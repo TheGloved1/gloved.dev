@@ -25,7 +25,7 @@ export default function HomePage() {
           >
             <h3 className="text-2xl font-bold">Github →</h3>
             <div className="text-lg">
-              Visit this site's repo, or visit my Github profile to see my other projects.
+              Visit this site''s repo, or visit my Github profile to see my other projects.
             </div>
           </Link>
         </div>
