@@ -34,6 +34,7 @@ export default function HomePage() {
             <div className="text-lg">
               Vist the old site. This is the previous version of my portfolio site built with Vue.
             </div>
+          </Link>
         </div>
       </div>
     </main>
