@@ -1,5 +1,6 @@
 import "src/styles/globals.css";
 import React from 'react';
+import StyledSection from "src/components/StyledSection";
 
 export default function HomePage() {
   return (
@@ -9,6 +10,9 @@ export default function HomePage() {
           gloved<span className="text-[hsl(280,100%,40%)]">.</span>dev/home
           coming soon!
         </h1>
+        <StyledSection>
+          <h3>Welcome</h3>
+        </StyledSection>
       </div>
     </main>
   );
