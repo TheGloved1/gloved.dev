@@ -11,7 +11,11 @@ export default function StyledSection({
 
   useEffect(() => {
     const observer = new IntersectionObserver(
-      ([entry]) => setIsInView(entry.isIntersecting),
+      ([entry]) => {
+        if (entry) {
+          setIsInView(entry.isIntersecting);
+        }
+      },
       { threshold: 0.1 }
     );
 
