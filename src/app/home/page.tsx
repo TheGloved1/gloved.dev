@@ -1,29 +1,28 @@
 /* eslint-disable prefer-const */
 "use client";
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import StyledSection from "src/components/StyledSection";
 
+const sections = ['Welcome', 'About', 'Robotics'];
+
 export default function Page() {
-  const [currentSection, setCurrentSection] = useState(0);
-  const sections: string[] = ['Welcome', 'About', 'Robotics'];
+  const [currentSection, setCurrentSection] = useState(0 | 1 | 2);
+  useEffect(() => {
+    const element = document.getElementById(sections[currentSection]) || document.getElementById(sections[0]);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [currentSection]);
 
   const handleNext = () => {
     const nextSection = (currentSection + 1) % sections.length;
     setCurrentSection(nextSection);
-    const element = document.getElementById(sections[currentSection]);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
   };
 
   const handlePrev = () => {
     const prevSection = (currentSection - 1 + sections.length) % sections.length;
     setCurrentSection(prevSection);
-    const element = document.getElementById(sections[currentSection]);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
   };
 
 
