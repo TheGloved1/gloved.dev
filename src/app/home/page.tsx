@@ -7,12 +7,12 @@ import StyledSection from "src/components/StyledSection";
 const sections = ['Welcome', 'About', 'Robotics'];
 
 export default function Page() {
-  const [currentSection, setCurrentSection] = useState(0 | 1 | 2);
+  const [currentSection, setCurrentSection] = useState(0);
   useEffect(() => {
-    const element = document.getElementById(sections[currentSection]) || document.getElementById(sections[0]);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
+      const element = document.getElementById(sections[currentSection]);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
   }, [currentSection]);
 
   const handleNext = () => {
