@@ -29,7 +29,7 @@ export default function HomePage() {
           </Link>
         </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
-          <Link className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20" href="https://old.gloved.dev/">
+          <Link className="flex items-center justify-center max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20" href="https://old.gloved.dev/">
             <h3 className="text-2xl font-bold">Old Site →</h3>
             <div className="text-lg">
               Vist the old site. This is the previous version of my portfolio site built with Vue.
