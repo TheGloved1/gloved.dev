@@ -8,7 +8,7 @@ export default function HomePage() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e526d] to-[#1e210c] text-white">
       <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
-        <h1 className="fixed left-4 top-4 text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
+        <h1 className="fixed left-4 top-4 text-5xl font-extrabold tracking-tight text-white sm:text-[5rem] bg-slate-600">
           gloved<span className="text-[hsl(280,100%,40%)]">.</span>dev<span className="text-[hsl(280,100%,40%)]">/</span>home <span className="text-[hsl(0,0%,23%)]">Work in progress...</span>
         </h1>
         <StyledSection id={sections[0]}>
