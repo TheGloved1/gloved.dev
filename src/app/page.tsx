@@ -14,7 +14,7 @@ export default function HomePage() {
           >
             <h3 className="text-2xl font-bold">Home →</h3>
             <div className="text-lg">
-              The landing page for my portfolio based web project built using React.
+              The landing page for my About Me based web project built using React.
             </div>
           </Link>
           <Link
@@ -24,7 +24,7 @@ export default function HomePage() {
           >
             <h3 className="text-2xl font-bold">Github →</h3>
             <div className="text-lg">
-              Git the source. Visit my Github profile to take a look at my other projects.
+              Git the source code. Visit my Github profile to take a look at my other projects.
             </div>
           </Link>
         </div>
@@ -32,7 +32,7 @@ export default function HomePage() {
           <Link className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20" href="https://old.gloved.dev/">
             <h3 className="text-2xl font-bold">Old Site →</h3>
             <div className="text-lg">
-              Vist the old site. This is the previous version of my portfolio site built with Vue.
+              Vist the old site. This is the previous version of my About Me site built with Vue.
             </div>
           </Link>
         </div>
