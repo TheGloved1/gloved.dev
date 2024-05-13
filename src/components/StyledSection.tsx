@@ -3,8 +3,10 @@ import React, { useEffect, useRef, useState } from 'react';
 
 export default function StyledSection({
   children,
+  id,
 }: {
   children: React.ReactNode;
+  id?: string;
 }) {
   const sectionRef = useRef<HTMLDivElement>(null);
   const [isInView, setIsInView] = useState(false);
@@ -32,8 +34,9 @@ export default function StyledSection({
 
   return (
     <section
+      id={id}
       ref={sectionRef}
-      className={`flex flex-col items-center justify-center h-screen text-center box-border ${isInView ? 'animate-fadeIn' : 'animate-out'}`}
+      className={`flex flex-col items-center justify-center h-screen text-center box-border ${isInView ? 'animate-fadeIn' : 'no-visibility'}`}
     >
       {children}
     </section>
