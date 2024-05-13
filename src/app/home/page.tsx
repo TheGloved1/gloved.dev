@@ -1,4 +1,5 @@
-import "src/styles/globals.css";
+"use client";
+
 import React from 'react';
 import StyledSection from "src/components/StyledSection";
 
