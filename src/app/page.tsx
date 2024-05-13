@@ -32,7 +32,7 @@ export default function HomePage() {
           <Link className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20" href="https://old.gloved.dev/">
             <h3 className="text-2xl font-bold">Old Site →</h3>
             <div className="text-lg">
-              Vist the old site. This is the previous version of my About Me site built with Vue.
+              Visit the old site. This is the previous version of my About Me site built with Vue.
             </div>
           </Link>
         </div>
