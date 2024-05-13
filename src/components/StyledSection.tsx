@@ -5,7 +5,7 @@ export default function StyledSection({
   id,
 }: {
   children: React.ReactNode;
-  id: string;
+  id?: string;
 }) {
   const sectionRef = useRef<HTMLDivElement>(null);
   const [isInView, setIsInView] = useState(false);
@@ -18,7 +18,7 @@ export default function StyledSection({
           console.log(entry.isIntersecting);
         }
       },
-      { threshold: 1 }
+      { threshold: 0.3 }
     );
 
     if (sectionRef.current) {

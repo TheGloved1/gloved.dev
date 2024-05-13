@@ -6,12 +6,12 @@ import StyledSection from "src/components/StyledSection";
 
 export default function Page() {
   const [currentSection, setCurrentSection] = useState(0);
-  let sections: string[] = ['Welcome', 'About', 'Robotics'];
+  const sections: string[] = ['Welcome', 'About', 'Robotics'];
 
   const handleNext = () => {
     const nextSection = (currentSection + 1) % sections.length;
     setCurrentSection(nextSection);
-    const element = document.getElementById(sections[nextSection]);
+    const element = document.getElementById(sections[currentSection]);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
     }
@@ -20,7 +20,7 @@ export default function Page() {
   const handlePrev = () => {
     const prevSection = (currentSection - 1 + sections.length) % sections.length;
     setCurrentSection(prevSection);
-    const element = document.getElementById(sections[prevSection]);
+    const element = document.getElementById(sections[currentSection]);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
     }
@@ -51,8 +51,8 @@ export default function Page() {
           <p><strong>{"Language: "}</strong>{"Java and Python"}</p>
         </StyledSection>
       </div>
-      <button className="fixed bottom-4 left-4 rounded" onClick={handlePrev}>Previous</button>
-      <button className="fixed bottom-4 right-4 rounded" onClick={handleNext}>Next</button>
+      <button className="fixed bottom-4 left-4 rounded bg-gray-500" onClick={handlePrev}>Previous</button>
+      <button className="fixed bottom-4 right-4 rounded bg-gray-500" onClick={handleNext}>Next</button>
     </main>
   );
 }
