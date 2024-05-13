@@ -1,18 +1,33 @@
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import StyledSection from "src/components/StyledSection";
 
-export default function HomePage() {
-  const sections = ['Home', 'About', 'Robotics']
+export default function Page() {
+  const [currentSection, setCurrentSection] = useState(0);
+  const sections = ['Welcome', 'About', 'Robotics'];
+
+  const handleNext = () => {
+    const nextSection = (currentSection + 1) % sections.length;
+    setCurrentSection(nextSection);
+    document.getElementById(sections[nextSection])?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handlePrev = () => {
+    const prevSection = (currentSection - 1 + sections.length) % sections.length;
+    setCurrentSection(prevSection);
+    document.getElementById(sections[prevSection])?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e526d] to-[#1e210c] text-white">
-      <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
-        <h1 className="fixed left-4 top-4 right-4 text-5xl font-extrabold tracking-tight text-white sm:text-[5rem] bg-slate-600">
-          gloved<span className="text-[hsl(280,100%,40%)]">.</span>dev<span className="text-[hsl(280,100%,40%)]">/</span>home <span className="text-[hsl(0,0%,23%)]">Work in progress...</span>
-        </h1>
+      <h1 className="fixed text-5xl font-extrabold tracking-tight text-white sm:text-[5rem] top-4 left-4">
+        gloved<span className="text-[hsl(280,100%,40%)]">.</span>dev<span className="text-[hsl(280,100%,40%)]">/</span>home <span className="text-gray-700">Work in progress...</span>
+      </h1>
+      <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 scroll-snap-y-mandatory">
         <StyledSection id={sections[0]}>
-          <h1>{"Welcome to my website!"}</h1>
+          <h2>{"Welcome to my website!"}</h2>
           <p>{"I'm Kaden Hood."}</p>
           <p>{"I'm a young software engineer."}</p>
         </StyledSection>
@@ -29,6 +44,8 @@ export default function HomePage() {
           <p><strong>{"Language: "}</strong>{"Java and Python"}</p>
         </StyledSection>
       </div>
+      <button className="fixed bottom-4 left-4 rounded" onClick={handlePrev}>Previous</button>
+      <button className="fixed bottom-4 right-4" onClick={handleNext}>Next</button>
     </main>
   );
 }

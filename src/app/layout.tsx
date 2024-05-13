@@ -9,7 +9,7 @@ const inter = Inter({
 
 export const metadata = {
   title: "gloved.dev",
-  description: "Made with React!",
+  description: "Made by Kaden Hood with NextJS!",
   icons: [{ rel: "icon", url: "https://avatars.githubusercontent.com/u/96776176?v=4" }],
 };
 

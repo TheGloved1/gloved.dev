@@ -18,3 +18,12 @@
   color: purple;
   background-size: 100% 3px;
 }
+
+.scroll-snap-y-mandatory {
+  scroll-snap-type: y mandatory;
+  overflow-y: scroll;
+}
+
+.scroll-snap-start {
+  scroll-snap-align: start;
+}
