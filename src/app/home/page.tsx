@@ -9,10 +9,12 @@ const sections = ['Welcome', 'About', 'Robotics'];
 export default function Page() {
   const [currentSection, setCurrentSection] = useState(0);
   useEffect(() => {
+    if (sections[currentSection]) {
       const element = document.getElementById(sections[currentSection]);
       if (element) {
         element.scrollIntoView({ behavior: 'smooth' });
       }
+    }
   }, [currentSection]);
 
   const handleNext = () => {
