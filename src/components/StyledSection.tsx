@@ -6,7 +6,7 @@ export default function StyledSection({
   id,
 }: {
   children: React.ReactNode;
-  id?: string;
+  id: string;
 }) {
   const sectionRef = useRef<HTMLDivElement>(null);
   const [isInView, setIsInView] = useState(false);

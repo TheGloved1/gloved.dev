@@ -1,5 +1,7 @@
+/* eslint-disable prefer-const */
 "use client";
 
+import { spec } from 'node:test/reporters';
 import React, { useState } from 'react';
 import StyledSection from "src/components/StyledSection";
 
@@ -31,7 +33,7 @@ export default function Page() {
       <h1 className="fixed text-5xl font-extrabold tracking-tight text-white sm:text-[5rem] top-4 left-4">
         gloved<span className="text-[hsl(280,100%,40%)]">.</span>dev<span className="text-[hsl(280,100%,40%)]">/</span>home <span className="text-gray-700">Work in progress...</span>
       </h1>
-      <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 scroll-snap-y-mandatory">
+      <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16">
         <StyledSection id={sections[0]}>
           <h2>{"Welcome to my website!"}</h2>
           <p>{"I'm Kaden Hood."}</p>
@@ -51,7 +53,7 @@ export default function Page() {
         </StyledSection>
       </div>
       <button className="fixed bottom-4 left-4 rounded" onClick={handlePrev}>Previous</button>
-      <button className="fixed bottom-4 right-4" onClick={handleNext}>Next</button>
+      <button className="fixed bottom-4 right-4 rounded" onClick={handleNext}>Next</button>
     </main>
   );
 }
