@@ -1,4 +1,3 @@
-import "src/styles/globals.css";
 import React, { useEffect, useRef, useState } from 'react';
 
 export default function StyledSection({
@@ -16,13 +15,15 @@ export default function StyledSection({
       ([entry]) => {
         if (entry) {
           setIsInView(entry.isIntersecting);
+          console.log(entry.isIntersecting);
         }
       },
-      { threshold: 0.1 }
+      { threshold: 1 }
     );
 
     if (sectionRef.current) {
       observer.observe(sectionRef.current);
+      console.log(sectionRef.current);
     }
 
     return () => {
@@ -36,7 +37,7 @@ export default function StyledSection({
     <section
       id={id}
       ref={sectionRef}
-      className={`flex flex-col items-center justify-center h-screen text-center box-border ${isInView ? 'animate-fadeIn' : 'no-visibility'}`}
+      className={`flex flex-col items-center justify-center h-screen text-center box-border animate-in animate-out ${isInView ? 'animate-enter' : 'animate-leave'}`}
     >
       {children}
     </section>

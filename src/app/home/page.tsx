@@ -1,13 +1,12 @@
 /* eslint-disable prefer-const */
 "use client";
 
-import { spec } from 'node:test/reporters';
 import React, { useState } from 'react';
 import StyledSection from "src/components/StyledSection";
 
 export default function Page() {
   const [currentSection, setCurrentSection] = useState(0);
-  const sections = ['Welcome', 'About', 'Robotics'];
+  let sections: string[] = ['Welcome', 'About', 'Robotics'];
 
   const handleNext = () => {
     const nextSection = (currentSection + 1) % sections.length;
