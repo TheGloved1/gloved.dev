@@ -10,13 +10,19 @@ export default function Page() {
   const handleNext = () => {
     const nextSection = (currentSection + 1) % sections.length;
     setCurrentSection(nextSection);
-    document.getElementById(sections[nextSection])?.scrollIntoView({ behavior: 'smooth' });
+    const element = document.getElementById(sections[nextSection]);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   const handlePrev = () => {
     const prevSection = (currentSection - 1 + sections.length) % sections.length;
     setCurrentSection(prevSection);
-    document.getElementById(sections[prevSection])?.scrollIntoView({ behavior: 'smooth' });
+    const element = document.getElementById(sections[prevSection]);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
 
