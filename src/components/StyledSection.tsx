@@ -34,7 +34,6 @@ export default function StyledSection({
     <section
       ref={sectionRef}
       className={`flex flex-col items-center justify-center h-screen text-center box-border ${isInView ? 'animate-fadeIn' : 'animate-out'}`}
-      style={{ height: '115vh' }}
     >
       {children}
     </section>

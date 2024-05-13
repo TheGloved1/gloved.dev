@@ -9,11 +9,29 @@ export default function HomePage() {
         <StyledSection>
           <h1 className="text-3xl font-extrabold tracking-tight text-white sm:text-[5rem]">
             gloved<span className="text-[hsl(280,100%,40%)]">.</span>dev/home
-            coming soon!
+            work in progress...
           </h1>
         </StyledSection>
         <StyledSection>
-          <h3>Welcome</h3>
+          <h1>Welcome to my website!</h1>
+          <p>I'm Kaden Hood</p>
+          <p>A young software engineer</p>
+        </StyledSection>
+        <StyledSection>
+          <h2>About Me</h2>
+          <p></p>
+          <p>I wear gloves, and go by "Gloves" online.</p>
+          <p>and if you couldn't tell already, I like to code.</p>
+        </StyledSection>
+        <StyledSection>
+          <h2><strong><a className="fancy-link" href="https://meporobotics.com/">Mediapolis High School Robotics
+            Club</a></strong></h2>
+          <p><a className="fancy-link" href="https://frc-events.firstinspires.org/team/9061">FIRST Inspires Robotics Team
+            9061</a></p>
+          <p>Since 2023 - Present</p>
+          <p></p>
+          <p><strong>Role:</strong> Programmer</p>
+          <p><strong>Language:</strong> Java & Python</p>
         </StyledSection>
       </div>
     </main>
