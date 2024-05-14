@@ -5,10 +5,12 @@ import React, {
   // useState
 } from 'react';
 import StyledSection from "src/components/StyledSection";
+import Counter from 'src/components/counter';
 
 const sections = ['Welcome', 'About', 'Robotics'];
 
 export default function Page() {
+  console.log('Rendering Page...');
   // const [currentSection, setCurrentSection] = useState(0);
   // useEffect(() => {
   //   if (sections[currentSection]) {
@@ -36,24 +38,30 @@ export default function Page() {
       </h1>
       <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16">
         <StyledSection id={sections[0]}>
-          <h2>{"Welcome to my website!"}</h2>
+          <h3>{"Welcome to my website!"}</h3>
           <p></p>
           <p>{"I'm Kaden Hood."}</p>
           <p>{"I'm a young software engineer."}</p>
         </StyledSection>
         <StyledSection id={sections[1]}>
-          <h2>{"About Me"}</h2>
+          <h3>{"About Me"}</h3>
           <p></p>
           <p>{"I wear gloves, and go by \"Gloves\" online."}</p>
           <p>{"And if you couldn't tell already, I like to code."}</p>
         </StyledSection>
         <StyledSection id={sections[2]}>
-          <h2><strong><a className="fancy-link" href="https://meporobotics.com/">{"Mediapolis High School Robotics Club"}</a></strong></h2>
+          <h3><strong><a className="fancy-link" href="https://meporobotics.com/">{"Mediapolis High School Robotics Club"}</a></strong></h3>
           <p><a className="fancy-link" href="https://frc-events.firstinspires.org/team/9061">{"FIRST Inspires Robotics Team 9061"}</a></p>
           <p>{"Since 2023 - Present"}</p>
           <p></p>
           <p><strong>{"Role: "}</strong>{"Programmer"}</p>
           <p><strong>{"Language: "}</strong>{"Java and Python"}</p>
+        </StyledSection>
+      </div>
+      <div>
+        <StyledSection>
+          <p>Here a counter button thing...</p>
+          <Counter></Counter>
         </StyledSection>
       </div>
       {/* <button className="fixed bottom-4 left-4 rounded bg-gray-500" onClick={handlePrev}>Previous</button> */}

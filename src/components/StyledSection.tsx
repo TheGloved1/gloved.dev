@@ -6,6 +6,7 @@ interface StyledSectionProps {
 }
 
 export default function StyledSection({ children, id }: StyledSectionProps) {
+  console.log('Rendering StyledSection...');
   const sectionRef = useRef<HTMLDivElement>(null);
   const [isInView, setIsInView] = useState(false);
   const animate = "animate-in animate-out";
@@ -31,6 +32,7 @@ export default function StyledSection({ children, id }: StyledSectionProps) {
       }
     };
   }, []);
+
 
   return (
     <section
