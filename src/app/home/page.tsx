@@ -37,11 +37,13 @@ export default function Page() {
       <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16">
         <StyledSection id={sections[0]}>
           <h2>{"Welcome to my website!"}</h2>
+          <p></p>
           <p>{"I'm Kaden Hood."}</p>
           <p>{"I'm a young software engineer."}</p>
         </StyledSection>
         <StyledSection id={sections[1]}>
           <h2>{"About Me"}</h2>
+          <p></p>
           <p>{"I wear gloves, and go by \"Gloves\" online."}</p>
           <p>{"And if you couldn't tell already, I like to code."}</p>
         </StyledSection>
@@ -49,6 +51,7 @@ export default function Page() {
           <h2><strong><a className="fancy-link" href="https://meporobotics.com/">{"Mediapolis High School Robotics Club"}</a></strong></h2>
           <p><a className="fancy-link" href="https://frc-events.firstinspires.org/team/9061">{"FIRST Inspires Robotics Team 9061"}</a></p>
           <p>{"Since 2023 - Present"}</p>
+          <p></p>
           <p><strong>{"Role: "}</strong>{"Programmer"}</p>
           <p><strong>{"Language: "}</strong>{"Java and Python"}</p>
         </StyledSection>

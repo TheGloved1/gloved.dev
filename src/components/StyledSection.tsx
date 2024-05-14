@@ -8,8 +8,10 @@ interface StyledSectionProps {
 export default function StyledSection({ children, id }: StyledSectionProps) {
   const sectionRef = useRef<HTMLDivElement>(null);
   const [isInView, setIsInView] = useState(false);
+  const animate = "animate-in animate-out";
 
   useEffect(() => {
+    const refs = sectionRef;
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry) {
@@ -19,13 +21,13 @@ export default function StyledSection({ children, id }: StyledSectionProps) {
       { threshold: 0.3 }
     );
 
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
+    if (refs.current) {
+      observer.observe(refs.current);
     }
 
     return () => {
-      if (sectionRef.current) {
-        observer.unobserve(sectionRef.current);
+      if (refs.current) {
+        observer.unobserve(refs.current);
       }
     };
   }, []);
@@ -34,7 +36,7 @@ export default function StyledSection({ children, id }: StyledSectionProps) {
     <section
       id={id}
       ref={sectionRef}
-      className={`flex flex-col items-center justify-center h-screen text-center box-border animate-in animate-out ${isInView ? 'animate-enter' : 'animate-leave'}`}
+      className={`flex flex-col items-center justify-center h-screen text-center box-border ${isInView ? 'animate-in' : 'animate-out'}`}
     >
       {children}
     </section>
