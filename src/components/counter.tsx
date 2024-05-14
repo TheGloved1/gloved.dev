@@ -9,7 +9,7 @@ export default function Counter() {
 
   return (
     <div>
-      <Button variant="secondary" onClick={() => setCount(count + 1)}>Clicks: {count}</Button>
+      <Button onClick={() => setCount(count + 1)}>Clicks: {count}</Button>
     </div>
   )
 }

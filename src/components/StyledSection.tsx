@@ -9,7 +9,6 @@ export default function StyledSection({ children, id }: StyledSectionProps) {
   console.log('Rendering StyledSection...');
   const sectionRef = useRef<HTMLDivElement>(null);
   const [isInView, setIsInView] = useState(false);
-  const animate = "animate-in animate-out";
 
   useEffect(() => {
     const refs = sectionRef;
@@ -38,7 +37,7 @@ export default function StyledSection({ children, id }: StyledSectionProps) {
     <section
       id={id}
       ref={sectionRef}
-      className={`flex-col items-center justify-center h-screen text-center box-border ${isInView ? 'flex' : 'flex-none'}`}
+      className={`flex-col items-center justify-center h-screen text-center box-border fade-in fade-out ${isInView ? 'flex' : 'flex-none'}`}
     >
       {children}
     </section>
