@@ -1,12 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, ReactNode } from 'react';
 
-export default function StyledSection({
-  children,
-  id,
-}: {
-  children: React.ReactNode;
+interface StyledSectionProps {
+  children: ReactNode;
   id?: string;
-}) {
+}
+
+export default function StyledSection({ children, id }: StyledSectionProps) {
   const sectionRef = useRef<HTMLDivElement>(null);
   const [isInView, setIsInView] = useState(false);
 
@@ -15,7 +14,6 @@ export default function StyledSection({
       ([entry]) => {
         if (entry) {
           setIsInView(entry.isIntersecting);
-          console.log(entry.isIntersecting);
         }
       },
       { threshold: 0.3 }
@@ -23,7 +21,6 @@ export default function StyledSection({
 
     if (sectionRef.current) {
       observer.observe(sectionRef.current);
-      console.log(sectionRef.current);
     }
 
     return () => {
