@@ -36,7 +36,7 @@ export default function StyledSection({ children, id }: StyledSectionProps) {
     <section
       id={id}
       ref={sectionRef}
-      className={`flex flex-col items-center justify-center h-screen text-center box-border ${isInView ? 'flex' : 'flex-none'}`}
+      className={`flex-col items-center justify-center h-screen text-center box-border ${isInView ? 'flex' : 'flex-none'}`}
     >
       {children}
     </section>
