@@ -6,7 +6,7 @@ interface StyledSectionProps {
   id?: string;
 }
 
-const sectionStyles = "flex flex-col items-center justify-center tracking h-screen text-center";
+const sectionStyles = "flex flex-col items-center justify-center tracking h-screen text-center snap-center";
 export default function StyledSection({ children, id }: StyledSectionProps) {
   console.log('Rendering StyledSection...');
   const sectionRef = useRef(null);
