@@ -6,6 +6,7 @@ interface StyledSectionProps {
   id?: string;
 }
 
+const sectionStyles = "flex flex-col items-center justify-center tracking h-screen text-center";
 export default function StyledSection({ children, id }: StyledSectionProps) {
   console.log('Rendering StyledSection...');
   const sectionRef = useRef(null);
@@ -33,26 +34,26 @@ export default function StyledSection({ children, id }: StyledSectionProps) {
     };
   }, [sectionRef]);
 
-  // if (!isInView) {
-  //   return (
-  //     <section
-  //       id={id}
-  //       ref={sectionRef}
-  //       className={`flex-col items-center justify-center h-screen text-center box-border`}
-  //     >
-  //     </section>
-  //   );
-
-  // } else {
+  if (!isInView) {
     return (
       <section
         id={id}
         ref={sectionRef}
-        className={`flex flex-col items-center justify-center tracking h-screen text-center ${isInView ? 'fade-in-left' : ''}`}
+        className={sectionStyles}
+      >
+      </section>
+    );
+
+  } else {
+    return (
+      <section
+        id={id}
+        ref={sectionRef}
+        className={sectionStyles + ` ${isInView ? 'fade-in-left' : ''}`}
       >
         {children}
       </section>
     );
 
-  // }
+  }
 };

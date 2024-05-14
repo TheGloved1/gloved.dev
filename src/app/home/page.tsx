@@ -17,7 +17,7 @@ export default function Page() {
       <h1 className="fixed text-5xl items-center font-extrabold tracking-tight text-white sm:text-[5rem] top-4 left-4">
         gloved<span className="text-[hsl(280,100%,40%)]">.</span>dev<span className="text-[hsl(280,100%,40%)]">/</span>home <span className="text-gray-700">Work in progress...</span>
       </h1>
-      <div className="flex flex-col items-center justify-center gap-12 px-4 py-16">
+      <div className="flex flex-col items-center justify-center gap-12 px-4 py-16 snap-y">
         <StyledSection id={sections[0]}>
           <h3 className="font-extrabold text-xl">{"Welcome to my website!"}</h3>
           <p>{"---"}</p>
@@ -43,8 +43,6 @@ export default function Page() {
           <Counter></Counter>
         </StyledSection>
       </div>
-      {/* <button className="fixed bottom-4 left-4 rounded bg-gray-500" onClick={handlePrev}>Previous</button> */}
-      {/* <button className="fixed bottom-4 right-4 rounded bg-gray-500" onClick={handleNext}>Next</button> */}
     </main>
   );
 }
