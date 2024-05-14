@@ -8,7 +8,6 @@ interface StyledSectionProps {
 export default function StyledSection({ children, id }: StyledSectionProps) {
   const sectionRef = useRef<HTMLDivElement>(null);
   const [isInView, setIsInView] = useState(false);
-  const animate = "animate-in animate-out";
 
   useEffect(() => {
     const refs = sectionRef;
@@ -32,13 +31,17 @@ export default function StyledSection({ children, id }: StyledSectionProps) {
     };
   }, []);
 
-  return (
-    <section
-      id={id}
-      ref={sectionRef}
-      className={`flex flex-col items-center justify-center h-screen text-center box-border ${isInView ? 'animate-in' : 'animate-out'}`}
-    >
-      {children}
-    </section>
-  );
+  if (!isInView) {
+    return;
+  } else {
+    return (
+      <section
+        id={id}
+        ref={sectionRef}
+        className={`flex flex-col items-center justify-center h-screen text-center box-border animate-in animate-out`}
+      >
+        {children}
+      </section>
+    );
+  }
 };
