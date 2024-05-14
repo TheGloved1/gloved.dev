@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 export default function Page() {
-  console.log('Rendering Page...');
+  console.log('Rendering Root...');
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e526d] to-[#1e210c] text-white">
       <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">

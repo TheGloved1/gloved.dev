@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState, ReactNode } from 'react';
+/* eslint-disable prefer-const */
+import React, { useEffect, useRef, useState, type ReactNode } from 'react';
 
 interface StyledSectionProps {
   children: ReactNode;
@@ -7,39 +8,51 @@ interface StyledSectionProps {
 
 export default function StyledSection({ children, id }: StyledSectionProps) {
   console.log('Rendering StyledSection...');
-  const sectionRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef(null);
   const [isInView, setIsInView] = useState(false);
 
   useEffect(() => {
-    const refs = sectionRef;
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry) {
           setIsInView(entry.isIntersecting);
         }
       },
-      { threshold: 0.3 }
+      { threshold: 0.1 }
     );
+    let sectionRefCurrent = sectionRef.current;
 
-    if (refs.current) {
-      observer.observe(refs.current);
+    if (sectionRefCurrent) {
+      observer.observe(sectionRefCurrent);
     }
 
     return () => {
-      if (refs.current) {
-        observer.unobserve(refs.current);
+      if (sectionRefCurrent) {
+        observer.unobserve(sectionRefCurrent);
       }
     };
-  }, []);
+  }, [sectionRef]);
 
+  // if (!isInView) {
+  //   return (
+  //     <section
+  //       id={id}
+  //       ref={sectionRef}
+  //       className={`flex-col items-center justify-center h-screen text-center box-border`}
+  //     >
+  //     </section>
+  //   );
 
-  return (
-    <section
-      id={id}
-      ref={sectionRef}
-      className={`flex-col items-center justify-center h-screen text-center box-border fade-in fade-out ${isInView ? 'flex' : 'flex-none'}`}
-    >
-      {children}
-    </section>
-  );
+  // } else {
+    return (
+      <section
+        id={id}
+        ref={sectionRef}
+        className={`flex flex-col items-center justify-center tracking h-screen text-center ${isInView ? 'fade-in-left' : ''}`}
+      >
+        {children}
+      </section>
+    );
+
+  // }
 };
