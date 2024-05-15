@@ -1,10 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { Button } from 'src/components/ui/button';
+import { Button } from 'src/components/ui/button'
 
 export default function Counter() {
-  console.log('Rendering Counter...');
+  console.log('Rendering Counter...')
   const [count, setCount] = useState(0)
 
   return (
