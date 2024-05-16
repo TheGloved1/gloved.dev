@@ -18,8 +18,8 @@ async function fetchGitUser(name: string) {
   return gitUserResponse;
 }
 
-export default async function GitUser(name: GitUserProps) {
-  const gitUser = await fetchGitUser(name.name)
+export default async function GitUser({ name }: GitUserProps) {
+  const gitUser = await fetchGitUser(name)
 
   return (
     <div className="container ring ring-white">
