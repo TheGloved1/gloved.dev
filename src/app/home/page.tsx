@@ -2,6 +2,7 @@ import React, {
   // useEffect,
   // useState
 } from 'react'
+import GitUser from 'src/components/GitUser'
 import StyledSection from "src/components/StyledSection"
 import Counter from "src/components/counter"
 
@@ -39,6 +40,9 @@ export default function Page() {
         <StyledSection>
           <p>Here a counter button thing...</p>
           <Counter></Counter>
+        </StyledSection>
+        <StyledSection>
+          <GitUser name="TheGloved1"></GitUser>
         </StyledSection>
       </div>
     </main>
