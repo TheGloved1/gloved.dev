@@ -1,39 +1,44 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+import Image from "next/image";
+import { useState } from "react";
+
 type GitUserProps = {
   name: string
-}
-
-async function fetchGitUser(name: string) {
-  let gitUserResponse = null;
-
-  try {
-    const response = await fetch(`https://api.github.com/users/${name}`);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    gitUserResponse = await response.json();
-  } catch (error) {
-    console.error('There was a problem with the fetch operation: ', error);
-    gitUserResponse = null;
-  }
-  return gitUserResponse;
+  html_url: string
+  avatar_url: string
+  login: string
+  bio: string
+  company: string
+  location: string
+  blog: string
+  email: string
 }
 
 export default async function GitUser({ name }: GitUserProps) {
-  const gitUser = await fetchGitUser(name)
+  const [gitUser, setGitUser] = useState<GitUserProps | null>(null);
+  const response = await fetch(`https://api.github.com/users/${name}`);
+  const data: GitUserProps = await response.json();
+  setGitUser(data);
 
   return (
     <div className="container ring ring-white">
-      <div className="image-container git-image-container">
-        <a href={gitUser.html_url} target="_blank" rel="noopener">
-          <img src={gitUser.avatar_url} alt="User image" />
-        </a>
-      </div>
-      <h2>{gitUser.name}</h2>
-      <span>{gitUser.login}</span>
-      <p>{gitUser.bio}</p>
-      <a className="fancy-link" href={gitUser.html_url} target="_blank" rel="noopener">
-        {gitUser.html_url}
-      </a>
+      {gitUser && (
+        <div className="image-container git-image-container">
+          <a href={gitUser.html_url} target="_blank" rel="noopener">
+            <Image src={gitUser.avatar_url} alt="User image" />
+          </a>
+        </div>
+      )}
+      {gitUser && (
+        <>
+          <h2>{gitUser.name}</h2>
+          <span>{gitUser.login}</span>
+          <p>{gitUser.bio}</p>
+          <a className="fancy-link" href={gitUser.html_url} target="_blank" rel="noopener">
+            {gitUser.html_url}
+          </a>
+        </>
+      )}
     </div>
   )
 }
