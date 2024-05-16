@@ -2,7 +2,7 @@
 /* eslint-disable prefer-const */
 import React, { useEffect, useRef, useState, type ReactNode } from 'react'
 
-interface StyledSectionProps {
+type StyledSectionProps = {
   children: ReactNode
   id?: string
 }
