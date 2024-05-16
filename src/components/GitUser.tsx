@@ -21,7 +21,6 @@ async function fetchGitUser(name: string) {
 export default async function GitUser(name: GitUserProps) {
   const gitUser = await fetchGitUser(name.name)
 
-
   return (
     <div className="container ring ring-white">
       <div className="image-container git-image-container">
