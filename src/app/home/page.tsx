@@ -6,7 +6,7 @@ import GitUser from 'src/components/GitUser'
 import StyledSection from "src/components/StyledSection"
 import Counter from "src/components/counter"
 
-const sections = ['Welcome', 'About', 'Robotics']
+const sections = ['Welcome', 'About', 'Robotics', 'Github']
 
 export default function Page() {
   console.log('Rendering Home...')
@@ -41,7 +41,7 @@ export default function Page() {
           <p>Here a counter button thing...</p>
           <Counter></Counter>
         </StyledSection>
-        <StyledSection>
+        <StyledSection id={sections[3]}>
           <GitUser name="TheGloved1"></GitUser>
         </StyledSection>
       </div>
