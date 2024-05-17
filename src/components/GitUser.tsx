@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import Image from "next/image";
-import { useState } from "react";
+import Image from "next/image"
+import { useState } from "react"
 
 type GitUserProps = {
   name: string
@@ -15,10 +15,10 @@ type GitUserProps = {
 }
 
 export default async function GitUser({ name }: GitUserProps) {
-  const [gitUser, setGitUser] = useState<GitUserProps | null>(null);
-  const response = await fetch(`https://api.github.com/users/${name}`);
-  const data: GitUserProps = await response.json();
-  setGitUser(data);
+  const [gitUser, setGitUser] = useState<GitUserProps | null>(null)
+  const response = await fetch(`https://api.github.com/users/${name}`)
+  const data: GitUserProps = await response.json()
+  setGitUser(data)
 
   return (
     <div className="container ring ring-white">
