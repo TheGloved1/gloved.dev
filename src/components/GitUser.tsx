@@ -1,12 +1,20 @@
 "use client"
 import React, { useEffect, useState } from 'react';
 
+interface UserData {
+  html_url: string;
+  avatar_url: string;
+  name: string;
+  login: string;
+  bio: string;
+}
+
 type GitUserProps = {
   name: string
 }
 
 export default function GitUser({ name }: GitUserProps) {
-  const [data, setData] = useState(null);
+  const [data, setData] = useState<UserData | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -24,7 +32,7 @@ export default function GitUser({ name }: GitUserProps) {
         <>
           <div className="image-container git-image-container">
             <a href={data.html_url} target="_blank" rel="noopener">
-              <img src={data.avatar_url} alt="User image"></img>
+              <img src={data.avatar_url} alt="User image" />
             </a>
           </div>
           <h2>{data.name}</h2>
