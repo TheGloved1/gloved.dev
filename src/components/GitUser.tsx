@@ -24,7 +24,7 @@ export default function GitUser({ name }: GitUserProps) {
         <>
           <div className="image-container git-image-container">
             <a href={data.html_url} target="_blank" rel="noopener">
-              <img src={data.avatar_url} alt="User image" />
+              <img src={data.avatar_url} alt="User image"></img>
             </a>
           </div>
           <h2>{data.name}</h2>
