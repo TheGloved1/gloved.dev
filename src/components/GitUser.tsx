@@ -1,4 +1,5 @@
 "use client"
+import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 
 interface UserData {
@@ -34,12 +35,12 @@ export default function GitUser({ name }: GitUserProps) {
   }, [name]);
 
   return (
-    <div className="container ring ring-white gap-4 rounded-lx">
+    <div className="container flex flex-row gap-4 rounded-xl border-white">
       {data && (
         <>
           <div className="image-container git-image-container">
             <a href={data.html_url} target="_blank" rel="noopener">
-              <img src={data.avatar_url} alt="User image" />
+              <Image width={500} height={500} src={data.avatar_url} alt="User image" />
             </a>
           </div>
           <h2>{data.name}</h2>
