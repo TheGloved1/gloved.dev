@@ -23,7 +23,7 @@ export default function GitUser({ name }: GitUserProps) {
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
-        const data: UserData = await response.json();
+        const data = await response.json() as UserData;
         setData(data);
       } catch (error) {
         console.error('Error:', error);
@@ -53,3 +53,4 @@ export default function GitUser({ name }: GitUserProps) {
     </div>
   );
 }
+
