@@ -18,12 +18,19 @@ export default function GitUser({ name }: GitUserProps) {
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch(`https://api.github.com/users/${name}`);
-      const data = await response.json();
-      setData(data);
+      try {
+        const response = await fetch(`https://api.github.com/users/${name}`);
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data: UserData = await response.json();
+        setData(data);
+      } catch (error) {
+        console.error('Error:', error);
+      }
     };
 
-    fetchData();
+    void fetchData();
   }, [name]);
 
   return (
