@@ -34,7 +34,7 @@ export default function GitUser({ name }: GitUserProps) {
   }, [name]);
 
   return (
-    <div className="container ring ring-white gap-4">
+    <div className="container ring ring-white gap-4 rounded-lx">
       {data && (
         <>
           <div className="image-container git-image-container">
