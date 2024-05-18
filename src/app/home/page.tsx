@@ -4,7 +4,7 @@ import React, {
 } from 'react'
 import GitUser from 'src/components/GitUser'
 import StyledSection from "src/components/StyledSection"
-import Counter from "src/components/counter"
+// import Counter from "src/components/counter"
 
 const sections = ['Welcome', 'About', 'Robotics', 'Github']
 
@@ -36,10 +36,6 @@ export default function Page() {
           <p>{"-----"}</p>
           <p><strong>{"Role: "}</strong>{"Programmer"}</p>
           <p><strong>{"Language: "}</strong>{"Java and Python"}</p>
-        </StyledSection>
-        <StyledSection>
-          <p>Here a counter button thing...</p>
-          <Counter></Counter>
         </StyledSection>
         <StyledSection id={sections[3]}>
           <GitUser name="TheGloved1"></GitUser>
