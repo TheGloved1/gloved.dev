@@ -22,7 +22,7 @@ export default function Page() {
           <h3 className="font-extrabold text-xl">{"Welcome to my website!"}</h3>
           <p>{"-----"}</p>
           <p>{"I'm Kaden Hood."}</p>
-          <p>{"I'm a young software engineer."}</p>
+          <p>{"and I'm a young software engineer."}</p>
         </StyledSection>
         <StyledSection id={sections[1]}>
           <h3>{"About Me"}</h3>
@@ -39,6 +39,8 @@ export default function Page() {
           <p><strong>{"Language: "}</strong>{"Java and Python"}</p>
         </StyledSection>
         <StyledSection id={sections[3]}>
+          <h3>{"My Github Profile"}</h3>
+          <p>{"-----"}</p>
           <GitUser name="TheGloved1"></GitUser>
         </StyledSection>
       </div>
