@@ -1,15 +1,12 @@
 "use client"
-import Image from 'next/image'
-import { useMutation } from 'react-query'
-import { getUser } from 'src/server/actions'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
 
 interface UserData {
-  html_url: string
-  avatar_url: string
-  name: string
-  login: string
-  bio: string
+  html_url: string;
+  avatar_url: string;
+  name: string;
+  login: string;
+  bio: string;
 }
 
 type GitUserProps = {
@@ -17,36 +14,43 @@ type GitUserProps = {
 }
 
 export default function GitUser({ name }: GitUserProps) {
-  const [user, setUser] = useState<UserData | null>(null)
-
-  const { mutate: server_getUser } = useMutation<UserData, unknown, { userId: string }>({
-    mutationFn: getUser,
-    onSuccess: (data: UserData) => setUser(data),
-  })
+  const [data, setData] = useState<UserData | null>(null);
 
   useEffect(() => {
-    server_getUser({ userId: name })
-  }, [name, server_getUser])
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`https://api.github.com/users/${name}`);
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json() as UserData;
+        setData(data);
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    };
 
-  if (!user) {
-    return null
-  }
+    void fetchData();
+  }, [name]);
+
   return (
-    <div className="container flex flex-col gap-4 rounded border-white items-center justify-center">
-      <>
-        <div className="image-container git-image-container">
-          <a href={user.html_url} target="_blank" rel="noopener">
-            <Image width={200} height={200} src={user.avatar_url} alt="User image" />
+    <div className="container gap-4 rounded-lx border-white">
+      {data && (
+        <>
+          <div className="image-container git-image-container">
+            <a href={data.html_url} target="_blank" rel="noopener">
+              <img src={data.avatar_url} alt="User image" />
+            </a>
+          </div>
+          <h2>{data.name}</h2>
+          <span>{data.login}</span>
+          <p>{data.bio}</p>
+          <a className="fancy-link" href={data.html_url} target="_blank" rel="noopener">
+            {data.html_url}
           </a>
-        </div>
-        <h2>{user.name}</h2>
-        <span>{user.login}</span>
-        <p>{user.bio}</p>
-        <a className="fancy-link" href={user.html_url} target="_blank" rel="noopener">
-          {user.html_url}
-        </a>
-      </>
+        </>
+      )}
     </div>
-  )
+  );
 }
 
