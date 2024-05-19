@@ -19,9 +19,9 @@ type GitUserProps = {
 export default function GitUser({ name }: GitUserProps) {
   const [user, setUser] = useState<UserData | null>(null)
 
-  const { mutate: server_getUser } = useMutation({
+  const { mutate: server_getUser } = useMutation<UserData, unknown, { userId: string }>({
     mutationFn: getUser,
-    onSuccess: (data) => setUser(data),
+    onSuccess: (data: UserData) => setUser(data),
   })
 
   useEffect(() => {
