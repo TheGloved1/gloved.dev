@@ -40,7 +40,6 @@ export default function Page() {
         </StyledSection>
         <StyledSection id={sections[3]}>
           <h3>{"My Github Profile"}</h3>
-          <p>{"-----"}</p>
           <GitUser name="TheGloved1"></GitUser>
         </StyledSection>
       </div>

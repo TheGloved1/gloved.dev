@@ -38,7 +38,7 @@ export default function GitUser({ name }: GitUserProps) {
     <div className="container flex flex-col p-4 ring ring-white gap-4 rounded-lx border-white justify-center items-center">
       {data && (
         <>
-          <div className="">
+          <div>
             <a href={data.html_url} target="_blank" rel="noopener">
               <Image width={200} height={200} src={data.avatar_url} alt="User image" />
             </a>
