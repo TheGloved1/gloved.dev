@@ -17,19 +17,19 @@ type GitUserProps = {
 }
 
 export default function GitUser({ name }: GitUserProps) {
-  const [user, setUser] = useState<UserData | null>(null);
+  const [user, setUser] = useState<UserData | null>(null)
 
   const { mutate: server_getUser } = useMutation({
     mutationFn: getUser,
     onSuccess: (data) => setUser(data),
-  });
+  })
 
   useEffect(() => {
-    server_getUser({ userId: name });
-  }, [name, server_getUser]);
+    server_getUser({ userId: name })
+  }, [name, server_getUser])
 
   if (!user) {
-    return null; // or some loading state
+    return null
   }
   return (
     <div className="container flex flex-col gap-4 rounded border-white items-center justify-center">
