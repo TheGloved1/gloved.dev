@@ -8,6 +8,8 @@ import GitUser from 'src/components/GitUser'
 import StyledSection from 'src/components/StyledSection'
 import { Button } from 'src/components/ui/button'
 
+//  TODO: Add more information on how the website is built and things it can do using React.
+
 const sections = ['Welcome', 'About', 'Robotics', 'Github']
 
 export default function Page() {
@@ -15,7 +17,7 @@ export default function Page() {
 
   return (
     <main className="flex min-h-screen flex-col items-center bg-gradient-to-b from-[#2e526d] to-[#1e210c] text-white">
-      <Button className='fixed p-4 top-2 left-2'>
+      <Button className='fixed p-4 top-4 left-4'>
         <Link href={"/"}>{"<- Back"}</Link>
       </Button>
       <h1 className="fixed items-center font-bold tracking-tight text-white sm:text-[5rem]">
