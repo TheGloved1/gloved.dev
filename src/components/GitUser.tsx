@@ -37,14 +37,14 @@ export default function GitUser({ name }: GitUserProps) {
 
   if (!data) {
     return (
-      <div className="container flex flex-col p-4 ring ring-white gap-4 rounded-lx border-white justify-center items-center">
+      <div className="container flex flex-col p-4 border-4 gap-4 rounded-lx border-white justify-center items-center">
         <p>Loading Data...</p>
       </div>
     )
   }
 
   return (
-    <div className="container flex flex-col p-4 ring ring-white gap-4 rounded-lx border-white justify-center items-center">
+    <div className="container flex flex-col p-4 border-4 gap-4 rounded-lx border-white justify-center items-center">
       {data && (
         <>
           <div>
