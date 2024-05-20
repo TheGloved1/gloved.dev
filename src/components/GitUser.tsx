@@ -1,5 +1,6 @@
 "use client"
 import Image from 'next/image'
+import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
 
 interface UserData {
@@ -39,16 +40,16 @@ export default function GitUser({ name }: GitUserProps) {
       {data && (
         <>
           <div>
-            <a href={data.html_url} target="_blank" rel="noopener">
+            <Link href={data.html_url} target="_blank" rel="noopener">
               <Image className="rounded-xl" width={200} height={200} src={data.avatar_url} alt="User image" />
-            </a>
+            </Link>
           </div>
           <h2>{data.name}</h2>
           <span>{data.login}</span>
           <p>{data.bio}</p>
-          <a className="fancy-link" href={data.html_url} target="_blank" rel="noopener">
+          <Link className="fancy-link" href={data.html_url} target="_blank" rel="noopener">
             {data.html_url}
-          </a>
+          </Link>
         </>
       )}
     </div>
