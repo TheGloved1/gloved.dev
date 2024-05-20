@@ -8,8 +8,6 @@ import GitUser from 'src/components/GitUser'
 import StyledSection from 'src/components/StyledSection'
 import { Button } from 'src/components/ui/button'
 
-// TODO: Make a back button for `/home`
-
 const sections = ['Welcome', 'About', 'Robotics', 'Github']
 
 export default function Page() {
