@@ -6,7 +6,7 @@ import React, {
 } from 'react'
 import GitUser from 'src/components/GitUser'
 import StyledSection from 'src/components/StyledSection'
-// import Counter from 'src/components/counter'
+import { Button } from 'src/components/ui/button'
 
 // TODO: Make a back button for `/home`
 
@@ -17,7 +17,10 @@ export default function Page() {
 
   return (
     <main className="flex min-h-screen flex-col items-center bg-gradient-to-b from-[#2e526d] to-[#1e210c] text-white">
-      <h1 className="fixed items-center font-bold tracking-tight text-white sm:text-[5rem] bottom-4 left-4">
+      <Button className='fixed p-4 top-2 left-2'>
+        <Link href={"/"}>{"<- Back"}</Link>
+      </Button>
+      <h1 className="fixed items-center font-bold tracking-tight text-white sm:text-[5rem]">
         gloved<span className="text-[hsl(280,100%,40%)]">.</span>dev<span className="text-[hsl(280,100%,40%)]">/</span>home <span className="text-gray-700">Work in progress...</span>
       </h1>
       <div className="flex flex-col items-center justify-center gap-12 px-4 py-16 snap-y snap-mandatory">
