@@ -1,11 +1,12 @@
 "use client"
+import Link from 'next/link'
 import React, {
   // useEffect,
   // useState
 } from 'react'
 import GitUser from 'src/components/GitUser'
-import StyledSection from "src/components/StyledSection"
-// import Counter from "src/components/counter"
+import StyledSection from 'src/components/StyledSection'
+// import Counter from 'src/components/counter'
 
 const sections = ['Welcome', 'About', 'Robotics', 'Github']
 
@@ -14,7 +15,7 @@ export default function Page() {
 
   return (
     <main className="flex min-h-screen flex-col items-center bg-gradient-to-b from-[#2e526d] to-[#1e210c] text-white">
-      <h1 className="fixed text-5xl items-center font-extrabold tracking-tight text-white sm:text-[5rem] top-4 left-4">
+      <h1 className="fixed items-center font-bold tracking-tight text-white sm:text-[5rem] bottom-4 left-4">
         gloved<span className="text-[hsl(280,100%,40%)]">.</span>dev<span className="text-[hsl(280,100%,40%)]">/</span>home <span className="text-gray-700">Work in progress...</span>
       </h1>
       <div className="flex flex-col items-center justify-center gap-12 px-4 py-16 snap-y snap-mandatory">
@@ -31,8 +32,8 @@ export default function Page() {
           <p>{"And if you couldn't tell already, I like to code."}</p>
         </StyledSection>
         <StyledSection id={sections[2]}>
-          <h3><strong><a className="fancy-link" href="https://meporobotics.com/">{"Mediapolis High School Robotics Club"}</a></strong></h3>
-          <p><a className="fancy-link" href="https://frc-events.firstinspires.org/team/9061">{"FIRST Inspires Robotics Team 9061"}</a></p>
+          <h3><strong><Link className="fancy-link" href="https://meporobotics.com/">{"Mediapolis High School Robotics Club"}</Link></strong></h3>
+          <p><Link className="fancy-link" href="https://frc-events.firstinspires.org/team/9061">{"FIRST Inspires Robotics Team 9061"}</Link></p>
           <p>{"Since 2023 - Present"}</p>
           <p>{"-----"}</p>
           <p><strong>{"Role: "}</strong>{"Programmer"}</p>
