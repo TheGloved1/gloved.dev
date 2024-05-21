@@ -1,5 +1,5 @@
 "use client"
-import { getGithubUser } from '@/server/actions'
+import { githubUser } from '@/server/actions'
 import Image from 'next/image'
 import Link from 'next/link'
 import React, {
@@ -23,7 +23,7 @@ type GitUserProps = {
 export default function GitUser({ name }: GitUserProps) {
   const data = useQuery({
     queryKey: ['user'],
-    queryFn: () => getGithubUser(name),
+    queryFn: () => githubUser(name),
   })
 
   if (data.isLoading) {
