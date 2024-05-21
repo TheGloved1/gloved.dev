@@ -19,9 +19,9 @@ export default function Page() {
       <Button className='fixed p-4 top-4 left-4'>
         <Link href={"/"}>{"<- Back"}</Link>
       </Button>
-      <h1 className="fixed items-center font-bold tracking-tight text-white sm:text-[5rem] animate-pulse">
+      <p className="fixed items-center font-bold tracking-tight text-white sm:text-[5rem] animate-pulse">
         gloved<span className="text-[hsl(280,100%,40%)]">.</span>dev<span className="text-[hsl(280,100%,40%)]">/</span>home <span className="text-gray-700">Work in progress...</span>
-      </h1>
+      </p>
       <div className="flex flex-col items-center justify-center gap-12 px-4 py-16 snap-y snap-mandatory">
         <StyledSection id={sections[0]}>
           <h3 className="font-extrabold text-xl">{"Welcome to my website!"}</h3>
