@@ -24,7 +24,10 @@ const fetchGithubUser = async (name: string): Promise<UserData> => {
 }
 
 export default function GitUser({ name }: GitUserProps) {
-  const { data } = useQuery(['user'], () => fetchGithubUser(name))
+  const { data } = useQuery({
+    queryKey: ['user'],
+    queryFn: () => fetchGithubUser(name),
+  })
   console.log('Rendering GitUser...')
 
   if (!data) {
