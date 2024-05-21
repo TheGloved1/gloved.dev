@@ -23,7 +23,7 @@ export default function GitUser({ name }: GitUserProps) {
     const fetchData = async () => {
       try {
         const response = await fetch(`https://api.github.com/users/${name}`)
-        const data = await response.json() as UserData
+        const data = await response.json()
         setData(data)
       } catch (error) {
         setData(null)
@@ -32,7 +32,7 @@ export default function GitUser({ name }: GitUserProps) {
     }
 
     void fetchData()
-  }, [name])
+  }, [])
 
   if (!data) {
     return (
