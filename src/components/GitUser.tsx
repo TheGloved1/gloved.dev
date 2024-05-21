@@ -20,7 +20,7 @@ type GitUserProps = {
 
 const fetchGithubUser = async (name: string): Promise<UserData> => {
   const response = await fetch(`https://api.github.com/users/${name}`)
-  return response.json()
+  return (await response.json()) as UserData
 }
 
 export default function GitUser({ name }: GitUserProps) {
