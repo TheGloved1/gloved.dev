@@ -23,7 +23,7 @@ type GitUserProps = {
 export default function GitUser({ name }: GitUserProps) {
   const data = useQuery({
     queryKey: ['user'],
-    queryFn: () => githubUser(name),
+    queryFn: () => fetch(`https://api.github.com/users/${name}`).then((res) => res.json()),
   })
 
   if (data.isLoading) {

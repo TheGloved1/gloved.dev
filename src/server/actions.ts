@@ -11,7 +11,6 @@ export const getUser = async ({ userId }: { userId: string }) => {
 }
 
 export async function githubUser(username: string) {
-  const response = await fetch(`https://api.github.com/users/${username}`)
-  return response.json()
+  return await fetch(`https://api.github.com/users/${username}`).then((res) => res.json())
 }
 
