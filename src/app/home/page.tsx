@@ -8,8 +8,6 @@ import StyledSection from '@/components/StyledSection'
 import { Button } from '@/components/ui/button'
 
 //  TODO: Add more information on how the website is built and things it can do using React.
-//  TODO: Add 
-
 
 const sections = ['Welcome', 'About', 'Robotics', 'Github']
 
@@ -27,13 +25,13 @@ export default function Page() {
       <div className="flex flex-col items-center justify-center gap-12 px-4 py-16 snap-y snap-mandatory">
         <StyledSection id={sections[0]}>
           <h3 className="font-extrabold text-xl">{"Welcome to my website!"}</h3>
-          <p>{"-----"}</p>
+          <br />
           <p>{"I'm Kaden Hood."}</p>
           <p>{"and I'm a young software engineer."}</p>
         </StyledSection>
         <StyledSection id={sections[1]}>
           <h3>{"About Me"}</h3>
-          <p>{"-----"}</p>
+          <br />
           <p>{"I wear gloves, and go by \"Gloves\" online."}</p>
           <p>{"And if you couldn't tell already, I like to code."}</p>
         </StyledSection>
@@ -41,12 +39,13 @@ export default function Page() {
           <h3><strong><Link className="fancy-link" href="https://meporobotics.com/">{"Mediapolis High School Robotics Club"}</Link></strong></h3>
           <p><Link className="fancy-link" href="https://frc-events.firstinspires.org/team/9061">{"FIRST Inspires Robotics Team 9061"}</Link></p>
           <p>{"Since 2023 - Present"}</p>
-          <p>{"-----"}</p>
+          <br />
           <p><strong>{"Role: "}</strong>{"Programmer"}</p>
           <p><strong>{"Language: "}</strong>{"Java and Python"}</p>
         </StyledSection>
         <StyledSection id={sections[3]}>
           <h3>{"My Github Profile"}</h3>
+          <br />
           <GitUser name="TheGloved1"></GitUser>
         </StyledSection>
       </div>
