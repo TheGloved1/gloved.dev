@@ -3,10 +3,11 @@ import Link from 'next/link'
 import React, {
   // useEffect,
   // useState
+  lazy,
 } from 'react'
-import GitUser from 'src/components/GitUser'
-import StyledSection from 'src/components/StyledSection'
-import { Button } from 'src/components/ui/button'
+import GitUser from '@/components/GitUser'
+import StyledSection from '@/components/StyledSection'
+import { Button } from '@/components/ui/button'
 
 //  TODO: Add more information on how the website is built and things it can do using React.
 
