@@ -14,12 +14,16 @@ type UserData = {
   bio: string
 }
 
+type GitUserProps = {
+  name: string
+}
+
 const fetchGithubUser = async (name: string): Promise<UserData> => {
   const response = await fetch(`https://api.github.com/users/${name}`)
   return response.json()
 }
 
-export default function GitUser(name: string) {
+export default function GitUser({ name }: GitUserProps) {
   const { data } = useQuery(['user'], () => fetchGithubUser(name))
   console.log('Rendering GitUser...')
 
