@@ -1,9 +1,7 @@
-"use client"
 import Link from 'next/link'
 import React, {
   // useEffect,
   // useState
-  lazy,
 } from 'react'
 import GitUser from '@/components/GitUser'
 import StyledSection from '@/components/StyledSection'
