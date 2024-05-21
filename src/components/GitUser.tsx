@@ -22,8 +22,9 @@ export default function GitUser({ name }: GitUserProps) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`https://api.github.com/users/${name}`).then((res) => res.json()) as UserData
-        setData(response)
+        const response = await fetch(`https://api.github.com/users/${name}`)
+        const data = await response.json() as UserData
+        setData(data)
       } catch (error) {
         setData(null)
         console.error('Error:', error)
