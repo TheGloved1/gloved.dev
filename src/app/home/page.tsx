@@ -28,19 +28,19 @@ export default function Page() {
         <div className="text-slate-900 bg-gray-700 p-2 rounded-xl">{"Work in progress..."}</div>
       </div>
       <div className="flex flex-col items-center justify-center gap-12 px-4 py-16">
-        <StyledSection id={sections[0]} className="snap-start">
+        <StyledSection id={sections[0]} className="snap-always snap-center">
           <h3 className="font-extrabold text-xl">{"Welcome to my website!"}</h3>
           <br />
           <p>{"I'm Kaden Hood."}</p>
           <p>{"and I'm a young software engineer."}</p>
         </StyledSection>
-        <StyledSection id={sections[1]} className="snap-start">
+        <StyledSection id={sections[1]} className="snap-always snap-center">
           <h3>{"About Me"}</h3>
           <br />
           <p>{"I wear gloves, and go by \"Gloves\" online."}</p>
           <p>{"And if you couldn't tell already, I like to code."}</p>
         </StyledSection>
-        <StyledSection id={sections[2]} className="snap-start">
+        <StyledSection id={sections[2]} className="snap-always snap-center">
           <h3><strong><Link className="fancy-link" href="https://meporobotics.com/">{"Mediapolis High School Robotics Club"}</Link></strong></h3>
           <p><Link className="fancy-link" href="https://frc-events.firstinspires.org/team/9061">{"FIRST Inspires Robotics Team 9061"}</Link></p>
           <p>{"Since 2023 - Present"}</p>
@@ -48,7 +48,7 @@ export default function Page() {
           <p><strong>{"Role: "}</strong>{"Programmer"}</p>
           <p><strong>{"Language: "}</strong>{"Java and Python"}</p>
         </StyledSection>
-        <StyledSection id={sections[3]} className="snap-start">
+        <StyledSection id={sections[3]} className="snap-always snap-center">
           <h3>{"My Github Profile"}</h3>
           <br />
           <GitUser name="TheGloved1"></GitUser>
