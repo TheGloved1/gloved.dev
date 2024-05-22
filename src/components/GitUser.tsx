@@ -23,7 +23,7 @@ export default function GitUser({ name }: GitUserProps) {
     const fetchData = async () => {
       try {
         const response = await fetch(`https://api.github.com/users/${name}`)
-        const data = await response.json()
+        const data = await response.json() as UserData
         setData(data)
       } catch (error) {
         setData(null)
@@ -40,7 +40,7 @@ export default function GitUser({ name }: GitUserProps) {
         <p>Loading Data...</p>
       </div>
     )
-  } else if (data) {
+  } else {
     return (
       <div className="container flex flex-col p-4 border-4 gap-4 border-dashed rounded-lx border-white justify-center items-center">
         <div>
