@@ -25,7 +25,7 @@ export default function Page() {
         <div>{"dev"}</div>
         <div className="text-[hsl(280,100%,40%)]">{"/"}</div>
         <div className='pr-2'>{"home "}</div>
-        <div className="text-black bg-gray-700 p-2 rounded-xl">{"Work in progress..."}</div>
+        <div className="text-slate-900 bg-gray-700 p-2 rounded-xl">{"Work in progress..."}</div>
       </div>
       <div className="flex flex-col items-center justify-center gap-12 px-4 py-16"> <StyledSection id={sections[0]} className="snap-start">
         <h3 className="font-extrabold text-xl">{"Welcome to my website!"}</h3>
