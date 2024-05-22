@@ -16,7 +16,7 @@ export default function Page() {
 
   return (
     <main className="flex min-h-screen flex-col items-center bg-gradient-to-b from-[#2e526d] to-[#1e210c] text-white snap-mandatory snap-y">
-      <Button className='fixed p-2 top-4 left-4'>
+      <Button className='fixed p-2 top-2 left-2'>
         <Link href={"/"}>{"<- Back"}</Link>
       </Button>
       <div className="flex fixed text-[3vw] font-bold justify-center items-center p-1 text-center md:text-[3rem] sm:text-[5rem] animate-pulse top-4">
