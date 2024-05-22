@@ -1,10 +1,7 @@
+"use client"
 import Image from 'next/image'
 import Link from 'next/link'
-import React, {
-  // useEffect,
-  // useState
-} from 'react'
-import { useQuery } from 'react-query'
+import React, { useEffect, useState } from 'react'
 
 type UserData = {
   html_url: string
@@ -18,17 +15,24 @@ type GitUserProps = {
   name: string
 }
 
-const fetchGithubUser = async (name: string): Promise<UserData> => {
-  const response = await fetch(`https://api.github.com/users/${name}`)
-  return (await response.json()) as UserData
-}
-
 export default function GitUser({ name }: GitUserProps) {
-  const { data } = useQuery({
-    queryKey: ['user'],
-    queryFn: () => fetchGithubUser(name),
-  })
+  const [data, setData] = useState<UserData | null>(null)
   console.log('Rendering GitUser...')
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`https://api.github.com/users/${name}`)
+        const data = await response.json()
+        setData(data)
+      } catch (error) {
+        setData(null)
+        console.error('Error:', error)
+      }
+    }
+
+    void fetchData()
+  }, [name])
 
   if (!data) {
     return (
