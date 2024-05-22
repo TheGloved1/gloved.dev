@@ -21,7 +21,7 @@ export default function StyledSection({ children, id, className }: StyledSection
           setIsInView(entry.isIntersecting)
         }
       },
-      { threshold: 0.3 }
+      { threshold: 0.8 }
     )
 
     let sectionRefCurrent = sectionRef.current
