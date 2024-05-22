@@ -5,9 +5,10 @@ import React, { useEffect, useRef, useState, type ReactNode } from 'react'
 type StyledSectionProps = {
   children: ReactNode
   id?: string
+  className?: string
 }
 
-export default function StyledSection({ children, id }: StyledSectionProps) {
+export default function StyledSection({ children, id, className }: StyledSectionProps) {
   console.log('Rendering StyledSection...')
 
   const sectionRef = useRef(null)
@@ -41,7 +42,7 @@ export default function StyledSection({ children, id }: StyledSectionProps) {
       <section
         id={id}
         ref={sectionRef}
-        className={`flex flex-col items-center justify-center h-screen text-center tracking-tight snap-center`}
+        className={`flex flex-col items-center justify-center h-screen text-center tracking-tight ${className}`}
       >
       </section>
     )
@@ -51,7 +52,7 @@ export default function StyledSection({ children, id }: StyledSectionProps) {
       <section
         id={id}
         ref={sectionRef}
-        className={`flex flex-col items-center justify-center h-screen text-center tracking-tight snap-center ${isInView ? 'fade-in-left' : ''}`}
+        className={`flex flex-col items-center justify-center h-screen text-center tracking-tight ${className} ${isInView ? 'fade-in-left' : ''}`}
       >
         {children}
       </section>
