@@ -20,7 +20,13 @@ export default function Page() {
         <Link href={"/"}>{"<- Back"}</Link>
       </Button>
       <div className="flex fixed text-[3vw] font-bold justify-center items-center p-1 text-center md:text-[3rem] sm:text-[5rem] animate-pulse top-4">
-        gloved<div className="text-[hsl(280,100%,40%)]">.</div>dev<div className="text-[hsl(280,100%,40%)]">/</div><div className='pr-2'>home </div><div className="text-gray-700">Work in progress...</div> </div>
+        <div>gloved</div>
+        <div className="text-[hsl(280,100%,40%)]">.</div>
+        <div>dev</div>
+        <div className="text-[hsl(280,100%,40%)]">/</div>
+        <div className='pr-2'>home </div>
+        <div className="text-gray-700">Work in progress...</div>
+      </div>
       <div className="flex flex-col items-center justify-center gap-12 px-4 py-16"> <StyledSection id={sections[0]} className="snap-start">
         <h3 className="font-extrabold text-xl">{"Welcome to my website!"}</h3>
         <br />
