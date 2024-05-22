@@ -21,7 +21,7 @@ export default function Page() {
         <Link href={"/"}>{"<- Back"}</Link>
       </Button>
       <div className="flex fixed text-[3vw] justify-center items-center p-1 text-center md:text-[3rem] sm:text-[5rem] animate-pulse top-4">
-        gloved<span className="text-[hsl(280,100%,40%)]">.</span>dev<span className="text-[hsl(280,100%,40%)]">/</span>home <span className="text-gray-700">Work in progress...</span>
+        gloved<div className="text-[hsl(280,100%,40%)]">.</div>dev<div className="text-[hsl(280,100%,40%)]">/</div>home <div className="text-gray-700">Work in progress...</div>
       </div>
       <div className="flex flex-col items-center justify-center gap-12 px-4 py-16">
         <StyledSection id={sections[0]} className="snap-start">
