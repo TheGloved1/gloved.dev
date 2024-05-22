@@ -20,7 +20,7 @@ export default function Page() {
       <Button className='fixed p-4 top-4 left-4'>
         <Link href={"/"}>{"<- Back"}</Link>
       </Button>
-      <div className="flex fixed w-[75vw] items-center text-sm sm:text-[5rem] animate-pulse top-4">
+      <div className="flex fixed w-[75vw] items-center text-center text-sm sm:text-[5rem] animate-pulse top-4">
         gloved<span className="text-[hsl(280,100%,40%)]">.</span>dev<span className="text-[hsl(280,100%,40%)]">/</span>home <span className="text-gray-700">Work in progress...</span>
       </div>
       <div className="flex flex-col items-center justify-center gap-12 px-4 py-16">
