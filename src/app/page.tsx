@@ -15,7 +15,7 @@ export default function Page() {
           >
             <h3 className="text-2xl font-bold">Home →</h3>
             <div className="text-lg">
-              The landing page for my About Me based web project built using React.
+              The landing page for my About Me based web project built using the lovely help of the NextJS React Web Framework.
             </div>
           </Link>
           <Link
@@ -25,7 +25,7 @@ export default function Page() {
           >
             <h3 className="text-2xl font-bold">Github →</h3>
             <div className="text-lg">
-              Git the source code. Visit my Github profile to take a look at my other projects.
+              View the source code. Visit my Github profile to take a look at my other projects.
             </div>
           </Link>
         </div>
