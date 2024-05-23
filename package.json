@@ -43,6 +43,7 @@
     "@radix-ui/react-tooltip": "^1.0.7",
     "@t3-oss/env-nextjs": "^0.10.1",
     "@trpc/client": "^11.0.0-rc.374",
+    "@trpc/react-query": "^10.45.2",
     "@trpc/server": "^11.0.0-rc.374",
     "@vercel/analytics": "^1.2.2",
     "@vercel/postgres": "^0.8.0",
