@@ -38,7 +38,6 @@ export default function StyledSection({ children, id, className }: StyledSection
   }, [sectionRef])
 
   if (!isInView) {
-    console.log(`Unrendering StyledSection${id}...`)
     return (
       <section
         id={id}
