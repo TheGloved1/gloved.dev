@@ -9,8 +9,7 @@ type StyledSectionProps = {
 }
 
 export default function StyledSection({ children, id, className }: StyledSectionProps) {
-  console.log('Rendering StyledSection...')
-
+  console.log(`Rendering StyledSection ${id}...`)
   const sectionRef = useRef(null)
   const [isInView, setIsInView] = useState(false)
 
@@ -28,11 +27,13 @@ export default function StyledSection({ children, id, className }: StyledSection
 
     if (sectionRefCurrent) {
       observer.observe(sectionRefCurrent)
+      console.log(`${id} sectionRef observed`)
     }
 
     return () => {
       if (sectionRefCurrent) {
         observer.unobserve(sectionRefCurrent)
+        console.log(`${id} sectionRef unobserved`)
       }
     }
   }, [sectionRef])
@@ -42,7 +43,7 @@ export default function StyledSection({ children, id, className }: StyledSection
       <section
         id={id}
         ref={sectionRef}
-        className={`flex flex-col items-center justify-center h-screen text-center tracking-tight ${className}`}
+        className={`flex flex-col items-center justify-center h-[85vh] text-center tracking-tight ${className}`}
       >
       </section>
     )
