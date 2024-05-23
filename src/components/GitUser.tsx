@@ -17,7 +17,6 @@ type GitUserProps = {
 
 export default function GitUser({ name }: GitUserProps) {
   const [data, setData] = useState<UserData | null>(null)
-  console.log('Rendering GitUser...')
 
   useEffect(() => {
     const fetchData = async () => {
@@ -25,6 +24,7 @@ export default function GitUser({ name }: GitUserProps) {
         const response = await fetch(`https://api.github.com/users/${name}`)
         const data = await response.json() as UserData
         setData(data)
+        console.log('Finished fetching data: ', data)
       } catch (error) {
         setData(null)
         console.error('Error:', error)
@@ -35,6 +35,7 @@ export default function GitUser({ name }: GitUserProps) {
   }, [name])
 
   if (!data) {
+    console.log('Loading GitUser...')
     return (
       <div className="container flex flex-col p-4 border-4 gap-4 border-dashed rounded-lx border-white justify-center items-center">
         <p>Loading Data...</p>
@@ -42,6 +43,7 @@ export default function GitUser({ name }: GitUserProps) {
     )
   } else {
     return (
+      console.log('Rendered GitUser...'),
       <div className="container flex flex-col p-4 border-4 gap-4 border-dashed rounded-lx border-white justify-center items-center">
         <div>
           <Link href={data.html_url} target="_blank" rel="noopener">

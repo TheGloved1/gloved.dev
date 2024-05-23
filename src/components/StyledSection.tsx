@@ -9,7 +9,6 @@ type StyledSectionProps = {
 }
 
 export default function StyledSection({ children, id, className }: StyledSectionProps) {
-  console.log(`Rendering StyledSection ${id}...`)
   const sectionRef = useRef(null)
   const [isInView, setIsInView] = useState(false)
 
@@ -39,6 +38,7 @@ export default function StyledSection({ children, id, className }: StyledSection
   }, [sectionRef])
 
   if (!isInView) {
+    console.log(`Unrendering StyledSection${id}...`)
     return (
       <section
         id={id}
@@ -49,6 +49,7 @@ export default function StyledSection({ children, id, className }: StyledSection
     )
 
   } else {
+    console.log(`Rendering StyledSection${id}...`)
     return (
       <section
         id={id}
