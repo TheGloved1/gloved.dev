@@ -32,3 +32,18 @@ export const posts = createTable(
     nameIndex: index("name_idx").on(example.name),
   })
 );
+
+export const todos = createTable(
+  "todo",
+  {
+    id: serial("id").primaryKey(),
+    name: varchar("name", { length: 256 }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    updatedAt: timestamp("updatedAt", { withTimezone: true }),
+  },
+  (example) => ({
+    nameIndex: index("name_idx").on(example.name),
+  })
+);

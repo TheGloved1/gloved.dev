@@ -1,4 +1,4 @@
-# [gloved.dev](https://gloved.dev) built with [Next.js](https://nextjs.org/)
+# [gloved.dev](https://gloved.dev) built with the [Next.js](https://nextjs.org/) React Framework
 
-## Previously made with [Vue.js](https://vuejs.org)
-### - [GlovedWeb-Vue](https://github.com/TheGloved1/glovedweb-vue)
+## - Previously made with [Vue.js](https://vuejs.org)
+### [glovedweb-vue](https://github.com/TheGloved1/glovedweb-vue)
