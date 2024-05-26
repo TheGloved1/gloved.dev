@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button'
 //  TODO: Fix the "Home" page to be more responsive and have a better layout.
 
 const sections = ['Welcome', 'About', 'Robotics', 'Github']
+
 export default function Page() {
   console.log('Rendering Home...')
 
@@ -19,7 +20,7 @@ export default function Page() {
       <Button className='fixed p-2 top-2 left-2'>
         <Link href={"/"}>{"<- Back"}</Link>
       </Button>
-      <div className="flex fixed text-[3vw] font-bold justify-center items-center p-1 text-center md:text-[3rem] sm:text-[5rem] animate-pulse top-4">
+      <div className="flex fixed text-4xl font-bold justify-center items-center p-1 text-center md:text-md sm:text-sm animate-pulse top-5">
         <div>{"gloved"}</div>
         <div className="text-[hsl(280,100%,40%)]">{"."}</div>
         <div>{"dev"}</div>
@@ -31,12 +32,14 @@ export default function Page() {
         <StyledSection id={sections[0]} className="snap-always snap-center">
           <h3 className="font-extrabold text-xl">{"Welcome to my website!"}</h3>
           <br />
+          <p></p>
           <p>{"I'm Kaden Hood."}</p>
           <p>{"and I'm a young software engineer."}</p>
         </StyledSection>
         <StyledSection id={sections[1]} className="snap-always snap-center">
           <h3>{"About Me"}</h3>
           <br />
+          <p></p>
           <p>{"I wear gloves, and go by \"Gloves\" online."}</p>
           <p>{"And if you couldn't tell already, I like to code."}</p>
         </StyledSection>
@@ -45,12 +48,14 @@ export default function Page() {
           <p><Link className="fancy-link" href="https://frc-events.firstinspires.org/team/9061">{"FIRST Inspires Robotics Team 9061"}</Link></p>
           <p>{"Since 2023 - Present"}</p>
           <br />
+          <p></p>
           <p><strong>{"Role: "}</strong>{"Programmer"}</p>
           <p><strong>{"Language: "}</strong>{"Java and Python"}</p>
         </StyledSection>
         <StyledSection id={sections[3]} className="snap-always snap-center">
           <h3>{"My Github Profile"}</h3>
           <br />
+          <p></p>
           <GitUser name="TheGloved1"></GitUser>
         </StyledSection>
       </div>

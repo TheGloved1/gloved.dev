@@ -4,12 +4,6 @@ import React, {
   // useState
 } from 'react'
 import { CreateTodo } from '../_components/create-todo'
-// import GitUser from '@/components/GitUser'
-// import StyledSection from '@/components/StyledSection'
-// import { Button } from '@/components/ui/button'
-// import { CreatePost } from "@/app/_components/create-post";
-// import { api } from "@/trpc/server";
-
 //  TODO: Make a seperate TODO react app to keep track of all the things I need to do.
 
 export default function Page() {
