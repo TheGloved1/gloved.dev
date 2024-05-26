@@ -10,7 +10,7 @@ interface FileResponse {
 export default function FileManager() {
   const [files, setFiles] = useState<string[]>([]);
   const [passwordEntered, setPasswordEntered] = useState<boolean>(false);
-  const correctPassword: string = process.env.FILE_MANAGER_PASSKEY || '';
+  const correctPassword: string = process.env.FILE_MANAGER_PASSKEY ?? '';
 
   useEffect(() => {
     const GETFILES = async () => {
@@ -21,7 +21,7 @@ export default function FileManager() {
 
   async function deleteFile(file: string) {
     if (!passwordEntered) {
-      const password = prompt(`Enter passkey to delete files`) || '';
+      const password = prompt(`Enter passkey to delete files`) ?? '';
       if (password === correctPassword) {
         setPasswordEntered(true);
       } else {
