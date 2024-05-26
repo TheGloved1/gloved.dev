@@ -12,8 +12,11 @@ export default function FileManager() {
   const correctPassword: string = process.env.FILE_MANAGER_PASSKEY || '';
 
   useEffect(() => {
-    getFiles();
-  }, []);
+    const GETFILES = async () => {
+      await getFiles();
+    }
+    void GETFILES();
+  });
 
   async function deleteFile(file: string) {
     if (!passwordEntered) {
