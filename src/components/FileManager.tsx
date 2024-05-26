@@ -17,9 +17,10 @@ export default function FileManager() {
       await getFiles();
     }
     void GETFILES();
-  });
+  }, []);
 
   async function deleteFile(file: string) {
+    "use server"
     if (!passwordEntered) {
       const password = prompt(`Enter passkey to delete files`) ?? '';
       if (password === correctPassword) {
@@ -39,6 +40,7 @@ export default function FileManager() {
   }
 
   async function getFiles() {
+    "use server"
     setFiles([]);
     try {
       const response: AxiosResponse<FileResponse> = await axios.get("https://api.gloved.dev/files/");
@@ -50,6 +52,7 @@ export default function FileManager() {
   }
 
   async function uploadFile(event: ChangeEvent<HTMLInputElement>) {
+    "use server"
     try {
       const file = event.target.files?.[0];
       if (!file) return;

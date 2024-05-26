@@ -35,7 +35,7 @@ export default function StyledSection({ children, id, className }: StyledSection
         console.log(`${id} sectionRef unobserved`)
       }
     }
-  }, [sectionRef])
+  })
 
   if (!isInView) {
     return (
