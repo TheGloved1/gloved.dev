@@ -72,21 +72,21 @@ export default function FileManager() {
 
   return (
     <div>
-      <h1>Simple File Uploader</h1>
-      <p>(Don't download random files off the internet)</p>
+      <h1>{"Simple File Uploader"}</h1>
+      <p>{"(Don't download random files off the internet)"}</p>
       <br />
 
-      <h2>Upload File</h2>
+      <h2>{"Upload File"}</h2>
       <input type="file" onChange={uploadFile} />
 
-      <h2>Download Files <button onClick={getFiles}
-        title="Refresh Files">&#8635;</button>
+      <h2>{"Download Files "}<Button onClick={getFiles}
+        title="Refresh Files">&#8635;</Button>{""}
       </h2>
       <ul>
         {files.map(file => (
           <li key={file}>
             <a href={`https://api.gloved.dev/download/${file}`}>{file}</a>
-            <Button onClick={() => deleteFile(file)} title="Delete File">X</Button>
+            <Button onClick={() => deleteFile(file)} title="Delete File">{"X"}</Button>
           </li>
         ))}
       </ul>
