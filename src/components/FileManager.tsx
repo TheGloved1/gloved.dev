@@ -1,7 +1,6 @@
 import axios, { type AxiosResponse } from 'axios';
 import { useState, useEffect, type ChangeEvent } from 'react';
 import { Button } from './ui/button';
-import { UploadButton } from '@/utils/uploadthing'
 
 interface FileResponse {
   data: string[];
