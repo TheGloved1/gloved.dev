@@ -1,3 +1,4 @@
+"use client"
 import axios, { type AxiosResponse } from 'axios';
 import { useState, useEffect, type ChangeEvent } from 'react';
 import { Button } from './ui/button';

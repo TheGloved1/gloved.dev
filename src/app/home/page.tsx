@@ -6,11 +6,12 @@ import React, {
 import GitUser from '@/components/GitUser'
 import StyledSection from '@/components/StyledSection'
 import { Button } from '@/components/ui/button'
+import FileManager from '@/components/FileManager'
 
 //  TODO: Add more information on how the website is built and things it can do using React.
 //  TODO: Fix the "Home" page to be more responsive and have a better layout.
 
-const sections = ['Welcome', 'About', 'Robotics', 'Github']
+const sections = ['Welcome', 'About', 'Robotics', 'Github', 'FileManager']
 
 export default function Page() {
   console.log('Rendering Home...')
@@ -56,7 +57,16 @@ export default function Page() {
           <h3>{"My Github Profile"}</h3>
           <br />
           <p></p>
-          <GitUser name="TheGloved1"></GitUser>
+          <GitUser name="TheGloved1" />
+        </StyledSection>
+        <StyledSection id={sections[4]} className="snap-always snap-center">
+          <h3>{"File Manager"}</h3>
+          <br />
+          <p></p>
+          <p>{"This is a file manager that I built to manage files on my server."}</p>
+          <p>{"It's a work in progress, but it's functional."}</p>
+          <p>{"I'm working on adding more features to it."}</p>
+          <FileManager />
         </StyledSection>
       </div>
     </main>
