@@ -1,7 +1,5 @@
-"use client"
 import Image from 'next/image'
 import Link from 'next/link'
-import React, { useEffect, useState } from 'react'
 
 type UserData = {
   html_url: string
@@ -15,25 +13,21 @@ type GitUserProps = {
   name: string
 }
 
-export default function GitUser({ name }: GitUserProps) {
-  const [data, setData] = useState<UserData | null>(null)
+const fetchData = async (name: string) => {
+  "use server"
+  try {
+    const response = await fetch(`https://api.github.com/users/${name}`)
+    const data = await response.json() as UserData
+    console.log('Finished fetching data: ', data)
+    return data
+  } catch (error) {
+    console.error('Error:', error)
+    return null
+  }
+}
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(`https://api.github.com/users/${name}`)
-        const data = await response.json() as UserData
-        setData(data)
-        console.log('Finished fetching data: ', data)
-      } catch (error) {
-        setData(null)
-        console.error('Error:', error)
-      }
-    }
-
-    void fetchData()
-  }, [name])
-
+export default async function GitUser({ name }: GitUserProps) {
+  const data = await fetchData(name)
   if (!data) {
     console.log('Loading GitUser...')
     return (
