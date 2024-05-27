@@ -72,7 +72,7 @@ export default function FileManager() {
 
   return (
     <>
-      <div className='flex flex-col ring-2 p-4'>
+      <div className='flex flex-col p-4 border-white border-4 rounded-xl'>
         <h1 className='font-bold'>{"Simple File Uploader"}</h1>
         <p className='text-sm'>{"(Don't download random files off the internet)"}</p>
         <br />
@@ -84,7 +84,7 @@ export default function FileManager() {
           {"Download Files "}
           <Button className='rounded-xl' onClick={getFiles} title="Refresh Files">↻</Button>
         </h2>
-        <ul className='ring-1 p-[.2rem]'>
+        <ul className='border-white border-2 rounded-xl p-[.2rem]'>
           <strong className='pb-3'>{"Files"}</strong>
           {files.map(file => (
             <li className='p-2 text-[.2rem]' key={file}>

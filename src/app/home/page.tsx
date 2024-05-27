@@ -35,7 +35,7 @@ export default function Page() {
           <br />
           <p></p>
           <p>{"I'm Kaden Hood."}</p>
-          <p>{"and I'm a young software engineer."}</p>
+          <p>{"and I'm a software engineer."}</p>
         </StyledSection>
         <StyledSection id={sections[1]} className="snap-always snap-center">
           <h3>{"About Me"}</h3>
