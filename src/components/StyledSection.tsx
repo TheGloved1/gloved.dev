@@ -1,6 +1,7 @@
 "use client"
 /* eslint-disable prefer-const */
-import React, { useEffect, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
+import * as React from "react"
 
 type StyledSectionProps = {
   children: ReactNode
@@ -26,18 +27,15 @@ export default function StyledSection({ children, id, className }: StyledSection
 
     if (sectionRefCurrent) {
       observer.observe(sectionRefCurrent)
-      console.log(`${id} sectionRef observed`)
     }
 
     return () => {
       if (sectionRefCurrent) {
         observer.unobserve(sectionRefCurrent)
-        console.log(`${id} sectionRef unobserved`)
       }
     }
   })
 
-  console.log(`Rendering StyledSection${id}...`)
   return (
     <section
       id={id}
