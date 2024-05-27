@@ -21,7 +21,7 @@ export default function Page() {
       <Button className='fixed p-2 top-2 left-2'>
         <Link href={"/"}>{"<- Back"}</Link>
       </Button>
-      <div className="flex fixed lg:text-5xl font-bold justify-center items-center p-1 text-center md:text-[0.75rem] sm:text-sm animate-pulse top-5">
+      <div className="flex fixed lg:text-5xl font-bold justify-center items-center p-1 text-center md:text-[0.75rem] sm:text-sm animate-pulse top-[10vh]">
         <div>{"gloved"}</div>
         <div className="text-[hsl(280,100%,40%)]">{"."}</div>
         <div>{"dev"}</div>
