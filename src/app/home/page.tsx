@@ -60,9 +60,6 @@ export default function Page() {
           <GitUser name="TheGloved1" />
         </StyledSection>
         <StyledSection id={sections[4]} className="snap-always snap-center">
-          <h3 className='font-extrabold text-xl'>{"File Manager"}</h3>
-          <br />
-          <p></p>
           <FileManager />
         </StyledSection>
       </div>
