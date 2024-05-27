@@ -78,7 +78,7 @@ export default function FileManager() {
         <br />
 
         <Label htmlFor='uploadBtn'>{"Upload File"}</Label>
-        <Input id='uploadBtn' className='bg-black' type="file" onChange={uploadFile} />
+        <Input id='uploadBtn' className='bg-black cursor-pointer hover:animate-pulse' type="file" onChange={uploadFile} />
 
         <h2 className='text-center justify-center content-center place-items-center pt-4 pb-4'>
           {"Download Files "}
