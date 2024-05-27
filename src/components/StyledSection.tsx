@@ -37,27 +37,15 @@ export default function StyledSection({ children, id, className }: StyledSection
     }
   })
 
-  if (!isInView) {
-    return (
-      <section
-        id={id}
-        ref={sectionRef}
-        className={`flex flex-col items-center justify-center h-[85vh] text-center tracking-tight ${className}`}
-      >
-      </section>
-    )
+  console.log(`Rendering StyledSection${id}...`)
+  return (
+    <section
+      id={id}
+      ref={sectionRef}
+      className={`flex flex-col items-center justify-center min-h-[95vh] text-center tracking-tight ${className} ${isInView ? 'fade-in-left' : ''}`}
+    >
+      {children}
+    </section>
+  )
 
-  } else {
-    console.log(`Rendering StyledSection${id}...`)
-    return (
-      <section
-        id={id}
-        ref={sectionRef}
-        className={`flex flex-col items-center justify-center h-screen text-center tracking-tight ${className} ${isInView ? 'fade-in-left' : ''}`}
-      >
-        {children}
-      </section>
-    )
-
-  }
 }

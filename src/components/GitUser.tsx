@@ -14,7 +14,6 @@ type GitUserProps = {
 }
 
 const fetchData = async (name: string) => {
-  "use server"
   try {
     const response = await fetch(`https://api.github.com/users/${name}`)
     const data = await response.json() as UserData

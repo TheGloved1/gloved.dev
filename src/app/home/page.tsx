@@ -21,7 +21,7 @@ export default function Page() {
       <Button className='fixed p-2 top-2 left-2'>
         <Link href={"/"}>{"<- Back"}</Link>
       </Button>
-      <div className="flex fixed text-4xl font-bold justify-center items-center p-1 text-center md:text-md sm:text-sm animate-pulse top-5">
+      <div className="flex fixed lg:text-5xl font-bold justify-center items-center p-1 text-center md:text-[0.75rem] sm:text-sm animate-pulse top-5">
         <div>{"gloved"}</div>
         <div className="text-[hsl(280,100%,40%)]">{"."}</div>
         <div>{"dev"}</div>
@@ -60,12 +60,9 @@ export default function Page() {
           <GitUser name="TheGloved1" />
         </StyledSection>
         <StyledSection id={sections[4]} className="snap-always snap-center">
-          <h3>{"File Manager"}</h3>
+          <h3 className='font-extrabold text-xl'>{"File Manager"}</h3>
           <br />
           <p></p>
-          <p>{"This is a file manager that I built to manage files on my server."}</p>
-          <p>{"It's a work in progress, but it's functional."}</p>
-          <p>{"I'm working on adding more features to it."}</p>
           <FileManager />
         </StyledSection>
       </div>
