@@ -71,26 +71,29 @@ export default function FileManager() {
   }
 
   return (
-    <div className='flex flex-col ring-2 p-4'>
-      <h1 className='font-bold'>{"Simple File Uploader"}</h1>
-      <p className='text-sm'>{"(Don't download random files off the internet)"}</p>
-      <br />
+    <>
+      <div className='flex flex-col ring-2 p-4'>
+        <h1 className='font-bold'>{"Simple File Uploader"}</h1>
+        <p className='text-sm'>{"(Don't download random files off the internet)"}</p>
+        <br />
 
-      <Label htmlFor='uploadBtn'>{"Upload File"}</Label>
-      <Input id='uploadBtn' className='bg-black' type="file" onChange={uploadFile} />
+        <Label htmlFor='uploadBtn'>{"Upload File"}</Label>
+        <Input id='uploadBtn' className='bg-black' type="file" onChange={uploadFile} />
 
-      <h2 className='text-center justify-center content-center place-items-center pt-4 pb-4'>
-        {"Download Files "}
-        <Button className='rounded-xl' onClick={getFiles} title="Refresh Files">↻</Button>
-      </h2>
-      <ul className='ring-1 p-[.2rem]'>
-        {files.map(file => (
-          <li className='p-2 text-[.2rem]' key={file}>
-            <a href={`https://api.gloved.dev/download/${file}`}><Button className='mx-2 p-3 rounded-xl hover:animate-pulse'>{file}</Button></a>
-            <Button className='bg-red-500 rounded-xl' onClick={() => deleteFile(file)} title="Delete File">{"X"}</Button>
-          </li>
-        ))}
-      </ul>
-    </div>
+        <h2 className='text-center justify-center content-center place-items-center pt-4 pb-4'>
+          {"Download Files "}
+          <Button className='rounded-xl' onClick={getFiles} title="Refresh Files">↻</Button>
+        </h2>
+        <ul className='ring-1 p-[.2rem]'>
+          <strong className='pb-3'>{"Files"}</strong>
+          {files.map(file => (
+            <li className='p-2 text-[.2rem]' key={file}>
+              <a href={`https://api.gloved.dev/download/${file}`}><Button className='mx-2 p-3 rounded-xl hover:animate-pulse hover:bg-gray-700'>{file}</Button></a>
+              <Button disabled={true} className='bg-red-500 rounded-xl hover:bg-red-400' onClick={() => deleteFile(file)} title="Delete File (WIP)">{"X"}</Button>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </>
   )
 }
