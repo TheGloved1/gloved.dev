@@ -10,7 +10,7 @@ export type Todo = {
   completed: boolean
 }
 
-export default function Page() {
+export default function TodosPage() {
   const [todos, setTodos] = useState<Todo[]>(() => {
     if (typeof window === "undefined") return []
 
