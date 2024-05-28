@@ -10,6 +10,7 @@ export default function FileManager() {
   const [files, setFiles] = useState<string[]>([])
   const [passwordEntered, setPasswordEntered] = useState<boolean>(false)
   const correctPassword = process.env.NEXT_CLIENT_FILE_MANAGER_PASSKEY
+  const [alert, setAlert] = useState<string>('')
 
   useEffect(() => {
     const GETFILES = async () => {
@@ -24,7 +25,7 @@ export default function FileManager() {
       if (password === "7693" ?? correctPassword) {
         setPasswordEntered(true)
       } else {
-        alert('Incorrect passkey')
+        setAlert('Incorrect passkey')
         return
       }
     }
@@ -33,7 +34,7 @@ export default function FileManager() {
       await getFiles()
     } catch (error) {
       console.error("An error occurred while deleting file:", error)
-      alert('An error occurred while deleting file')
+      setAlert('An error occurred while deleting file')
     }
   }
 
@@ -45,7 +46,7 @@ export default function FileManager() {
       console.log(response.data)
     } catch (error) {
       console.error("An error occurred while getting files:", error)
-      alert('An error occured while getting files')
+      setAlert('An error occured while getting files')
     }
   }
 
@@ -66,7 +67,7 @@ export default function FileManager() {
       await getFiles()
     } catch (error) {
       console.error("An error occurred while uploading file:", error)
-      alert('An error occured while uploading file')
+      setAlert('An error occured while uploading file')
     }
   }
 
@@ -94,6 +95,7 @@ export default function FileManager() {
           ))}
         </ul>
       </div>
+      <p className='text-red-500'>{alert}</p>
     </>
   )
 }
