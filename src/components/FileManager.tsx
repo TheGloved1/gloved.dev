@@ -32,6 +32,7 @@ export default function FileManager() {
     try {
       await axios.delete(`https://api.gloved.dev/delete/${file}`)
       await getFiles()
+      setAlert('')
     } catch (error) {
       console.error("An error occurred while deleting file:", error)
       setAlert('An error occurred while deleting file')
@@ -44,6 +45,7 @@ export default function FileManager() {
       const response: AxiosResponse<string[]> = await axios.get("https://api.gloved.dev/files")
       setFiles(response.data)
       console.log(response.data)
+      setAlert('')
     } catch (error) {
       console.error("An error occurred while getting files:", error)
       setAlert('An error occured while getting files')
@@ -65,6 +67,7 @@ export default function FileManager() {
       })
 
       await getFiles()
+      setAlert('')
     } catch (error) {
       console.error("An error occurred while uploading file:", error)
       setAlert('An error occured while uploading file')
