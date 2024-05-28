@@ -4,6 +4,7 @@ import GitUser from '@/components/GitUser'
 import StyledSection from '@/components/StyledSection'
 import { Button } from '@/components/ui/button'
 import FileManager from '@/components/FileManager'
+import { ChevronLeft } from 'lucide-react'
 
 /*
  * TODO: Add more information on how the website is built and things it can do using React.
@@ -19,8 +20,8 @@ export default function Page() {
 
   return (
     <main className='flex min-h-screen scroll-m-[40rem] flex-col items-center bg-gradient-to-b from-[#2e526d] to-[#1e210c] text-white snap-mandatory snap-y'>
-      <Button className='fixed p-2 top-2 left-2'>
-        <Link href={"/"}>{"<- Back"}</Link>
+      <Button className='flex flex-col fixed p-2 top-2 left-2'>
+        <Link href={"/"} className='flex flex-row justify-center items-center'><ChevronLeft />{"Back"}</Link>
       </Button>
       <div className='flex fixed lg:text-5xl font-bold justify-center items-center p-1 text-center md:text-[0.75rem] animate-pulse top-[10vh]'>
         <div>{"gloved"}</div>
