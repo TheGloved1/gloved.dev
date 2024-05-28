@@ -12,6 +12,8 @@ export type Todo = {
 
 export default function Page() {
   const [todos, setTodos] = useState<Todo[]>(() => {
+    if (typeof window === "undefined") return []
+
     const localValue = localStorage.getItem("ITEMS")
     if (localValue == null) return []
 
