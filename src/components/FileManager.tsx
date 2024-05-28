@@ -19,6 +19,13 @@ export default function FileManager() {
     void GETFILES()
   }, [])
 
+  useEffect(() => {
+    if (alert == '') return
+    setTimeout(() => {
+      setAlert('')
+    }, 2500)
+  }, [alert])
+
   async function deleteFile(file: string) {
     if (!passwordEntered) {
       const password = (`${prompt(`Enter passkey to delete files`)}`)
@@ -99,6 +106,7 @@ export default function FileManager() {
         </ul>
       </div>
       <p className='text-red-500'>{alert}</p>
+      <Button className='rounded-xl' onClick={() => setAlert('This is a test alert!')} title="Test Error">{"Error Test"}</Button>
     </>
   )
 }
