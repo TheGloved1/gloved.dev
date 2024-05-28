@@ -4,6 +4,7 @@ import { useState, useEffect, type ChangeEvent } from 'react'
 import { Button } from './ui/button'
 import { Input } from './ui/input'
 import { Label } from './ui/label'
+import Link from 'next/link'
 
 
 export default function FileManager() {
@@ -47,7 +48,7 @@ export default function FileManager() {
   }
 
   async function getFiles() {
-    setFiles([])
+    setFiles(['loading...'])
     try {
       const response: AxiosResponse<string[]> = await axios.get("https://api.gloved.dev/files")
       setFiles(response.data)
@@ -55,6 +56,7 @@ export default function FileManager() {
       setAlert('')
     } catch (error) {
       console.error("An error occurred while getting files:", error)
+      setFiles([])
       setAlert('An error occured while getting files')
     }
   }
@@ -83,13 +85,13 @@ export default function FileManager() {
 
   return (
     <>
-      <div className='flex flex-col p-4 border-white border-4 rounded-xl'>
+      <div className='flex flex-col items-center justify-center p-4 border-white border-4 rounded-xl'>
         <h1 className='font-bold'>{"Simple File Uploader"}</h1>
         <p className='text-sm'>{"(Don't download random files off the internet)"}</p>
         <br />
 
         <Label htmlFor='uploadBtn'>{"Upload File"}</Label>
-        <Input id='uploadBtn' className='bg-black cursor-pointer hover:animate-pulse' type="file" onChange={uploadFile} />
+        <Input id='uploadBtn' className='max-w-56 bg-black cursor-pointer hover:animate-pulse' type="file" onChange={uploadFile} />
 
         <h2 className='text-center justify-center content-center place-items-center pt-4 pb-4'>
           {"Download Files "}
@@ -98,7 +100,9 @@ export default function FileManager() {
         <ul className='flex flex-wrap flex-col overflow-x-auto lg:max-h-72 max-h-48 max-w-96 border-white border-2 rounded-xl p-[.2rem] '>
           {files.map(file => (
             <li className='flex flex-row p-1 text-[.2rem] w-64' key={file}>
-              <a className='mx-2 w-64 truncate rounded-xl' href={`https://api.gloved.dev/download/${file}`}><Button className='mx-2 p-3 rounded-xl hover:animate-pulse hover:bg-gray-700'>{file}</Button></a>
+              <Link className='mx-2 w-64 truncate rounded-xl' href={`https://api.gloved.dev/download/${file}`}>
+                <Button className='mx-2 p-3 rounded-xl hover:animate-pulse hover:bg-gray-700'>{file}</Button>
+              </Link>
               <Button disabled={true} className='bg-red-500 rounded-xl hover:bg-red-400' onClick={() => deleteFile(file)} title="Delete File (WIP)">{"X"}</Button>
             </li>
           ))}
