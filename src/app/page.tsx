@@ -23,7 +23,7 @@ export default function Page() {
             className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
             href="/todos"
           >
-            <h3 className="text-2xl font-bold">Todos App →</h3>
+            <h3 className="text-2xl font-bold">Todo App →</h3>
             <div className="text-lg">
               A simple todo list web app. Uses local storage to save and get todos list even after reloading.
             </div>
