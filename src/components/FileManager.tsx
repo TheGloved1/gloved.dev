@@ -95,11 +95,10 @@ export default function FileManager() {
           {"Download Files "}
           <Button className='rounded-xl' onClick={getFiles} title="Refresh Files">↻</Button>
         </h2>
-        <ul className='border-white border-2 rounded-xl p-[.2rem]'>
-          <strong className='pb-3'>{"Files"}</strong>
+        <ul className='flex flex-wrap flex-col overflow-x-auto max-h-48 max-w-96 border-white border-2 rounded-xl p-[.2rem] '>
           {files.map(file => (
-            <li className='p-2 text-[.2rem]' key={file}>
-              <a href={`https://api.gloved.dev/download/${file}`}><Button className='mx-2 p-3 rounded-xl hover:animate-pulse hover:bg-gray-700'>{file}</Button></a>
+            <li className='flex flex-row p-1 text-[.2rem] w-64' key={file}>
+              <a className='mx-2 w-64 truncate rounded-xl' href={`https://api.gloved.dev/download/${file}`}><Button className='mx-2 p-3 rounded-xl hover:animate-pulse hover:bg-gray-700'>{file}</Button></a>
               <Button disabled={true} className='bg-red-500 rounded-xl hover:bg-red-400' onClick={() => deleteFile(file)} title="Delete File (WIP)">{"X"}</Button>
             </li>
           ))}
