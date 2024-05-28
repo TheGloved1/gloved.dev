@@ -16,7 +16,7 @@ export default function NewTodoForm({ onSubmit }: { onSubmit: (title: string) =>
   return (
     <form onSubmit={handleSubmit} className="new-item-form">
       <div className="flex flex-col gap-[0.1rem]">
-        <label htmlFor="item">New Item</label>
+        <label htmlFor="item">New Todo</label>
         <input
           value={newItem}
           onChange={e => setNewItem(e.target.value)}
