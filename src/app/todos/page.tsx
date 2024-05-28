@@ -54,7 +54,7 @@ export default function TodosPage() {
   return (
     <>
       <NewTodoForm onSubmit={addTodo} />
-      <h1 className="header">Todo List</h1>
+      <h1 className="text-[1.5rem] mt-6 mb-2">Todo List</h1>
       <TodoList todos={todos} toggleTodo={toggleTodo} deleteTodo={deleteTodo} />
     </>
   )
