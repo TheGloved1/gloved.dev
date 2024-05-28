@@ -106,7 +106,6 @@ export default function FileManager() {
         </ul>
       </div>
       <p className='text-red-500'>{alert}</p>
-      <Button className='rounded-xl' onClick={() => setAlert('This is a test alert!')} title="Test Error">{"Error Test"}</Button>
     </>
   )
 }
