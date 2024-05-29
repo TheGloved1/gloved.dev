@@ -37,6 +37,7 @@ const config = withUt({
   },
   plugins: [
     require("tailwindcss-animate"),
+    require("daisyui"),
   ],
 } satisfies Config)
 

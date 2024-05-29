@@ -98,7 +98,7 @@ export default function FileManager() {
           <Button className='rounded-xl' onClick={getFiles} title="Refresh Files">↻</Button>
         </h2>
         <ul className='flex flex-wrap flex-col overflow-x-auto lg:max-h-72 max-h-48 max-w-96 border-white border-2 rounded-xl p-[.2rem] '>
-          {files.map(file => (
+          {files.length !== 0 && files[0] !== 'loading...' && files.map(file => (
             <li className='flex flex-row p-1 text-[.2rem] w-64' key={file}>
               <Link className='mx-2 w-64 truncate rounded-xl' href={`https://api.gloved.dev/download/${file}`}>
                 <Button className='mx-2 p-3 rounded-xl hover:animate-pulse hover:bg-gray-700'>{file}</Button>
@@ -106,9 +106,16 @@ export default function FileManager() {
               <Button disabled={true} className='bg-red-500 rounded-xl hover:bg-red-400' onClick={() => deleteFile(file)} title="Delete File (WIP)">{"X"}</Button>
             </li>
           ))}
+          {files[0] === 'loading...' && <li>{"Loading files..."}</li>}
+          {files.length === 0 && <li>{"No files found"}</li>}
         </ul>
       </div>
-      <p className='text-red-500'>{alert}</p>
+      {alert !== '' &&
+        <div role="alert" className="alert alert-error">
+          <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          <span>{alert}</span>
+        </div>
+      }
     </>
   )
 }
