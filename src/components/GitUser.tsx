@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
+import { use } from 'react'
 
 type UserData = {
   html_url: string
@@ -25,8 +26,8 @@ const fetchData = async (name: string) => {
   }
 }
 
-export default async function GitUser({ name }: GitUserProps) {
-  const data = await fetchData(name)
+export default function GitUser({ name }: GitUserProps) {
+  const data = use(fetchData(name))
   if (!data) {
     console.log('Loading GitUser...')
     return (
