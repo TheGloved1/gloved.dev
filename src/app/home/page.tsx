@@ -1,10 +1,10 @@
-import Link from "next/link";
-import React from "react";
-import GitUser from "@/components/GitUser";
-import StyledSection from "@/components/StyledSection";
-import { Button } from "@/components/ui/button";
-import FileManager from "@/components/FileManager";
-import { ChevronLeft } from "lucide-react";
+import Link from "next/link"
+import React from "react"
+import GitUser from "@/components/GitUser"
+import StyledSection from "@/components/StyledSection"
+import { Button } from "@/components/ui/button"
+import FileManager from "@/components/FileManager"
+import { ChevronLeft } from "lucide-react"
 
 /**
  * TODO: Add more information on how the website is built and things it can do using React.
@@ -13,10 +13,10 @@ import { ChevronLeft } from "lucide-react";
  * TODO: Make the work in progress message disappear after a few seconds.
  */
 
-const sections = ["Welcome", "About", "Robotics", "Github", "FileManager"];
+const sections = ["Welcome", "About", "Robotics", "Github", "FileManager"]
 
 export default function Page() {
-  console.log("Rendering Home...");
+  console.log("Rendering Home...")
 
   return (
     <main className="flex min-h-screen snap-y snap-mandatory flex-col items-center bg-gradient-to-b from-[#2e526d] to-[#1e210c] text-white">
@@ -52,32 +52,13 @@ export default function Page() {
           <p>{"And if you couldn't tell already, I like to code."}</p>
         </StyledSection>
         <StyledSection id={sections[2]} className="snap-center snap-always">
-          <h3>
-            <strong>
-              <Link className="fancy-link" href="https://meporobotics.com/">
-                {"Mediapolis High School Robotics Club"}
-              </Link>
-            </strong>
-          </h3>
-          <p>
-            <Link
-              className="fancy-link"
-              href="https://frc-events.firstinspires.org/team/9061"
-            >
-              {"FIRST Inspires Robotics Team 9061"}
-            </Link>
-          </p>
+          <h3><strong><Link className="fancy-link" href="https://meporobotics.com/">{"Mediapolis High School Robotics Club"}</Link></strong></h3>
+          <p><Link className="fancy-link" href="https://frc-events.firstinspires.org/team/9061">{"FIRST Inspires Robotics Team 9061"}</Link></p>
           <p>{"Since 2023 - Present"}</p>
           <br />
           <p></p>
-          <p>
-            <strong>{"Role: "}</strong>
-            {"Programmer"}
-          </p>
-          <p>
-            <strong>{"Language: "}</strong>
-            {"Java and Python"}
-          </p>
+          <p><strong>{"Role: "}</strong>{"Programmer"}</p>
+          <p><strong>{"Language: "}</strong>{"Java and Python"}</p>
         </StyledSection>
         <StyledSection id={sections[3]} className="snap-center snap-always">
           <h3>{"My Github Profile"}</h3>
@@ -90,5 +71,5 @@ export default function Page() {
         </StyledSection>
       </div>
     </main>
-  );
+  )
 }
