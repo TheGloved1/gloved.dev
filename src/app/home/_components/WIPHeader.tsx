@@ -1,25 +1,23 @@
 "use client"
-import React, { useState, useEffect } from 'react';
-import './WIPHeader.css'; // Import the CSS file
-
+import React, { useState, useEffect } from 'react'
+import './WIPHeader.css'
 export function WIPHeader() {
-  const [isVisible, setIsVisible] = useState(true);
-  const [isFading, setIsFading] = useState(false);
+  const [isVisible, setIsVisible] = useState(true)
+  const [isFading, setIsFading] = useState(false)
 
   useEffect(() => {
     const timerFadeOut = setTimeout(() => {
-      setIsFading(true);
+      setIsFading(true)
       const timerDisappear = setTimeout(() => {
-        setIsVisible(false);
-      }, 1900); // This should match the duration of your CSS transition
-      return () => clearTimeout(timerDisappear);
-    }, 5000);
+        setIsVisible(false)
+      }, 1900)
+      return () => clearTimeout(timerDisappear)
+    }, 5000)
 
-    return () => clearTimeout(timerFadeOut);
-  }, []);
+    return () => clearTimeout(timerFadeOut)
+  }, [])
 
-  // Add the 'fadeOut' class when the component is fading out
-  const className = isFading ? 'fadeOut' : '';
+  const className = isFading ? 'fadeOut' : ''
 
   return isVisible ? (
     <div className={`fixed top-[10vh] flex items-center justify-center p-1 text-center font-bold md:text-[0.75rem] lg:text-5xl ${className}`}>
@@ -32,5 +30,5 @@ export function WIPHeader() {
         {"Work in progress..."}
       </div>
     </div>
-  ) : null;
+  ) : null
 }
