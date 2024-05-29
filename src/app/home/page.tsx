@@ -1,17 +1,14 @@
 import Link from "next/link"
 import React from "react"
-import GitUser from "@/components/GitUser"
-import StyledSection from "@/components/StyledSection"
-import { Button } from "@/components/ui/button"
-import FileManager from "@/components/FileManager"
 import { ChevronLeft } from "lucide-react"
 
-/**
- * TODO: Add more information on how the website is built and things it can do using React.
- * TODO: Fix the "Home" page to be more responsive and have a better layout.
- *
- * TODO: Make the work in progress message disappear after a few seconds.
- */
+import GitUser from "@/components/GitUser"
+import StyledSection from "@/components/StyledSection"
+import FileManager from "@/components/FileManager"
+import { Button } from "@/components/ui/button"
+
+import { WIPHeader } from "./_components/WIPHeader"
+
 
 const sections = ["Welcome", "About", "Robotics", "Github", "FileManager"]
 
@@ -26,16 +23,7 @@ export default function Page() {
           {"Back"}
         </Link>
       </Button>
-      <div className="fixed top-[10vh] flex animate-pulse items-center justify-center p-1 text-center font-bold md:text-[0.75rem] lg:text-5xl">
-        <div>{"gloved"}</div>
-        <div className="text-[hsl(280,100%,40%)]">{"."}</div>
-        <div>{"dev"}</div>
-        <div className="text-[hsl(280,100%,40%)]">{"/"}</div>
-        <div className="pr-2">{"home "}</div>
-        <div className="rounded-xl bg-gray-700 p-2 text-slate-900">
-          {"Work in progress..."}
-        </div>
-      </div>
+      <WIPHeader />
       <div className="flex flex-col items-center justify-center gap-12 px-4 py-16">
         <StyledSection id={sections[0]} className="snap-center snap-always">
           <h3 className="text-xl font-extrabold">{"Welcome to my website!"}</h3>
