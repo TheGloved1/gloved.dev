@@ -8,6 +8,7 @@ type UserData = {
   name: string
   login: string
   bio: string
+  message: string
 }
 
 type GitUserProps = {
@@ -18,7 +19,6 @@ const fetchData = async (name: string) => {
   try {
     const response = await fetch(`https://api.github.com/users/${name}`)
     const data = await response.json() as UserData
-    console.log('Finished fetching data: ', data)
     return data
   } catch (error) {
     console.error('Error:', error)
@@ -33,6 +33,13 @@ export default function GitUser({ name }: GitUserProps) {
     return (
       <div className="container flex flex-col p-4 border-4 gap-4 border-dashed rounded-lx border-white justify-center items-center">
         <p>Loading Data...</p>
+      </div>
+    )
+  } else if (data.message) {
+    return (
+      console.log('Error fetching data:', data.message),
+      <div className="container flex flex-col p-4 border-4 gap-4 border-dashed rounded-lx border-white justify-center items-center">
+        <p>Error fetching data: {data.message}</p>
       </div>
     )
   } else {

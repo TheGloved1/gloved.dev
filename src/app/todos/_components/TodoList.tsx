@@ -1,5 +1,5 @@
 import { TodoItem } from "./TodoItem"
-import { type Todo } from "../page"
+import { type Todo } from "./TodoPage"
 
 type TodoListProps = {
   todos: Todo[]

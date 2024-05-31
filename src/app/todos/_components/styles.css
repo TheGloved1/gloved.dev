@@ -1,9 +1,5 @@
-* {
-  font-family: Arial, Helvetica, sans-serif;
-  box-sizing: border-box;
-}
 
-body {
+.main {
   background: #333;
   color: hsl(200, 100%, 90%);
   max-width: 400px;
