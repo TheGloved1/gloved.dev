@@ -39,13 +39,13 @@ export default function GitUser({ name }: GitUserProps) {
     return (
       console.log('Error fetching data:', data.message),
       <div className="container flex flex-col p-4 border-4 gap-4 border-dashed rounded-lx border-white justify-center items-center">
-        <p>Error fetching data: {data.message}</p>
+        <p>Error fetching data</p>
       </div>
     )
   } else {
     return (
       console.log('Rendered GitUser...'),
-      <div className="container flex flex-col p-4 border-4 gap-4 border-dashed rounded-lx border-white justify-center items-center">
+      <div className="container flex flex-col p-4 border-4 gap-4 border-dashed rounded-lx border-white justify-center items-center bg-gray-600/50">
         <div>
           <Link href={data.html_url} target="_blank" rel="noopener">
             <Image className="rounded-xl" width={200} height={200} src={data.avatar_url} alt="User image" />

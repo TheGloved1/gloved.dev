@@ -5,7 +5,6 @@ import { ChevronLeft } from "lucide-react"
 import GitUser from "@/components/GitUser"
 import StyledSection from "@/components/StyledSection"
 import FileManager from "@/components/FileManager"
-import { Button } from "@/components/ui/button"
 
 import { WIPHeader } from "./_components/WIPHeader"
 
@@ -22,10 +21,10 @@ export default function Page() {
   return (
     <main className="flex min-h-screen snap-y snap-mandatory flex-col items-center text-white bg-gradient-to-b from-sky-950 to-[#1e210c]">
       <Link href={"/"} className="fixed pl-0 left-2 top-2 flex flex-row items-center justify-center">
-        <Button className="flex flex-row items-center justify-center">
+        <button className="btn flex flex-row items-center justify-center">
           <ChevronLeft />
           {"Back"}
-        </Button>
+        </button>
       </Link>
       <WIPHeader />
       <div className="flex flex-col items-center justify-center gap-12 px-4 py-16">

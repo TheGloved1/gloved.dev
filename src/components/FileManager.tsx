@@ -85,25 +85,38 @@ export default function FileManager() {
 
   return (
     <>
-      <div className='flex flex-col items-center justify-center p-4 border-white border-4 rounded-xl'>
+      <div className='flex flex-col items-center justify-center p-4 border-white border-4 rounded-xl bg-gray-700/50'>
         <h1 className='font-bold'>{"Simple File Uploader"}</h1>
         <p className='text-sm'>{"(Don't download random files off the internet)"}</p>
         <br />
 
         <Label htmlFor='uploadBtn'>{"Upload File"}</Label>
-        <Input id='uploadBtn' className='max-w-56 bg-black cursor-pointer hover:animate-pulse' type="file" onChange={uploadFile} />
+        <Input id='uploadBtn' className='file-input file-input-bordered file-input-primary bg-black glass w-full max-w-xs' type="file" onChange={uploadFile} />
 
         <h2 className='text-center justify-center content-center place-items-center pt-4 pb-4'>
           {"Download Files "}
-          <Button className='rounded-xl' onClick={getFiles} title="Refresh Files">↻</Button>
+          <button
+            className='btn btn-circle hover:animate-spin'
+            onClick={getFiles}
+            title="Refresh Files"
+          >
+            ↻
+          </button>
         </h2>
         <ul className='flex flex-wrap flex-col overflow-x-auto lg:max-h-72 max-h-48 max-w-96 border-white border-2 rounded-xl p-[.2rem] '>
           {files.length !== 0 && files[0] !== 'loading...' && files.map(file => (
             <li className='flex flex-row p-1 text-[.2rem] w-64' key={file}>
               <Link className='mx-2 w-64 truncate rounded-xl' href={`https://api.gloved.dev/download/${file}`}>
-                <Button className='mx-2 p-3 rounded-xl hover:animate-pulse hover:bg-gray-700'>{file}</Button>
+                <button className='btn mx-2 p-3 rounded-xl hover:animate-pulse hover:bg-gray-700'>{file}</button>
               </Link>
-              <Button disabled={true} className='bg-red-500 rounded-xl hover:bg-red-400' onClick={() => deleteFile(file)} title="Delete File (WIP)">{"X"}</Button>
+              <button
+                disabled={true}
+                className='btn btn-square bg-red-500 rounded-xl hover:bg-red-400'
+                onClick={() => deleteFile(file)}
+                title="Delete File (WIP)"
+              >
+                {"X"}
+              </button>
             </li>
           ))}
           {files[0] === 'loading...' && <li>{"Loading files..."}</li>}
