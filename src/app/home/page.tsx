@@ -35,7 +35,7 @@ export default function Page() {
           <p>{"I'm Kaden Hood."}</p>
           <p>{"and I'm a software engineer."}</p>
         </StyledSection>
-        <div className="divider w-[75vw]"></div>
+        <div className="divider w-[75vw] max-w-[1000px]"></div>
         <StyledSection id={sections[1]} className="snap-center snap-always">
           <h3 className="text-xl font-extrabold">{"About Me"}</h3>
           <br />
@@ -43,7 +43,7 @@ export default function Page() {
           <p>{"I wear gloves, and go by 'Gloves' online."}</p>
           <p>{"And if you couldn't tell already, I like to code."}</p>
         </StyledSection>
-        <div className="divider w-[75vw]"></div>
+        <div className="divider w-[75vw] max-w-[1000px]"></div>
         <StyledSection id={sections[2]} className="snap-center snap-always">
           <h3><strong><Link className="fancy-link" href="https://meporobotics.com/">{"Mediapolis High School Robotics Club"}</Link></strong></h3>
           <p><Link className="fancy-link" href="https://frc-events.firstinspires.org/team/9061">{"FIRST Inspires Robotics Team 9061"}</Link></p>
@@ -53,14 +53,14 @@ export default function Page() {
           <p><strong>{"Role: "}</strong>{"Programmer"}</p>
           <p><strong>{"Language: "}</strong>{"Java and Python"}</p>
         </StyledSection>
-        <div className="divider w-[75vw]"></div>
+        <div className="divider w-[75vw] max-w-[1000px]"></div>
         <StyledSection id={sections[3]} className="snap-center snap-always">
           <h3>{"My Github Profile"}</h3>
           <br />
           <p></p>
           <GitUser name="TheGloved1" />
         </StyledSection>
-        <div className="divider w-[75vw]"></div>
+        <div className="divider w-[75vw] max-w-[1000px]"></div>
         <StyledSection id={sections[4]} className="snap-center snap-always">
           <FileManager />
         </StyledSection>
