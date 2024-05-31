@@ -6,7 +6,8 @@ const config = {
   },
   "plugins": [
     "@typescript-eslint",
-    "drizzle"
+    "drizzle",
+    "react-compiler",
   ],
   "extends": [
     "next/core-web-vitals",
@@ -53,7 +54,8 @@ const config = {
           "db"
         ]
       }
-    ]
+    ],
+    "react-compiler/react-compiler": "error",
   }
 }
 module.exports = config;
