@@ -10,18 +10,20 @@ export type Todo = {
   completed: boolean
 }
 
-export default function TodosPage() {
+const todo_key = "TODO_ITEMS"
+
+export default function Page() {
   const [todos, setTodos] = useState<Todo[]>(() => {
     if (typeof window === "undefined") return []
 
-    const localValue = localStorage.getItem("ITEMS")
+    const localValue = localStorage.getItem(todo_key)
     if (localValue == null) return []
 
     return JSON.parse(localValue) as Todo[]
   })
 
   useEffect(() => {
-    localStorage.setItem("ITEMS", JSON.stringify(todos))
+    localStorage.setItem(todo_key, JSON.stringify(todos))
   }, [todos])
 
   function addTodo(title: string) {
