@@ -1,6 +1,7 @@
 "use client"
 import React, { useState, useEffect } from 'react'
 import './WIPHeader.css'
+
 export function WIPHeader() {
   const [isVisible, setIsVisible] = useState(true)
   const [isFading, setIsFading] = useState(false)
@@ -10,7 +11,7 @@ export function WIPHeader() {
       setIsFading(true)
       const timerDisappear = setTimeout(() => {
         setIsVisible(false)
-      }, 1900)
+      }, 2000)
       return () => clearTimeout(timerDisappear)
     }, 5000)
 

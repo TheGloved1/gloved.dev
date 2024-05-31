@@ -11,7 +11,7 @@ const inter = Inter({
 
 export const metadata = {
   title: "gloved.dev",
-  description: "Made by Kaden Hood. A personal website for my projects and interests. Built using NextJS and hosted on Vercel.",
+  description: "Made by Kaden Hood. A personal website for my projects and interests. Built using NextJS and hosted with Vercel.",
   icons: [{ rel: "icon", url: "https://avatars.githubusercontent.com/u/96776176?v=4" }],
 }
 

@@ -16,7 +16,7 @@ export default function Page() {
   console.log("Rendering Home...")
 
   return (
-    <main className="flex min-h-screen snap-y snap-mandatory flex-col items-center bg-gradient-to-b from-[#2e526d] to-[#1e210c] text-white">
+    <main className="flex min-h-screen snap-y snap-mandatory flex-col items-center text-white bg-gradient-to-b from-sky-950 to-[#1e210c]">
       <Button className="fixed left-2 top-2 flex flex-col p-2">
         <Link href={"/"} className="flex flex-row items-center justify-center">
           <ChevronLeft />
