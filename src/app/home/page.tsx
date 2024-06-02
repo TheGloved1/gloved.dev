@@ -7,10 +7,11 @@ import StyledSection from "@/components/StyledSection"
 import FileManager from "@/components/FileManager"
 
 import { WIPHeader } from "./_components/WIPHeader"
+import { Button } from "@/components/ui/button"
 
 export const metadata = {
   title: "Home",
-  description: "The home page for my About Me based web project built with the NextJS React Web Framework.",
+  description: "The home page for my About Me based web project built with the Next.js React Web Framework.",
 }
 
 const sections = ["Welcome", "About", "Robotics", "Github", "FileManager"]
@@ -21,10 +22,10 @@ export default function Page() {
   return (
     <main className="flex min-h-screen snap-y snap-mandatory flex-col items-center text-white bg-gradient-to-b from-sky-950 to-[#1e210c]">
       <Link href={"/"} className="fixed pl-0 left-2 top-2 flex flex-row items-center justify-center">
-        <button className="btn flex flex-row items-center justify-center">
+        <Button className="btn flex flex-row items-center justify-center">
           <ChevronLeft />
           {"Back"}
-        </button>
+        </Button>
       </Link>
       <WIPHeader />
       <div className="flex flex-col items-center justify-center gap-12 px-4 py-16">
