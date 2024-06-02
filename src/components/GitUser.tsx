@@ -8,7 +8,7 @@ type UserData = {
   name: string
   login: string
   bio: string
-  message: string
+  message: string | null
 }
 
 type GitUserProps = {
@@ -45,10 +45,10 @@ export default function GitUser({ name }: GitUserProps) {
   } else {
     return (
       console.log('Rendered GitUser...'),
-      <div className="container flex flex-col p-4 border-4 gap-4 border-dashed rounded-lx border-white justify-center items-center bg-gray-600/50">
+      <div className="container flex flex-col p-4 border-4 gap-4 border-dashed rounded-3xl border-white justify-center items-center bg-gray-600/50">
         <div>
           <Link href={data.html_url} target="_blank" rel="noopener">
-            <Image className="rounded-xl" width={200} height={200} src={data.avatar_url} alt="User image" />
+            <Image className="rounded-full" width={200} height={200} src={data.avatar_url} alt="User image" />
           </Link>
         </div>
         <h2>{data.name}</h2>

@@ -10,7 +10,7 @@ import { WIPHeader } from "./_components/WIPHeader"
 
 export const metadata = {
   title: "Home",
-  description: "The landing page for my About Me based web project built with the NextJS React Web Framework.",
+  description: "The home page for my About Me based web project built with the NextJS React Web Framework.",
 }
 
 const sections = ["Welcome", "About", "Robotics", "Github", "FileManager"]
