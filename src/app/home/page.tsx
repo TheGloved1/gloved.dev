@@ -34,7 +34,7 @@ export default function Page() {
           <br />
           <p></p>
           <p>{"I'm Kaden Hood."}</p>
-          <p>{"and I'm a software engineer."}</p>
+          <p>{"and I'm a self taught software engineer."}</p>
         </StyledSection>
         <div className="divider w-[75vw] max-w-[1000px]"></div>
         <StyledSection id={sections[1]} className="snap-center snap-always">

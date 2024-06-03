@@ -15,10 +15,8 @@ const todo_key = "TODO_ITEMS"
 export default function TodoPage() {
   const [todos, setTodos] = useState<Todo[]>(() => {
     if (typeof window === "undefined") return []
-
     const localValue = localStorage.getItem(todo_key)
     if (localValue == null) return []
-
     return JSON.parse(localValue) as Todo[]
   })
 
@@ -41,7 +39,6 @@ export default function TodoPage() {
         if (todo.id === id) {
           return { ...todo, completed }
         }
-
         return todo
       })
     })
@@ -55,7 +52,7 @@ export default function TodoPage() {
 
   return (
     <>
-      <main className="main">
+      <main className="main place-items-center">
         <NewTodoForm onSubmit={addTodo} />
         <h1 className="text-[1.5rem] mt-6 mb-2">Todo List</h1>
         <TodoList todos={todos} toggleTodo={toggleTodo} deleteTodo={deleteTodo} />
