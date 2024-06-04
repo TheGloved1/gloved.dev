@@ -14,6 +14,17 @@ export const metadata = {
   description: "The home page for my About Me based web project built with the Next.js React Web Framework.",
 }
 
+function calculateAge(birthdate: string) {
+  const today = new Date()
+  const birth = new Date(birthdate)
+  let age = today.getFullYear() - birth.getFullYear()
+  const month = today.getMonth() - birth.getMonth()
+  if (month < 0 || (month === 0 && today.getDate() < birth.getDate())) {
+    age--
+  }
+  return age
+}
+
 const sections = ["Welcome", "About", "Robotics", "Github", "FileManager"]
 
 export default function Page() {
@@ -34,13 +45,14 @@ export default function Page() {
           <br />
           <p></p>
           <p>{"I'm Kaden Hood."}</p>
-          <p>{"and I'm a self taught software engineer."}</p>
+          <p>{"a self taught software engineer."}</p>
         </StyledSection>
         <div className="divider w-[75vw] max-w-[1000px]"></div>
         <StyledSection id={sections[1]} className="snap-center snap-always">
           <h3 className="text-xl font-extrabold">{"About Me"}</h3>
           <br />
           <p></p>
+          <p>{"I'm "}<span className="font-mono p-1 bg-gray-900 rounded">{calculateAge("2005-12-29") + " years old"}</span>.</p>
           <p>{"I wear gloves, and go by 'Gloves' online."}</p>
           <p>{"And if you couldn't tell already, I like to code."}</p>
         </StyledSection>

@@ -50,8 +50,10 @@ export default async function GitUser({ name }: GitUserProps) {
             <Image className="rounded-full" width={200} height={200} src={data.avatar_url} alt="User image" />
           </Link>
         </div>
-        <strong>{data.name}</strong>
-        <span>{data.login}</span>
+        <div className='flex flex-col gap-1'>
+          <strong>{data.login}</strong>
+          <span>{data.name}</span>
+        </div>
         <p className='flex flex-col bg-gray-600 rounded-xl p-1'>{data.bio}</p>
         <Link className="fancy-link" href={data.html_url} target="_blank" rel="noopener">
           {data.html_url}
