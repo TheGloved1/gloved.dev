@@ -1,6 +1,5 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { use } from 'react'
 
 type UserData = {
   html_url: string
@@ -26,8 +25,8 @@ const fetchData = async (name: string) => {
   }
 }
 
-export default function GitUser({ name }: GitUserProps) {
-  const data = use(fetchData(name))
+export default async function GitUser({ name }: GitUserProps) {
+  const data = await fetchData(name)
   if (!data) {
     console.log('Loading GitUser...')
     return (
@@ -51,9 +50,9 @@ export default function GitUser({ name }: GitUserProps) {
             <Image className="rounded-full" width={200} height={200} src={data.avatar_url} alt="User image" />
           </Link>
         </div>
-        <h2>{data.name}</h2>
+        <strong>{data.name}</strong>
         <span>{data.login}</span>
-        <p>{data.bio}</p>
+        <p className='flex flex-col bg-gray-600 rounded-xl p-1'>{data.bio}</p>
         <Link className="fancy-link" href={data.html_url} target="_blank" rel="noopener">
           {data.html_url}
         </Link>

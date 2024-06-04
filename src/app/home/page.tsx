@@ -1,5 +1,5 @@
 import Link from "next/link"
-import React from "react"
+import React, { Suspense } from "react"
 import { ChevronLeft } from "lucide-react"
 
 import GitUser from "@/components/GitUser"
@@ -59,7 +59,9 @@ export default function Page() {
           <h3>{"My Github Profile"}</h3>
           <br />
           <p></p>
-          <GitUser name="TheGloved1" />
+          <Suspense fallback={<p>{"Loading..."}</p>}>
+            <GitUser name="TheGloved1" />
+          </Suspense>
         </StyledSection>
         <div className="divider w-[75vw] max-w-[1000px]"></div>
         <StyledSection id={sections[4]} className="snap-center snap-always">
