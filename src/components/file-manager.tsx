@@ -1,7 +1,6 @@
 "use client"
 import axios, { type AxiosResponse } from 'axios'
 import { useState, useEffect, type ChangeEvent } from 'react'
-import { Button } from './ui/button'
 import { Input } from './ui/input'
 import { Label } from './ui/label'
 import Link from 'next/link'
@@ -52,7 +51,6 @@ export default function FileManager() {
     try {
       const response: AxiosResponse<string[]> = await axios.get("https://api.gloved.dev/files")
       setFiles(response.data)
-      console.log(response.data)
       setAlert('')
     } catch (error) {
       console.error("An error occurred while getting files:", error)
@@ -111,7 +109,7 @@ export default function FileManager() {
               </Link>
               <button
                 disabled={true}
-                className='btn btn-square bg-red-500 rounded-xl hover:bg-red-400'
+                className='btn btn-warning btn-square bg-red-500 rounded-xl hover:bg-red-400'
                 onClick={() => deleteFile(file)}
                 title="Delete File (WIP)"
               >
