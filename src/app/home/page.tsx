@@ -52,7 +52,7 @@ export default function Page() {
           <h3 className="font-extrabold">{"About Me"}</h3>
           <br />
           <p></p>
-          <p>{"I'm "}<span className="font-mono p-1 bg-gray-900 rounded">{calculateAge("2005-12-29") + " years old"}</span>{"."}</p>
+          {/* <p>{"I'm "}<span className="font-mono p-1 bg-gray-900 rounded">{calculateAge("2005-12-29") + " years old"}</span>{"."}</p> */}
           <p>{"I wear gloves, and go by 'Gloves' online."}</p>
           <p>{"And if you couldn't tell already, I like to code."}</p>
         </StyledSection>
@@ -64,7 +64,7 @@ export default function Page() {
           <br />
           <p></p>
           <p><strong>{"Role: "}</strong>{"Programmer"}</p>
-          <p><strong>{"Language: "}</strong>{"Java and Python"}</p>
+          <p><strong>{"Language: "}</strong>{"Java"}</p>
         </StyledSection>
         <div className="divider w-[75vw] max-w-[1000px]"></div>
         <StyledSection id={sections[3]} className="snap-center snap-always">
