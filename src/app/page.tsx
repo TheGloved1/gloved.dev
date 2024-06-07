@@ -1,7 +1,6 @@
 import Link from "next/link"
 
 export default function Page() {
-  console.log('Rendering Root...')
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center text-white bg-gradient-to-br from-sky-950 to-[#1e210c]">

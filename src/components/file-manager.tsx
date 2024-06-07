@@ -1,8 +1,6 @@
 "use client"
 import axios, { type AxiosResponse } from 'axios'
 import { useState, useEffect, type ChangeEvent } from 'react'
-import { Input } from './ui/input'
-import { Label } from './ui/label'
 import Link from 'next/link'
 
 
@@ -88,8 +86,8 @@ export default function FileManager() {
         <p className='text-sm'>{"(Don't download random files off the internet)"}</p>
         <br />
 
-        <Label htmlFor='uploadBtn'>{"Upload File"}</Label>
-        <Input id='uploadBtn' className='file-input file-input-bordered file-input-primary bg-black glass w-full max-w-xs' type="file" onChange={uploadFile} />
+        <label htmlFor='uploadBtn'>{"Upload File"}</label>
+        <input id='uploadBtn' className='file-input file-input-bordered file-input-primary bg-black glass w-full max-w-xs' type="file" onChange={uploadFile} />
 
         <h2 className='text-center justify-center content-center place-items-center pt-4 pb-4'>
           {"Download Files "}

@@ -16,7 +16,7 @@ export default function StyledSection(props: { children: ReactNode, id?: string,
           setIsInView(entry.isIntersecting)
         }
       },
-      { threshold: 0 }
+      { threshold: 0.2 }
     )
 
     let sectionRefCurrent = sectionRef.current
