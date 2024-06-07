@@ -19,6 +19,7 @@ const sections = ["Welcome", "About", "Robotics", "Github", "FileManager"]
 export default function Page() {
   console.log("Rendering Home...")
 
+  /**
   function calculateAge(birthdate: string) {
     const today = new Date()
     const birth = new Date(birthdate)
@@ -29,6 +30,7 @@ export default function Page() {
     }
     return age
   }
+  */
 
   return (
     <main className="flex min-h-screen snap-y snap-mandatory flex-col items-center text-white bg-gradient-to-b from-sky-950 to-[#1e210c]">

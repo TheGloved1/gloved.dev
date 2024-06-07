@@ -102,7 +102,7 @@ export default function FileManager() {
           </button>
         </h2>
         <ul className='flex flex-wrap flex-col overflow-x-auto lg:max-h-72 max-h-48 max-w-96 border-white border-2 rounded-xl p-[.2rem] '>
-          {files.length !== 0 && files[0] !== 'loading...' && files.map(file => (
+          {!!files.length && files[0] !== 'loading...' && files.map(file => (
             <li className='flex flex-row p-1 text-[.2rem] w-64' key={file}>
               <Link className='mx-2 w-64 truncate rounded-xl' href={`https://api.gloved.dev/download/${file}`}>
                 <button className='btn mx-2 p-3 rounded-xl hover:animate-pulse hover:bg-gray-700'>{file}</button>

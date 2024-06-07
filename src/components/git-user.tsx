@@ -7,12 +7,9 @@ type UserData = {
   name: string
   login: string
   bio: string
-  message: string | null
+  message?: string
 }
 
-type GitUserProps = {
-  name: string
-}
 
 const fetchData = async (name: string) => {
   try {
@@ -25,8 +22,8 @@ const fetchData = async (name: string) => {
   }
 }
 
-export default async function GitUser({ name }: GitUserProps) {
-  const data = await fetchData(name)
+export default async function GitUser(props: { name: string }) {
+  const data = await fetchData(props.name)
   if (!data) {
     console.log('Loading GitUser...')
     return (

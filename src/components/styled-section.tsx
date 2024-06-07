@@ -3,13 +3,9 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import * as React from "react"
 
-type StyledSectionProps = {
-  children: ReactNode
-  id?: string
-  className?: string
-}
 
-export default function StyledSection({ children, id, className }: StyledSectionProps) {
+export default function StyledSection(props: { children: ReactNode, id?: string, className?: string }) {
+
   const sectionRef = useRef(null)
   const [isInView, setIsInView] = useState(false)
 
@@ -38,11 +34,11 @@ export default function StyledSection({ children, id, className }: StyledSection
 
   return (
     <section
-      id={id}
+      id={props.id}
       ref={sectionRef}
-      className={`flex flex-col items-center justify-center min-h-[95vh] text-center tracking-tight ${className} ${isInView ? 'fade-in-left' : ''}`}
+      className={`flex flex-col items-center justify-center min-h-[95vh] text-center tracking-tight ${props.className} ${isInView ? 'fade-in-left' : ''}`}
     >
-      {children}
+      {props.children}
     </section>
   )
 

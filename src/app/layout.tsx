@@ -15,11 +15,11 @@ export const metadata = {
   icons: [{ rel: "icon", url: "https://avatars.githubusercontent.com/u/96776176?v=4" }],
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout(props: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body className={`font-sans ${inter.variable}`}>
-        {children}
+        {props.children}
         <Analytics />
         <SpeedInsights />
       </body>
