@@ -1,14 +1,14 @@
 "use client"
 import { useState } from "react"
 
-export default function NewTodoForm({ onSubmit }: { onSubmit: (title: string) => void }) {
+export default function NewTodoForm(props: { onSubmit: (title: string) => void }) {
   const [newItem, setNewItem] = useState("")
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     if (newItem === "") return
 
-    onSubmit(newItem)
+    props.onSubmit(newItem)
 
     setNewItem("")
   }

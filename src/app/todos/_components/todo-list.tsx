@@ -1,23 +1,22 @@
 import { TodoItem } from "./todo-item"
 import { type Todo } from "./todo-page"
 
-type TodoListProps = {
+
+export default function TodoList(props: {
   todos: Todo[]
   toggleTodo: (id: string, completed: boolean) => void
   deleteTodo: (id: string) => void
-}
-
-export function TodoList({ todos, toggleTodo, deleteTodo }: TodoListProps) {
+}) {
   return (
     <ul className="list">
-      {todos.length === 0 && "No Todos"}
-      {todos.map(todo => {
+      {props.todos.length === 0 && "No Todos"}
+      {props.todos.map(todo => {
         return (
           <TodoItem
             {...todo}
             key={todo.id}
-            toggleTodo={toggleTodo}
-            deleteTodo={deleteTodo}
+            toggleTodo={props.toggleTodo}
+            deleteTodo={props.deleteTodo}
           />
         )
       })}

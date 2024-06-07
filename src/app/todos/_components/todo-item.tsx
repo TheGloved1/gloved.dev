@@ -1,24 +1,21 @@
-type TodoItemProps = {
+export function TodoItem(props: {
   completed: boolean
   id: string
   title: string
   toggleTodo: (id: string, completed: boolean) => void
   deleteTodo: (id: string) => void
-}
-
-
-export function TodoItem({ completed, id, title, toggleTodo, deleteTodo }: TodoItemProps) {
+}) {
   return (
     <li>
       <label>
         <input
           type="checkbox"
-          checked={completed}
-          onChange={e => toggleTodo(id, e.target.checked)}
+          checked={props.completed}
+          onChange={e => props.toggleTodo(props.id, e.target.checked)}
         />
-        {title}
+        {props.title}
       </label>
-      <button onClick={() => deleteTodo(id)} className="btn btn-danger">
+      <button onClick={() => props.deleteTodo(props.id)} className="btn btn-danger">
         Delete
       </button>
     </li>

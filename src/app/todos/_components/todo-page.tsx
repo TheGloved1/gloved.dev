@@ -1,8 +1,8 @@
 "use client"
-import { useEffect, useState } from "react"
-import NewTodoForm from "./new-todo-form"
 import "./styles.css"
-import { TodoList } from "./todo-list"
+import { useEffect, useState } from "react"
+import TodoList from "./todo-list"
+import NewTodoForm from "./new-todo-form"
 
 export type Todo = {
   id: string
