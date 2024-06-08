@@ -34,6 +34,7 @@ export default function Page() {
   )
 
   useEffect(() => {
+    console.log("useEffect")
     const handler = (e: KeyboardEvent) => {
       const key = e.key
       if (!key.match(/^[a-z]$/)) return
@@ -47,7 +48,7 @@ export default function Page() {
     return () => {
       document.removeEventListener("keypress", handler)
     }
-  })
+  }, [addGuessedLetter])
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
