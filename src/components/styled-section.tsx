@@ -1,7 +1,6 @@
 "use client"
 /* eslint-disable prefer-const */
-import { useEffect, useRef, useState, type ReactNode } from 'react'
-import * as React from "react"
+import React, { useEffect, useRef, useState, type ReactNode } from 'react'
 
 
 export default function StyledSection(props: { children: ReactNode, id?: string, className?: string }) {

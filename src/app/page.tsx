@@ -1,4 +1,5 @@
 import Link from "next/link"
+import React from 'react'
 
 export default function Page() {
 
@@ -39,7 +40,7 @@ export default function Page() {
               View the source code. Visit my Github profile to take a look at my other projects.
             </div>
           </Link>
-          <Link className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20" href="https://old.gloved.dev/">
+          <Link className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20" href="https://old.gloved.dev/" target="_blank">
             <h3 className="text-2xl font-bold">Old Site →</h3>
             <div className="text-lg">
               Visit the old site. This is the previous version of my About Me site built with Vue.
