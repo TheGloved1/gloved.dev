@@ -33,3 +33,18 @@
 .fade-in-left {
   animation: fadeInLeft 1s ease-out forwards;
 }
+
+@keyframes fadeOutLeft {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-100px);
+  }
+}
+
+.fade-out-left {
+  animation: fadeOutLeft 1s ease-out forwards;
+}

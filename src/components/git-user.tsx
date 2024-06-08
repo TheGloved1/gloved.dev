@@ -28,7 +28,6 @@ const fetchData = async (name: string) => {
 export default function GitUser(props: { name: string }) {
   const data = use(fetchData(props.name))
   if (!data) {
-    console.log('Loading GitUser...')
     return (
       <div className="container flex flex-col p-4 border-4 gap-4 border-dashed rounded-lx border-white justify-center items-center">
         <span className="loading loading-spinner loading-lg"></span>
@@ -36,7 +35,6 @@ export default function GitUser(props: { name: string }) {
     )
   } else if (data.message) {
     return (
-      console.log('Error fetching data:', data.message),
       <div className="container flex flex-col p-4 gap-4 rounded-lx justify-center items-center">
         <div role="alert" className="alert alert-error">
           <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
@@ -48,7 +46,6 @@ export default function GitUser(props: { name: string }) {
     )
   } else {
     return (
-      console.log('Rendered GitUser...'),
       <div className="container flex flex-col p-4 border-4 gap-4 border-dashed rounded-3xl border-white justify-center items-center bg-gray-600/50">
         <div>
           <Link href={data.html_url} target="_blank" rel="noopener">

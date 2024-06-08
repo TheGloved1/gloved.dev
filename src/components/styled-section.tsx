@@ -15,7 +15,7 @@ export default function StyledSection(props: { children: ReactNode, id?: string,
           setIsInView(entry.isIntersecting)
         }
       },
-      { threshold: 0.2 }
+      { threshold: 0.5 }
     )
 
     let sectionRefCurrent = sectionRef.current
@@ -35,7 +35,7 @@ export default function StyledSection(props: { children: ReactNode, id?: string,
     <section
       id={props.id}
       ref={sectionRef}
-      className={`flex flex-col items-center justify-center min-h-[95vh] text-center tracking-tight ${props.className} ${isInView ? 'fade-in-left' : ''}`}
+      className={`flex flex-col items-center justify-center min-h-[95vh] text-center tracking-tight ${props.className} ${isInView ? 'fade-in-left' : 'fade-out-left'}`}
     >
       {props.children}
     </section>

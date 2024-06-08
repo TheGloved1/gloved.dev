@@ -40,9 +40,10 @@ export default function Page() {
         <StyledSection id={sections[1]} className="snap-center snap-always">
           <h3 className="font-extrabold">{"About Me"}</h3>
           <br />
-          <p></p>
           <p>{"I wear gloves, and go by 'Gloves' online."}</p>
           <p>{"And if you couldn't tell already, I like to code."}</p>
+          <br />
+          <p>{"I started to learn programming in my 2nd year of high school."}</p>
         </StyledSection>
         <div className="divider w-[75vw] max-w-[1000px]" />
         <StyledSection id={sections[2]} className="snap-center snap-always">
