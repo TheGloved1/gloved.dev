@@ -4,7 +4,7 @@ import { ChevronLeft } from "lucide-react"
 
 import GitUser from "@/components/git-user"
 import StyledSection from "@/components/styled-section"
-import FileManager from "@/components/file-manager"
+import FileUploader from "@/components/file-uploader"
 
 import { WIPHeader } from "./_components/WIPHeader"
 import { type Metadata } from "next"
@@ -66,7 +66,7 @@ export default function Page() {
         </StyledSection>
         <div className="divider w-[75vw] max-w-[1000px]" />
         <StyledSection id={sections[4]} className="snap-center snap-always">
-          <FileManager />
+          <FileUploader />
           <p className="m-2 opacity-25">{"(NOTE: I am not responsible for any files uploaded)"}</p>
         </StyledSection>
       </div>

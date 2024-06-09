@@ -5,10 +5,10 @@ import Link from 'next/link'
 import React from 'react'
 
 
-export default function FileManager() {
+export default function FileUploader() {
   const [files, setFiles] = useState<string[]>([])
   const [passwordEntered, setPasswordEntered] = useState<boolean>(false)
-  const correctPassword = process.env.NEXT_CLIENT_FILE_MANAGER_PASSKEY
+  const correctPassword = process.env.NEXT_CLIENT_FILE_MANAGER_PASSKEY || '7693' // Don't really care if this gets leaked
   const [alert, setAlert] = useState<string>('')
 
   useEffect(() => {
@@ -28,7 +28,7 @@ export default function FileManager() {
   async function deleteFile(file: string) {
     if (!passwordEntered) {
       const password = (`${prompt(`Enter passkey to delete files`)}`)
-      if (password === "7693" ?? correctPassword) {
+      if (password === correctPassword) {
         setPasswordEntered(true)
       } else {
         setAlert('Incorrect passkey')
