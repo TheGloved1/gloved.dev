@@ -10,19 +10,13 @@ export default function Page() {
           gloved<span className="text-[hsl(280,100%,40%)]">.</span>dev
         </h1>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
-          <Link
-            className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-            href="/home"
-          >
+          <Link className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20" href="/home">
             <h3 className="text-2xl font-bold">Home →</h3>
             <div className="text-lg">
               The home page for my About Me based web project built with the Next.js React Web Framework.
             </div>
           </Link>
-          <Link
-            className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-            href="/todos"
-          >
+          <Link className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20" href="/todos">
             <h3 className="text-2xl font-bold">Todo App →</h3>
             <div className="text-lg">
               A simple todo list web app. Uses local storage to save and get todos list even after reloading.
@@ -30,19 +24,13 @@ export default function Page() {
           </Link>
         </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
-          <Link className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-            href="/hangman"
-          >
+          <Link className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20" href="/hangman">
             <h3 className="text-2xl font-bold">Janky Hangman →</h3>
             <div className="text-lg">
               A simple hangman game web app. Guess the word.
             </div>
           </Link>
-          <Link
-            className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-            href="https://github.com/TheGloved1/"
-            target="_blank"
-          >
+          <Link className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20" href="https://github.com/TheGloved1/" target="_blank">
             <h3 className="text-2xl font-bold">Github →</h3>
             <div className="text-lg">
               View the source code. Visit my Github profile to take a look at my other projects.
