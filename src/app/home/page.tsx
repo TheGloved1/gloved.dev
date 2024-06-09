@@ -29,16 +29,15 @@ export default function Page() {
       </Link>
       <WIPHeader />
       <div className="flex flex-col items-center justify-center gap-12 px-4 py-16">
-        <StyledSection id={sections[0]} className="snap-center snap-always">
-          <h3 className="text-xl font-extrabold">{"Welcome to my website!"}</h3>
+        <StyledSection id={sections[0]}>
+          <p className="text-xl font-extrabold">{"Welcome to my website!"}</p>
           <br />
-          <p></p>
           <p>{"I'm Kaden Hood."}</p>
           <p>{"a self taught software engineer."}</p>
         </StyledSection>
         <div className="divider w-[75vw] max-w-[1000px]" />
-        <StyledSection id={sections[1]} className="snap-center snap-always">
-          <h3 className="font-extrabold">{"About Me"}</h3>
+        <StyledSection id={sections[1]}>
+          <p className="font-extrabold">{"About Me"}</p>
           <br />
           <p>{"I wear gloves, and go by 'Gloves' online."}</p>
           <p>{"And if you couldn't tell already, I like to code."}</p>
@@ -46,26 +45,24 @@ export default function Page() {
           <p>{"I started to learn programming in my 2nd year of high school."}</p>
         </StyledSection>
         <div className="divider w-[75vw] max-w-[1000px]" />
-        <StyledSection id={sections[2]} className="snap-center snap-always">
-          <h3><strong><Link className="fancy-link" href="https://meporobotics.com/">{"Mediapolis High School Robotics Club"}</Link></strong></h3>
+        <StyledSection id={sections[2]}>
+          <p><strong><Link className="fancy-link" href="https://meporobotics.com/">{"Mediapolis High School Robotics Club"}</Link></strong></p>
           <p><Link className="fancy-link" href="https://frc-events.firstinspires.org/team/9061">{"FIRST Inspires Robotics Team 9061"}</Link></p>
           <p>{"Since 2023 - Present"}</p>
           <br />
-          <p></p>
           <p><strong>{"Role: "}</strong>{"Programmer"}</p>
           <p><strong>{"Language: "}</strong>{"Java"}</p>
         </StyledSection>
         <div className="divider w-[75vw] max-w-[1000px]" />
-        <StyledSection id={sections[3]} className="snap-center snap-always">
-          <h3 className="font-extrabold">{"My Github Profile"}</h3>
+        <StyledSection id={sections[3]}>
+          <p className="font-extrabold">{"My Github Profile"}</p>
           <br />
-          <p></p>
           <Suspense fallback={<p>{"Loading..."}</p>}>
             <GitUser name="TheGloved1" />
           </Suspense>
         </StyledSection>
         <div className="divider w-[75vw] max-w-[1000px]" />
-        <StyledSection id={sections[4]} className="snap-center snap-always">
+        <StyledSection id={sections[4]}>
           <FileUploader />
           <p className="m-2 opacity-25">{"(NOTE: I am not responsible for any files uploaded)"}</p>
         </StyledSection>
