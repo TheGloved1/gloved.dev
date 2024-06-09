@@ -49,7 +49,7 @@ export default function GitUser(props: { name: string }) {
       <div className="container flex flex-col p-4 border-4 gap-4 border-dashed rounded-3xl border-white justify-center items-center bg-gray-600/50">
         <div>
           <Link href={data.html_url} target="_blank" rel="noopener">
-            <Image className="rounded-full" width={200} height={200} src={data.avatar_url} alt="User image" />
+            <Image className="rounded-full" width={200} height={200} src={data.avatar_url} alt="User image" loading='lazy' />
           </Link>
         </div>
         <div className='flex flex-col gap-1'>
