@@ -1,6 +1,5 @@
 "use client"
 import React, { useState, useEffect } from 'react'
-import './WIPHeader.css'
 
 export function WIPHeader() {
   const [isVisible, setIsVisible] = useState(true)

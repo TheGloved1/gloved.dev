@@ -42,7 +42,7 @@
     "@typescript-eslint/eslint-plugin": "^7.1.1",
     "@typescript-eslint/parser": "^7.1.1",
     "babel-plugin-react-compiler": "^0.0.0-experimental-938cd9a-20240601",
-    "daisyui": "^4.11.1",
+    "daisyui": "^4.12.2",
     "drizzle-kit": "^0.20.14",
     "eslint": "^8.57.0",
     "eslint-config-next": "^14.1.3",

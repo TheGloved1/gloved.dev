@@ -1,9 +1,9 @@
 import "@/styles/globals.css"
+import React from 'react'
 import { Inter } from "next/font/google"
 import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { type Metadata } from "next"
-import React, { type ReactNode } from 'react'
 
 
 const inter = Inter({
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   icons: [{ rel: "icon", url: "https://avatars.githubusercontent.com/u/96776176?v=4" }],
 }
 
-export default function RootLayout(props: { children: ReactNode }) {
+export default function RootLayout(props: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body className={`font-sans ${inter.variable}`}>
