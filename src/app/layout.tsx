@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout(props: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html data-theme="dark" lang="en">
       <body className={`font-sans ${inter.variable}`}>
         {props.children}
         <Analytics />

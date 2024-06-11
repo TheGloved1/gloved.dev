@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+
 .fancy-link {
   text-decoration: none;
   background-image: linear-gradient(90deg, red, blue);

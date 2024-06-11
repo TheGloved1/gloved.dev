@@ -24,7 +24,7 @@ export default function Page() {
       <div className="fixed top-0 left-0 right-0 z-[1000]">
         <div className="navbar bg-base-100">
           <div className="navbar-start">
-            <Link href="/" className="btn btn-ghost text-xl"><ChevronLeft />Back</Link>
+            <Link href={"/"} className="btn btn-ghost text-xl"><ChevronLeft />Back</Link>
             <div className="dropdown">
               <div tabIndex={0} role="button" className="btn btn-ghost md:hidden">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h8m-8 6h16" /></svg>
@@ -51,12 +51,6 @@ export default function Page() {
         </div>
       </div>
       <main className="flex min-h-screen snap-y snap-mandatory flex-col items-center text-white bg-gradient-to-b from-sky-950 to-[#1e210c]">
-        {/* <Link href={"/"} className="fixed pl-0 left-2 top-2 flex flex-row items-center justify-center"> */}
-        {/*   <button className="btn flex flex-row items-center justify-center"> */}
-        {/*     <ChevronLeft /> */}
-        {/*     {"Back"} */}
-        {/*   </button> */}
-        {/* </Link> */}
         <WIPHeader />
         <div className="flex flex-col items-center justify-center gap-12 px-4 py-16">
           <StyledSection id={sections[0]}>
@@ -87,7 +81,7 @@ export default function Page() {
           <StyledSection id={sections[3]}>
             <p className="font-extrabold">{"My Github Profile"}</p>
             <br />
-            <Suspense fallback={<p>{"Loading..."}</p>}>
+            <Suspense fallback={""}>
               <GitUser name="TheGloved1" />
             </Suspense>
           </StyledSection>

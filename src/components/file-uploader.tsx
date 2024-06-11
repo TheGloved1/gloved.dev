@@ -1,21 +1,19 @@
 "use client"
 import axios, { type AxiosResponse } from 'axios'
-import { useState, useEffect, type ChangeEvent } from 'react'
+import { useState, useEffect, type ChangeEvent, use } from 'react'
 import Link from 'next/link'
 import React from 'react'
+import Loading from '@/components/loading'
 
 
 export default function FileUploader() {
   const [files, setFiles] = useState<string[]>([])
   const [passwordEntered, setPasswordEntered] = useState<boolean>(false)
-  const correctPassword = process.env.NEXT_CLIENT_FILE_MANAGER_PASSKEY ?? '7693' // Don't really care if this gets leaked
   const [alert, setAlert] = useState<string>('')
+  const correctPassword = process.env.NEXT_CLIENT_FILE_MANAGER_PASSKEY ?? '7693' // Don't really care if this gets leaked
 
   useEffect(() => {
-    const GETFILES = async () => {
-      await getFiles()
-    }
-    void GETFILES()
+    use(getFiles())
   }, [])
 
   useEffect(() => {
@@ -92,13 +90,7 @@ export default function FileUploader() {
 
         <h2 className='text-center justify-center content-center place-items-center pt-4 pb-4'>
           {"Download Files "}
-          <button
-            className='btn btn-circle hover:animate-spin'
-            onClick={getFiles}
-            title="Refresh Files"
-          >
-            ↻
-          </button>
+          <button className='btn btn-circle hover:animate-spin' onClick={getFiles} title="Refresh Files">↻</button>
         </h2>
 
         {files[0] !== 'loading' && files.length > 0 &&
@@ -132,8 +124,3 @@ export default function FileUploader() {
   )
 }
 
-function Loading() {
-  return (
-    <span className="loading loading-spinner loading-lg"></span>
-  )
-}
