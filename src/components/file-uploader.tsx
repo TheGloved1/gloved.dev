@@ -9,8 +9,8 @@ import Loading from '@/components/loading'
 export default function FileUploader() {
   const [files, setFiles] = useState<string[]>([])
   const [passwordEntered, setPasswordEntered] = useState<boolean>(false)
-  const [alert, setAlert] = useState<string>('')
   const correctPassword = process.env.NEXT_CLIENT_FILE_MANAGER_PASSKEY ?? '7693' // Don't really care if this gets leaked
+  const [alert, setAlert] = useState<string>('')
 
   useEffect(() => {
     use(getFiles())

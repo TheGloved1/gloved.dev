@@ -30,21 +30,17 @@ export default function Page() {
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h8m-8 6h16" /></svg>
               </div>
               <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
-                <li><Link href={`#${sections[0]}`} replace>{sections[0]}</Link></li>
-                <li><Link href={`#${sections[1]}`} replace>{sections[1]}</Link></li>
-                <li><Link href={`#${sections[2]}`} replace>{sections[2]}</Link></li>
-                <li><Link href={`#${sections[3]}`} replace>{sections[3]}</Link></li>
-                <li><Link href={`#${sections[4]}`} replace>{sections[4]}</Link></li>
+                {sections.map((section) => (
+                  <li key={section}><Link href={`#${section}`} replace>{section}</Link></li>
+                ))}
               </ul>
             </div>
           </div>
           <div className="navbar-center hidden md:flex">
             <ul className="menu menu-horizontal px-1">
-              <li><Link href={`#${sections[0]}`} replace>{sections[0]}</Link></li>
-              <li><Link href={`#${sections[1]}`} replace>{sections[1]}</Link></li>
-              <li><Link href={`#${sections[2]}`} replace>{sections[2]}</Link></li>
-              <li><Link href={`#${sections[3]}`} replace>{sections[3]}</Link></li>
-              <li><Link href={`#${sections[4]}`} replace>{sections[4]}</Link></li>
+              {sections.map((section) => (
+                <li key={section}><Link href={`#${section}`} replace>{section}</Link></li>
+              ))}
             </ul>
           </div>
           <div className="navbar-end"></div>
@@ -88,7 +84,6 @@ export default function Page() {
           <div className="divider w-[75vw] max-w-[1000px]" />
           <StyledSection id={sections[4]}>
             <FileUploader />
-            <p className="m-2 opacity-25">{"(NOTE: I am not responsible for any files uploaded)"}</p>
           </StyledSection>
         </div>
       </main>
