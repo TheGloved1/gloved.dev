@@ -6,8 +6,8 @@ export default function Page() {
 
   return (
     <>
-      <Link href={"/"} className="fixed pl-0 left-2 bottom-2 lg:bottom-auto lg:top-2 flex flex-row items-center justify-center">
-        <button className="btn flex flex-row items-center justify-center">
+      <Link href={"/"} className="flex fixed bottom-2 left-2 flex-row justify-center items-center pl-0 lg:top-2 lg:bottom-auto">
+        <button className="flex flex-row justify-center items-center btn">
           <ChevronLeft />
           {"Back"}
         </button>

@@ -52,9 +52,9 @@ export default function TodoPage() {
 
   return (
     <>
-      <main className="main place-items-center">
+      <main className="place-items-center main">
         <NewTodoForm onSubmit={addTodo} />
-        <h1 className="text-[1.5rem] mt-6 mb-2">Todo List</h1>
+        <h1 className="mt-6 mb-2 text-[1.5rem]">Todo List</h1>
         <TodoList todos={todos} toggleTodo={toggleTodo} deleteTodo={deleteTodo} />
       </main>
     </>

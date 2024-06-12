@@ -26,7 +26,7 @@ export function WIPHeader() {
       <div>{"dev"}</div>
       <div className="text-[hsl(280,100%,40%)]">{"/"}</div>
       <div className="pr-2">{"home "}</div>
-      <div className="rounded-xl bg-gray-700 p-2 text-slate-900">{"Work in progress..."}</div>
+      <div className="p-2 bg-gray-700 rounded-xl text-slate-900">{"Work in progress..."}</div>
     </div>
   ) : null
 }

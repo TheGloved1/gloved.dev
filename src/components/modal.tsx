@@ -12,7 +12,7 @@ export function ModalButton() {
 export function ModalDialog({ children }: { children?: React.ReactNode }) {
   return (
     <>
-      <dialog className="p-2 bg-white rounded z-10">
+      <dialog className="z-10 p-2 bg-white rounded">
         {children}
         <button className="btn" onClick={() => document.querySelector("dialog")?.close()}>{"Close"}</button>
       </dialog>

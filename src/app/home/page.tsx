@@ -21,23 +21,23 @@ export default function Page() {
 
   return (
     <>
-      <div className="fixed top-0 left-0 right-0 z-[1000]">
+      <div className="fixed top-0 right-0 left-0 z-[1000]">
         <div className="navbar bg-base-100">
           <div className="navbar-start">
-            <Link href={"/"} className="btn btn-ghost text-xl"><ChevronLeft />Back</Link>
+            <Link href={"/"} className="text-xl btn btn-ghost"><ChevronLeft />Back</Link>
             <div className="dropdown">
-              <div tabIndex={0} role="button" className="btn btn-ghost md:hidden">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h8m-8 6h16" /></svg>
+              <div tabIndex={0} role="button" className="md:hidden btn btn-ghost">
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h8m-8 6h16" /></svg>
               </div>
-              <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
+              <ul tabIndex={0} className="p-2 mt-3 w-52 shadow menu menu-sm dropdown-content z-[1] bg-base-100 rounded-box">
                 {sections.map((section) => (
                   <li key={section}><Link href={`#${section}`} replace>{section}</Link></li>
                 ))}
               </ul>
             </div>
           </div>
-          <div className="navbar-center hidden md:flex">
-            <ul className="menu menu-horizontal px-1">
+          <div className="hidden md:flex navbar-center">
+            <ul className="px-1 menu menu-horizontal">
               {sections.map((section) => (
                 <li key={section}><Link href={`#${section}`} replace>{section}</Link></li>
               ))}
@@ -46,9 +46,9 @@ export default function Page() {
           <div className="navbar-end"></div>
         </div>
       </div>
-      <main className="flex min-h-screen snap-y snap-mandatory flex-col items-center text-white bg-gradient-to-b from-sky-950 to-[#1e210c]">
+      <main className="flex min-h-screen flex-col items-center text-white bg-gradient-to-b from-sky-950 to-[#1e210c]">
         <WIPHeader />
-        <div className="flex flex-col items-center justify-center gap-12 px-4 py-16">
+        <div className="flex flex-col gap-12 justify-center items-center py-16 px-4">
           <StyledSection id={sections[0]}>
             <p className="text-xl font-extrabold">{"Welcome to my website!"}</p>
             <br />

@@ -68,15 +68,15 @@ export default function Page() {
 
   return (
     <>
-      <main className="items-center justify-center text-white">
-        <Link href={"/"} className="fixed pl-0 left-2 top-2 flex flex-row items-center justify-center">
-          <button className="btn flex flex-row items-center justify-center">
+      <main className="justify-center items-center text-white">
+        <Link href={"/"} className="flex fixed top-2 left-2 flex-row justify-center items-center pl-0">
+          <button className="flex flex-row justify-center items-center btn">
             <ChevronLeft />
             {"Back"}
           </button>
         </Link>
-        <div className="max-w-4xl mx-auto flex flex-col gap-8 items-center max-h-svh">
-          <div className="text-[2rem] items-center">
+        <div className="flex flex-col gap-8 items-center mx-auto max-w-4xl max-h-svh">
+          <div className="items-center text-[2rem]">
             {isWinner && "Winner! - Refresh to try again"}
             {isLoser && "Nice Try - Refresh to try again"}
           </div>

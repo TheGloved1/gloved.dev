@@ -80,29 +80,29 @@ export default function FileUploader() {
 
   return (
     <>
-      <div className='flex flex-col items-center justify-center p-4 border-white border-4 rounded-xl bg-gray-700/50'>
+      <div className='flex flex-col justify-center items-center p-4 rounded-xl border-4 border-white bg-gray-700/50'>
         <h1 className='font-bold'>{"Simple File Uploader"}</h1>
         <p className='text-sm'>{"(Don't download random files off the internet)"}</p>
         <br />
 
         <label htmlFor='uploadBtn'>{"Upload File"}</label>
-        <input id='uploadBtn' className='file-input file-input-bordered file-input-primary bg-black glass w-full max-w-xs' type="file" onChange={uploadFile} />
+        <input id='uploadBtn' className='w-full max-w-xs bg-black file-input file-input-bordered file-input-primary glass' type="file" onChange={uploadFile} />
 
-        <h2 className='text-center justify-center content-center place-items-center pt-4 pb-4'>
+        <h2 className='justify-center content-center place-items-center pt-4 pb-4 text-center'>
           {"Download Files "}
-          <button className='btn btn-circle hover:animate-spin' onClick={getFiles} title="Refresh Files">↻</button>
+          <button className='hover:animate-spin btn btn-circle' onClick={getFiles} title="Refresh Files">↻</button>
         </h2>
 
         {files[0] !== 'loading' && files.length > 0 &&
-          <ul className='flex flex-wrap flex-col overflow-x-auto lg:max-h-72 max-h-48 max-w-96 border-white border-2 rounded-xl p-[.2rem] '>
+          <ul className='flex overflow-x-auto flex-col flex-wrap max-h-48 rounded-xl border-2 border-white lg:max-h-72 max-w-96 p-[.2rem]'>
             {!!files.length && files[0] !== 'loading' && files.map(file => (
-              <li className='flex flex-row p-1 text-[.2rem] w-64' key={file}>
-                <Link className='mx-2 w-64 truncate rounded-xl' href={`https://api.gloved.dev/download/${file}`}>
-                  <button className='btn mx-2 p-3 rounded-xl hover:animate-pulse hover:bg-gray-700'>{file}</button>
+              <li className='flex flex-row p-1 w-64 text-[.2rem]' key={file}>
+                <Link className='mx-2 w-64 rounded-xl truncate' href={`https://api.gloved.dev/download/${file}`}>
+                  <button className='p-3 mx-2 rounded-xl hover:bg-gray-700 hover:animate-pulse btn'>{file}</button>
                 </Link>
                 <button
                   disabled={false}
-                  className='btn btn-warning btn-square bg-red-500 rounded-xl hover:bg-red-400'
+                  className='bg-red-500 rounded-xl hover:bg-red-400 btn btn-warning btn-square'
                   onClick={() => deleteFile(file)}
                   title="Delete File"
                 >
@@ -116,11 +116,10 @@ export default function FileUploader() {
       </div>
       {alert !== '' &&
         <div role="alert" className="m-2 alert alert-error">
-          <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 stroke-current shrink-0" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
           <span>{alert}</span>
         </div>
       }
     </>
   )
 }
-
