@@ -13,7 +13,8 @@ export default function FileUploader() {
   const [alert, setAlert] = useState<string>('')
 
   useEffect(() => {
-    use(getFiles())
+    const GETFILES = async () => await getFiles()
+    void GETFILES()
   }, [])
 
   useEffect(() => {
