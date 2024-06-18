@@ -26,7 +26,7 @@ export default function FileUploader() {
 
   async function deleteFile(file: string) {
     if (!passwordEntered) {
-      const password = (`${prompt(`Enter passkey to delete files`)}`)
+      const password = prompt(`Enter passkey to delete files`)
       if (password === correctPassword) {
         setPasswordEntered(true)
       } else {
