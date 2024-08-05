@@ -66,7 +66,7 @@ export default function Page() {
           </StyledSection>
           <div className="divider w-[75vw] max-w-[1000px]" />
           <StyledSection id={sections[2]}>
-            <p><strong><Link className="fancy-link" href="https://meporobotics.com/">{"Mediapolis High School Robotics Club"}</Link></strong></p>
+            <p><strong><Link className="fancy-link" href="https://meporobotics.com/">{"Mediapolis Robotics Club"}</Link></strong></p>
             <p><Link className="fancy-link" href="https://frc-events.firstinspires.org/team/9061">{"FIRST Inspires Robotics Team 9061"}</Link></p>
             <p>{"Since 2023 - Present"}</p>
             <br />
