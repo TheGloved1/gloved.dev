@@ -1,0 +1,38 @@
+{
+  "name": "gloved.dev",
+  "version": "0.2.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbo",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@types/eslint": "^9.6.0",
+    "@typescript-eslint/eslint-plugin": "^8.2.0",
+    "@typescript-eslint/parser": "^8.2.0",
+    "axios": "^1.7.5",
+    "babel-plugin-react-compiler": "^0.0.0-experimental-48eb8f4-20240822",
+    "clsx": "^2.1.1",
+    "eslint-plugin-react-compiler": "^0.0.0-experimental-72f06b2-20240822",
+    "next": "15.0.0-rc.0",
+    "react": "19.0.0-rc-f994737d14-20240522",
+    "react-dom": "19.0.0-rc-f994737d14-20240522",
+    "tailwind-merge": "^2.5.2",
+    "tailwindcss-animate": "^1.0.7"
+  },
+  "devDependencies": {
+    "@types/node": "^22.5.0",
+    "@types/react": "^18.3.4",
+    "@types/react-dom": "^18.3.0",
+    "daisyui": "^4.12.10",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "15.0.0-rc.0",
+    "postcss": "^8.4.41",
+    "prettier": "^3.3.3",
+    "prettier-plugin-tailwindcss": "^0.6.6",
+    "tailwindcss": "^3.4.10",
+    "typescript": "^5.5.4"
+  }
+}
