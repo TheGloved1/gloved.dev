@@ -12,20 +12,24 @@ export default function Page() {
         </h1>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
           <Link
-            className="flex flex-col gap-4 p-4 max-w-xs text-white rounded-xl bg-white/10 hover:bg-white/20"
+            className="flex flex-col group gap-4 p-4 max-w-xs text-white rounded-xl bg-white/10 hover:bg-white/20"
             href="/home"
           >
-            <h3 className="text-2xl font-bold">Home →</h3>
+            <h3 className="text-2xl font-bold">Home <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
+              -&gt;
+            </span></h3>
             <div className="text-lg">
               The home page for my About Me based web project built with the
               Next.js React Web Framework.
             </div>
           </Link>
           <Link
-            className="flex flex-col gap-4 p-4 max-w-xs text-white rounded-xl bg-white/10 hover:bg-white/20"
+            className="flex flex-col group gap-4 p-4 max-w-xs text-white rounded-xl bg-white/10 hover:bg-white/20"
             href="/todos"
           >
-            <h3 className="text-2xl font-bold">Todo App →</h3>
+            <h3 className="text-2xl font-bold">Todo App <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
+              -&gt;
+            </span></h3>
             <div className="text-lg">
               A simple todo list web app. Uses local storage to save and get
               todos list even after reloading.
@@ -34,20 +38,24 @@ export default function Page() {
         </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
           <Link
-            className="flex flex-col gap-4 p-4 max-w-xs text-white rounded-xl bg-white/10 hover:bg-white/20"
+            className="flex flex-col group gap-4 p-4 border border-transparent max-w-xs text-white rounded-xl bg-white/10 hover:bg-white/20"
             href="/hangman"
           >
-            <h3 className="text-2xl font-bold">Janky Hangman →</h3>
+            <h3 className="text-2xl font-bold">
+              Janky Hangman <span className="inline-block transition-transform group-hover:translate-x-1">-&gt;</span>
+            </h3>
             <div className="text-lg">
               A simple hangman game web app. Guess the word.
             </div>
           </Link>
           <Link
-            className="flex flex-col gap-4 p-4 max-w-xs text-white rounded-xl bg-white/10 hover:bg-white/20"
+            className="flex flex-col group gap-4 p-4 max-w-xs text-white rounded-xl bg-white/10 hover:bg-white/20"
             href="https://github.com/TheGloved1/"
             target="_blank"
           >
-            <h3 className="text-2xl font-bold">Github →</h3>
+            <h3 className="text-2xl font-bold">Github <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
+              -&gt;
+            </span></h3>
             <div className="text-lg">
               View the source code. Visit my Github profile to take a look at my
               other projects.
@@ -56,7 +64,7 @@ export default function Page() {
         </div>
         {/* <div className="grid grid-cols-1 gap-4 sm:grid-cols-1 md:gap-8">
           <Link
-            className="flex flex-col gap-4 p-4 max-w-xs text-white rounded-xl bg-white/10 hover:bg-white/20"
+            className="flex flex-col group gap-4 p-4 max-w-xs text-white rounded-xl bg-white/10 hover:bg-white/20"
             href="https://old.gloved.dev/"
             target="_blank"
           >

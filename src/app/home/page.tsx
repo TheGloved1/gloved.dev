@@ -54,7 +54,7 @@ export default function Page() {
               </div>
               <ul
                 tabIndex={0}
-                className="p-2 mt-3 w-52 shadow menu menu-sm dropdown-content z-[1] bg-base-100 rounded-box"
+                className="p-2 mt-3 w-52 shadow menu-sm menu dropdown-content z-[1] bg-base-100 rounded-box"
               >
                 {sections.map((section) => (
                   <li key={section}>
