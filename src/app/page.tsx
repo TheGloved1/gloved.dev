@@ -25,20 +25,13 @@ export default function Page() {
           </Link>
         </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
-          <Link
-            className="group flex max-w-xs flex-col gap-4 rounded-xl border border-transparent bg-white/10 p-4 text-white hover:bg-white/20"
-            href="/hangman"
-          >
+          <Link className="group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20" href="/hangman">
             <h3 className="text-2xl font-bold">
               Janky Hangman <span className="inline-block transition-transform group-hover:translate-x-1">-&gt;</span>
             </h3>
             <div className="text-lg">A simple hangman game web app. Guess the word.</div>
           </Link>
-          <Link
-            className="group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-            href="https://github.com/TheGloved1/"
-            target="_blank"
-          >
+          <Link className="group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20" href="https://github.com/TheGloved1/">
             <h3 className="text-2xl font-bold">
               Github <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">-&gt;</span>
             </h3>
@@ -59,6 +52,12 @@ export default function Page() {
             </div>
           </Link>
         </div> */}
+      </div>
+      <div className="flex content-center pt-40">
+        <p className="p-4 text-xl">Help me improve and</p>
+        <Link href={'https://crotus.io/gloves/review'} className="btn btn-outline text-xl">
+          Write a review!
+        </Link>
       </div>
     </main>
   )
