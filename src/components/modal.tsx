@@ -1,10 +1,12 @@
-"use client"
-import React from "react"
+'use client'
+import React from 'react'
 
 export function ModalButton() {
   return (
     <>
-      <button className="btn" onClick={() => document.querySelector("dialog")?.showModal()}>{"Open Modal"}</button>
+      <button className="btn" onClick={() => document.querySelector('dialog')?.showModal()}>
+        {'Open Modal'}
+      </button>
     </>
   )
 }
@@ -12,9 +14,11 @@ export function ModalButton() {
 export function ModalDialog({ children }: { children?: React.ReactNode }) {
   return (
     <>
-      <dialog className="z-10 p-2 bg-white rounded">
+      <dialog className="z-10 rounded bg-white p-2">
         {children}
-        <button className="btn" onClick={() => document.querySelector("dialog")?.close()}>{"Close"}</button>
+        <button className="btn" onClick={() => document.querySelector('dialog')?.close()}>
+          {'Close'}
+        </button>
       </dialog>
     </>
   )

@@ -1,10 +1,8 @@
-"use client"
+'use client'
 /* eslint-disable prefer-const */
 import React, { useEffect, useRef, useState, type ReactNode } from 'react'
 
-
-export default function StyledSection(props: { children: ReactNode, id?: string, className?: string }) {
-
+export default function StyledSection(props: { children: ReactNode; id?: string; className?: string }) {
   const sectionRef = useRef(null)
   const [isInView, setIsInView] = useState(false)
 
@@ -35,10 +33,9 @@ export default function StyledSection(props: { children: ReactNode, id?: string,
     <section
       id={props.id}
       ref={sectionRef}
-      className={`flex flex-col items-center justify-center min-h-[95vh] text-center tracking-tight ${props.className} ${isInView ? 'fade-in-left' : 'fade-out-left'}`}
+      className={`flex min-h-[95vh] flex-col items-center justify-center text-center tracking-tight ${props.className} ${isInView ? 'fade-in-left' : 'fade-out-left'}`}
     >
       {props.children}
     </section>
   )
-
 }

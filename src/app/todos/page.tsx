@@ -1,20 +1,17 @@
-import Link from "next/link";
-import TodoPage from "./_components/todo-page";
-import ChevronLeft from "@/components/chevron-left";
+import Link from 'next/link'
+import TodoPage from './_components/todo-page'
+import ChevronLeft from '@/components/chevron-left'
 
 export default function Page() {
   return (
     <>
-      <Link
-        href={"/"}
-        className="flex fixed bottom-2 left-2 flex-row justify-center items-center pl-0 lg:top-2 lg:bottom-auto"
-      >
-        <button className="flex flex-row justify-center items-center btn">
+      <Link href={'/'} className="fixed bottom-2 left-2 flex flex-row items-center justify-center pl-0 lg:bottom-auto lg:top-2">
+        <button className="btn flex flex-row items-center justify-center">
           <ChevronLeft />
-          {"Back"}
+          {'Back'}
         </button>
       </Link>
       <TodoPage />
     </>
-  );
+  )
 }
