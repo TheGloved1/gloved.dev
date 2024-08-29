@@ -5,7 +5,7 @@ import Link from 'next/link'
 import React from 'react'
 import Loading from '@/components/loading'
 
-export default function FileUploader() {
+export default function FileUploader(): React.JSX.Element {
   const [files, setFiles] = useState<string[]>([])
   const [passwordEntered, setPasswordEntered] = useState<boolean>(false)
   const correctPassword = process.env.NEXT_CLIENT_FILE_MANAGER_PASSKEY ?? '7693' // Don't really care if this gets leaked
@@ -23,7 +23,7 @@ export default function FileUploader() {
     }, 2500)
   }, [alert])
 
-  async function deleteFile(file: string) {
+  async function deleteFile(file: string): Promise<void> {
     if (!passwordEntered) {
       const password = prompt(`Enter passkey to delete files`)
       if (password === correctPassword) {
@@ -43,7 +43,7 @@ export default function FileUploader() {
     }
   }
 
-  async function getFiles() {
+  async function getFiles(): Promise<void> {
     setFiles(['loading'])
     try {
       const response: AxiosResponse<string[]> = await axios.get('https://api.gloved.dev/files')
@@ -56,7 +56,7 @@ export default function FileUploader() {
     }
   }
 
-  async function uploadFile(event: ChangeEvent<HTMLInputElement>) {
+  async function uploadFile(event: ChangeEvent<HTMLInputElement>): Promise<void> {
     try {
       const file = event.target.files?.[0]
       if (!file) return
@@ -127,12 +127,7 @@ export default function FileUploader() {
       {alert !== '' && (
         <div role="alert" className="alert alert-error m-2">
           <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           <span>{alert}</span>
         </div>

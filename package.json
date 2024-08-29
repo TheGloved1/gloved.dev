@@ -9,9 +9,9 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@types/eslint": "^9.6.0",
-    "@typescript-eslint/eslint-plugin": "^8.2.0",
-    "@typescript-eslint/parser": "^8.2.0",
+    "@types/eslint": "^9.6.1",
+    "@typescript-eslint/eslint-plugin": "^8.3.0",
+    "@typescript-eslint/parser": "^8.3.0",
     "axios": "^1.7.5",
     "babel-plugin-react-compiler": "^0.0.0-experimental-48eb8f4-20240822",
     "clsx": "^2.1.1",

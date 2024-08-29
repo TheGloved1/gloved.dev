@@ -2,7 +2,7 @@
 /* eslint-disable prefer-const */
 import React, { useEffect, useRef, useState, type ReactNode } from 'react'
 
-export default function StyledSection(props: { children: ReactNode; id?: string; className?: string }) {
+export default function StyledSection(props: { children: ReactNode; id?: string; className?: string }): React.JSX.Element {
   const sectionRef = useRef(null)
   const [isInView, setIsInView] = useState(false)
 

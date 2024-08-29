@@ -1,7 +1,7 @@
 'use client'
 import React from 'react'
 
-export function ModalButton() {
+export function ModalButton(): React.JSX.Element {
   return (
     <>
       <button className="btn" onClick={() => document.querySelector('dialog')?.showModal()}>
@@ -11,7 +11,7 @@ export function ModalButton() {
   )
 }
 
-export function ModalDialog({ children }: { children?: React.ReactNode }) {
+export function ModalDialog({ children }: { children?: React.ReactNode }): React.JSX.Element {
   return (
     <>
       <dialog className="z-10 rounded bg-white p-2">

@@ -1,16 +1,16 @@
-"use client"
-import { useState } from "react"
+'use client'
+import { useState } from 'react'
 
-export default function NewTodoForm(props: { onSubmit: (title: string) => void }) {
-  const [newItem, setNewItem] = useState("")
+export default function NewTodoForm(props: { onSubmit: (title: string) => void }): React.JSX.Element {
+  const [newItem, setNewItem] = useState('')
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>): void {
     e.preventDefault()
-    if (newItem === "") return
+    if (newItem === '') return
 
     props.onSubmit(newItem)
 
-    setNewItem("")
+    setNewItem('')
   }
 
   return (
@@ -19,10 +19,10 @@ export default function NewTodoForm(props: { onSubmit: (title: string) => void }
         <label htmlFor="item">New Todo</label>
         <input
           value={newItem}
-          onChange={e => setNewItem(e.target.value)}
+          onChange={(e) => setNewItem(e.target.value)}
           type="text"
           id="item"
-          className="outline-none border-[1px] border-[hsl(200, 100%, 40%)] border-gray-300 rounded-md p-1"
+          className="border-[hsl(200, 100%, 40%)] rounded-md border-[1px] border-gray-300 p-1 outline-none"
         />
       </div>
       <button className="btn">Add</button>

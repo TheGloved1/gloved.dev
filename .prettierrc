@@ -6,7 +6,7 @@
   "bracketSpacing": true,
   "jsxBracketSameLine": false,
   "arrowParens": "always",
-  "printWidth": 175,
+  "printWidth": 165,
   "proseWrap": "preserve",
   "endOfLine": "lf",
   "overrides": [

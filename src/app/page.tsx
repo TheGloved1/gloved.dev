@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import React from 'react'
 
-export default function Page() {
+export default function Page(): React.JSX.Element {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-sky-950 to-[#1e210c] text-white">
       <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16">
@@ -40,22 +40,19 @@ export default function Page() {
         </div>
         {/* <div className="grid grid-cols-1 gap-4 sm:grid-cols-1 md:gap-8">
           <Link
-            className="flex flex-col group gap-4 p-4 max-w-xs text-white rounded-xl bg-white/10 hover:bg-white/20"
+            className="group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
             href="https://old.gloved.dev/"
             target="_blank"
           >
             <h3 className="text-2xl font-bold">Old Site →</h3>
 
-            <div className="text-lg">
-              Visit the old site. This is the previous version of my About Me
-              site built with Vue.
-            </div>
+            <div className="text-lg">Visit the old site. This is the previous version of my About Me site built with Vue.</div>
           </Link>
         </div> */}
       </div>
       <div className="flex content-center pt-40">
-        <p className="p-4 text-xl">Help me improve and</p>
-        <Link href={'https://crotus.io/gloves/review'} className="btn btn-outline text-xl">
+        <p className="p-4 text-sm">Help me improve and</p>
+        <Link href={'https://crotus.io/gloves/review'} className="btn btn-outline text-sm">
           Write a review!
         </Link>
       </div>
