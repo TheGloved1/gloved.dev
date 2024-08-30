@@ -1,5 +1,7 @@
+/** @format */
+
 'use client'
-/* eslint-disable prefer-const */
+
 import React, { useEffect, useRef, useState, type ReactNode } from 'react'
 
 export default function StyledSection(props: { children: ReactNode; id?: string; className?: string }): React.JSX.Element {
@@ -16,7 +18,7 @@ export default function StyledSection(props: { children: ReactNode; id?: string;
       { threshold: 0.5 }
     )
 
-    let sectionRefCurrent = sectionRef.current
+    let sectionRefCurrent = sectionRef.current /* eslint-disable prefer-const */
 
     if (sectionRefCurrent) {
       observer.observe(sectionRefCurrent)

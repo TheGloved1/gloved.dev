@@ -8,27 +8,11 @@
   "arrowParens": "always",
   "printWidth": 165,
   "proseWrap": "preserve",
-  "endOfLine": "lf",
-  "overrides": [
-    {
-      "files": "*.json",
-      "options": {
-        "parser": "json"
-      }
-    },
-    {
-      "files": "*.md",
-      "options": {
-        "parser": "markdown"
-      }
-    },
-    {
-      "files": "*.yml",
-      "options": {
-        "parser": "yaml"
-      }
-    }
-  ],
+  "endOfLine": "crlf",
+  "overrides": [],
   "experimentalTernaries": true,
-  "plugins": ["prettier-plugin-tailwindcss"]
+  "plugins": ["prettier-plugin-tailwindcss"],
+  "insertPragma": false,
+  "singleAttributePerLine": false,
+  "jsxSingleQuote": true
 }
