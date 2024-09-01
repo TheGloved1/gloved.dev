@@ -1,5 +1,5 @@
 'use client'
-import { useFetchIp } from '@/lib/utils'
+import { useFetchIp } from '@/lib/hooks'
 import Loading from '@/components/loading'
 import React from 'react'
 

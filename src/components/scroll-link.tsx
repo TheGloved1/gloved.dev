@@ -10,7 +10,7 @@ export default function ScrollLink(props: { children: React.ReactNode; href: str
     }
   }
   return (
-    <Link className={props.className} href={props.href} onClick={(e) => handleScroll(e, props.href)} scroll={false} replace>
+    <Link className={props.className} href={props.href} onClick={(e) => handleScroll(e, props.href)} scroll={false}>
       {props.children}
     </Link>
   )
