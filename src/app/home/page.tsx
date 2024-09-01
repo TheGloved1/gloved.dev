@@ -10,6 +10,7 @@ import ChevronLeft from '@/components/chevron-left'
 
 import { WIPHeader } from './_components/WIPHeader'
 import { type Metadata } from 'next'
+import ScrollLink from '@/components/scroll-link'
 
 export const metadata: Metadata = {
   title: 'Home',
@@ -20,7 +21,13 @@ const sections = ['Welcome', 'About', 'Robotics', 'Github', 'File Uploader']
 
 export default function Page(): React.JSX.Element {
   console.log('Rendering Home...')
-
+  const handleScroll = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>, href: string) => {
+    event.preventDefault()
+    const element = document.getElementById(href)
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' })
+    }
+  }
   return (
     <>
       <div className='fixed left-0 right-0 top-0 z-[1000]'>
@@ -39,9 +46,7 @@ export default function Page(): React.JSX.Element {
               <ul tabIndex={0} className='menu dropdown-content menu-sm z-[1] mt-3 w-52 rounded-box bg-base-100 p-2 shadow'>
                 {sections.map((section) => (
                   <li key={section}>
-                    <Link href={`#${section}`} replace>
-                      {section}
-                    </Link>
+                    <ScrollLink href={`#${section}`}>{section}</ScrollLink>
                   </li>
                 ))}
               </ul>
@@ -51,9 +56,9 @@ export default function Page(): React.JSX.Element {
             <ul className='menu menu-horizontal px-1'>
               {sections.map((section) => (
                 <li key={section}>
-                  <Link href={`#${section}`} className='mx-1' replace>
+                  <ScrollLink href={`#${section}`} className='mx-1'>
                     {section}
-                  </Link>
+                  </ScrollLink>
                 </li>
               ))}
             </ul>

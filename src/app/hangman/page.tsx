@@ -43,7 +43,7 @@ export default function Page() {
     return () => {
       document.removeEventListener('keypress', handler)
     }
-  }, [])
+  }, [addGuessedLetter])
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
