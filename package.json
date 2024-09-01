@@ -2,11 +2,21 @@
   "name": "gloved.dev",
   "version": "2.0.0",
   "private": true,
+  "homepage": "https://gloved.dev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TheGloved1/gloved.dev.git"
+  },
+  "author": {
+    "name": "TheGloved1",
+    "email": "gloves1229@gmail.com"
+  },
   "scripts": {
     "dev": "next dev --turbo",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "format": "prettier \"./src/**/*.ts\" --write && git status"
   },
   "dependencies": {
     "@types/eslint": "^9.6.1",
