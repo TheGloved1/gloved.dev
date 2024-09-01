@@ -80,40 +80,40 @@ export default function FileUploader(): React.JSX.Element {
 
   return (
     <>
-      <div className="flex flex-col items-center justify-center rounded-xl border-4 border-white bg-gray-700/50 p-4">
-        <h1 className="font-bold">{'Simple File Uploader'}</h1>
-        <p className="text-sm">{"(Don't download random files off the internet)"}</p>
+      <div className='flex flex-col items-center justify-center rounded-xl border-4 border-white bg-gray-700/50 p-4'>
+        <h1 className='font-bold'>{'Simple File Uploader'}</h1>
+        <p className='text-sm'>{"(Don't download random files off the internet)"}</p>
         <br />
 
-        <label htmlFor="uploadBtn">{'Upload File'}</label>
+        <label htmlFor='uploadBtn'>{'Upload File'}</label>
         <input
-          id="uploadBtn"
-          className="glass file-input file-input-bordered file-input-primary w-full max-w-xs bg-black hover:animate-pulse"
-          type="file"
+          id='uploadBtn'
+          className='glass file-input file-input-bordered file-input-primary w-full max-w-xs bg-black hover:animate-pulse'
+          type='file'
           onChange={uploadFile}
         />
 
-        <h2 className="place-items-center content-center justify-center pb-4 pt-4 text-center">
+        <h2 className='place-items-center content-center justify-center pb-4 pt-4 text-center'>
           {'Download Files '}
-          <button className="btn btn-circle hover:animate-spin" onClick={getFiles} title="Refresh Files">
+          <button className='btn btn-circle hover:animate-spin' onClick={getFiles} title='Refresh Files'>
             ↻
           </button>
         </h2>
 
         {files[0] !== 'loading' && files.length > 0 && (
-          <ul className="flex max-h-48 max-w-96 flex-col flex-wrap overflow-x-auto rounded-xl border-2 border-white p-[.2rem] lg:max-h-72">
+          <ul className='flex max-h-48 max-w-96 flex-col flex-wrap overflow-x-auto rounded-xl border-2 border-white p-[.2rem] lg:max-h-72'>
             {!!files.length &&
               files[0] !== 'loading' &&
               files.map((file) => (
-                <li className="flex w-64 flex-row p-1 text-[.2rem]" key={file}>
-                  <Link className="mx-2 w-64 truncate rounded-xl" href={`https://api.gloved.dev/download/${file}`}>
-                    <button className="btn mx-2 rounded-xl p-3 hover:animate-pulse hover:bg-gray-700">{file}</button>
+                <li className='flex w-64 flex-row p-1 text-[.2rem]' key={file}>
+                  <Link className='mx-2 w-64 truncate rounded-xl' href={`https://api.gloved.dev/download/${file}`}>
+                    <button className='btn mx-2 rounded-xl p-3 hover:animate-pulse hover:bg-gray-700'>{file}</button>
                   </Link>
                   <button
                     disabled={false}
-                    className="btn btn-square btn-warning rounded-xl bg-red-500 hover:bg-red-400"
+                    className='btn btn-square btn-warning rounded-xl bg-red-500 hover:bg-red-400'
                     onClick={() => deleteFile(file)}
-                    title="Delete File"
+                    title='Delete File'
                   >
                     {'X'}
                   </button>
@@ -125,9 +125,9 @@ export default function FileUploader(): React.JSX.Element {
         {files.length === 0 && <li>{'No files found'}</li>}
       </div>
       {alert !== '' && (
-        <div role="alert" className="alert alert-error m-2">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        <div role='alert' className='alert alert-error m-2'>
+          <svg xmlns='http://www.w3.org/2000/svg' className='h-6 w-6 shrink-0 stroke-current' fill='none' viewBox='0 0 24 24'>
+            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth='2' d='M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z' />
           </svg>
           <span>{alert}</span>
         </div>
