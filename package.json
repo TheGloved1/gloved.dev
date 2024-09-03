@@ -26,7 +26,6 @@
     "babel-plugin-react-compiler": "^0.0.0-experimental-48eb8f4-20240822",
     "clsx": "^2.1.1",
     "eslint-plugin-react-compiler": "^0.0.0-experimental-72f06b2-20240822",
-    "lightningcss": "^1.26.0",
     "next": "15.0.0-rc.0",
     "prettier": "^3.3.3",
     "react": "19.0.0-rc-f994737d14-20240522",

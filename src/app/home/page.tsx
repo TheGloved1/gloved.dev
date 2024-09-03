@@ -21,13 +21,6 @@ const sections = ['Welcome', 'About', 'Robotics', 'Github', 'File Uploader']
 
 export default function Page(): React.JSX.Element {
   console.log('Rendering Home...')
-  const handleScroll = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>, href: string) => {
-    event.preventDefault()
-    const element = document.getElementById(href)
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' })
-    }
-  }
   return (
     <>
       <div className='fixed left-0 right-0 top-0 z-[1000]'>
