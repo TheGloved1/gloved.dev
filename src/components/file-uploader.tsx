@@ -1,6 +1,6 @@
 'use client'
 import axios, { type AxiosResponse } from 'axios'
-import { useState, useEffect, type ChangeEvent } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import React from 'react'
 import Loading from '@/components/loading'
@@ -12,8 +12,7 @@ export default function FileUploader(): React.JSX.Element {
   const [alert, setAlert] = useState<string>('')
 
   useEffect(() => {
-    const GETFILES = async () => await getFiles()
-    void GETFILES()
+    getFiles()
   }, [])
 
   useEffect(() => {
@@ -56,7 +55,7 @@ export default function FileUploader(): React.JSX.Element {
     }
   }
 
-  async function uploadFile(event: ChangeEvent<HTMLInputElement>): Promise<void> {
+  async function uploadFile(event: React.ChangeEvent<HTMLInputElement>): Promise<void> {
     try {
       const file = event.target.files?.[0]
       if (!file) return

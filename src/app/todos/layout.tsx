@@ -1,4 +1,4 @@
-import { geistMono, geistSans } from '@/lib/fonts'
+import { geistSans, geistMono } from '@/lib/fonts'
 import '@/styles/globals.css'
 import { Metadata } from 'next'
 

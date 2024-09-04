@@ -10,6 +10,7 @@ export function useFetchIp() {
       try {
         const response = await axios.get('https://api.ipify.org?format=json')
         setClientIp(response.data.ip)
+        console.log('Client IP:', response.data.ip)
       } catch (error) {
         console.error('Error fetching IP address:', error)
       } finally {

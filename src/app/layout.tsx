@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import '@/styles/globals.css'
-import { geistMono, geistSans } from '@/lib/fonts'
+import { geistSans, geistMono } from '@/lib/fonts'
 
 export const metadata: Metadata = {
   title: 'gloved.dev',

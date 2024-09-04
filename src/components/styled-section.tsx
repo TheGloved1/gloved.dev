@@ -2,10 +2,16 @@
 
 'use client'
 
-import React, { useEffect, useRef, useState, type ReactNode } from 'react'
+import React, { ComponentPropsWithoutRef, ReactNode, useEffect, useRef, useState } from 'react'
 
-export default function StyledSection(props: { children: ReactNode; id?: string; className?: string }): React.JSX.Element {
-  const sectionRef = useRef(null)
+type StyledSectionProps = {
+  children: React.ReactNode
+  id?: string
+  className?: string
+} & React.ComponentPropsWithoutRef<'section'>
+
+export default function StyledSection({ children, className, id, ...props }: StyledSectionProps): React.JSX.Element {
+  const sectionRef = useRef<HTMLElement>(null)
   const [isInView, setIsInView] = useState(false)
 
   useEffect(() => {
@@ -18,7 +24,7 @@ export default function StyledSection(props: { children: ReactNode; id?: string;
       { threshold: 0.5 }
     )
 
-    let sectionRefCurrent = sectionRef.current /* eslint-disable prefer-const */
+    let sectionRefCurrent = sectionRef.current
 
     if (sectionRefCurrent) {
       observer.observe(sectionRefCurrent)
@@ -29,15 +35,16 @@ export default function StyledSection(props: { children: ReactNode; id?: string;
         observer.unobserve(sectionRefCurrent)
       }
     }
-  })
+  }, [])
 
   return (
     <section
-      id={props.id}
+      id={id}
       ref={sectionRef}
-      className={`flex min-h-[95vh] flex-col items-center justify-center text-center tracking-tight ${props.className} ${isInView ? 'fade-in-left' : 'fade-out-left'}`}
+      className={`flex min-h-[95vh] flex-col items-center justify-center text-center tracking-tight ${className} ${isInView ? 'fade-in-left' : 'fade-out-left'}`}
+      {...props}
     >
-      {props.children}
+      {children}
     </section>
   )
 }
