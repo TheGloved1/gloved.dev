@@ -1,17 +1,18 @@
 'use client'
+import ChevronLeft from '@/components/chevron-left'
+import Link from 'next/link'
 import { useCallback, useEffect, useState } from 'react'
 import { HangmanDrawing } from './_components/HangmanDrawing'
 import { HangmanWord } from './_components/HangmanWord'
 import { Keyboard } from './_components/Keyboard'
 import words from './wordList.json'
-import ChevronLeft from '@/components/chevron-left'
-import Link from 'next/link'
+import React from 'react'
 
 function getWord() {
   return words[Math.floor(Math.random() * words.length)]!
 }
 
-export default function Page() {
+export default function Page(): React.JSX.Element {
   const [wordToGuess, setWordToGuess] = useState(getWord)
   const [guessedLetters, setGuessedLetters] = useState<string[]>([])
 

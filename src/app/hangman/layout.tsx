@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   description: 'A simple hangman game web app. Guess the word. (Might be broken)',
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }): React.JSX.Element {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>): React.JSX.Element {
   return (
     <html lang='en'>
       <body>{children}</body>
