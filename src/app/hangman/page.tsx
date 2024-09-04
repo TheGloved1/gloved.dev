@@ -64,21 +64,21 @@ export default function Page() {
 
   return (
     <>
-      <main className='items-center justify-center text-white'>
+      <main className='flex max-h-screen min-h-screen items-center justify-center bg-gradient-to-br from-sky-950 to-[#1e210c] text-white'>
         <Link href={'/'} className='fixed left-2 top-2 flex flex-row items-center justify-center pl-0'>
           <button className='btn flex flex-row items-center justify-center'>
             <ChevronLeft />
             {'Back'}
           </button>
         </Link>
-        <div className='mx-auto flex max-h-svh max-w-4xl flex-col items-center gap-8'>
+        <div className='flex max-w-4xl flex-col items-center gap-8'>
           <div className='items-center text-[2rem]'>
             {isWinner && 'Winner! - Refresh to try again'}
             {isLoser && 'Nice Try - Refresh to try again'}
           </div>
           <HangmanDrawing numberOfGuesses={incorrectLetters.length} />
           <HangmanWord reveal={isLoser} guessedLetters={guessedLetters} wordToGuess={wordToGuess} />
-          <div className='self-stretch'>
+          <div className='min-w-46 self-stretch'>
             <Keyboard
               disabled={isWinner || isLoser}
               activeLetters={guessedLetters.filter((letter) => wordToGuess.includes(letter))}
