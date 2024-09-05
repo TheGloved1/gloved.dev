@@ -2,15 +2,15 @@
 
 'use client'
 
-import React, { ComponentPropsWithoutRef, ReactNode, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
-type StyledSectionProps = {
+type ObserverSectionProps = {
   children: React.ReactNode
   id?: string
   className?: string
 } & React.ComponentPropsWithoutRef<'section'>
 
-export default function StyledSection({ children, className, id, ...props }: StyledSectionProps): React.JSX.Element {
+export default function ObserverSection({ children, className, id, ...props }: ObserverSectionProps): React.JSX.Element {
   const sectionRef = useRef<HTMLElement>(null)
   const [isInView, setIsInView] = useState(false)
 
@@ -41,7 +41,10 @@ export default function StyledSection({ children, className, id, ...props }: Sty
     <section
       id={id}
       ref={sectionRef}
-      className={`flex min-h-[95vh] flex-col items-center justify-center text-center tracking-tight ${className} ${isInView ? 'fade-in-left' : 'fade-out-left'}`}
+      className={
+        `flex min-h-[95vh] flex-col items-center justify-center text-center tracking-tight ${isInView ? 'fade-in-left' : 'fade-out-left'}` +
+        (className ? ` ${className}` : '')
+      }
       {...props}
     >
       {children}

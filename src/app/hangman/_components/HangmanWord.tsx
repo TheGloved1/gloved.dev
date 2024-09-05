@@ -4,33 +4,16 @@ type HangmanWordProps = {
   reveal?: boolean
 }
 
-export function HangmanWord({
-  guessedLetters,
-  wordToGuess,
-  reveal = false,
-}: HangmanWordProps) {
+export function HangmanWord({ guessedLetters, wordToGuess, reveal = false }: HangmanWordProps) {
   return (
-    <div
-      style={{
-        display: "flex",
-        gap: ".25em",
-        fontSize: "6rem",
-        fontWeight: "bold",
-        textTransform: "uppercase",
-        fontFamily: "monospace",
-      }}
-    >
-      {wordToGuess.split("").map((letter, index) => (
-        <span style={{ borderBottom: ".1em solid black" }} key={index}>
+    <div className='flex gap-[0.25em] font-mono text-[6rem] font-bold uppercase'>
+      {wordToGuess.split('').map((letter, index) => (
+        <span style={{ borderBottom: '.5rem solid black' }} key={index}>
           <span
-            style={{
-              visibility:
-                guessedLetters.includes(letter) || reveal
-                  ? "visible"
-                  : "hidden",
-              color:
-                !guessedLetters.includes(letter) && reveal ? "red" : "black",
-            }}
+            key={index}
+            className={`${
+              guessedLetters.includes(letter) || reveal ? 'visible' : 'invisible'
+            } ${!guessedLetters.includes(letter) && reveal ? 'text-red-500' : 'text-black'}`}
           >
             {letter}
           </span>

@@ -4,7 +4,7 @@ import Link from 'next/link'
 import React, { Suspense } from 'react'
 
 import GitUser from '@/components/git-user'
-import StyledSection from '@/components/styled-section'
+import ObserverSection from '@/components/observer-section'
 import FileUploader from '@/components/file-uploader'
 import ChevronLeft from '@/components/chevron-left'
 
@@ -62,23 +62,23 @@ export default function Page(): React.JSX.Element {
       <main className='flex min-h-screen flex-col items-center bg-gradient-to-b from-sky-950 to-[#1e210c] text-white'>
         <WIPHeader />
         <div className='flex flex-col items-center justify-center gap-12 px-4 py-16'>
-          <StyledSection id={sections[0]}>
+          <ObserverSection id={sections[0]}>
             <p className='text-xl font-extrabold'>{'Welcome to my website!'}</p>
             <p className='p-3 text-xl'></p>
             <p>{"I'm Kaden Hood."}</p>
             <p>{'a self taught software engineer.'}</p>
-          </StyledSection>
+          </ObserverSection>
           <div className='divider w-[75vw] max-w-[1000px]' />
-          <StyledSection id={sections[1]}>
+          <ObserverSection id={sections[1]}>
             <p className='font-extrabold'>{'About Me'}</p>
             <p className='p-3 text-xl'></p>
             <p>{'I wear gloves, and go by Gloves online.'}</p>
             <p>{"And if you couldn't tell already, I like to code."}</p>
             <p className='p-3 text-xl'></p>
             <p>{'I started programming in my 2nd year of high school.'}</p>
-          </StyledSection>
+          </ObserverSection>
           <div className='divider w-[75vw] max-w-[1000px]' />
-          <StyledSection id={sections[2]}>
+          <ObserverSection id={sections[2]}>
             <p>
               <strong>
                 <Link className='fancy-link' href='https://meporobotics.com/'>
@@ -101,22 +101,22 @@ export default function Page(): React.JSX.Element {
               <strong>{'Language: '}</strong>
               {'Java'}
             </p>
-          </StyledSection>
+          </ObserverSection>
           <div className='divider w-[75vw] max-w-[1000px]' />
-          <StyledSection id={sections[3]}>
+          <ObserverSection id={sections[3]}>
             <p className='font-extrabold'>{'My Github Profile'}</p>
             <p className='p-3 text-xl'></p>
             <Suspense fallback={''}>
               <GitUser name='TheGloved1' />
             </Suspense>
-          </StyledSection>
+          </ObserverSection>
           <div className='divider w-[75vw] max-w-[1000px]' />
-          <StyledSection id={sections[4]}>
+          <ObserverSection id={sections[4]}>
             <FileUploader />
             <Link href={'/file-uploader'} className='group btn m-4 text-xl'>
               Standalone Version <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>-&gt;</span>
             </Link>
-          </StyledSection>
+          </ObserverSection>
         </div>
       </main>
     </>

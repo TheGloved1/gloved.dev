@@ -65,7 +65,7 @@ export default function Page(): React.JSX.Element {
 
   return (
     <>
-      <main className='flex max-h-screen min-h-screen items-center justify-center bg-gradient-to-br from-sky-950 to-[#1e210c] text-white'>
+      <main className='flex min-h-screen items-center justify-center bg-gradient-to-br from-sky-950 to-[#1e210c] text-white'>
         <Link href={'/'} className='fixed left-2 top-2 flex flex-row items-center justify-center pl-0'>
           <button className='btn flex flex-row items-center justify-center'>
             <ChevronLeft />
@@ -79,7 +79,7 @@ export default function Page(): React.JSX.Element {
           </div>
           <HangmanDrawing numberOfGuesses={incorrectLetters.length} />
           <HangmanWord reveal={isLoser} guessedLetters={guessedLetters} wordToGuess={wordToGuess} />
-          <div className='min-w-46 self-stretch'>
+          <div className='min-w-4xl self-stretch text-xs'>
             <Keyboard
               disabled={isWinner || isLoser}
               activeLetters={guessedLetters.filter((letter) => wordToGuess.includes(letter))}

@@ -1,6 +1,7 @@
+'use client'
 import Image from 'next/image'
 import Link from 'next/link'
-import React, { use } from 'react'
+import React, { useEffect, useState } from 'react'
 
 type UserData = {
   html_url: string
@@ -11,7 +12,7 @@ type UserData = {
   message?: string
 }
 
-const fetchData = async (name: string) => {
+const fetchData = async (name: string): Promise<UserData> => {
   try {
     const response = await fetch(`https://api.github.com/users/${name}`, {
       cache: 'force-cache',
@@ -20,19 +21,27 @@ const fetchData = async (name: string) => {
     return data
   } catch (error) {
     console.error('Error:', error)
-    return null
+    return { message: 'Failed to fetch data.' } as UserData
   }
 }
 
-export default function GitUser(props: { name: string }): React.JSX.Element {
-  const data = use(fetchData(props.name)) as UserData | null
-  if (!data) {
+export default function GitUser({ name }: { name: string }): React.JSX.Element {
+  const [user, setUser] = useState<UserData | null>(null)
+  const [loading, setLoading] = useState(true)
+  useEffect(() => {
+    fetchData(name).then((data) => {
+      setUser(data)
+      setLoading(false)
+    })
+  }, [name])
+
+  if (loading || !user) {
     return (
       <div className='rounded-lx container flex flex-col items-center justify-center gap-4 border-4 border-dashed border-white p-4'>
         <span className='loading loading-spinner loading-lg'></span>
       </div>
     )
-  } else if (data.message) {
+  } else if (user.message) {
     return (
       <div className='rounded-lx container flex flex-col items-center justify-center gap-4 p-4'>
         <div role='alert' className='alert alert-error'>
@@ -47,17 +56,17 @@ export default function GitUser(props: { name: string }): React.JSX.Element {
     return (
       <div className='container flex flex-col items-center justify-center gap-4 rounded-3xl border-4 border-dashed border-white bg-gray-600/50 p-4'>
         <div>
-          <Link href={data.html_url} target='_blank' rel='noopener'>
-            <Image className='rounded-full' width={200} height={200} src={data.avatar_url} alt='User image' loading='lazy' />
+          <Link href={user.html_url} target='_blank' rel='noopener'>
+            <Image className='rounded-full' width={200} height={200} src={user.avatar_url} alt='User image' loading='lazy' />
           </Link>
         </div>
         <div className='flex flex-col gap-1'>
-          <strong>{data.login}</strong>
-          <span>{data.name}</span>
+          <strong>{user.login}</strong>
+          <span>{user.name}</span>
         </div>
-        <p className='flex flex-col rounded-xl bg-gray-600 p-1'>{data.bio}</p>
-        <Link className='fancy-link' href={data.html_url} target='_blank' rel='noopener'>
-          {data.html_url}
+        <p className='flex flex-col rounded-xl bg-gray-600 p-1'>{user.bio}</p>
+        <Link className='fancy-link' href={user.html_url} target='_blank' rel='noopener'>
+          {user.html_url}
         </Link>
       </div>
     )

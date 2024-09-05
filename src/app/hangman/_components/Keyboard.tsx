@@ -14,7 +14,7 @@ export function Keyboard({
   addGuessedLetter: (letter: string) => void
 }) {
   return (
-    <div className='grid max-w-[1000px] grid-cols-[repeat(auto-fit,minmax(75px,1fr))] gap-1'>
+    <div className='grid max-w-4xl grid-cols-[repeat(auto-fit,minmax(75px,1fr))] gap-1 text-xs'>
       {KEYS.map((key) => {
         const isActive = activeLetters.includes(key)
         const isInactive = inactiveLetters.includes(key)
