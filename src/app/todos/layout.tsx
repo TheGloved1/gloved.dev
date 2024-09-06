@@ -1,6 +1,6 @@
-import { geistSans, geistMono } from '@/lib/fonts'
+import fonts from '@/lib/fonts'
 import '@/styles/globals.css'
-import { Metadata } from 'next'
+import { type Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'gloved.dev | Todo App',
@@ -9,8 +9,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>): React.JSX.Element {
   return (
-    <html lang='en' className={`${geistSans.variable} ${geistMono.variable}`}>
-      <body className='h-dvh w-dvw bg-[#333] font-mono'>{children}</body>
+    <html lang='en' className={`${fonts.geistSans.variable} ${fonts.geistMono.variable} ${fonts.JetBrainsMono.variable}`}>
+      <body className='font-primary h-dvh w-dvw bg-[#333]'>{children}</body>
     </html>
   )
 }

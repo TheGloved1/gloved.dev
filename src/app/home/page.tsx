@@ -11,6 +11,7 @@ import ChevronLeft from '@/components/chevron-left'
 import { WIPHeader } from './_components/WIPHeader'
 import { type Metadata } from 'next'
 import ScrollLink from '@/components/scroll-link'
+import Loading from '@/components/loading'
 
 export const metadata: Metadata = {
   title: 'Home',
@@ -30,6 +31,24 @@ export default function Page(): React.JSX.Element {
               <ChevronLeft />
               Back
             </Link>
+          </div>
+          <div className='navbar-end flex md:hidden'>
+            <div className='dropdown'>
+              <div tabIndex={0} role='button' className='btn btn-ghost md:hidden'>
+                <svg xmlns='http://www.w3.org/2000/svg' className='h-5 w-5' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth='2' d='M4 6h16M4 12h8m-8 6h16' />
+                </svg>
+              </div>
+              <ul tabIndex={0} className='menu dropdown-content menu-sm z-[1] mt-3 w-44 -translate-x-32 rounded-box bg-base-100 p-2 shadow'>
+                {sections.map((section) => (
+                  <li key={section}>
+                    <ScrollLink href={`#${section}`}>{section}</ScrollLink>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+          <div className='navbar-center hidden md:flex'>
             <div className='dropdown'>
               <div tabIndex={0} role='button' className='btn btn-ghost md:hidden'>
                 <svg xmlns='http://www.w3.org/2000/svg' className='h-5 w-5' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
@@ -44,8 +63,6 @@ export default function Page(): React.JSX.Element {
                 ))}
               </ul>
             </div>
-          </div>
-          <div className='navbar-center hidden md:flex'>
             <ul className='menu menu-horizontal px-1'>
               {sections.map((section) => (
                 <li key={section}>
@@ -56,7 +73,11 @@ export default function Page(): React.JSX.Element {
               ))}
             </ul>
           </div>
-          <div className='navbar-end'></div>
+          <div className='navbar-end hidden lg:flex'>
+            <h1 className='p-2 text-lg font-extrabold tracking-tight text-white'>
+              gloved<span className='text-[hsl(280,93%,72%)]'>.</span>dev
+            </h1>
+          </div>
         </div>
       </div>
       <main className='flex min-h-screen flex-col items-center bg-gradient-to-b from-sky-950 to-[#1e210c] text-white'>
@@ -106,7 +127,7 @@ export default function Page(): React.JSX.Element {
           <ObserverSection id={sections[3]}>
             <p className='font-extrabold'>{'My Github Profile'}</p>
             <p className='p-3 text-xl'></p>
-            <Suspense fallback={''}>
+            <Suspense fallback={<Loading />}>
               <GitUser name='TheGloved1' />
             </Suspense>
           </ObserverSection>

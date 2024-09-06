@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import '@/styles/globals.css'
-import { geistSans, geistMono } from '@/lib/fonts'
+import fonts from '@/lib/fonts'
 
 export const metadata: Metadata = {
   title: 'gloved.dev',
@@ -10,8 +10,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang='en' className={`${geistSans.variable} ${geistMono.variable}`}>
-      <body className='font-mono antialiased'>{children}</body>
+    <html lang='en' className={`${fonts.geistSans.variable} ${fonts.geistMono.variable} ${fonts.JetBrainsMono.variable}`}>
+      <body className='font-primary antialiased'>{children}</body>
     </html>
   )
 }

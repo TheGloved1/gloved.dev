@@ -2,7 +2,7 @@
 import Link from 'next/link'
 
 export default function ScrollLink(props: { children: React.ReactNode; href: string; className?: string }): React.JSX.Element {
-  function handleScroll(event: React.MouseEvent<HTMLAnchorElement, MouseEvent>, href: string) {
+  function handleScroll(event: React.MouseEvent<HTMLButtonElement, MouseEvent>, href: string) {
     event.preventDefault()
     const element = document.getElementById(href.replace('#', ''))
     if (element) {
@@ -10,8 +10,8 @@ export default function ScrollLink(props: { children: React.ReactNode; href: str
     }
   }
   return (
-    <Link className={props.className} href={props.href} onClick={(e) => handleScroll(e, props.href)} scroll={false}>
+    <button className={props.className} onClick={(e) => handleScroll(e, props.href)}>
       {props.children}
-    </Link>
+    </button>
   )
 }

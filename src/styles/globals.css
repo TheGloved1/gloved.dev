@@ -70,8 +70,3 @@ body {
 .fade-out-left {
   animation: fadeOutLeft 1s ease-out forwards;
 }
-
-.fadeOut {
-  transition: opacity 2s ease-in-out;
-  opacity: 0;
-}

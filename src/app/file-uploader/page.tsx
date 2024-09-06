@@ -1,6 +1,6 @@
 /** @format */
 
-import React, { Suspense } from 'react'
+import React from 'react'
 import FileUploader from '@/components/file-uploader'
 import { type Metadata } from 'next'
 import ChevronLeft from '@/components/chevron-left'
