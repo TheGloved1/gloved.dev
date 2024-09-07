@@ -25,6 +25,9 @@ export default function FileUploader(): React.JSX.Element {
   async function deleteFile(file: string): Promise<void> {
     if (!passwordEntered) {
       const password = prompt(`Enter passkey to delete files`)
+      if (!password) {
+        return
+      }
       if (password === correctPassword) {
         setPasswordEntered(true)
       } else {
@@ -79,22 +82,22 @@ export default function FileUploader(): React.JSX.Element {
 
   return (
     <>
-      <div className='flex flex-col items-center justify-center rounded-xl border-4 border-white bg-gray-700/50 p-4'>
+      <div className='flex flex-col items-center justify-center rounded-xl border-4 border-white bg-gray-700/50 p-4 text-[10px] md:text-[1rem]'>
         <h1 className='font-bold'>{'Simple File Uploader'}</h1>
-        <p className='text-sm'>{"(Don't download random files off the internet)"}</p>
+        <p className='text-[0.5rem] md:text-sm'>{"(Don't download random files off the internet)"}</p>
         <br />
 
         <label htmlFor='uploadBtn'>{'Upload File'}</label>
         <input
           id='uploadBtn'
-          className='glass file-input file-input-bordered file-input-primary w-full max-w-xs bg-black hover:animate-pulse'
+          className='glass file-input file-input-primary max-w-[18rem] rounded-xl bg-black hover:animate-pulse'
           type='file'
           onChange={uploadFile}
         />
 
         <h2 className='place-items-center content-center justify-center pb-4 pt-4 text-center'>
           {'Download Files '}
-          <button className='btn btn-circle hover:animate-spin' onClick={getFiles} title='Refresh Files'>
+          <button className='btn btn-circle btn-sm hover:animate-spin' onClick={getFiles} title='Refresh Files'>
             ↻
           </button>
         </h2>

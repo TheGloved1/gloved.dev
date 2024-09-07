@@ -2,6 +2,7 @@
 
 'use client'
 
+import { cn } from '@/lib/utils'
 import React, { useEffect, useRef, useState } from 'react'
 
 type ObserverSectionProps = {
@@ -41,10 +42,10 @@ export default function ObserverSection({ children, className, id, ...props }: O
     <section
       id={id}
       ref={sectionRef}
-      className={
-        `flex min-h-[95vh] flex-col items-center justify-center text-center tracking-tight ${isInView ? 'fade-in-left' : 'fade-out-left'}` +
-        (className ? ` ${className}` : '')
-      }
+      className={cn(
+        `flex min-h-svh flex-col items-center justify-center text-center tracking-tight ${isInView ? 'fade-in-left' : 'fade-out-left'}`,
+        className ? ` ${className}` : ''
+      )}
       {...props}
     >
       {children}

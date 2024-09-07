@@ -1,17 +1,24 @@
 'use client'
-import Link from 'next/link'
 
-export default function ScrollLink(props: { children: React.ReactNode; href: string; className?: string }): React.JSX.Element {
+export default function ScrollLink({ children, href, className }: { children: React.ReactNode; href: string; className?: string }): React.JSX.Element {
   function handleScroll(event: React.MouseEvent<HTMLButtonElement, MouseEvent>, href: string) {
     event.preventDefault()
     const element = document.getElementById(href.replace('#', ''))
     if (element) {
-      element.scrollIntoView({ behavior: 'auto' })
+      const offset = 25 // Adjust this value to set the desired offset
+      const elementPosition = element.getBoundingClientRect().top + window.scrollY
+      const offsetPosition = elementPosition - offset
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth', // Use 'smooth' for smooth scrolling
+      })
     }
   }
+
   return (
-    <button className={props.className} onClick={(e) => handleScroll(e, props.href)}>
-      {props.children}
+    <button className={className} onClick={(e) => handleScroll(e, href)}>
+      {children}
     </button>
   )
 }
