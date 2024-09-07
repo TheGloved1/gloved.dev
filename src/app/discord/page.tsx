@@ -1,5 +1,3 @@
-/** @format */
-
 import { NAME } from '@/lib/constants'
 import { type Metadata } from 'next'
 import Link from 'next/link'

@@ -14,6 +14,13 @@ const config: Config = {
       },
     },
     extend: {
+      screens: {
+        sm: '40rem', // 640px / 16 = 40rem
+        md: '48rem', // 768px / 16 = 48rem
+        lg: '64rem', // 1024px / 16 = 64rem
+        xl: '80rem', // 1280px / 16 = 80rem
+        '2xl': '96rem', // 1536px / 16 = 96rem
+      },
       keyframes: {
         fadeOut: {
           '0%': { opacity: '1' },

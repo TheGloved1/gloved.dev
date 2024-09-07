@@ -1,5 +1,3 @@
-/** @format */
-
 import Link from 'next/link'
 import React, { Suspense } from 'react'
 
@@ -80,7 +78,7 @@ export default function Page(): React.JSX.Element {
           </div>
         </div>
       </div>
-      <main className='flex min-h-screen flex-col items-center bg-gradient-to-b from-sky-950 to-[#1e210c] text-white'>
+      <main className='flex min-h-screen flex-col items-center bg-gradient-to-b from-sky-950 to-[#1e210c] font-primary text-white'>
         <WIPHeader />
         <div className='flex flex-col items-center justify-center gap-12 px-4 py-16'>
           <ObserverSection id={sections[0]}>
