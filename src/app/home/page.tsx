@@ -12,7 +12,7 @@ import ScrollLink from '@/components/scroll-link'
 import Loading from '@/components/loading'
 
 export const metadata: Metadata = {
-  title: 'Home',
+  title: 'gloved.dev | Home',
   description: 'The home page for my About Me based web project built with the Next.js React Web Framework.',
 }
 

@@ -88,12 +88,7 @@ export default function FileUploader(): React.JSX.Element {
         <br />
 
         <label htmlFor='uploadBtn'>{'Upload File'}</label>
-        <input
-          id='uploadBtn'
-          className='glass file-input file-input-primary max-w-[18rem] rounded-xl bg-black hover:animate-pulse'
-          type='file'
-          onChange={uploadFile}
-        />
+        <input id='uploadBtn' className='glass file-input file-input-primary max-w-80 rounded-xl bg-black hover:animate-pulse' type='file' onChange={uploadFile} />
 
         <h2 className='place-items-center content-center justify-center pb-4 pt-4 text-center'>
           {'Download Files '}

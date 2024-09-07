@@ -14,10 +14,10 @@ export default function Page(): React.JSX.Element {
   return (
     <>
       <main className='flex min-h-screen flex-col items-center bg-gradient-to-b from-sky-950 to-[#1e210c] text-white'>
-        <Link href={'/'} className='fixed bottom-2 left-2 flex flex-row items-center justify-center pl-0 lg:bottom-auto lg:top-2'>
+        <Link href={'/home'} className='fixed bottom-2 left-2 flex flex-row items-center justify-center pl-0 md:bottom-auto md:top-2'>
           <button className='btn flex flex-row items-center justify-center'>
             <ChevronLeft />
-            {'Back'}
+            {'Home'}
           </button>
         </Link>
         <div className='flex flex-col items-center justify-center gap-12 px-4 py-32'>
