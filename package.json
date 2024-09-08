@@ -2,7 +2,6 @@
   "name": "gloved.dev",
   "version": "2.0.0",
   "private": true,
-  "type": "module",
   "homepage": "https://gloved.dev",
   "repository": {
     "type": "git",
@@ -31,6 +30,7 @@
     "dotenv": "^16.4.5",
     "eslint-plugin-react-compiler": "^0.0.0-experimental-72f06b2-20240822",
     "next": "15.0.0-rc.0",
+    "node-gyp": "^10.2.0",
     "prettier": "^3.3.3",
     "react": "19.0.0-rc-f994737d14-20240522",
     "react-dom": "19.0.0-rc-f994737d14-20240522",
@@ -45,6 +45,7 @@
     "daisyui": "^4.12.10",
     "eslint": "^8.57.0",
     "eslint-config-next": "15.0.0-rc.0",
+    "node-loader": "^2.0.0",
     "postcss": "^8.4.41",
     "prettier-plugin-tailwindcss": "^0.6.6",
     "tailwindcss": "^3.4.10",

@@ -71,5 +71,6 @@ export async function stopBot() {
   await bot.clearApplicationCommands(...bot.guilds.cache.map((g) => g.id))
   await bot.clearApplicationCommands()
   await bot.destroy()
+  console.log('Bot stopped')
   return { message: 'Bot stopped successfully' }
 }

@@ -1,5 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  webpack: (config, options) => {
+    config.module.rules.push({
+      test: /\.node/,
+      use: 'node-loader',
+    })
+
+    return config
+  },
   env: {
     NEXT_CLIENT_FILE_MANAGER_PASSKEY: '7693',
   },
