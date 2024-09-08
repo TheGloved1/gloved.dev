@@ -1,7 +1,4 @@
-/**
- * @format
- * @type {import('next').NextConfig}
- */
+/** @type {import('next').NextConfig} */
 const nextConfig = {
   env: {
     NEXT_CLIENT_FILE_MANAGER_PASSKEY: '7693',

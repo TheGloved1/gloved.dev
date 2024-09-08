@@ -1,6 +1,11 @@
 'use client'
 
-export default function ScrollLink({ children, href, className }: { children: React.ReactNode; href: string; className?: string }): React.JSX.Element {
+type ScrollLinkProps = {
+  children: React.ReactNode
+  href: string
+} & React.ComponentPropsWithoutRef<'button'>
+
+export default function ScrollLink({ children, href, ...props }: ScrollLinkProps): React.JSX.Element {
   function handleScroll(event: React.MouseEvent<HTMLButtonElement, MouseEvent>, href: string) {
     event.preventDefault()
     const element = document.getElementById(href.replace('#', ''))
@@ -9,7 +14,7 @@ export default function ScrollLink({ children, href, className }: { children: Re
       const elementPosition = element.getBoundingClientRect().top + window.scrollY
       const offsetPosition = elementPosition - offset
 
-      window.scrollTo({
+      scrollTo({
         top: offsetPosition,
         behavior: 'smooth', // Use 'smooth' for smooth scrolling
       })
@@ -17,7 +22,7 @@ export default function ScrollLink({ children, href, className }: { children: Re
   }
 
   return (
-    <button className={className} onClick={(e) => handleScroll(e, href)}>
+    <button onClick={(e) => handleScroll(e, href)} {...props}>
       {children}
     </button>
   )

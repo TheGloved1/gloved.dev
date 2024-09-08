@@ -7,9 +7,9 @@ import Loading from '@/components/loading'
 
 export default function FileUploader(): React.JSX.Element {
   const [files, setFiles] = useState<string[]>([])
+  const [alert, setAlert] = useState<string>('')
   const [passwordEntered, setPasswordEntered] = useState<boolean>(false)
   const correctPassword = process.env.NEXT_CLIENT_FILE_MANAGER_PASSKEY ?? '7693' // Don't really care if this gets leaked
-  const [alert, setAlert] = useState<string>('')
 
   useEffect(() => {
     getFiles()
@@ -37,7 +37,7 @@ export default function FileUploader(): React.JSX.Element {
     }
     try {
       await axios.delete(`https://api.gloved.dev/delete/${file}`)
-      await getFiles()
+      getFiles()
       setAlert('')
     } catch (error) {
       console.error('An error occurred while deleting file:', error)
@@ -66,13 +66,13 @@ export default function FileUploader(): React.JSX.Element {
       const formData = new FormData()
       formData.append('file', file)
 
-      await axios.post('https://api.gloved.dev/upload', formData, {
+      axios.post('https://api.gloved.dev/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       })
 
-      await getFiles()
+      getFiles()
       setAlert('')
     } catch (error) {
       console.error('An error occurred while uploading file:', error)
