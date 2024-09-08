@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  transpilePackages: ['zlib-sync', 'node-gyp', 'node-loader'],
   webpack: (config, options) => {
     config.module.rules.push({
       test: /\.node/,

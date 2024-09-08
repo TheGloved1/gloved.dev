@@ -1,7 +1,35 @@
 'use client'
 
 import { useTransition, useState, useEffect } from 'react'
-import { startDiscordBot, stopDiscordBot, getBotStatus } from '@/lib/actions'
+
+async function startDiscordBot() {
+  try {
+    const result = (await fetch('https://api.gloved.dev/bot/start', {
+      method: 'POST',
+    }).then((res) => res.json())) as { message: string }
+    return result
+  } catch (error) {
+    console.error(error)
+    throw new Error('Failed to start bot')
+  }
+}
+
+async function stopDiscordBot() {
+  try {
+    const result = (await fetch('https://api.gloved.dev/bot/stop', {
+      method: 'POST',
+    }).then((res) => res.json())) as { message: string }
+    return result
+  } catch (error) {
+    console.error(error)
+    throw new Error('Failed to stop bot')
+  }
+}
+
+async function getBotStatus() {
+  const status = (await fetch('https://api.gloved.dev/bot/status').then((res) => res.json())) as { isRunning: boolean }
+  return status
+}
 
 export default function BotButtons(): React.JSX.Element {
   const [isPendingStart, startTransitionStart] = useTransition()
@@ -12,19 +40,24 @@ export default function BotButtons(): React.JSX.Element {
   const [isDisabled, setIsDisabled] = useState<boolean>(true)
   const [isBotRunning, setIsBotRunning] = useState<boolean>(false)
 
+  const checkBotStatus = async () => {
+    try {
+      const status = await getBotStatus()
+      setIsBotRunning(status.isRunning)
+      setIsDisabled(false) // Enable buttons after checking status
+    } catch (error) {
+      console.error('Failed to check bot status:', error)
+    }
+  }
   useEffect(() => {
     // Check if the bot is running when the component mounts
-    const checkBotStatus = async () => {
-      try {
-        const status = await getBotStatus()
-        setIsBotRunning(status.isRunning)
-        setIsDisabled(false) // Enable buttons after checking status
-      } catch (error) {
-        console.error('Failed to check bot status:', error)
-      }
-    }
-
     checkBotStatus()
+
+    // Set up interval to check bot status every 5 seconds
+    // const intervalId = setInterval(async () => await checkBotStatus(), 5000)
+
+    // Clean up interval when the component unmounts
+    // return () => clearInterval(intervalId)
   }, [])
 
   const handleStartBot = () => {
@@ -39,7 +72,7 @@ export default function BotButtons(): React.JSX.Element {
         setTimeout(() => {
           setStartButtonText('Start Bot')
           setIsDisabled(false)
-        }, 500)
+        }, 1000)
       } catch (error) {
         console.error((error as Error).message)
         setError((error as Error).message) // Set the error message
@@ -59,7 +92,7 @@ export default function BotButtons(): React.JSX.Element {
         setTimeout(() => {
           setStopButtonText('Stop Bot')
           setIsDisabled(false)
-        }, 500)
+        }, 1000)
       } catch (error) {
         console.error((error as Error).message)
         setError((error as Error).message) // Set the error message
