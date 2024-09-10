@@ -3,9 +3,10 @@ import axios, { type AxiosResponse } from 'axios'
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
 import Loading from '@/components/loading'
+import { apiRoute } from '@/lib/utils'
 
 export default function FileUploader(): React.JSX.Element {
-  const correctPassword = process.env.NEXT_CLIENT_FILE_MANAGER_PASSKEY ?? '7693'
+  const correctPassword = process.env.NEXT_CLIENT_FILE_MANAGER_PASSKEY ?? '7693' // Don't care about security here
   const [files, setFiles] = useState<string[]>([])
   const [alert, setAlert] = useState<string>('')
   const [passwordEntered, setPasswordEntered] = useState<boolean>(false)
@@ -40,7 +41,7 @@ export default function FileUploader(): React.JSX.Element {
     }
     try {
       setLoading(true)
-      await axios.delete(`https://api.gloved.dev/delete/${file}`)
+      await axios.delete(apiRoute(`/delete/${file}`))
       setAlert('')
       getFiles()
     } catch (error) {
@@ -55,7 +56,7 @@ export default function FileUploader(): React.JSX.Element {
     setLoading(true)
     setFiles(['loading'])
     try {
-      const response: AxiosResponse<string[]> = await axios.get('https://api.gloved.dev/files')
+      const response: AxiosResponse<string[]> = await axios.get(apiRoute('/files'))
       setFiles(response.data)
       setAlert('')
     } catch (error) {
@@ -75,7 +76,7 @@ export default function FileUploader(): React.JSX.Element {
       const formData = new FormData()
       formData.append('file', file)
 
-      await axios.post('https://api.gloved.dev/upload', formData, {
+      await axios.post(apiRoute('/upload'), formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -111,7 +112,7 @@ export default function FileUploader(): React.JSX.Element {
           <ul className='flex max-h-48 max-w-96 flex-col flex-wrap overflow-x-auto rounded-xl border-2 border-white p-[.2rem] lg:max-h-72'>
             {files.map((file) => (
               <li className='flex w-64 flex-row p-1 text-[.2rem]' key={file}>
-                <Link className='mx-2 w-64 truncate rounded-xl' href={`https://api.gloved.dev/download/${file}`}>
+                <Link className='mx-2 w-64 truncate rounded-xl' href={apiRoute(`/download/${file}`)}>
                   <button className='btn mx-2 rounded-xl p-3 hover:animate-pulse hover:bg-gray-700'>{file}</button>
                 </Link>
                 <button

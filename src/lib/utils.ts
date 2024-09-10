@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
+import { API } from '@/lib/constants'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -18,4 +19,13 @@ export async function safeAwait<T, E = Error>(input: Promise<T> | T): Promise<[T
   } catch (err) {
     return [null, err as E]
   }
+}
+
+export async function apiFetch(path: string, options?: RequestInit) {
+  const res = await fetch(`https://api.gloved.dev/${path}`, options)
+  return await res.json()
+}
+
+export function apiRoute(path: string) {
+  return `${API}${path}`
 }

@@ -2,10 +2,11 @@
 import { useFetchIp } from '@/lib/hooks'
 import Loading from '@/components/loading'
 import React, { Suspense, use, useEffect, useState } from 'react'
+import { apiRoute } from '@/lib/utils'
 
 export default function AdminComponent({ children }: { children: React.ReactNode }): React.JSX.Element | null {
   const fetchIps = async () => {
-    const res = await fetch('https://api.gloved.dev/admin-ips')
+    const res = await fetch(apiRoute('/admin-ips'))
     return (await res.json()) as Promise<string[]>
   }
   const [allowedIps, setAllowedIps] = useState<string[]>([])

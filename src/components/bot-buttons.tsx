@@ -1,9 +1,10 @@
 'use client'
+import { apiRoute } from '@/lib/utils'
 import { useTransition, useState, useEffect } from 'react'
 
 async function startDiscordBot() {
   try {
-    const result = (await fetch('https://api.gloved.dev/bot/start', {
+    const result = (await fetch(apiRoute('/bot/start'), {
       method: 'POST',
     }).then((res) => res.json())) as { message: string }
     return result
@@ -15,7 +16,7 @@ async function startDiscordBot() {
 
 async function stopDiscordBot() {
   try {
-    const result = (await fetch('https://api.gloved.dev/bot/stop', {
+    const result = (await fetch(apiRoute('/bot/stop'), {
       method: 'POST',
     }).then((res) => res.json())) as { message: string }
     return result
@@ -26,7 +27,7 @@ async function stopDiscordBot() {
 }
 
 async function getBotStatus() {
-  const status = (await fetch('https://api.gloved.dev/bot/status').then((res) => res.json())) as { isRunning: boolean }
+  const status = (await fetch(apiRoute('/bot/status')).then((res) => res.json())) as { isRunning: boolean }
   return status
 }
 
