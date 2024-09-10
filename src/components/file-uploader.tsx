@@ -8,10 +8,11 @@ export default function FileUploader(): React.JSX.Element {
   const correctPassword = process.env.NEXT_CLIENT_FILE_MANAGER_PASSKEY ?? '7693'
   const [files, setFiles] = useState<string[]>([])
   const [alert, setAlert] = useState<string>('')
-  const [passwordEntered, setPasswordEntered] = useState<boolean>(window.localStorage.getItem('fileUploaderPasswordEntered') === correctPassword)
+  const [passwordEntered, setPasswordEntered] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(false)
 
   useEffect(() => {
+    setPasswordEntered(window.localStorage.getItem('fileUploaderPasswordEntered') === correctPassword)
     getFiles()
   }, [])
 
