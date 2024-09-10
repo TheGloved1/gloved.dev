@@ -1,5 +1,4 @@
 'use client'
-
 import { useTransition, useState, useEffect } from 'react'
 
 async function startDiscordBot() {
@@ -49,6 +48,7 @@ export default function BotButtons(): React.JSX.Element {
       console.error('Failed to check bot status:', error)
     }
   }
+
   useEffect(() => {
     // Check if the bot is running when the component mounts
     checkBotStatus()
@@ -58,7 +58,7 @@ export default function BotButtons(): React.JSX.Element {
 
     // Clean up interval when the component unmounts
     // return () => clearInterval(intervalId)
-  }, [])
+  })
 
   const handleStartBot = () => {
     startTransitionStart(async () => {

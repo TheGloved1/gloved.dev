@@ -7,11 +7,11 @@ export default function AdminComponent({ children }: { children: React.ReactNode
   const allowedIps = ['207.199.235.110', '216.248.102.160']
   const { clientIp, loading } = useFetchIp()
 
-  if (loading) {
+  if (loading || clientIp === '') {
     return <Loading />
   }
 
-  const isAllowed = clientIp !== null && allowedIps.includes(clientIp)
+  const isAllowed = allowedIps.includes(clientIp)
 
   if (!isAllowed) {
     console.log('Client IP is not allowed')

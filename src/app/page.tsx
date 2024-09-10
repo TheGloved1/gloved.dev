@@ -3,7 +3,7 @@
 import AdminComponent from '@/components/admin-component'
 import Link from 'next/link'
 import React from 'react'
-import StartBotButton from '@/components/bot-buttons'
+import BotButtons from '@/components/bot-buttons'
 
 export default function Page(): React.JSX.Element {
   return (
@@ -55,7 +55,7 @@ export default function Page(): React.JSX.Element {
               <div className='text-lg'>{'Join my Discord to chat!'}</div>
             </Link>
           </div>
-          <StartBotButton />
+          <BotButtons />
         </AdminComponent>
       </div>
       <div className='px-30 flex content-center'>
@@ -65,18 +65,5 @@ export default function Page(): React.JSX.Element {
         </Link>
       </div>
     </main>
-  )
-}
-
-function OldSiteButton(): React.JSX.Element {
-  return (
-    <div className='grid grid-cols-1 gap-4 sm:grid-cols-1 md:gap-8'>
-      <Link className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20' href='https://old.gloved.dev/' target='_blank'>
-        <h3 className='text-2xl font-bold'>
-          Old Site <span className='inline-block transition-transform group-hover:translate-x-1'>{'->'}</span>
-        </h3>
-        <div className='text-lg'>{'Visit the old site. This is the first version of my About Me site built with Vue.'}</div>
-      </Link>
-    </div>
   )
 }
