@@ -1,20 +1,34 @@
 import AdminComponent from "@/components/admin-component";
 import BotButtons from "@/components/bot-buttons";
-import type { MetaFunction } from "@remix-run/node";
+import type { LinksFunction, MetaFunction } from "@remix-run/node";
 import { Link } from "@remix-run/react";
 import React from "react";
+
+export const links: LinksFunction = () => {
+  return [
+    {
+      rel: "icon",
+      href: "https://icongeneratorai.com/api/images/a71ceb15-0f19-41b0-b5b9-3a32e5dc649f.jpg",
+      type: "image/png",
+    },
+  ]
+};
 
 export const meta: MetaFunction = () => {
   return [
     { title: "gloved.dev" },
-    { name: "description", content: "Made by Kaden Hood. A personal website for my projects and interests. Built using Next.js React Web Framework." },
-    { icons: { rel: 'icon', url: 'https://avatars.githubusercontent.com/u/96776176?v=4' } },
+    { name: "description", content: "Made by Kaden Hood. A personal website for my projects and interests. Built using Next.js React Web Framework." }
   ];
 };
 
 export default function Page(): React.JSX.Element {
   return (
     <main className='flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-sky-950 to-[#1e210c] text-white'>
+      <img
+        src="https://icongeneratorai.com/api/images/a71ceb15-0f19-41b0-b5b9-3a32e5dc649f.jpg"
+        alt="Gloved.Dev Icon"
+        className="absolute top-1 left-1 w-12 h-12 sm:w-16 sm:h-16 md:w-24 md:h-24 sm:top-4 sm:left-4 sm:transform md:top-4 md:left-4 lg:top-4 lg:left-4 xl:top-4 xl:left-4 2xl:top-4 2xl:left-4 border-2 border-white shadow-lg rounded-xl"
+      />
       <div className='container flex flex-col items-center justify-center gap-12 px-4 py-16'>
         <h1 className='text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]'>
           gloved<span className='text-[hsl(280,100%,40%)]'>.</span>dev

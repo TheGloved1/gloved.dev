@@ -15,7 +15,7 @@ export const meta: MetaFunction = () => {
   return [
     { title: "gloved.dev | Home" },
     { name: "description", content: "The home page for my About Me based web project built with the Next.js React Web Framework" },
-    { icons: [{ rel: 'icon', url: 'https://avatars.githubusercontent.com/u/96776176?v=4' }] },
+    { name: 'icons', content: 'https://avatars.githubusercontent.com/u/96776176?v=4' }
   ];
 };
 
