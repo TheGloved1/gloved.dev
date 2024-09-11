@@ -24,7 +24,7 @@ export default function Page(): React.JSX.Element {
             <h3 className='text-2xl font-bold'>
               Home <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>{'->'}</span>
             </h3>
-            <div className='text-lg'>{'The home page for my About Me based web project built with the Next.js React Web Framework.'}</div>
+            <div className='text-lg'>{'The home page for my About Me based web project built with the Remix Web Framework. (Previously Next.js)'}</div>
           </Link>
           <Link className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20' to={'/todos'}>
             <h3 className='text-2xl font-bold'>

@@ -10,7 +10,7 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-export default function Page({ children }: Readonly<{ children: React.ReactNode }>): React.JSX.Element {
+export default function Page(): React.JSX.Element {
   return (
     <HangmanPage />
   )
