@@ -14,7 +14,7 @@ export const meta: MetaFunction = () => {
 export default function Page(): React.JSX.Element {
   return (
     <>
-      <div className='font-mono h-dvh w-dvw bg-[#333]'>
+      <div className='h-dvh w-dvw bg-[#333]'>
       <Link to={'/'} className='fixed bottom-2 left-2 flex flex-row items-center justify-center pl-0 lg:bottom-auto lg:top-2' replace>
         <button className='btn flex flex-row items-center justify-center'>
           <ChevronLeft />

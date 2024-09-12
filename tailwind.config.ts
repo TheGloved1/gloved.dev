@@ -23,6 +23,14 @@ export default {
           '0%': { opacity: '1' },
           '100%': { opacity: '0' },
         },
+        fadeInLeft: {
+          '0%': { opacity: '0', transform: 'translateX(-100px)' },
+          '100%': { opacity: '1', transform: 'translateX(0)' },
+        },
+        fadeOutLeft: {
+          '0%': { opacity: '1', transform: 'translateX(0)' },
+          '100%': { opacity: '0', transform: 'translateX(-100px)' },
+        },
         'accordion-down': {
           from: { height: '0' },
           to: { height: 'var(--radix-accordion-content-height)' },
@@ -34,6 +42,8 @@ export default {
       },
       animation: {
         fadeOut: 'fadeOut 2.5s ease-in-out',
+        'fade-in-left': 'fadeInLeft 1s ease-out forwards',
+        'fade-out-left': 'fadeOutLeft 1s ease-out forwards',
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
       },

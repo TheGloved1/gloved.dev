@@ -32,8 +32,7 @@ async function getBotStatus() {
 }
 
 export default function BotButtons(): React.JSX.Element {
-  const [isPendingStart, startTransitionStart] = useTransition()
-  const [isPendingStop, startTransitionStop] = useTransition()
+  const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
   const [startButtonText, setStartButtonText] = useState<string>('Start Bot')
   const [stopButtonText, setStopButtonText] = useState<string>('Stop Bot')
@@ -59,59 +58,63 @@ export default function BotButtons(): React.JSX.Element {
 
     // Clean up interval when the component unmounts
     // return () => clearInterval(intervalId)
-  })
+  }, [])
 
   const handleStartBot = () => {
-    startTransitionStart(async () => {
-      try {
-        const result = await startDiscordBot()
-        console.log(result.message)
-        setStartButtonText(result.message)
-        setError(null) // Clear any previous errors
-        setIsDisabled(true)
-        setIsBotRunning(true)
-        setTimeout(() => {
-          setStartButtonText('Start Bot')
-          setIsDisabled(false)
-        }, 1000)
-      } catch (error) {
-        console.error((error as Error).message)
-        setError((error as Error).message) // Set the error message
-      }
+    startTransition(() => {
+      ;(async () => {
+        try {
+          const result = await startDiscordBot()
+          console.log(result.message)
+          setStartButtonText(result.message)
+          setError(null) // Clear any previous errors
+          setIsDisabled(true)
+          setIsBotRunning(true)
+          setTimeout(() => {
+            setStartButtonText('Start Bot')
+            setIsDisabled(false)
+          }, 1000)
+        } catch (error) {
+          console.error((error as Error).message)
+          setError((error as Error).message) // Set the error message
+        }
+      })()
     })
   }
 
   const handleStopBot = () => {
-    startTransitionStop(async () => {
-      try {
-        const result = await stopDiscordBot()
-        console.log(result.message)
-        setStopButtonText(result.message)
-        setError(null) // Clear any previous errors
-        setIsDisabled(true)
-        setIsBotRunning(false)
-        setTimeout(() => {
-          setStopButtonText('Stop Bot')
-          setIsDisabled(false)
-        }, 1000)
-      } catch (error) {
-        console.error((error as Error).message)
-        setError((error as Error).message) // Set the error message
-      }
+    startTransition(() => {
+      ;(async () => {
+        try {
+          const result = await stopDiscordBot()
+          console.log(result.message)
+          setStopButtonText(result.message)
+          setError(null) // Clear any previous errors
+          setIsDisabled(true)
+          setIsBotRunning(false)
+          setTimeout(() => {
+            setStopButtonText('Stop Bot')
+            setIsDisabled(false)
+          }, 1000)
+        } catch (error) {
+          console.error((error as Error).message)
+          setError((error as Error).message) // Set the error message
+        }
+      })()
     })
   }
 
   return (
     <div>
-      <button className='btn mx-4' onClick={handleStartBot} disabled={isPendingStart || isDisabled || isBotRunning}>
-        {isPendingStart ?
+      <button className='btn mx-4' onClick={handleStartBot} disabled={isPending || isDisabled || isBotRunning}>
+        {isPending ?
           'Starting Bot...'
         : isBotRunning ?
           'Discord Bot is Online...'
         : startButtonText}
       </button>
-      <button className='btn mx-4' onClick={handleStopBot} disabled={isPendingStop || isDisabled || !isBotRunning}>
-        {isPendingStop ?
+      <button className='btn mx-4' onClick={handleStopBot} disabled={isPending || isDisabled || !isBotRunning}>
+        {isPending ?
           'Stopping Bot...'
         : !isBotRunning ?
           'Discord Bot is Offline...'
