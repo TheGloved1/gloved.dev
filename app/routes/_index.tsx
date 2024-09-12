@@ -8,7 +8,7 @@ export const links: LinksFunction = () => {
   return [
     {
       rel: 'icon',
-      href: 'https://icongeneratorai.com/api/images/a71ceb15-0f19-41b0-b5b9-3a32e5dc649f.jpg',
+      href: '/logo.png',
       type: 'image/png',
     },
   ]
@@ -25,7 +25,7 @@ export default function Page(): React.JSX.Element {
   return (
     <main className='flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-sky-950 to-[#1e210c] text-white'>
       <img
-        src='https://icongeneratorai.com/api/images/a71ceb15-0f19-41b0-b5b9-3a32e5dc649f.jpg'
+        src='/logo.png'
         alt='Gloved.Dev Icon'
         className='fixed left-1 top-1 hidden h-12 w-12 rounded-xl border-2 border-white shadow-lg sm:left-4 sm:top-4 sm:block sm:h-16 sm:w-16 sm:transform md:left-4 md:top-4 md:h-24 md:w-24 lg:left-4 lg:top-4 xl:left-4 xl:top-4 2xl:left-4 2xl:top-4'
       />
@@ -77,7 +77,7 @@ export default function Page(): React.JSX.Element {
         <AdminComponent>
           <div className='divider w-[75vw] max-w-[1000px] items-center self-center' />
           <h2 className='text-3xl font-bold'>
-            <u>{'Admin Tools'}</u>
+            <u>{'Admin Stuff'}</u>
           </h2>
           <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8'>
             <Link className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20' to={'/black'}>

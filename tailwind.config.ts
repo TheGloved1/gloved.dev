@@ -1,7 +1,7 @@
-import type { Config } from "tailwindcss";
+import type { Config } from 'tailwindcss'
 
 export default {
-  content: ["./app/**/{**,.client,.server}/**/*.{js,jsx,ts,tsx}"],
+  content: ['./app/**/{**,.client,.server}/**/*.{js,jsx,ts,tsx}'],
   theme: {
     container: {
       center: true,
@@ -52,9 +52,10 @@ export default {
         foreground: 'var(--foreground)',
       },
       fontFamily: {
-        primary: 'var(--font-geist-mono)',
+        jetbrains: 'var(--font-jetbrains)',
+        geist: 'var(--font-geist)',
       },
     },
   },
   plugins: [require('tailwindcss-animate'), require('daisyui')],
-} satisfies Config;
+} satisfies Config
