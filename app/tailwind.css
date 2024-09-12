@@ -2,9 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'Geist Mono';
+  src: url('/app/lib/fonts/GeistMonoVF.woff') format('woff');
+}
+
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --font-geist-mono: 'Geist Mono', monospace;
 }
 
 @media (prefers-color-scheme: dark) {

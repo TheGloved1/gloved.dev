@@ -42,9 +42,7 @@ export default {
         foreground: 'var(--foreground)',
       },
       fontFamily: {
-        primary: ['Geist Mono', 'monospace'],
-        sans: ['var(--font-geist-sans)'],
-        mono: ['var(--font-geist-mono)'],
+        primary: 'var(--font-geist-mono)',
       },
     },
   },
