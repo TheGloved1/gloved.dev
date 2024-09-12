@@ -1,8 +1,11 @@
 import ChevronLeft from '@/components/chevron-left'
 import { Link } from '@remix-run/react'
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
+import Button from './Button'
+import OperatorButton from './OperatorButton'
+import EqualsButton from './EqualsButton'
 
-export default function Page(): React.JSX.Element {
+export default function CalculatorPage(): React.JSX.Element {
   const [display, setDisplay] = useState<string>('')
   const [isError, setIsError] = useState<boolean>(false)
   const [isCalculating, setIsCalculating] = useState<boolean>(false)
@@ -15,12 +18,12 @@ export default function Page(): React.JSX.Element {
     }
   }, [display])
 
-  function appendToDisplay(value: string) {
+  const appendToDisplay = useCallback((value: string) => {
     setDisplay((prevDisplay) => prevDisplay + value)
     setIsError(false) // Reset error state when appending new values
-  }
+  }, [])
 
-  function calculate(): void {
+  const calculate = useCallback(() => {
     setIsCalculating(true)
     setTimeout(() => {
       try {
@@ -40,12 +43,12 @@ export default function Page(): React.JSX.Element {
         setIsCalculating(false)
       }
     }, 1000) // Simulate calculation delay
-  }
+  }, [display])
 
-  function clearDisplay(): void {
+  const clearDisplay = useCallback(() => {
     setDisplay('')
     setIsError(false) // Reset error state when clearing the display
-  }
+  }, [])
 
   return (
     <>
@@ -67,109 +70,73 @@ export default function Page(): React.JSX.Element {
           <div className='flex flex-col gap-2 p-2'>
             <div className='grid grid-cols-4 gap-2 p-2'>
               <OperatorButton onClick={() => appendToDisplay('(')} disabled={isCalculating}>
-                (
+                {'('}
               </OperatorButton>
               <OperatorButton onClick={() => appendToDisplay(')')} disabled={isCalculating}>
-                )
+                {')'}
               </OperatorButton>
               <OperatorButton onClick={() => appendToDisplay('^')} disabled={isCalculating}>
-                ^
+                {'^'}
               </OperatorButton>
               <OperatorButton onClick={clearDisplay} disabled={isCalculating}>
-                C
+                {'C'}
               </OperatorButton>
             </div>
           </div>
           <div className='flex flex-col gap-2 p-2'>
             <div id='regular-keys' className='grid grid-cols-4 gap-2 p-2'>
               <Button onClick={() => appendToDisplay('7')} disabled={isCalculating}>
-                7
+                {'7'}
               </Button>
               <Button onClick={() => appendToDisplay('8')} disabled={isCalculating}>
-                8
+                {'8'}
               </Button>
               <Button onClick={() => appendToDisplay('9')} disabled={isCalculating}>
-                9
+                {'9'}
               </Button>
               <OperatorButton onClick={() => appendToDisplay('+')} disabled={isCalculating}>
-                +
+                {'+'}
               </OperatorButton>
               <Button onClick={() => appendToDisplay('4')} disabled={isCalculating}>
-                4
+                {'4'}
               </Button>
               <Button onClick={() => appendToDisplay('5')} disabled={isCalculating}>
-                5
+                {'5'}
               </Button>
               <Button onClick={() => appendToDisplay('6')} disabled={isCalculating}>
-                6
+                {'6'}
               </Button>
               <OperatorButton onClick={() => appendToDisplay('-')} disabled={isCalculating}>
-                -
+                {'-'}
               </OperatorButton>
               <Button onClick={() => appendToDisplay('1')} disabled={isCalculating}>
-                1
+                {'1'}
               </Button>
               <Button onClick={() => appendToDisplay('2')} disabled={isCalculating}>
-                2
+                {'2'}
               </Button>
               <Button onClick={() => appendToDisplay('3')} disabled={isCalculating}>
-                3
+                {'3'}
               </Button>
               <OperatorButton onClick={() => appendToDisplay('*')} disabled={isCalculating}>
-                x
+                {'x'}
               </OperatorButton>
               <Button onClick={() => appendToDisplay('0')} disabled={isCalculating}>
-                0
+                {'0'}
               </Button>
               <Button onClick={() => appendToDisplay('.')} disabled={isCalculating}>
-                .
+                {'.'}
               </Button>
               <EqualsButton onClick={calculate} disabled={isCalculating}>
-                =
+                {'='}
               </EqualsButton>
               <OperatorButton onClick={() => appendToDisplay('/')} disabled={isCalculating}>
-                /
+                {'/'}
               </OperatorButton>
             </div>
           </div>
         </div>
       </div>
     </>
-  )
-}
-
-function Button(props: { onClick: React.MouseEventHandler<HTMLButtonElement>; children: string; disabled: boolean }): React.JSX.Element {
-  return (
-    <button
-      className='btn btn-circle m-1 h-[50px] w-[50px] p-2 text-[1rem] font-bold text-white sm:h-[60px] sm:w-[60px] sm:text-[1.5rem] md:h-[70px] md:w-[70px] md:text-[2rem] lg:h-[80px] lg:w-[80px] lg:text-[2.5rem] xl:h-[100px] xl:w-[100px] xl:text-[3rem]'
-      onClick={props.onClick}
-      disabled={props.disabled}
-    >
-      {props.children}
-    </button>
-  )
-}
-
-function OperatorButton(props: { onClick: React.MouseEventHandler<HTMLButtonElement>; children: string; disabled: boolean }): React.JSX.Element {
-  return (
-    <button
-      className='btn btn-circle m-1 h-[50px] w-[50px] bg-orange-400 p-2 text-[1.5rem] font-bold text-white hover:bg-orange-500 active:bg-orange-600 sm:h-[60px] sm:w-[60px] sm:text-[2rem] md:h-[70px] md:w-[70px] md:text-[2.5rem] lg:h-[80px] lg:w-[80px] lg:text-[3rem] xl:h-[100px] xl:w-[100px] xl:text-[3.5rem]'
-      onClick={props.onClick}
-      disabled={props.disabled}
-    >
-      {props.children}
-    </button>
-  )
-}
-
-function EqualsButton(props: { onClick: React.MouseEventHandler<HTMLButtonElement>; children: string; disabled: boolean }): React.JSX.Element {
-  return (
-    <button
-      className='btn btn-circle m-1 h-[50px] w-[50px] bg-green-500 p-2 text-[1.5rem] font-bold text-white hover:bg-green-600 active:bg-green-700 sm:h-[60px] sm:w-[60px] sm:text-[2rem] md:h-[70px] md:w-[70px] md:text-[2.5rem] lg:h-[80px] lg:w-[80px] lg:text-[3rem] xl:h-[100px] xl:w-[100px] xl:text-[3.5rem]'
-      onClick={props.onClick}
-      disabled={props.disabled}
-    >
-      {props.children}
-    </button>
   )
 }
