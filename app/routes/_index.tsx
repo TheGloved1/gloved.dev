@@ -1,5 +1,6 @@
-import AdminComponent from '@/components/admin-component'
-import BotButtons from '@/components/bot-buttons'
+import AdminComponent from '@/components/AdminComponent'
+import BotButtons from '@/components/BotButtons'
+import Counter from '@/components/Counter'
 import type { LinksFunction, MetaFunction } from '@remix-run/node'
 import { Link } from '@remix-run/react'
 import React from 'react'
@@ -21,6 +22,44 @@ export const meta: MetaFunction = () => {
   ]
 }
 
+const { Home, Todos, Hangman, Calc, Github, Black, Discord } = {
+  Home: {
+    title: 'Home',
+    link: '/home',
+    description: 'The home page for my About Me based web project built with the Remix Web Framework.',
+  },
+  Todos: {
+    title: 'Todo App',
+    link: '/todos',
+    description: 'A simple todo list web app. Uses local storage to save and get todos list even after reloading.',
+  },
+  Hangman: {
+    title: 'Janky Hangman',
+    link: '/hangman',
+    description: 'A simple hangman game web app. Guess the word. (Might be broken)',
+  },
+  Calc: {
+    title: 'Calculator',
+    link: '/calc',
+    description: 'A simple calculator web app. Do math calculations.',
+  },
+  Github: {
+    title: 'Github',
+    link: 'https://github.com/TheGloved1/',
+    description: 'View the source code. Visit my Github profile to take a look at my other projects.',
+  },
+  Black: {
+    title: 'Black Screen',
+    link: '/black',
+    description: 'This is just a black screen',
+  },
+  Discord: {
+    title: 'Discord',
+    link: '/discord',
+    description: 'Join my Discord to chat!',
+  },
+}
+
 export default function Page(): React.JSX.Element {
   return (
     <main className='flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-sky-950 to-[#1e210c] text-white'>
@@ -34,44 +73,42 @@ export default function Page(): React.JSX.Element {
           gloved<span className='text-[hsl(280,100%,40%)]'>.</span>dev
         </h1>
         <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8'>
-          <Link className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20' to={'/home'}>
+          <Link className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20' to={Home.link}>
             <h3 className='text-2xl font-bold'>
-              {'Home '}
-              <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>{'->'}</span>
+              {Home.title} <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>{'->'}</span>
             </h3>
-            <div className='text-lg'>{'The home page for my About Me based web project built with the Remix Web Framework.'}</div>
+            <div className='text-lg'>{Home.description}</div>
           </Link>
-          <Link className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20' to={'/todos'}>
+          <Link className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20' to={Todos.link}>
             <h3 className='text-2xl font-bold'>
-              {'Todo App '}
-              <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>{'->'}</span>
+              {Todos.title} <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>{'->'}</span>
             </h3>
-            <div className='text-lg'>{'A simple todo list web app. Uses local storage to save and get todos list even after reloading.'}</div>
+            <div className='text-lg'>{Todos.description}</div>
           </Link>
         </div>
         <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8'>
-          <Link className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20' to={'/hangman'}>
+          <Link className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20' to={Hangman.link}>
             <h3 className='text-2xl font-bold'>
-              {'Janky Hangman '}
+              {Hangman.title}
               <span className='inline-block transition-transform group-hover:translate-x-1'>{'->'}</span>
             </h3>
-            <div className='text-lg'>{'A simple hangman game web app. Guess the word. (Might be broken)'}</div>
+            <div className='text-lg'>{Hangman.description}</div>
           </Link>
-          <Link className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20' to={'https://github.com/TheGloved1/'}>
+          <Link className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20' to={Github.link}>
             <h3 className='text-2xl font-bold'>
-              {'Github '}
+              {Github.title}
               <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>{'->'}</span>
             </h3>
-            <div className='text-lg'>{'View the source code. Visit my Github profile to take a look at my other projects.'}</div>
+            <div className='text-lg'>{Github.description}</div>
           </Link>
         </div>
         <div className='grid grid-cols-1 gap-4 sm:grid-cols-1 md:gap-8'>
-          <Link className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20' to={'/calc'}>
+          <Link className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20' to={Calc.link}>
             <h3 className='text-2xl font-bold'>
-              {'Calculator '}
+              {Calc.title}
               <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>{'->'}</span>
             </h3>
-            <div className='text-lg'>{'A simple calculator web app. Do math calculations.'}</div>
+            <div className='text-lg'>{Calc.description}</div>
           </Link>
         </div>
         <AdminComponent>
@@ -80,26 +117,27 @@ export default function Page(): React.JSX.Element {
             <u>{'Admin Stuff'}</u>
           </h2>
           <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8'>
-            <Link className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20' to={'/black'}>
+            <Link className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20' to={Black.link}>
               <h3 className='text-2xl font-bold'>
-                {'Black Screen '}
+                {Black.title}
                 <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>{'->'}</span>
               </h3>
-              <div className='text-lg'>{'This is just a black screen'}</div>
+              <div className='text-lg'>{Black.description}</div>
             </Link>
-            <Link className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20' to={'/discord'}>
+            <Link className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20' to={Discord.link}>
               <h3 className='text-2xl font-bold'>
-                {'Discord '}
+                {Discord.title}
                 <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>{'->'}</span>
               </h3>
-              <div className='text-lg'>{'Join my Discord to chat!'}</div>
+              <div className='text-lg'>{Discord.description}</div>
             </Link>
           </div>
           <BotButtons />
+          <Counter />
         </AdminComponent>
       </div>
       <div className='divider w-[75vw] max-w-[1000px] items-center self-center' />
-      <div className='px-30 container flex flex-col content-center items-center justify-center gap-12 px-4 py-16'>
+      <div className='px-30 container fixed bottom-0 left-0 flex flex-col gap-1 px-4 py-4'>
         <p className='p-4 text-sm'>
           {'Help me improve the site and '}
           <Link className='btn btn-outline text-sm' to={'https://crotus.io/gloves/review'}>

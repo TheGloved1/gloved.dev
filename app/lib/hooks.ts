@@ -1,26 +1,32 @@
-'use client'
-import axios from 'axios'
-import { safeAwait } from '@/lib/utils'
-import { useEffect, useState } from 'react'
-
-export function useFetchIp() {
-  const [clientIp, setClientIp] = useState('')
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    const fetchIp = async () => {
-      const [response, error] = await safeAwait(axios.get('https://api64.ipify.org?format=json'))
-      if (error) {
-        console.error('Failed to fetch client IP:', error)
-        return
+import React from 'react'
+export function useQuery(url: string) {
+  const [data, setData] = React.useState<JSON | null>(null)
+  const [isLoading, setIsLoading] = React.useState(true)
+  const [error, setError] = React.useState<Error | null>(null)
+  React.useEffect(() => {
+    let ignore = false
+    const handleFetch = async () => {
+      setData(null)
+      setIsLoading(true)
+      setError(null)
+      try {
+        const res = await fetch(url)
+        if (ignore) return
+        if (!res.ok) {
+          throw new Error(res.statusText)
+        }
+        const json = await res.json() as JSON
+        setData(json)
+        setIsLoading(false)
+      } catch (e) {
+        setError(e as Error)
+        setIsLoading(false)
       }
-      setClientIp(response.data.ip)
-      console.log('Client IP:', response.data.ip)
-      setLoading(false)
     }
-
-    fetchIp()
-  })
-
-  return { clientIp, loading }
+    handleFetch()
+    return () => {
+      ignore = true
+    }
+  }, [url])
+  return { data, isLoading, error }
 }

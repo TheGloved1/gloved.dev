@@ -1,6 +1,7 @@
 import Loading from '@/components/loading'
 import { Link } from '@remix-run/react'
-import React, { useEffect, useState } from 'react'
+import React from 'react'
+import { useQuery } from '@tanstack/react-query'
 
 type UserData = {
   html_url: string
@@ -24,22 +25,22 @@ const fetchData = async (name: string): Promise<UserData> => {
   }
 }
 
-export default function GitUser({ name }: { name: string }): React.JSX.Element {
-  const [data, setData] = useState<UserData>(null)
-  useEffect(() => {
-    const fetchUser = async () => {
-      const userData = await fetchData(name)
-      setData(userData)
-    }
-    fetchUser()
-  }, [name])
-  if (!data) {
+export default function GitUser({ name }: { name: string }): React.JSX.Element | undefined {
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['userData', name],
+    queryFn: () => fetchData(name),
+    initialData: null,
+  })
+
+  if (isLoading) {
     return (
       <div className='rounded-lx container flex flex-col items-center justify-center gap-4 border-4 border-dashed border-white p-4'>
         <Loading />
       </div>
     )
-  } else if (data.message) {
+  }
+
+  if (isError || (data && data.message)) {
     return (
       <div className='rounded-lx container flex flex-col items-center justify-center gap-4 p-4'>
         <div role='alert' className='alert alert-error'>
@@ -50,12 +51,12 @@ export default function GitUser({ name }: { name: string }): React.JSX.Element {
         </div>
       </div>
     )
-  } else {
+  } else if (data) {
     return (
       <div className='container flex flex-col items-center justify-center gap-4 rounded-3xl border-4 border-dashed border-white bg-gray-600/50 p-4'>
         <div>
-          <Link to={data.html_url} target='_blank' rel='noopener'>
-            <img className='rounded-full' width={200} height={200} src={data.avatar_url} alt='User image' loading='lazy' />
+          <Link to={data.html_url} target='_blank' rel='noopener noreferrer'>
+            <img className='rounded-full' width={200} height={200} src={data.avatar_url} alt='' loading='lazy' />
           </Link>
         </div>
         <div className='flex flex-col gap-1'>
@@ -63,7 +64,7 @@ export default function GitUser({ name }: { name: string }): React.JSX.Element {
           <span>{data.name}</span>
         </div>
         <p className='flex flex-col rounded-xl bg-gray-600 p-1'>{data.bio}</p>
-        <Link className='fancy-link' to={data.html_url} target='_blank' rel='noopener'>
+        <Link className='fancy-link' to={data.html_url} target='_blank' rel='noopener noreferrer'>
           {data.html_url}
         </Link>
       </div>

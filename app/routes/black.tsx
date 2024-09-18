@@ -1,4 +1,4 @@
-import ChevronLeft from '@/components/chevron-left'
+import ChevronLeft from '@/components/ChevronLeft'
 import { Link } from '@remix-run/react'
 import React from 'react'
 

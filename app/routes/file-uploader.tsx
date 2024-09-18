@@ -1,6 +1,6 @@
 import React from 'react'
-import FileUploader from '@/components/file-uploader'
-import ChevronLeft from '@/components/chevron-left'
+import FileUploader from '@/components/FileUploader'
+import ChevronLeft from '@/components/ChevronLeft'
 import { Link, MetaFunction } from '@remix-run/react'
 
 export const meta: MetaFunction = () => {

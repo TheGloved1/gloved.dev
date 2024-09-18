@@ -2,6 +2,10 @@ import { Links, Meta, Outlet, Scripts, ScrollRestoration } from '@remix-run/reac
 import '@/tailwind.css'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/remix'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import React from 'react'
+
+const queryClient = new QueryClient()
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -15,7 +19,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <body className='font-jetbrains'>
         <Analytics />
         <SpeedInsights />
-        {children}
+        <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
         <ScrollRestoration />
         <Scripts />
       </body>

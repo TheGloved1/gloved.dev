@@ -1,5 +1,5 @@
 'use client'
-import ChevronLeft from '@/components/chevron-left'
+import ChevronLeft from '@/components/ChevronLeft'
 import { useCallback, useEffect, useState } from 'react'
 import { HangmanDrawing } from './HangmanDrawing'
 import { HangmanWord } from './HangmanWord'
@@ -14,11 +14,8 @@ function getWord() {
 }
 
 export const meta: MetaFunction = () => {
-  return [
-    { title: NAME + ' | Hangman Game', },
-    { name: "description", content: 'A simple hangman game web app. Guess the word. (Might be broken)' },
-  ];
-};
+  return [{ title: NAME + ' | Hangman Game' }, { name: 'description', content: 'A simple hangman game web app. Guess the word. (Might be broken)' }]
+}
 
 export default function Page(): React.JSX.Element {
   const [wordToGuess, setWordToGuess] = useState(getWord)

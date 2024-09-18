@@ -1,23 +1,22 @@
-
 import React, { Suspense } from 'react'
 
-import GitUser from '@/components/git-user'
-import ObserverSection from '@/components/observer-section'
-import FileUploader from '@/components/file-uploader'
-import ChevronLeft from '@/components/chevron-left'
+import GitUser from '@/components/GitUser'
+import ObserverSection from '@/components/ObserverSection'
+import FileUploader from '@/components/FileUploader'
+import ChevronLeft from '@/components/ChevronLeft'
 
 import { WIPHeader } from './home/WIPHeader'
-import ScrollLink from '@/components/scroll-link'
+import ScrollLink from '@/components/ScrollLink'
 import Loading from '@/components/loading'
 import { Link, MetaFunction } from '@remix-run/react'
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "gloved.dev | Home" },
-    { name: "description", content: "The home page for my About Me based web project built with the Next.js React Web Framework" },
-    { name: 'icons', content: 'https://avatars.githubusercontent.com/u/96776176?v=4' }
-  ];
-};
+    { title: 'gloved.dev | Home' },
+    { name: 'description', content: 'The home page for my About Me based web project built with the Next.js React Web Framework' },
+    { name: 'icons', content: 'https://avatars.githubusercontent.com/u/96776176?v=4' },
+  ]
+}
 
 const sections = ['Welcome', 'About', 'Robotics', 'Github', 'File Uploader']
 
@@ -35,12 +34,12 @@ export default function Page(): React.JSX.Element {
           </div>
           <div className='navbar-end flex md:hidden'>
             <div className='dropdown'>
-              <div tabIndex={0} role='button' className='btn btn-ghost md:hidden'>
+              <div role='button' className='btn btn-ghost md:hidden'>
                 <svg xmlns='http://www.w3.org/2000/svg' className='h-5 w-5' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
                   <path strokeLinecap='round' strokeLinejoin='round' strokeWidth='2' d='M4 6h16M4 12h8m-8 6h16' />
                 </svg>
               </div>
-              <ul tabIndex={0} className='menu dropdown-content menu-sm z-[1] mt-3 w-44 -translate-x-32 rounded-box bg-base-100 p-2 shadow'>
+              <ul className='menu dropdown-content menu-sm z-[1] mt-3 w-44 -translate-x-32 rounded-box bg-base-100 p-2 shadow'>
                 {sections.map((section) => (
                   <li key={section}>
                     <ScrollLink to={`#${section}`}>{section}</ScrollLink>
@@ -51,12 +50,12 @@ export default function Page(): React.JSX.Element {
           </div>
           <div className='navbar-center hidden md:flex'>
             <div className='dropdown'>
-              <div tabIndex={0} role='button' className='btn btn-ghost md:hidden'>
+              <div role='button' className='btn btn-ghost md:hidden'>
                 <svg xmlns='http://www.w3.org/2000/svg' className='h-5 w-5' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
                   <path strokeLinecap='round' strokeLinejoin='round' strokeWidth='2' d='M4 6h16M4 12h8m-8 6h16' />
                 </svg>
               </div>
-              <ul tabIndex={0} className='menu dropdown-content menu-sm z-[1] mt-3 w-52 rounded-box bg-base-100 p-2 shadow'>
+              <ul className='menu dropdown-content menu-sm z-[1] mt-3 w-52 rounded-box bg-base-100 p-2 shadow'>
                 {sections.map((section) => (
                   <li key={section}>
                     <ScrollLink to={`#${section}`}>{section}</ScrollLink>
@@ -81,7 +80,7 @@ export default function Page(): React.JSX.Element {
           </div>
         </div>
       </div>
-      <main className='flex min-h-screen flex-col items-center bg-gradient-to-b from-sky-950 to-[#1e210c] font-primary text-white'>
+      <main className='font-primary flex min-h-screen flex-col items-center bg-gradient-to-b from-sky-950 to-[#1e210c] text-white'>
         <WIPHeader />
         <div className='flex flex-col items-center justify-center gap-12 px-4 py-16'>
           <ObserverSection id={sections[0]}>
