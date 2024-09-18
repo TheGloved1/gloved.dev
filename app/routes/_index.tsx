@@ -85,7 +85,7 @@ export default function Page(): React.JSX.Element {
         </AdminComponent>
       </div>
       <div className='divider w-[75vw] max-w-[1000px] items-center self-center' />
-      <div className='px-30 container flex flex-col gap-1 px-4 py-4'>
+      <div className='px-30 container flex flex-col items-center gap-1 self-center px-4 py-4'>
         <p className='p-4 text-sm'>
           {'Help me improve the site and '}
           <Link className='btn btn-outline text-sm' to={'https://crotus.io/gloves/review'}>
