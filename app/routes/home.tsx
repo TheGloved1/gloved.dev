@@ -1,11 +1,10 @@
 import ChevronLeft from '@/components/ChevronLeft'
 import FileUploader from '@/components/FileUploader'
 import GitUser from '@/components/GitUser'
-import Loading from '@/components/Loading'
 import ObserverSection from '@/components/ObserverSection'
 import ScrollLink from '@/components/ScrollLink'
 import { Link, MetaFunction } from '@remix-run/react'
-import React, { Suspense } from 'react'
+import React from 'react'
 import { WIPHeader } from './home/WIPHeader'
 
 export const meta: MetaFunction = () => {
@@ -125,9 +124,7 @@ export default function Page(): React.JSX.Element {
           <ObserverSection id={sections[3]}>
             <p className='font-extrabold'>{'My Github Profile'}</p>
             <p className='p-3 text-xl'></p>
-            <Suspense fallback={<Loading />}>
-              <GitUser name='TheGloved1' />
-            </Suspense>
+            <GitUser name='TheGloved1' />
           </ObserverSection>
           <div className='divider w-[75vw] max-w-[1000px]' />
           <ObserverSection id={sections[4]}>
@@ -137,6 +134,7 @@ export default function Page(): React.JSX.Element {
             </Link>
           </ObserverSection>
         </div>
+        1
       </main>
     </>
   )
