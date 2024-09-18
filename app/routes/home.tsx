@@ -1,14 +1,12 @@
-import React, { Suspense } from 'react'
-
-import GitUser from '@/components/GitUser'
-import ObserverSection from '@/components/ObserverSection'
-import FileUploader from '@/components/FileUploader'
 import ChevronLeft from '@/components/ChevronLeft'
-
-import { WIPHeader } from './home/WIPHeader'
+import FileUploader from '@/components/FileUploader'
+import GitUser from '@/components/GitUser'
+import Loading from '@/components/Loading'
+import ObserverSection from '@/components/ObserverSection'
 import ScrollLink from '@/components/ScrollLink'
-import Loading from '@/components/loading'
 import { Link, MetaFunction } from '@remix-run/react'
+import React, { Suspense } from 'react'
+import { WIPHeader } from './home/WIPHeader'
 
 export const meta: MetaFunction = () => {
   return [
@@ -80,7 +78,7 @@ export default function Page(): React.JSX.Element {
           </div>
         </div>
       </div>
-      <main className='font-primary flex min-h-screen flex-col items-center bg-gradient-to-b from-sky-950 to-[#1e210c] text-white'>
+      <main className='flex min-h-screen flex-col items-center bg-gradient-to-b from-sky-950 to-[#1e210c] font-jetbrains text-white'>
         <WIPHeader />
         <div className='flex flex-col items-center justify-center gap-12 px-4 py-16'>
           <ObserverSection id={sections[0]}>

@@ -1,11 +1,30 @@
-import { Links, Meta, Outlet, Scripts, ScrollRestoration } from '@remix-run/react'
 import '@/tailwind.css'
+import { LinksFunction } from '@remix-run/node'
+import { Links, Meta, Outlet, Scripts, ScrollRestoration } from '@remix-run/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/remix'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import React from 'react'
 
-const queryClient = new QueryClient()
+export const links: LinksFunction = () => {
+  return [
+    {
+      rel: 'icon',
+      href: '/logo.png',
+      type: 'image/png',
+    },
+  ]
+}
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: true,
+      retry: true,
+    },
+  },
+})
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -19,7 +38,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <body className='font-jetbrains'>
         <Analytics />
         <SpeedInsights />
-        <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+        <QueryClientProvider client={queryClient}>
+          {children}
+          <ReactQueryDevtools />
+        </QueryClientProvider>
         <ScrollRestoration />
         <Scripts />
       </body>

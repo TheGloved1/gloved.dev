@@ -21,11 +21,22 @@ export async function safeAwait<T, E = Error>(input: Promise<T> | T): Promise<[T
   }
 }
 
+/**
+ * Fetches data from the API.
+ * @param route - The route to fetch data from.
+ * @param options - Optional request options.
+ * @returns A promise that resolves to the JSON response.
+ */
 export async function apiFetch(route: string, options?: RequestInit) {
   const res = await fetch(apiRoute(route), options)
   return res.json()
 }
 
+/**
+ * Generates the API route by concatenating the base API URL with the provided route.
+ * @param route - The route to be appended to the base API URL.
+ * @returns The complete API route.
+ */
 export function apiRoute(route: string) {
   return `${API}${route}`
 }

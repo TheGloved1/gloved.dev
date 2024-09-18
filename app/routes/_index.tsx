@@ -1,63 +1,16 @@
 import AdminComponent from '@/components/AdminComponent'
 import BotButtons from '@/components/BotButtons'
 import Counter from '@/components/Counter'
-import type { LinksFunction, MetaFunction } from '@remix-run/node'
+import { Black, Calc, Discord, Github, Hangman, Home, Todos } from '@/lib/constants'
+import type { MetaFunction } from '@remix-run/node'
 import { Link } from '@remix-run/react'
 import React from 'react'
-
-export const links: LinksFunction = () => {
-  return [
-    {
-      rel: 'icon',
-      href: '/logo.png',
-      type: 'image/png',
-    },
-  ]
-}
 
 export const meta: MetaFunction = () => {
   return [
     { title: 'gloved.dev' },
     { name: 'description', content: 'Made by Kaden Hood. A personal website for my projects and interests. Built using Next.js React Web Framework.' },
   ]
-}
-
-const { Home, Todos, Hangman, Calc, Github, Black, Discord } = {
-  Home: {
-    title: 'Home',
-    link: '/home',
-    description: 'The home page for my About Me based web project built with the Remix Web Framework.',
-  },
-  Todos: {
-    title: 'Todo App',
-    link: '/todos',
-    description: 'A simple todo list web app. Uses local storage to save and get todos list even after reloading.',
-  },
-  Hangman: {
-    title: 'Janky Hangman',
-    link: '/hangman',
-    description: 'A simple hangman game web app. Guess the word. (Might be broken)',
-  },
-  Calc: {
-    title: 'Calculator',
-    link: '/calc',
-    description: 'A simple calculator web app. Do math calculations.',
-  },
-  Github: {
-    title: 'Github',
-    link: 'https://github.com/TheGloved1/',
-    description: 'View the source code. Visit my Github profile to take a look at my other projects.',
-  },
-  Black: {
-    title: 'Black Screen',
-    link: '/black',
-    description: 'This is just a black screen',
-  },
-  Discord: {
-    title: 'Discord',
-    link: '/discord',
-    description: 'Join my Discord to chat!',
-  },
 }
 
 export default function Page(): React.JSX.Element {
@@ -89,15 +42,13 @@ export default function Page(): React.JSX.Element {
         <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8'>
           <Link className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20' to={Hangman.link}>
             <h3 className='text-2xl font-bold'>
-              {Hangman.title}
-              <span className='inline-block transition-transform group-hover:translate-x-1'>{'->'}</span>
+              {Hangman.title} <span className='inline-block transition-transform group-hover:translate-x-1'>{'->'}</span>
             </h3>
             <div className='text-lg'>{Hangman.description}</div>
           </Link>
           <Link className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20' to={Github.link}>
             <h3 className='text-2xl font-bold'>
-              {Github.title}
-              <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>{'->'}</span>
+              {Github.title} <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>{'->'}</span>
             </h3>
             <div className='text-lg'>{Github.description}</div>
           </Link>
@@ -105,8 +56,7 @@ export default function Page(): React.JSX.Element {
         <div className='grid grid-cols-1 gap-4 sm:grid-cols-1 md:gap-8'>
           <Link className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20' to={Calc.link}>
             <h3 className='text-2xl font-bold'>
-              {Calc.title}
-              <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>{'->'}</span>
+              {Calc.title} <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>{'->'}</span>
             </h3>
             <div className='text-lg'>{Calc.description}</div>
           </Link>
@@ -119,15 +69,13 @@ export default function Page(): React.JSX.Element {
           <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8'>
             <Link className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20' to={Black.link}>
               <h3 className='text-2xl font-bold'>
-                {Black.title}
-                <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>{'->'}</span>
+                {Black.title} <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>{'->'}</span>
               </h3>
               <div className='text-lg'>{Black.description}</div>
             </Link>
             <Link className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20' to={Discord.link}>
               <h3 className='text-2xl font-bold'>
-                {Discord.title}
-                <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>{'->'}</span>
+                {Discord.title} <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>{'->'}</span>
               </h3>
               <div className='text-lg'>{Discord.description}</div>
             </Link>
@@ -137,7 +85,7 @@ export default function Page(): React.JSX.Element {
         </AdminComponent>
       </div>
       <div className='divider w-[75vw] max-w-[1000px] items-center self-center' />
-      <div className='px-30 container fixed bottom-0 left-0 flex flex-col gap-1 px-4 py-4'>
+      <div className='px-30 container flex flex-col gap-1 px-4 py-4'>
         <p className='p-4 text-sm'>
           {'Help me improve the site and '}
           <Link className='btn btn-outline text-sm' to={'https://crotus.io/gloves/review'}>

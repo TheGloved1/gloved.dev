@@ -18,12 +18,14 @@ export default function ObserverSection({ children, className, id, ...props }: O
       ([entry]) => {
         if (entry) {
           setIsInView(entry.isIntersecting)
+        } else {
+          setIsInView(false)
         }
       },
       { threshold: 0.5 }
     )
 
-    let sectionRefCurrent = sectionRef.current
+    const sectionRefCurrent = sectionRef.current
 
     if (sectionRefCurrent) {
       observer.observe(sectionRefCurrent)

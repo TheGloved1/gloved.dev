@@ -1,22 +1,19 @@
-import axios, { type AxiosResponse } from 'axios'
-import React, { useEffect, useState } from 'react'
-import Loading from '@/components/loading'
+import Loading from '@/components/Loading'
 import { apiRoute } from '@/lib/utils'
 import { Link } from '@remix-run/react'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import axios, { type AxiosResponse } from 'axios'
+import React, { useEffect, useState } from 'react'
 
-// Fetch files from the API
 const fetchFiles = async () => {
   const response: AxiosResponse<string[]> = await axios.get(apiRoute('/files'))
   return response.data
 }
 
-// Delete a file from the API
 const deleteFileApi = async (file: string) => {
   await axios.delete(apiRoute(`/delete/${file}`))
 }
 
-// Upload a file to the API
 const uploadFileApi = async (file: File) => {
   const formData = new FormData()
   formData.append('file', file)
@@ -34,11 +31,7 @@ export default function FileUploader(): React.JSX.Element {
 
   const queryClient = useQueryClient()
 
-  const {
-    data: files,
-    isLoading,
-    isError,
-  } = useQuery<string[], Error>({
+  const filesQuery = useQuery<string[], Error>({
     queryKey: ['files'],
     queryFn: fetchFiles,
     initialData: [],
@@ -123,12 +116,12 @@ export default function FileUploader(): React.JSX.Element {
           </button>
         </h2>
 
-        {isLoading && <Loading />}
-        {!isLoading && files.length > 0 && (
+        {filesQuery.isLoading && <Loading />}
+        {!filesQuery.isLoading && filesQuery.data.length > 0 && (
           <ul className='flex max-h-48 max-w-96 flex-col flex-wrap overflow-x-auto rounded-xl border-2 border-white p-[.2rem] lg:max-h-72'>
-            {isError ?
+            {filesQuery.isError ?
               <div className='alert alert-error'>An error occurred while fetching files.</div>
-            : files.map((file) => (
+            : filesQuery.data.map((file) => (
                 <li className='flex w-64 flex-row p-1 text-[.2rem]' key={file}>
                   <Link className='mx-2 w-64 truncate rounded-xl' to={apiRoute(`/download/${file}`)}>
                     <button className='btn mx-2 rounded-xl p-3 hover:animate-pulse hover:bg-gray-700'>{file}</button>
@@ -146,7 +139,7 @@ export default function FileUploader(): React.JSX.Element {
             }
           </ul>
         )}
-        {!isLoading && files.length === 0 && <li>{'No files found'}</li>}
+        {!filesQuery.isLoading && filesQuery.data.length === 0 && <li>{'No files found'}</li>}
       </div>
       {alert !== '' && (
         <div role='alert' className='alert alert-error m-2'>

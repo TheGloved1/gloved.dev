@@ -1,12 +1,9 @@
-import { NAME } from '@/lib/constants'
+import { Discord, NAME } from '@/lib/constants'
 import { Link, MetaFunction } from '@remix-run/react'
 
 export const meta: MetaFunction = () => {
-  return [
-    { title: NAME + ' | Discord' },
-    { name: "description", content: "Join my Discord to chat!" },
-  ];
-};
+  return [{ title: NAME + ' | ' + Discord.title }, { name: 'description', content: Discord.description }]
+}
 
 export default function Page(): React.JSX.Element {
   return (

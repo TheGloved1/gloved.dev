@@ -1,6 +1,11 @@
 import ChevronLeft from '@/components/ChevronLeft'
-import { Link } from '@remix-run/react'
+import { NAME, Black } from '@/lib/constants'
+import { Link, MetaFunction } from '@remix-run/react'
 import React from 'react'
+
+export const meta: MetaFunction = () => {
+  return [{ title: NAME + ' | ' + Black.title }, { name: 'description', content: Black.description }]
+}
 
 export default function Page(): React.JSX.Element {
   return (

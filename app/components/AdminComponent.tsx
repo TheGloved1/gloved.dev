@@ -1,4 +1,4 @@
-import Loading from '@/components/loading'
+import Loading from '@/components/Loading'
 import React from 'react'
 import { apiRoute } from '@/lib/utils'
 import axios from 'axios'

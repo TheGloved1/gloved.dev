@@ -1,4 +1,4 @@
-import Loading from '@/components/loading'
+import Loading from '@/components/Loading'
 import { Link } from '@remix-run/react'
 import React from 'react'
 import { useQuery } from '@tanstack/react-query'
@@ -26,13 +26,13 @@ const fetchData = async (name: string): Promise<UserData> => {
 }
 
 export default function GitUser({ name }: { name: string }): React.JSX.Element | undefined {
-  const { data, isLoading, isError } = useQuery({
+  const user = useQuery({
     queryKey: ['userData', name],
     queryFn: () => fetchData(name),
     initialData: null,
   })
 
-  if (isLoading) {
+  if (user.isLoading) {
     return (
       <div className='rounded-lx container flex flex-col items-center justify-center gap-4 border-4 border-dashed border-white p-4'>
         <Loading />
@@ -40,7 +40,7 @@ export default function GitUser({ name }: { name: string }): React.JSX.Element |
     )
   }
 
-  if (isError || (data && data.message)) {
+  if (user.isError || (user.data && user.data.message)) {
     return (
       <div className='rounded-lx container flex flex-col items-center justify-center gap-4 p-4'>
         <div role='alert' className='alert alert-error'>
@@ -51,21 +51,21 @@ export default function GitUser({ name }: { name: string }): React.JSX.Element |
         </div>
       </div>
     )
-  } else if (data) {
+  } else if (user.data) {
     return (
       <div className='container flex flex-col items-center justify-center gap-4 rounded-3xl border-4 border-dashed border-white bg-gray-600/50 p-4'>
         <div>
-          <Link to={data.html_url} target='_blank' rel='noopener noreferrer'>
-            <img className='rounded-full' width={200} height={200} src={data.avatar_url} alt='' loading='lazy' />
+          <Link to={user.data.html_url} target='_blank' rel='noopener noreferrer'>
+            <img className='rounded-full' width={200} height={200} src={user.data.avatar_url} alt='' loading='lazy' />
           </Link>
         </div>
         <div className='flex flex-col gap-1'>
-          <strong>{data.login}</strong>
-          <span>{data.name}</span>
+          <strong>{user.data.login}</strong>
+          <span>{user.data.name}</span>
         </div>
-        <p className='flex flex-col rounded-xl bg-gray-600 p-1'>{data.bio}</p>
-        <Link className='fancy-link' to={data.html_url} target='_blank' rel='noopener noreferrer'>
-          {data.html_url}
+        <p className='flex flex-col rounded-xl bg-gray-600 p-1'>{user.data.bio}</p>
+        <Link className='fancy-link' to={user.data.html_url} target='_blank' rel='noopener noreferrer'>
+          {user.data.html_url}
         </Link>
       </div>
     )

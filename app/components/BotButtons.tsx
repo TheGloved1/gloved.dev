@@ -1,24 +1,24 @@
-'use client'
 import { apiRoute } from '@/lib/utils'
-import { useState, useEffect } from 'react'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import axios, { AxiosResponse } from 'axios'
+import { useEffect, useState } from 'react'
 
-const startDiscordBot = async () => {
-  const response = await fetch(apiRoute('/bot/start'), { method: 'POST' })
-  if (!response.ok) throw new Error('Failed to start bot')
-  return response.json() as Promise<{ message: string }>
+const startDiscordBot = async (): Promise<{ message: string }> => {
+  const response: AxiosResponse<{ message: string }> = await axios.post(apiRoute('/bot/start'))
+  if (response.status !== 200) throw new Error('Failed to start bot')
+  return response.data
 }
 
-const stopDiscordBot = async () => {
-  const response = await fetch(apiRoute('/bot/stop'), { method: 'POST' })
-  if (!response.ok) throw new Error('Failed to stop bot')
-  return response.json() as Promise<{ message: string }>
+const stopDiscordBot = async (): Promise<{ message: string }> => {
+  const response: AxiosResponse<{ message: string }> = await axios.post(apiRoute('/bot/stop'))
+  if (response.status !== 200) throw new Error('Failed to stop bot')
+  return response.data
 }
 
-const getBotStatus = async () => {
-  const response = await fetch(apiRoute('/bot/status'))
-  if (!response.ok) throw new Error('Failed to fetch bot status')
-  return response.json() as Promise<{ isRunning: boolean }>
+const getBotStatus = async (): Promise<{ isRunning: boolean }> => {
+  const response: AxiosResponse<{ isRunning: boolean }> = await axios.get(apiRoute('/bot/status'))
+  if (response.status !== 200) throw new Error('Failed to fetch bot status')
+  return response.data
 }
 
 export default function BotButtons(): React.JSX.Element {
@@ -36,6 +36,12 @@ export default function BotButtons(): React.JSX.Element {
     queryFn: getBotStatus,
     initialData: { isRunning: false },
   })
+
+  useEffect(() => {
+    if (isStatusError) {
+      setError('Failed to fetch bot status')
+    }
+  }, [isStatusError])
 
   const startBotMutation = useMutation({
     mutationFn: startDiscordBot,
@@ -71,27 +77,19 @@ export default function BotButtons(): React.JSX.Element {
     stopBotMutation.mutate()
   }
 
-  useEffect(() => {
-    if (isStatusError) {
-      setError('Failed to fetch bot status')
-    }
-  }, [isStatusError])
-
-  const isBotRunning = botStatus?.isRunning ?? false
-
   return (
     <div>
-      <button className='btn mx-4' onClick={handleStartBot} disabled={isStatusLoading || startBotMutation.isPending || isBotRunning}>
+      <button className='btn mx-4' onClick={handleStartBot} disabled={isStatusLoading || startBotMutation.isPending || botStatus.isRunning}>
         {startBotMutation.isPending ?
           'Starting Bot...'
-        : isBotRunning ?
+        : botStatus.isRunning ?
           'Discord Bot is Online...'
         : startButtonText}
       </button>
-      <button className='btn mx-4' onClick={handleStopBot} disabled={isStatusLoading || stopBotMutation.isPending || !isBotRunning}>
+      <button className='btn mx-4' onClick={handleStopBot} disabled={isStatusLoading || stopBotMutation.isPending || !botStatus.isRunning}>
         {stopBotMutation.isPending ?
           'Stopping Bot...'
-        : !isBotRunning ?
+        : !botStatus.isRunning ?
           'Discord Bot is Offline...'
         : stopButtonText}
       </button>

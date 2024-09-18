@@ -1,16 +1,12 @@
-
 import TodoPage from './todos/todo-page'
 import ChevronLeft from '@/components/ChevronLeft'
 import React from 'react'
-import { Link, MetaFunction } from '@remix-run/react';
+import { Link, MetaFunction } from '@remix-run/react'
+import { NAME, Todos } from '@/lib/constants'
 
 export const meta: MetaFunction = () => {
-  return [
-    { title: "gloved.dev | Todo App" },
-    { name: "description", content: "A simple todo list web app. Uses local storage to save and get todos list even after reloading." },
-  ];
-};
-
+  return [{ title: NAME + ' | ' + Todos.title }, { name: 'description', content: Todos.description }]
+}
 export default function Page(): React.JSX.Element {
   return (
     <>
