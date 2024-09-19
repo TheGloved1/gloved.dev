@@ -1,4 +1,4 @@
-import Loading from '@/components/Loading'
+import Loading from '@/components/loading'
 import { Link } from '@remix-run/react'
 import React from 'react'
 import { useQuery } from '@tanstack/react-query'

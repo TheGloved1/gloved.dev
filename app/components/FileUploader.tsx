@@ -1,4 +1,4 @@
-import Loading from '@/components/Loading'
+import Loading from '@/components/loading'
 import { apiRoute } from '@/lib/utils'
 import { Link } from '@remix-run/react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'

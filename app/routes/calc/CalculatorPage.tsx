@@ -59,7 +59,7 @@ export default function CalculatorPage(): React.JSX.Element {
         </button>
       </Link>
       <div className='container flex h-dvh w-dvw flex-col items-center justify-center gap-12 px-4 py-16'>
-        <div id='calculator' className='w-full max-w-xs rounded-2xl bg-gray-900 font-primary sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl'>
+        <div id='calculator' className='font-primary w-full max-w-xs rounded-2xl bg-gray-900 sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl'>
           <textarea
             id='display'
             ref={textareaRef}
