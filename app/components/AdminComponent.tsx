@@ -1,35 +1,36 @@
 import Loading from '@/components/loading'
-import React from 'react'
 import { apiRoute } from '@/lib/utils'
-import axios from 'axios'
 import { useQuery } from '@tanstack/react-query'
+import axios from 'axios'
+import React from 'react'
 
 // Fetch client IP using axios
 const fetchClientIp = async () => {
-  const response = await axios.get('https://api64.ipify.org?format=json')
+  const response = await axios.get<{ ip: string }>('https://api64.ipify.org?format=json')
+  console.log('Client IP:', response.data.ip)
   return response.data.ip
 }
 
 // Fetch allowed IPs from the API
 const fetchAllowedIps = async () => {
-  const res = await fetch(apiRoute('/admin-ips'))
-  return res.json() as Promise<string[]>
+  const res = await axios.get<string[]>(apiRoute('/admin-ips'))
+  return res.data
 }
 
-export default function AdminComponent({ children }: { children: React.ReactNode }): React.JSX.Element | null {
-  const { data: clientIp, isLoading: isClientIpLoading, isError: isClientIpError } = useQuery({ queryKey: ['clientIp'], queryFn: fetchClientIp })
-  const { data: allowedIps, isLoading: isAllowedIpsLoading, isError: isAllowedIpsError } = useQuery({ queryKey: ['allowedIps'], queryFn: fetchAllowedIps })
+export default function AdminComponent({ children }: { children: React.ReactNode }): React.JSX.Element {
+  const clientIp = useQuery({ queryKey: ['clientIp'], queryFn: fetchClientIp })
+  const allowedIps = useQuery({ queryKey: ['allowedIps'], queryFn: fetchAllowedIps })
 
-  if (isClientIpLoading || isAllowedIpsLoading) {
+  if (clientIp.isLoading || allowedIps.isLoading) {
     return <Loading />
   }
 
-  if (isClientIpError || isAllowedIpsError || !clientIp || !allowedIps) {
+  if (clientIp.isError || allowedIps.isError || !clientIp.data || !allowedIps.data) {
     console.error('Failed to fetch data')
-    return null
+    return <></>
   }
 
-  const isAllowed = allowedIps.includes(clientIp)
+  const isAllowed = allowedIps.data.includes(clientIp.data)
 
   if (!isAllowed) {
     console.log('Client IP is not allowed')
@@ -37,5 +38,5 @@ export default function AdminComponent({ children }: { children: React.ReactNode
     console.log('Client IP is allowed')
   }
 
-  return isAllowed ? <>{children}</> : null
+  return isAllowed ? <>{children}</> : <></>
 }
