@@ -32,11 +32,7 @@ export default function FileUploader(): React.JSX.Element {
 
   const queryClient = useQueryClient()
 
-  const filesQuery = useQuery<string[], Error>({
-    queryKey: ['files'],
-    queryFn: fetchFiles,
-    initialData: [],
-  })
+  const filesQuery = useQuery<string[], Error>({ queryKey: ['files'], queryFn: fetchFiles, initialData: [] })
 
   const deleteMutation = useMutation({
     mutationFn: deleteFileApi,

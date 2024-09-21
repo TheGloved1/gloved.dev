@@ -16,25 +16,24 @@ async function fetchAllowedIps() {
 }
 
 export default function AdminComponent({ children }: { children: React.ReactNode }): React.JSX.Element {
-  const clientIp = useQuery({ queryKey: ['clientIp'], queryFn: fetchClientIp })
-  const allowedIps = useQuery({ queryKey: ['allowedIps'], queryFn: fetchAllowedIps })
+  const clientIp = useQuery<string>({ queryKey: ['clientIp'], queryFn: fetchClientIp })
+  const allowedIps = useQuery<string[]>({ queryKey: ['allowedIps'], queryFn: fetchAllowedIps, refetchOnWindowFocus: true })
 
-  if (clientIp.isLoading || allowedIps.isLoading) {
-    return <Loading />
-  }
+  const isLoading = clientIp.isLoading || allowedIps.isLoading
+  const isErrored = clientIp.isError || allowedIps.isError
+  const isAllowed = allowedIps.data?.includes(clientIp.data ?? '') ?? false
 
-  if (clientIp.isError || allowedIps.isError || !clientIp.data || !allowedIps.data) {
-    console.error('Failed to fetch data')
+  if (isErrored) {
     return <></>
   }
 
-  const isAllowed = allowedIps.data.includes(clientIp.data)
-
-  if (!isAllowed) {
-    console.log('Client IP is not allowed')
-  } else {
-    console.log('Client IP is allowed')
+  if (isLoading) {
+    return <Loading />
   }
 
-  return isAllowed ? <>{children}</> : <></>
+  if (isAllowed) {
+    return <>{children}</>
+  }
+
+  return <></>
 }

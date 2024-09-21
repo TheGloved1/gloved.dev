@@ -36,18 +36,18 @@ export default function Counter(): React.JSX.Element {
           className='btn btn-primary m-4 grid h-12 w-32 grid-cols-2 p-2 active:btn-active hover:bg-pink-500 active:bg-pink-700'
           onClick={() => handleButtonClick(count + 1)}
         >
-          <div>Increase Count</div>
+          Increase Count
           <span className='text-xs'>+</span>
         </button>
         <button
           className='btn btn-primary m-4 grid h-12 w-32 grid-cols-2 p-2 active:btn-active hover:bg-pink-500 active:bg-pink-700'
           onClick={() => handleButtonClick(count - 1)}
         >
-          <div>Decrease Count</div>
+          Decrease Count
           <span className='text-xs'>-</span>
         </button>
         <button className='btn btn-primary m-4 h-12 w-32 p-2 active:btn-active hover:bg-pink-500 active:bg-pink-700' onClick={() => handleButtonClick(0)}>
-          <div>Reset Count</div>
+          Reset Count
         </button>
       </div>
     </div>
