@@ -121,11 +121,11 @@ export default function CalculatorPage(): React.JSX.Element {
               <OperatorButton onClick={() => appendToDisplay('*')} disabled={isCalculating}>
                 {'x'}
               </OperatorButton>
-              <Button onClick={() => appendToDisplay('0')} disabled={isCalculating}>
-                {'0'}
-              </Button>
               <Button onClick={() => appendToDisplay('.')} disabled={isCalculating}>
                 {'.'}
+              </Button>
+              <Button onClick={() => appendToDisplay('0')} disabled={isCalculating}>
+                {'0'}
               </Button>
               <EqualsButton onClick={calculate} disabled={isCalculating}>
                 {'='}

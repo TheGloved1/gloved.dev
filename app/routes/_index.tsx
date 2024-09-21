@@ -1,14 +1,14 @@
 import AdminComponent from '@/components/AdminComponent'
 import BotButtons from '@/components/BotButtons'
 import Counter from '@/components/Counter'
-import { Black, Calc, Discord, Github, Hangman, Home, Todos } from '@/lib/constants'
+import { Black, Calc, Discord, Github, Hangman, Home, NAME, Todos } from '@/lib/constants'
 import type { MetaFunction } from '@remix-run/node'
 import { Link } from '@remix-run/react'
 import React from 'react'
 
 export const meta: MetaFunction = () => {
   return [
-    { title: 'gloved.dev' },
+    { title: NAME },
     { name: 'description', content: 'Made by Kaden Hood. A personal website for my projects and interests. Built using Next.js React Web Framework.' },
   ]
 }
@@ -18,7 +18,7 @@ export default function Page(): React.JSX.Element {
     <main className='flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-sky-950 to-[#1e210c] text-white'>
       <img
         src='/logo.png'
-        alt='Gloved.Dev Icon'
+        alt=''
         className='fixed left-1 top-1 hidden h-12 w-12 rounded-xl border-2 border-white shadow-lg sm:left-4 sm:top-4 sm:block sm:h-16 sm:w-16 sm:transform md:left-4 md:top-4 md:h-24 md:w-24 lg:left-4 lg:top-4 xl:left-4 xl:top-4 2xl:left-4 2xl:top-4'
       />
       <div className='container flex flex-col items-center justify-center gap-12 px-4 py-16'>

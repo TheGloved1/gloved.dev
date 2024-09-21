@@ -4,6 +4,7 @@ import { Link } from '@remix-run/react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import axios, { type AxiosResponse } from 'axios'
 import React, { useEffect, useState } from 'react'
+import { env } from '@/env'
 
 const fetchFiles = async () => {
   const response: AxiosResponse<string[]> = await axios.get(apiRoute('/files'))
@@ -25,7 +26,7 @@ const uploadFileApi = async (file: File) => {
 }
 
 export default function FileUploader(): React.JSX.Element {
-  const correctPassword = (import.meta.env.VITE_CLIENT_FILE_MANAGER_PASSKEY as string) ?? '7693' // Don't care about security here
+  const correctPassword = env.VITE_FILE_MANAGER_PASSKEY // Don't care about security here
   const [alert, setAlert] = useState<string>('')
   const [passwordEntered, setPasswordEntered] = useState<boolean>(false)
 

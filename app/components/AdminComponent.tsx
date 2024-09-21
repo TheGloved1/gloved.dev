@@ -4,15 +4,13 @@ import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import React from 'react'
 
-// Fetch client IP using axios
-const fetchClientIp = async () => {
+async function fetchClientIp() {
   const response = await axios.get<{ ip: string }>('https://api64.ipify.org?format=json')
   console.log('Client IP:', response.data.ip)
   return response.data.ip
 }
 
-// Fetch allowed IPs from the API
-const fetchAllowedIps = async () => {
+async function fetchAllowedIps() {
   const res = await axios.get<string[]>(apiRoute('/admin-ips'))
   return res.data
 }
