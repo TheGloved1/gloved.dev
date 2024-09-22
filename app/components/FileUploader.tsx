@@ -7,7 +7,7 @@ import React, { useEffect, useState } from 'react'
 import { env } from '@/env'
 
 const fetchFiles = async () => {
-  const response: AxiosResponse<string[]> = await axios.get(apiRoute('/files'))
+  const response: AxiosResponse<string[]> = await axios.get(apiRoute('/files/'))
   return response.data
 }
 
