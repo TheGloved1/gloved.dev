@@ -28,7 +28,7 @@ const queryClient = new QueryClient({
   },
 })
 
-export function Layout({ children }: { children: React.ReactNode }) {
+export function Layout({ children }: { children: React.ReactNode }): React.JSX.Element {
   return (
     <html lang='en'>
       <head>
@@ -51,6 +51,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
   )
 }
 
-export default function App() {
+export default function App(): React.JSX.Element {
   return <Outlet />
 }

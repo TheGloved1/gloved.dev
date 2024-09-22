@@ -12,13 +12,13 @@ const fetchFiles = async () => {
 }
 
 const deleteFileApi = async (file: string) => {
-  await axios.delete(apiRoute(`/delete/${file}`))
+  await axios.delete(apiRoute(`/files/delete/${file}`))
 }
 
 const uploadFileApi = async (file: File) => {
   const formData = new FormData()
   formData.append('file', file)
-  await axios.post(apiRoute('/upload'), formData, {
+  await axios.post(apiRoute('/files/upload'), formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
@@ -120,7 +120,7 @@ export default function FileUploader(): React.JSX.Element {
               <div className='alert alert-error'>An error occurred while fetching files.</div>
             : filesQuery.data.map((file) => (
                 <li className='flex w-64 flex-row p-1 text-[.2rem]' key={file}>
-                  <Link className='mx-2 w-64 truncate rounded-xl' to={apiRoute(`/download/${file}`)}>
+                  <Link className='mx-2 w-64 truncate rounded-xl' to={apiRoute(`/files/download/${file}`)}>
                     <button className='btn mx-2 rounded-xl p-3 hover:animate-pulse hover:bg-gray-700'>{file}</button>
                   </Link>
                   <button
