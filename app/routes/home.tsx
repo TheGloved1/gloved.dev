@@ -134,7 +134,6 @@ export default function Page(): React.JSX.Element {
             </Link>
           </ObserverSection>
         </div>
-        1
       </main>
     </>
   )

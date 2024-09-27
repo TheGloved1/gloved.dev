@@ -1,10 +1,10 @@
 import Loading from '@/components/loading'
 import { apiRoute } from '@/lib/utils'
-import { Link } from '@remix-run/react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import axios, { type AxiosResponse } from 'axios'
 import React, { useEffect, useState } from 'react'
 import { env } from '@/env'
+import FileButton from './FileButton'
 
 const fetchFiles = async () => {
   const response: AxiosResponse<string[]> = await axios.get(apiRoute('/files/'))
@@ -112,6 +112,7 @@ export default function FileUploader(): React.JSX.Element {
             ↻
           </button>
         </h2>
+        <h3 className='rounded-2xl bg-gray-500 bg-opacity-50 px-2 py-1 text-sm underline'>{'(Click file to Copy or Download)'}</h3>
 
         {filesQuery.isLoading && <Loading />}
         {!filesQuery.isLoading && filesQuery.data.length > 0 && (
@@ -120,9 +121,7 @@ export default function FileUploader(): React.JSX.Element {
               <div className='alert alert-error'>An error occurred while fetching files.</div>
             : filesQuery.data.map((file) => (
                 <li className='flex w-64 flex-row p-1 text-[.2rem]' key={file}>
-                  <Link className='mx-2 w-64 truncate rounded-xl' to={apiRoute(`/files/download/${file}`)}>
-                    <button className='btn mx-2 rounded-xl p-3 hover:animate-pulse hover:bg-gray-700'>{file}</button>
-                  </Link>
+                  <FileButton file={file} />
                   <button
                     disabled={false}
                     className='btn btn-square btn-warning rounded-xl bg-red-500 hover:bg-red-400'
