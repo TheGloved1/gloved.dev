@@ -1,5 +1,4 @@
 import AdminComponent from '@/components/AdminComponent'
-import BotButtons from '@/components/BotButtons'
 import Counter from '@/components/Counter'
 import { Black, Calc, Discord, Github, Hangman, Home, NAME, Todos } from '@/lib/constants'
 import type { MetaFunction } from '@remix-run/node'
@@ -80,7 +79,7 @@ export default function Page(): React.JSX.Element {
               <div className='text-lg'>{Discord.description}</div>
             </Link>
           </div>
-          <BotButtons />
+          {/* <BotButtons /> */}
           <Counter />
         </AdminComponent>
       </div>
