@@ -20,6 +20,11 @@ export default function FileButton({ file }: { file: string }): React.JSX.Elemen
     return videoExtensions.some((ext) => fileName.toLowerCase().endsWith(ext))
   }
 
+  const isImage = (fileName: string) => {
+    const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.svg', '.webp']
+    return imageExtensions.some((ext) => fileName.toLowerCase().endsWith(ext))
+  }
+
   const getMimeType = (fileName: string) => {
     const extension = fileName.split('.').pop()?.toLowerCase()
     switch (extension) {
@@ -51,13 +56,18 @@ export default function FileButton({ file }: { file: string }): React.JSX.Elemen
           <div className='z-10 rounded-xl bg-gray-800 p-4 shadow-lg'>
             <div className='row-span-2 grid items-center justify-center py-1'>
               <h2 className='p-4 text-base'>{file}</h2>
-              {isVideo(file) && (
+              {(isVideo(file) && (
                 <div className='mb-4 w-full max-w-md items-center justify-center'>
                   <VideoPreview src={previewUrl} type={getMimeType(file)} />
                 </div>
-              )}
+              )) ||
+                (isImage(file) && (
+                  <div className='mb-4 w-full max-w-md items-center justify-center'>
+                    <img src={fileUrl} alt={file} className='w-full max-w-md rounded-xl' />
+                  </div>
+                ))}
               <div>
-                <button onClick={copyToClipboard} className='btn m-2 rounded-xl p-4 hover:animate-pulse hover:bg-gray-700'>
+                <button onClick={() => copyToClipboard()} className='btn m-2 rounded-xl p-4 hover:animate-pulse hover:bg-gray-700'>
                   Copy
                 </button>
                 <Link to={fileUrl} className='btn m-2 rounded-xl p-4 hover:animate-pulse hover:bg-gray-700' onClick={() => setShowDialog(false)}>
