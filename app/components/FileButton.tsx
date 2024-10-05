@@ -12,7 +12,6 @@ export default function FileButton({ file }: { file: string }): React.JSX.Elemen
   const copyToClipboard = () => {
     navigator.clipboard.writeText(previewUrl)
     setShowDialog(false)
-    // Optionally, you can show a toast or alert to confirm the copy action
   }
 
   const isVideo = (fileName: string) => {
@@ -63,7 +62,16 @@ export default function FileButton({ file }: { file: string }): React.JSX.Elemen
               )) ||
                 (isImage(file) && (
                   <div className='mb-4 w-full max-w-md items-center justify-center'>
-                    <img src={fileUrl} alt={file} className='w-full max-w-md rounded-xl' />
+                    <Link
+                      to={previewUrl}
+                      onClick={() => {
+                        setShowDialog(false)
+                      }}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                    >
+                      <img src={previewUrl} alt={file} className='w-full max-w-md rounded-xl' />
+                    </Link>
                   </div>
                 ))}
               <div>
