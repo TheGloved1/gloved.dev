@@ -7,9 +7,10 @@ export default function FileButton({ file }: { file: string }): React.JSX.Elemen
   const [showDialog, setShowDialog] = useState(false)
   const encodedFileName = encodeURIComponent(file)
   const fileUrl = apiRoute(`/files/download/${encodedFileName}`)
+  const previewUrl = apiRoute(`/files/view/${encodedFileName}`)
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(fileUrl)
+    navigator.clipboard.writeText(previewUrl)
     setShowDialog(false)
     // Optionally, you can show a toast or alert to confirm the copy action
   }
@@ -51,8 +52,8 @@ export default function FileButton({ file }: { file: string }): React.JSX.Elemen
             <div className='row-span-2 grid items-center justify-center py-1'>
               <h2 className='p-4 text-base'>{file}</h2>
               {isVideo(file) && (
-                <div className='mb-4 w-full max-w-md'>
-                  <VideoPreview src={fileUrl} type={getMimeType(file)} />
+                <div className='mb-4 w-full max-w-md items-center justify-center'>
+                  <VideoPreview src={previewUrl} type={getMimeType(file)} />
                 </div>
               )}
               <div>
