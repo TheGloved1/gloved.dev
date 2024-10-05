@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from '@remix-run/react'
 import { apiRoute } from '@/lib/utils'
+import VideoPreview from './VideoPreview'
 
 export default function FileButton({ file }: { file: string }): React.JSX.Element {
   const [showDialog, setShowDialog] = useState(false)
@@ -11,6 +12,29 @@ export default function FileButton({ file }: { file: string }): React.JSX.Elemen
     navigator.clipboard.writeText(fileUrl)
     setShowDialog(false)
     // Optionally, you can show a toast or alert to confirm the copy action
+  }
+
+  const isVideo = (fileName: string) => {
+    const videoExtensions = ['.mp4', '.mov', '.avi', '.webm', '.mkv']
+    return videoExtensions.some((ext) => fileName.toLowerCase().endsWith(ext))
+  }
+
+  const getMimeType = (fileName: string) => {
+    const extension = fileName.split('.').pop()?.toLowerCase()
+    switch (extension) {
+      case 'mp4':
+        return 'video/mp4'
+      case 'mov':
+        return 'video/quicktime'
+      case 'avi':
+        return 'video/x-msvideo'
+      case 'webm':
+        return 'video/webm'
+      case 'mkv':
+        return 'video/x-matroska'
+      default:
+        return 'video/mp4' // fallback to mp4
+    }
   }
 
   return (
@@ -26,6 +50,11 @@ export default function FileButton({ file }: { file: string }): React.JSX.Elemen
           <div className='z-10 rounded-xl bg-gray-800 p-4 shadow-lg'>
             <div className='row-span-2 grid items-center justify-center py-1'>
               <h2 className='p-4 text-base'>{file}</h2>
+              {isVideo(file) && (
+                <div className='mb-4 w-full max-w-md'>
+                  <VideoPreview src={fileUrl} type={getMimeType(file)} />
+                </div>
+              )}
               <div>
                 <button onClick={copyToClipboard} className='btn m-2 rounded-xl p-4 hover:animate-pulse hover:bg-gray-700'>
                   Copy
