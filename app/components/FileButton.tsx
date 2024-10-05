@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from '@remix-run/react'
 import { apiRoute } from '@/lib/utils'
-import VideoPreview from './VideoPreview'
+import VideoPreview from '@/components/VideoPreview'
 
 export default function FileButton({ file }: { file: string }): React.JSX.Element {
   const [showDialog, setShowDialog] = useState(false)
