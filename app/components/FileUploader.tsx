@@ -15,13 +15,14 @@ const deleteFileApi = async (file: string) => {
   await axios.delete(apiRoute(`/files/delete/${file}`))
 }
 
-const uploadFileApi = async (file: File) => {
+const uploadFileApi = async (file: File, onUploadProgress: (progressEvent: import('axios').AxiosProgressEvent) => void) => {
   const formData = new FormData()
   formData.append('file', file)
   await axios.post(apiRoute('/files/upload'), formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
+    onUploadProgress,
   })
 }
 
@@ -29,6 +30,7 @@ export default function FileUploader(): React.JSX.Element {
   const correctPassword = env.VITE_FILE_MANAGER_PASSKEY // Don't care about security here
   const [alert, setAlert] = useState<string>('')
   const [passwordEntered, setPasswordEntered] = useState<boolean>(false)
+  const [uploadProgress, setUploadProgress] = useState<number>(0)
 
   const queryClient = useQueryClient()
 
@@ -42,9 +44,16 @@ export default function FileUploader(): React.JSX.Element {
   })
 
   const uploadMutation = useMutation({
-    mutationFn: uploadFileApi,
+    mutationFn: (file: File) =>
+      uploadFileApi(file, (progressEvent) => {
+        if (progressEvent.total) {
+          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+          setUploadProgress(percentCompleted)
+        }
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['files'] })
+      setUploadProgress(0)
     },
   })
 
@@ -85,10 +94,16 @@ export default function FileUploader(): React.JSX.Element {
 
   async function uploadFile(event: React.ChangeEvent<HTMLInputElement>): Promise<void> {
     try {
-      const file = event.target.files?.[0]
+      const files = event.target.files
+      if (!files || files.length === 0) {
+        console.error('No files found!')
+        setAlert('No files found!')
+        return
+      }
+      const file = files[0]
       if (!file) return
 
-      uploadMutation.mutate(file)
+      await uploadMutation.mutate(file)
       setAlert('')
     } catch (error) {
       console.error('An error occurred while uploading file:', error)
@@ -105,6 +120,13 @@ export default function FileUploader(): React.JSX.Element {
 
         <label htmlFor='uploadBtn'>{'Upload File'}</label>
         <input id='uploadBtn' className='glass file-input file-input-primary max-w-80 rounded-xl bg-black hover:animate-pulse' type='file' onChange={uploadFile} />
+
+        {uploadProgress > 0 && uploadProgress < 100 && (
+          <div className='mt-2 w-full'>
+            <progress className='progress progress-primary w-full' value={uploadProgress} max='100'></progress>
+            <p className='text-center'>{`Uploading: ${uploadProgress}%`}</p>
+          </div>
+        )}
 
         <h2 className='place-items-center content-center justify-center pb-4 pt-4 text-center'>
           {'Download Files '}
