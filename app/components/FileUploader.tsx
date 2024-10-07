@@ -6,18 +6,25 @@ import React, { useEffect, useState } from 'react'
 import { env } from '@/env'
 import FileButton from './FileButton'
 
+interface FileInfo {
+  name: string
+  isTemp: boolean
+  createdAt: string
+}
+
 const fetchFiles = async () => {
-  const response: AxiosResponse<string[]> = await axios.get(apiRoute('/files/'))
+  const response: AxiosResponse<FileInfo[]> = await axios.get(apiRoute('/files/'))
   return response.data
 }
 
-const deleteFileApi = async (file: string) => {
-  await axios.delete(apiRoute(`/files/delete/${file}`))
+const deleteFileApi = async (file: string, isTemp: boolean) => {
+  await axios.delete(apiRoute(`/files/delete/${file}?temp=${isTemp}`))
 }
 
-const uploadFileApi = async (file: File, onUploadProgress: (progressEvent: import('axios').AxiosProgressEvent) => void) => {
+const uploadFileApi = async (file: File, isTemp: boolean, onUploadProgress: (progressEvent: import('axios').AxiosProgressEvent) => void) => {
   const formData = new FormData()
   formData.append('file', file)
+  formData.append('temp', isTemp.toString())
   await axios.post(apiRoute('/files/upload'), formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
@@ -31,13 +38,14 @@ export default function FileUploader(): React.JSX.Element {
   const [alert, setAlert] = useState<string>('')
   const [passwordEntered, setPasswordEntered] = useState<boolean>(false)
   const [uploadProgress, setUploadProgress] = useState<number>(0)
+  const [isTemp, setIsTemp] = useState<boolean>(false)
 
   const queryClient = useQueryClient()
 
-  const filesQuery = useQuery<string[], Error>({ queryKey: ['files'], queryFn: fetchFiles, initialData: [] })
+  const filesQuery = useQuery<FileInfo[], Error>({ queryKey: ['files'], queryFn: fetchFiles, initialData: [] })
 
   const deleteMutation = useMutation({
-    mutationFn: deleteFileApi,
+    mutationFn: ({ file, isTemp }: { file: string; isTemp: boolean }) => deleteFileApi(file, isTemp),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['files'] })
     },
@@ -45,7 +53,7 @@ export default function FileUploader(): React.JSX.Element {
 
   const uploadMutation = useMutation({
     mutationFn: (file: File) =>
-      uploadFileApi(file, (progressEvent) => {
+      uploadFileApi(file, isTemp, (progressEvent) => {
         if (progressEvent.total) {
           const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
           setUploadProgress(percentCompleted)
@@ -69,7 +77,7 @@ export default function FileUploader(): React.JSX.Element {
     return () => clearTimeout(timer)
   }, [alert])
 
-  async function deleteFile(file: string): Promise<void> {
+  async function deleteFile(file: string, isTemp: boolean): Promise<void> {
     if (!passwordEntered) {
       const password = prompt(`Enter passkey to delete files`)
       if (!password) {
@@ -84,7 +92,7 @@ export default function FileUploader(): React.JSX.Element {
       }
     }
     try {
-      deleteMutation.mutate(file)
+      deleteMutation.mutate({ file, isTemp })
       setAlert('')
     } catch (error) {
       console.error('An error occurred while deleting file:', error)
@@ -118,7 +126,16 @@ export default function FileUploader(): React.JSX.Element {
         <p className='text-[0.5rem] md:text-sm'>{"(Don't download random files off the internet)"}</p>
         <br />
 
-        <label htmlFor='uploadBtn'>{'Upload File'}</label>
+        <label htmlFor='uploadBtn' className='label mt-2 pt-2'>
+          {'Upload File'}
+        </label>
+        <div className='form-control'>
+          <label className='label m-2 cursor-pointer rounded-xl bg-gray-600 p-2 text-black hover:bg-gray-700'>
+            <span className='label-text text-balance'>{'Temporary file (24h)'}</span>
+            <span className='w-2'></span>
+            <input type='checkbox' checked={isTemp} onChange={(e) => setIsTemp(e.target.checked)} className='checkbox' />
+          </label>
+        </div>
         <input id='uploadBtn' className='glass file-input file-input-primary max-w-80 rounded-xl bg-black hover:animate-pulse' type='file' onChange={uploadFile} />
 
         {uploadProgress > 0 && uploadProgress < 100 && (
@@ -138,24 +155,55 @@ export default function FileUploader(): React.JSX.Element {
 
         {filesQuery.isLoading && <Loading />}
         {!filesQuery.isLoading && filesQuery.data.length > 0 && (
-          <ul className='flex max-h-48 max-w-96 flex-col flex-wrap overflow-x-auto rounded-xl border-2 border-white p-[.2rem] lg:max-h-72'>
-            {filesQuery.isError ?
-              <div className='alert alert-error'>An error occurred while fetching files.</div>
-            : filesQuery.data.map((file) => (
-                <li className='flex w-64 flex-row p-1 text-[.2rem]' key={file}>
-                  <FileButton file={file} />
-                  <button
-                    disabled={false}
-                    className='btn btn-square btn-warning rounded-xl bg-red-500 hover:bg-red-400'
-                    onClick={() => deleteFile(file)}
-                    title='Delete File'
-                  >
-                    {'X'}
-                  </button>
-                </li>
-              ))
-            }
-          </ul>
+          <>
+            {filesQuery.data.some((file) => file.isTemp) && <h4>Permanent Files</h4>}
+            <ul className='flex max-h-48 max-w-96 flex-col flex-wrap overflow-x-auto rounded-xl border-2 border-white p-[.2rem] lg:max-h-72'>
+              {filesQuery.isError ?
+                <div className='alert alert-error'>An error occurred while fetching files.</div>
+              : filesQuery.data
+                  .filter((file) => !file.isTemp)
+                  .map((file) => (
+                    <li className='flex w-64 flex-row p-1 text-[.2rem]' key={file.name}>
+                      <FileButton file={file.name} />
+                      <button
+                        disabled={false}
+                        className='btn btn-square btn-warning rounded-xl bg-red-500 hover:bg-red-400'
+                        onClick={() => deleteFile(file.name, file.isTemp)}
+                        title='Delete File'
+                      >
+                        {'X'}
+                      </button>
+                    </li>
+                  ))
+              }
+            </ul>
+
+            {filesQuery.data.some((file) => file.isTemp) && (
+              <>
+                <h4>Temporary Files</h4>
+                <ul className='flex max-h-48 max-w-96 flex-col flex-wrap overflow-x-auto rounded-xl border-2 border-white p-[.2rem] lg:max-h-72'>
+                  {filesQuery.isError ?
+                    <div className='alert alert-error'>An error occurred while fetching files.</div>
+                  : filesQuery.data
+                      .filter((file) => file.isTemp)
+                      .map((file) => (
+                        <li className='flex w-64 flex-row p-1 text-[.2rem]' key={file.name}>
+                          <FileButton file={file.name} temp />
+                          <button
+                            disabled={false}
+                            className='btn btn-square btn-warning rounded-xl bg-red-500 hover:bg-red-400'
+                            onClick={() => deleteFile(file.name, file.isTemp)}
+                            title='Delete File'
+                          >
+                            {'X'}
+                          </button>
+                        </li>
+                      ))
+                  }
+                </ul>
+              </>
+            )}
+          </>
         )}
         {!filesQuery.isLoading && filesQuery.data.length === 0 && <li>{'No files found'}</li>}
       </div>

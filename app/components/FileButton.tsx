@@ -3,11 +3,12 @@ import { Link } from '@remix-run/react'
 import { apiRoute } from '@/lib/utils'
 import VideoPreview from '@/components/VideoPreview'
 
-export default function FileButton({ file }: { file: string }): React.JSX.Element {
+export default function FileButton({ file, temp: isTemp }: { file: string; temp?: boolean }): React.JSX.Element {
   const [showDialog, setShowDialog] = useState(false)
   const encodedFileName = encodeURIComponent(file)
-  const fileUrl = apiRoute(`/files/download/${encodedFileName}`)
-  const previewUrl = apiRoute(`/files/view/${encodedFileName}`)
+  const tempQuery = isTemp ? '?temp=true' : ''
+  const fileUrl = apiRoute(`/files/download/${encodedFileName}${tempQuery}`)
+  const previewUrl = apiRoute(`/files/view/${encodedFileName}${tempQuery}`)
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(previewUrl)
