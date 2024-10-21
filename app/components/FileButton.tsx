@@ -31,8 +31,6 @@ export default function FileButton({ file, temp: isTemp, size }: { file: string;
     switch (extension) {
       case 'mp4':
         return 'video/mp4'
-      case 'mov':
-        return 'video/quicktime'
       case 'avi':
         return 'video/x-msvideo'
       case 'webm':
@@ -40,16 +38,16 @@ export default function FileButton({ file, temp: isTemp, size }: { file: string;
       case 'mkv':
         return 'video/x-matroska'
       default:
-        return 'video/mp4' // fallback to mp4
+        return 'video/mp4'
     }
   }
 
   return (
     <>
       <div className='mx-2 w-64 truncate rounded-xl'>
-        <Button onClick={() => setShowDialog(true)} className='btn mx-2 rounded-xl p-3 hover:animate-pulse hover:bg-gray-700'>
+        <button onClick={() => setShowDialog(true)} className='btn mx-2 rounded-xl p-3 hover:animate-pulse hover:bg-gray-700'>
           {file}
-        </Button>
+        </button>
       </div>
 
       {showDialog && (
