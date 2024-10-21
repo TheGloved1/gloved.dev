@@ -2,8 +2,9 @@ import { useState } from 'react'
 import { Link } from '@remix-run/react'
 import { apiRoute } from '@/lib/utils'
 import VideoPreview from '@/components/VideoPreview'
+import Button, { LinkButton } from '@/components/Buttons'
 
-export default function FileButton({ file, temp: isTemp }: { file: string; temp?: boolean }): React.JSX.Element {
+export default function FileButton({ file, temp: isTemp, size }: { file: string; temp?: boolean; size?: string }): React.JSX.Element {
   const [showDialog, setShowDialog] = useState(false)
   const encodedFileName = encodeURIComponent(file)
   const tempQuery = isTemp ? '?temp=true' : ''
@@ -46,16 +47,18 @@ export default function FileButton({ file, temp: isTemp }: { file: string; temp?
   return (
     <>
       <div className='mx-2 w-64 truncate rounded-xl'>
-        <button onClick={() => setShowDialog(true)} className='btn mx-2 rounded-xl p-3 hover:animate-pulse hover:bg-gray-700'>
+        <Button onClick={() => setShowDialog(true)} className='btn mx-2 rounded-xl p-3 hover:animate-pulse hover:bg-gray-700'>
           {file}
-        </button>
+        </Button>
       </div>
 
       {showDialog && (
         <div className={`fixed inset-0 z-50 flex items-center justify-center bg-opacity-50`}>
           <div className='z-10 rounded-xl bg-gray-800 p-4 shadow-lg'>
             <div className='row-span-2 grid items-center justify-center py-1'>
-              <h2 className='p-4 text-base'>{file}</h2>
+              <h2 className='p-4 text-base'>
+                {file} ({size})
+              </h2>
               {(isVideo(file) && (
                 <div className='mb-4 w-full max-w-md items-center justify-center'>
                   <VideoPreview src={previewUrl} type={getMimeType(file)} />
@@ -74,14 +77,18 @@ export default function FileButton({ file, temp: isTemp }: { file: string; temp?
                       <img src={previewUrl} alt={file} className='w-full max-w-md rounded-xl' />
                     </Link>
                   </div>
-                ))}
-              <div>
-                <button onClick={() => copyToClipboard()} className='btn m-2 rounded-xl p-4 hover:animate-pulse hover:bg-gray-700'>
-                  Copy
-                </button>
-                <Link to={fileUrl} className='btn m-2 rounded-xl p-4 hover:animate-pulse hover:bg-gray-700' onClick={() => setShowDialog(false)}>
+                )) ||
+                null}
+              <div className='grid grid-cols-2 items-center justify-center'>
+                <Button onClick={() => copyToClipboard()}>Copy</Button>
+                <LinkButton to={fileUrl} onClick={() => setShowDialog(false)}>
                   Download
-                </Link>
+                </LinkButton>
+              </div>
+              <div className='flex items-center justify-center'>
+                <Button onClick={() => setShowDialog(false)} className='btn btn-warning m-2 rounded-xl p-4 hover:animate-pulse'>
+                  Close
+                </Button>
               </div>
             </div>
           </div>

@@ -4,12 +4,14 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import axios, { type AxiosResponse } from 'axios'
 import React, { useEffect, useState } from 'react'
 import { env } from '@/env'
-import FileButton from './FileButton'
+import FileButton from '@/components/FileButton'
+import ErrorAlert from '@/components/ErrorAlert'
 
 interface FileInfo {
   name: string
   isTemp: boolean
   createdAt: string
+  size: string
 }
 
 const fetchFiles = async () => {
@@ -78,7 +80,9 @@ export default function FileUploader(): React.JSX.Element {
   }, [alert])
 
   async function deleteFile(file: string, isTemp: boolean): Promise<void> {
+    console.log('delete file button clicked')
     if (!passwordEntered) {
+      console.log('password entered')
       const password = prompt(`Enter passkey to delete files`)
       if (!password) {
         return
@@ -157,14 +161,14 @@ export default function FileUploader(): React.JSX.Element {
         {!filesQuery.isLoading && filesQuery.data.length > 0 && (
           <>
             {filesQuery.data.some((file) => file.isTemp) && <h4>Permanent Files</h4>}
-            <ul className='flex max-h-48 max-w-96 flex-col flex-wrap overflow-x-auto rounded-xl border-2 border-white p-[.2rem] lg:max-h-72'>
+            <ul className='flex max-h-48 max-w-96 flex-col flex-wrap overflow-x-auto rounded-xl border-2 border-white p-[.2rem] md:max-h-60 lg:max-h-72'>
               {filesQuery.isError ?
                 <div className='alert alert-error'>An error occurred while fetching files.</div>
               : filesQuery.data
                   .filter((file) => !file.isTemp)
                   .map((file) => (
                     <li className='flex w-64 flex-row p-1 text-[.2rem]' key={file.name}>
-                      <FileButton file={file.name} />
+                      <FileButton file={file.name} size={file.size} />
                       <button
                         disabled={false}
                         className='btn btn-square btn-warning rounded-xl bg-red-500 hover:bg-red-400'
@@ -181,14 +185,14 @@ export default function FileUploader(): React.JSX.Element {
             {filesQuery.data.some((file) => file.isTemp) && (
               <>
                 <h4>Temporary Files</h4>
-                <ul className='flex max-h-48 max-w-96 flex-col flex-wrap overflow-x-auto rounded-xl border-2 border-white p-[.2rem] lg:max-h-72'>
+                <ul className='flex max-h-48 max-w-96 flex-col flex-wrap overflow-x-auto rounded-xl border-2 border-white p-[.2rem] md:max-h-60 lg:max-h-72'>
                   {filesQuery.isError ?
                     <div className='alert alert-error'>An error occurred while fetching files.</div>
                   : filesQuery.data
                       .filter((file) => file.isTemp)
                       .map((file) => (
                         <li className='flex w-64 flex-row p-1 text-[.2rem]' key={file.name}>
-                          <FileButton file={file.name} temp />
+                          <FileButton file={file.name} size={file.size} temp />
                           <button
                             disabled={false}
                             className='btn btn-square btn-warning rounded-xl bg-red-500 hover:bg-red-400'
@@ -207,14 +211,7 @@ export default function FileUploader(): React.JSX.Element {
         )}
         {!filesQuery.isLoading && filesQuery.data.length === 0 && <li>{'No files found'}</li>}
       </div>
-      {alert !== '' && (
-        <div role='alert' className='alert alert-error m-2'>
-          <svg xmlns='http://www.w3.org/2000/svg' className='h-6 w-6 shrink-0 stroke-current' fill='none' viewBox='0 0 24 24'>
-            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth='2' d='M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z' />
-          </svg>
-          <span>{alert}</span>
-        </div>
-      )}
+      {alert !== '' && <ErrorAlert alert={alert} />}
     </>
   )
 }
