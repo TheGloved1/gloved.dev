@@ -1,11 +1,12 @@
 import '@/tailwind.css'
 import { LinksFunction } from '@remix-run/node'
-import { Links, Meta, Outlet, Scripts, ScrollRestoration } from '@remix-run/react'
+import { Links, Meta, Outlet, Scripts, ScrollRestoration, useRouteError } from '@remix-run/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/remix'
 import React from 'react'
+import { LinkButton } from '@/components/Buttons'
 
 export const links: LinksFunction = () => {
   return [
@@ -15,6 +16,24 @@ export const links: LinksFunction = () => {
       type: 'image/png',
     },
   ]
+}
+
+export function ErrorBoundary(): React.JSX.Element {
+  const routeError = useRouteError()
+  return (
+    <>
+      <head>
+        <title>Error</title>
+        <Meta />
+        <Links />
+      </head>
+      <body className='min-h-svh font-jetbrains'>
+        <LinkButton to={'/'}>{'Home'}</LinkButton>
+        <div>{`Encoutered an error: ${routeError}`}</div>
+        <Scripts />
+      </body>
+    </>
+  )
 }
 
 const queryClient = new QueryClient({

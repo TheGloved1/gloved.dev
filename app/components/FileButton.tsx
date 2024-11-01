@@ -4,10 +4,16 @@ import { apiRoute } from '@/lib/utils'
 import VideoPreview from '@/components/VideoPreview'
 import Button, { LinkButton } from '@/components/Buttons'
 
-export default function FileButton({ file, temp: isTemp, size }: { file: string; temp?: boolean; size?: string }): React.JSX.Element {
+type FileButtonProps = {
+  file: string
+  temp?: boolean
+  size?: string
+}
+
+export default function FileButton({ file, temp, size }: FileButtonProps): React.JSX.Element {
   const [showDialog, setShowDialog] = useState(false)
   const encodedFileName = encodeURIComponent(file)
-  const tempQuery = isTemp ? '?temp=true' : ''
+  const tempQuery = temp ? '?temp=true' : ''
   const fileUrl = apiRoute(`/files/download/${encodedFileName}${tempQuery}`)
   const previewUrl = apiRoute(`/files/view/${encodedFileName}${tempQuery}`)
 
@@ -29,8 +35,6 @@ export default function FileButton({ file, temp: isTemp, size }: { file: string;
   const getMimeType = (fileName: string) => {
     const extension = fileName.split('.').pop()?.toLowerCase()
     switch (extension) {
-      case 'mp4':
-        return 'video/mp4'
       case 'avi':
         return 'video/x-msvideo'
       case 'webm':
@@ -58,13 +62,14 @@ export default function FileButton({ file, temp: isTemp, size }: { file: string;
                 {file} ({size})
               </h2>
               {(isVideo(file) && (
-                <div className='mb-4 w-full max-w-md items-center justify-center'>
-                  <VideoPreview src={previewUrl} type={getMimeType(file)} />
+                <div className='mb-4 w-full max-w-md items-center justify-center self-center'>
+                  <VideoPreview className='w-full max-w-md rounded-xl' src={previewUrl} type={getMimeType(file)} />
                 </div>
               )) ||
                 (isImage(file) && (
                   <div className='mb-4 w-full max-w-md items-center justify-center'>
                     <Link
+                      className='block w-full max-w-md rounded-xl'
                       to={previewUrl}
                       onClick={() => {
                         setShowDialog(false)

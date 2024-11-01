@@ -10,7 +10,10 @@ import { WIPHeader } from './home/WIPHeader'
 export const meta: MetaFunction = () => {
   return [
     { title: 'gloved.dev | Home' },
-    { name: 'description', content: 'The home page for my About Me based web project built with the Next.js React Web Framework' },
+    {
+      name: 'description',
+      content: 'The home page for my About Me based web project built with the Next.js React Web Framework',
+    },
     { name: 'icons', content: 'https://avatars.githubusercontent.com/u/96776176?v=4' },
   ]
 }
@@ -22,7 +25,7 @@ export default function Page(): React.JSX.Element {
   return (
     <>
       <div className='fixed left-0 right-0 top-0 z-[1000]'>
-        <div className='navbar bg-base-100'>
+        <div className='navbar bg-zinc-800'>
           <div className='navbar-start'>
             <Link to={'/'} className='btn btn-ghost text-xl'>
               <ChevronLeft />
@@ -32,11 +35,17 @@ export default function Page(): React.JSX.Element {
           <div className='navbar-end flex md:hidden'>
             <div className='dropdown'>
               <div role='button' className='btn btn-ghost md:hidden'>
-                <svg xmlns='http://www.w3.org/2000/svg' className='h-5 w-5' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+                <svg
+                  xmlns='http://www.w3.org/2000/svg'
+                  className='h-5 w-5'
+                  fill='none'
+                  viewBox='0 0 24 24'
+                  stroke='currentColor'
+                >
                   <path strokeLinecap='round' strokeLinejoin='round' strokeWidth='2' d='M4 6h16M4 12h8m-8 6h16' />
                 </svg>
               </div>
-              <ul className='menu dropdown-content menu-sm z-[1] mt-3 w-44 -translate-x-32 rounded-box bg-base-100 p-2 shadow'>
+              <ul className='menu dropdown-content menu-sm z-[1] mt-3 w-44 -translate-x-32 rounded-box bg-zinc-800 p-2 shadow'>
                 {sections.map((section) => (
                   <li key={section}>
                     <ScrollLink to={`#${section}`}>{section}</ScrollLink>
@@ -48,11 +57,17 @@ export default function Page(): React.JSX.Element {
           <div className='navbar-center hidden md:flex'>
             <div className='dropdown'>
               <div role='button' className='btn btn-ghost md:hidden'>
-                <svg xmlns='http://www.w3.org/2000/svg' className='h-5 w-5' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+                <svg
+                  xmlns='http://www.w3.org/2000/svg'
+                  className='h-5 w-5'
+                  fill='none'
+                  viewBox='0 0 24 24'
+                  stroke='currentColor'
+                >
                   <path strokeLinecap='round' strokeLinejoin='round' strokeWidth='2' d='M4 6h16M4 12h8m-8 6h16' />
                 </svg>
               </div>
-              <ul className='menu dropdown-content menu-sm z-[1] mt-3 w-52 rounded-box bg-base-100 p-2 shadow'>
+              <ul className='menu dropdown-content menu-sm z-[1] mt-3 w-52 rounded-box bg-zinc-800 p-2 shadow'>
                 {sections.map((section) => (
                   <li key={section}>
                     <ScrollLink to={`#${section}`}>{section}</ScrollLink>
@@ -112,8 +127,8 @@ export default function Page(): React.JSX.Element {
             <p>{'Since 2023 - Present'}</p>
             <p className='p-3 text-xl'></p>
             <p>
-              <strong>{'Role: '}</strong>
-              {'Programmer'}
+              <strong>{'Roles: '}</strong>
+              {'Programmer & Mentor'}
             </p>
             <p>
               <strong>{'Language: '}</strong>
@@ -130,7 +145,10 @@ export default function Page(): React.JSX.Element {
           <ObserverSection id={sections[4]}>
             <FileUploader />
             <Link to={'/file-uploader'} className='group btn m-4 text-xl'>
-              Standalone Version <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>-&gt;</span>
+              Standalone Version{' '}
+              <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
+                -&gt;
+              </span>
             </Link>
           </ObserverSection>
         </div>

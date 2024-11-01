@@ -40,3 +40,12 @@ export async function apiFetch(route: string, options?: RequestInit) {
 export function apiRoute(route: string) {
   return `${API}${route}`
 }
+
+export function checkDevMode(): boolean {
+  const environment = process.env.NODE_ENV
+
+  if (environment === 'development') {
+    return true
+  }
+  return false
+}
