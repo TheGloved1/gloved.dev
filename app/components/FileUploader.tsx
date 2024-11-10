@@ -1,7 +1,7 @@
 import Loading from '@/components/loading'
 import { apiRoute } from '@/lib/utils'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import axios, { type AxiosResponse } from 'axios'
+import axios, { type AxiosResponse, type AxiosProgressEvent } from 'axios'
 import React, { useEffect, useState } from 'react'
 import { env } from '@/env'
 import FileButton from '@/components/FileButton'
@@ -23,7 +23,11 @@ const deleteFileApi = async (file: string, isTemp: boolean) => {
   await axios.delete(apiRoute(`/files/delete/${file}?temp=${isTemp}`))
 }
 
-const uploadFileApi = async (file: File, isTemp: boolean, onUploadProgress: (progressEvent: import('axios').AxiosProgressEvent) => void) => {
+const uploadFileApi = async (
+  file: File,
+  isTemp: boolean,
+  onUploadProgress: (progressEvent: AxiosProgressEvent) => void
+) => {
   const formData = new FormData()
   formData.append('file', file)
   formData.append('temp', isTemp.toString())
@@ -140,7 +144,12 @@ export default function FileUploader(): React.JSX.Element {
             <input type='checkbox' checked={isTemp} onChange={(e) => setIsTemp(e.target.checked)} className='checkbox' />
           </label>
         </div>
-        <input id='uploadBtn' className='glass file-input file-input-primary max-w-80 rounded-xl bg-black hover:animate-pulse' type='file' onChange={uploadFile} />
+        <input
+          id='uploadBtn'
+          className='glass file-input file-input-primary max-w-80 rounded-xl bg-black hover:animate-pulse'
+          type='file'
+          onChange={uploadFile}
+        />
 
         {uploadProgress > 0 && uploadProgress < 100 && (
           <div className='mt-2 w-full'>
@@ -151,11 +160,17 @@ export default function FileUploader(): React.JSX.Element {
 
         <h2 className='place-items-center content-center justify-center pb-4 pt-4 text-center'>
           {'Download Files '}
-          <button className='btn btn-circle btn-sm hover:animate-spin' onClick={() => queryClient.invalidateQueries({ queryKey: ['files'] })} title='Refresh Files'>
+          <button
+            className='btn btn-circle btn-sm hover:animate-spin'
+            onClick={() => queryClient.invalidateQueries({ queryKey: ['files'] })}
+            title='Refresh Files'
+          >
             ↻
           </button>
         </h2>
-        <h3 className='rounded-2xl bg-gray-500 bg-opacity-50 px-2 py-1 text-sm underline'>{'(Click file to Copy or Download)'}</h3>
+        <h3 className='rounded-2xl bg-gray-500 bg-opacity-50 px-2 py-1 text-sm underline'>
+          {'(Click file to Copy or Download)'}
+        </h3>
 
         {filesQuery.isLoading && <Loading />}
         {!filesQuery.isLoading && filesQuery.data.length > 0 && (

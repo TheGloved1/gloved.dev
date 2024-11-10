@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 
-export function WIPHeader() {
+export function WIPHeader(): React.JSX.Element | null {
   const [isVisible, setIsVisible] = useState(true)
   const [isFading, setIsFading] = useState(false)
 

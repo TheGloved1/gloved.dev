@@ -45,7 +45,7 @@ export default function Page(): React.JSX.Element {
                   <path strokeLinecap='round' strokeLinejoin='round' strokeWidth='2' d='M4 6h16M4 12h8m-8 6h16' />
                 </svg>
               </div>
-              <ul className='menu dropdown-content menu-sm z-[1] mt-3 w-44 -translate-x-32 rounded-box bg-zinc-800 p-2 shadow'>
+              <ul className='menu dropdown-content menu-sm z-[1000] mt-3 w-44 -translate-x-48 rounded-box bg-zinc-800 p-2 shadow'>
                 {sections.map((section) => (
                   <li key={section}>
                     <ScrollLink to={`#${section}`}>{section}</ScrollLink>
@@ -56,7 +56,7 @@ export default function Page(): React.JSX.Element {
           </div>
           <div className='navbar-center hidden md:flex'>
             <div className='dropdown'>
-              <div role='button' className='btn btn-ghost md:hidden'>
+              <div role='button' className='btn btn-ghost hidden'>
                 <svg
                   xmlns='http://www.w3.org/2000/svg'
                   className='h-5 w-5'
@@ -67,7 +67,7 @@ export default function Page(): React.JSX.Element {
                   <path strokeLinecap='round' strokeLinejoin='round' strokeWidth='2' d='M4 6h16M4 12h8m-8 6h16' />
                 </svg>
               </div>
-              <ul className='menu dropdown-content menu-sm z-[1] mt-3 w-52 rounded-box bg-zinc-800 p-2 shadow'>
+              <ul className='menu dropdown-content menu-sm z-[1000] mt-3 w-52 -translate-x-48 rounded-box bg-zinc-800 p-2 shadow'>
                 {sections.map((section) => (
                   <li key={section}>
                     <ScrollLink to={`#${section}`}>{section}</ScrollLink>
