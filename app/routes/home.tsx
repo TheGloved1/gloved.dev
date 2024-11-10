@@ -34,7 +34,7 @@ export default function Page(): React.JSX.Element {
           </div>
           <div className='navbar-end flex md:hidden'>
             <div className='dropdown'>
-              <div role='button' className='btn btn-ghost md:hidden'>
+              <div role='button' className='btn btn-ghost hidden'>
                 <svg
                   xmlns='http://www.w3.org/2000/svg'
                   className='h-5 w-5'
