@@ -63,7 +63,13 @@ export default function FileButton({ file, temp, size }: FileButtonProps): React
               </h2>
               {(isVideo(file) && (
                 <div className='mb-4 w-full max-w-md items-center justify-center self-center'>
-                  <VideoPreview className='w-full max-w-md rounded-xl' src={previewUrl} type={getMimeType(file)} />
+                  {file.toLowerCase().endsWith('.mkv') ? (
+                    <div className='text-center p-4 bg-gray-700 rounded-xl'>
+                      MKV format cannot be previewed in browser. Please download to view.
+                    </div>
+                  ) : (
+                    <VideoPreview className='w-full max-w-md rounded-xl' src={previewUrl} type={getMimeType(file)} />
+                  )}
                 </div>
               )) ||
                 (isImage(file) && (

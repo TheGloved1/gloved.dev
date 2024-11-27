@@ -21,7 +21,6 @@ export const meta: MetaFunction = () => {
 const sections = ['Welcome', 'About', 'Robotics', 'Github', 'File Uploader']
 
 export default function Page(): React.JSX.Element {
-  console.log('Rendering Home...')
   return (
     <>
       <div className='fixed left-0 right-0 top-0 z-[1000]'>

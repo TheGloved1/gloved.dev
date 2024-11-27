@@ -19,7 +19,7 @@ export default function CalculatorPage(): React.JSX.Element {
   }, [display])
 
   const appendToDisplay = useCallback((value: string) => {
-    setDisplay((prevDisplay) => prevDisplay + value)
+    setDisplay((prev) => prev + value)
     setIsError(false) // Reset error state when appending new values
   }, [])
 
@@ -27,7 +27,7 @@ export default function CalculatorPage(): React.JSX.Element {
     setIsCalculating(true)
     setTimeout(() => {
       try {
-        let result = eval(display.replace('√', 'Math.sqrt').replace('^', '**'))
+        let result: any = eval(display.replace('√', 'Math.sqrt').replace('^', '**'))
         if (Math.abs(result) > 1e6 || Math.abs(result) < 1e-6) {
           result = result.toExponential()
         }
