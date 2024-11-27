@@ -49,7 +49,10 @@ export default function FileButton({ file, temp, size }: FileButtonProps): React
   return (
     <>
       <div className='mx-2 w-64 truncate rounded-xl'>
-        <button onClick={() => setShowDialog(true)} className='btn mx-2 rounded-xl p-3 hover:animate-pulse hover:bg-gray-700'>
+        <button
+          onClick={() => setShowDialog(true)}
+          className='btn mx-2 rounded-xl p-3 hover:animate-pulse hover:bg-gray-700'
+        >
           {file}
         </button>
       </div>
@@ -63,13 +66,21 @@ export default function FileButton({ file, temp, size }: FileButtonProps): React
               </h2>
               {(isVideo(file) && (
                 <div className='mb-4 w-full max-w-md items-center justify-center self-center'>
-                  {file.toLowerCase().endsWith('.mkv') ? (
-                    <div className='text-center p-4 bg-gray-700 rounded-xl'>
-                      MKV format cannot be previewed in browser. Please download to view.
-                    </div>
-                  ) : (
-                    <VideoPreview className='w-full max-w-md rounded-xl' src={previewUrl} type={getMimeType(file)} />
-                  )}
+                  {file.toLowerCase().endsWith('.mkv') ?
+                    <h2 className='rounded-xl bg-gray-700 p-4 text-center text-base'>
+                      MKV format cannot be previewed here.
+                      <LinkButton
+                        to={previewUrl}
+                        onClick={() => {
+                          setShowDialog(false)
+                        }}
+                        target='_blank'
+                        rel='noopener noreferrer'
+                      >
+                        Preview
+                      </LinkButton>
+                    </h2>
+                  : <VideoPreview className='w-full max-w-md rounded-xl' src={previewUrl} type={getMimeType(file)} />}
                 </div>
               )) ||
                 (isImage(file) && (
@@ -95,7 +106,10 @@ export default function FileButton({ file, temp, size }: FileButtonProps): React
                 </LinkButton>
               </div>
               <div className='flex items-center justify-center'>
-                <Button onClick={() => setShowDialog(false)} className='btn btn-warning m-2 rounded-xl p-4 hover:animate-pulse'>
+                <Button
+                  onClick={() => setShowDialog(false)}
+                  className='btn btn-warning m-2 rounded-xl p-4 hover:animate-pulse'
+                >
                   Close
                 </Button>
               </div>
@@ -106,3 +120,4 @@ export default function FileButton({ file, temp, size }: FileButtonProps): React
     </>
   )
 }
+
