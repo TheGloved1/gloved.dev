@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react'
 import { env } from '@/env'
 import FileButton from '@/components/FileButton'
 import ErrorAlert from '@/components/ErrorAlert'
+import Button from './Buttons'
 
 interface FileInfo {
   name: string
@@ -153,7 +154,7 @@ export default function FileUploader(): React.JSX.Element {
 
         {uploadProgress > 0 && uploadProgress < 100 && (
           <div className='mt-2 w-full'>
-            <progress className='progress progress-primary w-full' value={uploadProgress} max='100'></progress>
+            <progress className='progress progress-primary w-full' value={uploadProgress} max='100' /><Button onClick={() => uploadMutation.reset()}>Cancel</Button>
             <p className='text-center'>{`Uploading: ${uploadProgress}%`}</p>
           </div>
         )}
