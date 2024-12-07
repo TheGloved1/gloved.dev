@@ -7,6 +7,7 @@ import { env } from '@/env'
 import FileButton from '@/components/FileButton'
 import ErrorAlert from '@/components/ErrorAlert'
 import Button from './Buttons'
+import Dialog from '@/components/Dialog'
 
 interface FileInfo {
   name: string
@@ -22,6 +23,10 @@ const fetchFiles = async () => {
 
 const deleteFileApi = async (file: string, isTemp: boolean) => {
   await axios.delete(apiRoute(`/files/delete/${file}?temp=${isTemp}`))
+}
+
+const permanentDeleteFileApi = async (file: string, isTemp: boolean) => {
+  await axios.delete(apiRoute(`/files/permanent-delete/${file}?temp=${isTemp}`))
 }
 
 const uploadFileApi = async (
@@ -46,6 +51,9 @@ export default function FileUploader(): React.JSX.Element {
   const [passwordEntered, setPasswordEntered] = useState<boolean>(false)
   const [uploadProgress, setUploadProgress] = useState<number>(0)
   const [isTemp, setIsTemp] = useState<boolean>(false)
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false)
+  const [fileToDelete, setFileToDelete] = useState<{ name: string; isTemp: boolean } | null>(null)
+  const [isPermanentDelete, setIsPermanentDelete] = useState<boolean>(false)
 
   const queryClient = useQueryClient()
 
@@ -53,6 +61,13 @@ export default function FileUploader(): React.JSX.Element {
 
   const deleteMutation = useMutation({
     mutationFn: ({ file, isTemp }: { file: string; isTemp: boolean }) => deleteFileApi(file, isTemp),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['files'] })
+    },
+  })
+
+  const permanentDeleteMutation = useMutation({
+    mutationFn: ({ file, isTemp }: { file: string; isTemp: boolean }) => permanentDeleteFileApi(file, isTemp),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['files'] })
     },
@@ -84,10 +99,9 @@ export default function FileUploader(): React.JSX.Element {
     return () => clearTimeout(timer)
   }, [alert])
 
-  async function deleteFile(file: string, isTemp: boolean): Promise<void> {
-    console.log('delete file button clicked')
+  async function handleDelete(permanent: boolean = false): Promise<void> {
+    if (!fileToDelete) return
     if (!passwordEntered) {
-      console.log('password entered')
       const password = prompt(`Enter passkey to delete files`)
       if (!password) {
         return
@@ -101,8 +115,14 @@ export default function FileUploader(): React.JSX.Element {
       }
     }
     try {
-      deleteMutation.mutate({ file, isTemp })
+      if (permanent) {
+        await permanentDeleteMutation.mutate({ file: fileToDelete.name, isTemp: fileToDelete.isTemp })
+      } else {
+        await deleteMutation.mutate({ file: fileToDelete.name, isTemp: fileToDelete.isTemp })
+      }
       setAlert('')
+      setIsDeleteDialogOpen(false)
+      setFileToDelete(null)
     } catch (error) {
       console.error('An error occurred while deleting file:', error)
       setAlert('An error occurred while deleting file')
@@ -188,7 +208,10 @@ export default function FileUploader(): React.JSX.Element {
                       <button
                         disabled={false}
                         className='btn btn-square btn-warning rounded-xl bg-red-500 hover:bg-red-400'
-                        onClick={() => deleteFile(file.name, file.isTemp)}
+                        onClick={() => {
+                          setFileToDelete({ name: file.name, isTemp: file.isTemp })
+                          setIsDeleteDialogOpen(true)
+                        }}
                         title='Delete File'
                       >
                         {'X'}
@@ -212,7 +235,10 @@ export default function FileUploader(): React.JSX.Element {
                           <button
                             disabled={false}
                             className='btn btn-square btn-warning rounded-xl bg-red-500 hover:bg-red-400'
-                            onClick={() => deleteFile(file.name, file.isTemp)}
+                            onClick={() => {
+                              setFileToDelete({ name: file.name, isTemp: file.isTemp })
+                              setIsDeleteDialogOpen(true)
+                            }}
                             title='Delete File'
                           >
                             {'X'}
@@ -228,6 +254,38 @@ export default function FileUploader(): React.JSX.Element {
         {!filesQuery.isLoading && filesQuery.data.length === 0 && <li>{'No files found'}</li>}
       </div>
       {alert !== '' && <ErrorAlert alert={alert} />}
+      <Dialog
+        isOpen={isDeleteDialogOpen}
+        onClose={() => {
+          setIsDeleteDialogOpen(false)
+          setFileToDelete(null)
+          setIsPermanentDelete(false)
+        }}
+        className=''
+      >
+        <div className='flex flex-col items-center gap-4 p-4'>
+          <h2 className='text-lg font-bold'>Delete File</h2>
+          <p className='text-center'>Are you sure you want to delete this file?</p>
+          <label className='label m-2 cursor-pointer rounded-xl bg-gray-600 p-2 text-black hover:bg-gray-700'>
+            <span className='label-text text-balance'>Permanently Delete</span>
+            <span className='w-2'></span>
+            <input 
+              type='checkbox' 
+              checked={isPermanentDelete} 
+              onChange={(e) => setIsPermanentDelete(e.target.checked)} 
+              className='checkbox'
+            />
+          </label>
+          <div className='flex gap-4'>
+            <button
+              onClick={() => handleDelete(isPermanentDelete)}
+              className='btn btn-error rounded-xl bg-red-500 px-4 py-2 hover:bg-red-400'
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      </Dialog>
     </>
   )
 }
