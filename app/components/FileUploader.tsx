@@ -263,7 +263,7 @@ export default function FileUploader(): React.JSX.Element {
         }}
       >
         <div className='flex flex-col items-center gap-4 p-4'>
-          <h2 className='text-lg font-bold'>Delete <span className='rounded-md p-1 text-red-600 bg-slate-600'>{fileToDelete?.name}</span></h2>
+          <div className='flex flex-row items-center justify-center gap-2'><h2 className='text-lg font-bold'>Delete</h2> <span className='rounded-md px-1 text-red-600 bg-slate-600'>{fileToDelete?.name}</span></div>
           <p className='text-center'>Are you sure you want to delete this file?</p>
           <label className='label m-2 cursor-pointer rounded-xl bg-gray-600 p-2 text-black hover:bg-gray-700'>
             <span className='label-text text-balance'>Delete Permanently</span>
