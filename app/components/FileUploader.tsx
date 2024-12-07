@@ -261,7 +261,6 @@ export default function FileUploader(): React.JSX.Element {
           setFileToDelete(null)
           setIsPermanentDelete(false)
         }}
-        className=''
       >
         <div className='flex flex-col items-center gap-4 p-4'>
           <h2 className='text-lg font-bold'>Delete File</h2>
