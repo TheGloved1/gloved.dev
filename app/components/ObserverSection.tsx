@@ -35,6 +35,7 @@ export default function ObserverSection({ children, className, id, ...props }: O
       }
     }
   }, [])
+  
 
   return (
     <section

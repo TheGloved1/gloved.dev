@@ -21,7 +21,7 @@ export default function Page(): React.JSX.Element {
             {'Home'}
           </button>
         </Link>
-        <div className='flex flex-col items-center justify-center gap-12 px-4 py-32'>
+        <div className='flex flex-col items-center justify-center self-center gap-12 px-4 py-32'>
           <FileUploader />
         </div>
       </main>
