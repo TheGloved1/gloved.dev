@@ -77,11 +77,11 @@ export default function Gallery(): React.JSX.Element {
             {'Back'}
           </button>
         </Link>
-        <div className='flex flex-col items-center justify-center top-2 p-4 pt-16'>
+        <div className='top-2 flex flex-col items-center justify-center p-4 pt-16'>
           <div className='top-2 flex flex-col items-center justify-center'>
             <h1 className='text-2xl'>Gallery</h1>
             <h2 className='text-md pb-4'>A tribute to my best friend</h2>
-            <p className='pb-12 text-xs'>{'(Currently only images are supported)'}</p>
+            <p className='pb-12 text-xs'>{'(Currently only images are supported, will add videos later)'}</p>
           </div>
           {galleryQuery.isLoading ?
             <p>Loading...</p>
@@ -102,6 +102,7 @@ export default function Gallery(): React.JSX.Element {
           id='uploadBtn'
           className='glass file-input file-input-primary fixed bottom-2 max-w-80 rounded-xl bg-black hover:animate-pulse'
           type='file'
+          accept='image/*'
           onChange={uploadFile}
         />
         {uploadProgress > 0 && uploadProgress < 100 && (
