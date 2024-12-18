@@ -59,7 +59,7 @@ export default function FileButton({ file, temp, size }: FileButtonProps): React
       </div>
 
       <Dialog isOpen={showDialog} onClose={() => setShowDialog(false)}>
-        <h2 className='p-4 text-base'>
+        <h2 className='p-4 text-base self-center justify-center text-center'>
           {file} ({size})
         </h2>
         {(isVideo(file) && (

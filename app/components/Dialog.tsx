@@ -20,9 +20,9 @@ export default function Dialog({
   if (!isOpen) return null
 
   return (
-    <div className={`fixed inset-0 z-50 flex items-center justify-center bg-opacity-50`}>
+    <div className={`fixed inset-0 z-50 flex items-center self-center justify-center bg-opacity-50`}>
       <div className={cn(`z-10 rounded-xl bg-gray-800 p-4 shadow-lg`, className)}>
-        <div className='row-span-2 grid items-center justify-center py-1'>
+        <div className='row-span-2 grid items-center justify-center content-center py-1'>
           {children}
           <div className='flex items-center justify-center'>
             {closeButton || (

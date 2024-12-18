@@ -150,7 +150,7 @@ export default function FileUploader(): React.JSX.Element {
 
   return (
     <>
-      <div className='flex flex-col items-center justify-center rounded-xl border-4 border-white bg-gray-700/50 p-4 text-[10px] md:text-[1rem]'>
+      <div className='flex flex-col items-center justify-center self-center rounded-xl border-4 border-white bg-gray-700/50 p-4 text-[10px] md:text-[1rem]'>
         <h1 className='font-bold'>{'Simple File Uploader'}</h1>
         <p className='text-[0.5rem] md:text-sm'>{"(Don't download random files off the internet)"}</p>
         <br />
