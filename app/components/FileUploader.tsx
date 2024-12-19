@@ -213,7 +213,7 @@ export default function FileUploader(): React.JSX.Element {
                           setFileToDelete({ name: file.name, isTemp: file.isTemp })
                           setIsDeleteDialogOpen(true)
                         }}
-                        title={`Delete file ${filesQuery.data.findIndex((f) => f.name === file.name) + 1}/${filesQuery.data.length}`}
+                        title={`Delete file ${filesQuery.data.findIndex((f) => f.name === file.name) + 1} of ${filesQuery.data.length}`}
                       >
                         {'X'}
                       </RedButton>

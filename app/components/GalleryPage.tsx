@@ -115,7 +115,7 @@ export default function Gallery(): React.JSX.Element {
                   <RedButton
                     className='absolute right-2 top-2 opacity-0 group-hover:opacity-100'
                     onClick={() => deleteFile(file.name)}
-                    title={`Delete file ${galleryQuery.data.findIndex((f) => f.name === file.name) + 1}/${galleryQuery.data.length}`}
+                    title={`Delete file ${galleryQuery.data.findIndex((f) => f.name === file.name) + 1} of ${galleryQuery.data.length}`}
                   >
                     X
                   </RedButton>
