@@ -94,20 +94,23 @@ export default function Gallery(): React.JSX.Element {
           </button>
         </Link>
         <div className='flex flex-col items-center justify-center p-4 pt-16'>
-          <div className='flex scale-50 flex-col items-center justify-center sm:scale-75 md:scale-100'>
+          <div className='flex scale-50 flex-col items-center justify-center text-center sm:scale-75 md:scale-100'>
             <h1 className='text-2xl'>Gallery</h1>
             <h2 className='text-md pb-4'>A tribute to my best friend</h2>
-            <p className='pb-12 text-xs'>{'(Currently only images are supported, will add videos later)'}</p>
+            <p className='pb-12 text-center text-xs'>{'(Currently only images are supported, will add videos later)'}</p>
           </div>
           {galleryQuery.isPending || galleryQuery.isFetching || galleryQuery.isRefetching ?
             <Loading />
-          : <div className='flex scale-50 flex-wrap justify-center gap-4 sm:scale-75 md:scale-100'>
+          : <div className='flex w-full scale-50 flex-wrap justify-center sm:scale-75 md:scale-100'>
               {galleryQuery.data.map((file) => (
-                <div key={file.name} className='group relative flex flex-col items-center justify-center'>
+                <div
+                  key={file.name}
+                  className='group relative flex h-48 w-48 flex-col items-center justify-center border-2 border-dashed border-slate-500'
+                >
                   <img
                     src={apiRoute(`/files/download/${file.name}?gallery=true`)}
                     alt={file.name}
-                    className='bottom-0 left-0 right-0 top-0 max-h-64 max-w-64'
+                    className='bottom-0 left-0 right-0 top-0 max-h-full max-w-full cursor-pointer rounded-xl object-center p-2'
                   />
                   <RedButton
                     className='absolute right-2 top-2 opacity-0 group-hover:opacity-100'
