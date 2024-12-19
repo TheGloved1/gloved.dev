@@ -38,7 +38,7 @@ export default function Page(): React.JSX.Element {
           <button className='rounded bg-blue-500 px-4 py-2 text-white'>Go to Gallery</button>
         </Link>
       </ScrollVisibility>
-      <div className='container flex flex-col items-center justify-center gap-12 px-4 py-16'>
+      <div className='container flex flex-col items-center justify-center gap-8 px-1 py-16 md:px-4'>
         <h1 className='text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]'>
           gloved<span className='text-[hsl(280,100%,40%)]'>.</span>dev
         </h1>
@@ -141,7 +141,7 @@ export default function Page(): React.JSX.Element {
         </AdminComponent>
       </div>
       <div className='divider w-[75vw] max-w-[1000px] items-center self-center' />
-      <div className='px-30 container flex flex-col items-center gap-1 self-center px-4 py-4'>
+      <div className='px-30 container flex flex-col items-center gap-1 self-center px-4 py-4 text-xs md:text-sm lg:text-base'>
         <p className='p-4 text-sm'>
           {'Help me improve the site and '}
           <Link className='btn btn-outline text-sm' to={'https://crotus.io/gloves/review'}>
