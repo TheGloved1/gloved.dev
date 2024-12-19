@@ -93,7 +93,7 @@ export default function Gallery(): React.JSX.Element {
             {'Back'}
           </button>
         </Link>
-        <div className='flex flex-col items-center justify-center p-4 pt-16'>
+        <div className='flex w-screen flex-col items-center justify-center p-4 pt-16'>
           <div className='flex scale-50 flex-col items-center justify-center text-center sm:scale-75 md:scale-100'>
             <h1 className='text-2xl'>Gallery</h1>
             <h2 className='text-md pb-4'>A tribute to my best friend</h2>
@@ -101,7 +101,7 @@ export default function Gallery(): React.JSX.Element {
           </div>
           {galleryQuery.isPending || galleryQuery.isFetching || galleryQuery.isRefetching ?
             <Loading />
-          : <div className='flex w-full scale-50 flex-wrap justify-center sm:scale-75 md:scale-100'>
+          : <div className='flex w-screen scale-50 flex-wrap justify-center sm:scale-75 md:scale-100'>
               {galleryQuery.data.map((file) => (
                 <div
                   key={file.name}
