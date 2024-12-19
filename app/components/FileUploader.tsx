@@ -2,11 +2,11 @@ import Loading from '@/components/loading'
 import { apiRoute } from '@/lib/utils'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import axios, { type AxiosResponse, type AxiosProgressEvent } from 'axios'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { env } from '@/env'
 import FileButton from '@/components/FileButton'
 import ErrorAlert from '@/components/ErrorAlert'
-import Button from './Buttons'
+import Button, { RedButton } from './Buttons'
 import Dialog from '@/components/Dialog'
 
 interface FileInfo {
@@ -29,11 +29,7 @@ const permanentDeleteFileApi = async (file: string, isTemp: boolean) => {
   await axios.delete(apiRoute(`/files/permanent-delete/${file}?temp=${isTemp}`))
 }
 
-const uploadFileApi = async (
-  file: File,
-  isTemp: boolean,
-  onUploadProgress: (progressEvent: AxiosProgressEvent) => void
-) => {
+const uploadFileApi = async (file: File, isTemp: boolean, onUploadProgress: (progressEvent: AxiosProgressEvent) => void) => {
   const formData = new FormData()
   formData.append('file', file)
   formData.append('temp', isTemp.toString())
@@ -52,6 +48,7 @@ export default function FileUploader(): React.JSX.Element {
   const [uploadProgress, setUploadProgress] = useState<number>(0)
   const [isTemp, setIsTemp] = useState<boolean>(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false)
+  const inputButton = useRef<HTMLInputElement>(null)
   const [fileToDelete, setFileToDelete] = useState<{ name: string; isTemp: boolean } | null>(null)
   const [isPermanentDelete, setIsPermanentDelete] = useState<boolean>(false)
 
@@ -84,6 +81,9 @@ export default function FileUploader(): React.JSX.Element {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['files'] })
       setUploadProgress(0)
+      if (inputButton.current) {
+        inputButton.current.value = ''
+      }
     },
   })
 
@@ -167,6 +167,7 @@ export default function FileUploader(): React.JSX.Element {
         </div>
         <input
           id='uploadBtn'
+          ref={inputButton}
           className='glass file-input file-input-primary max-w-80 rounded-xl bg-black hover:animate-pulse'
           type='file'
           onChange={uploadFile}
@@ -174,7 +175,8 @@ export default function FileUploader(): React.JSX.Element {
 
         {uploadProgress > 0 && uploadProgress < 100 && (
           <div className='mt-2 w-full'>
-            <progress className='progress progress-primary w-full' value={uploadProgress} max='100' /><Button onClick={() => uploadMutation.reset()}>Cancel</Button>
+            <progress className='progress progress-primary w-full' value={uploadProgress} max='100' />
+            <Button onClick={() => uploadMutation.reset()}>Cancel</Button>
             <p className='text-center'>{`Uploading: ${uploadProgress}%`}</p>
           </div>
         )}
@@ -205,17 +207,16 @@ export default function FileUploader(): React.JSX.Element {
                   .map((file) => (
                     <li className='flex w-64 flex-row p-1 text-[.2rem]' key={file.name}>
                       <FileButton file={file.name} size={file.size} />
-                      <button
+                      <RedButton
                         disabled={false}
-                        className='btn btn-square btn-warning rounded-xl bg-red-500 hover:bg-red-400'
                         onClick={() => {
                           setFileToDelete({ name: file.name, isTemp: file.isTemp })
                           setIsDeleteDialogOpen(true)
                         }}
-                        title='Delete File'
+                        title={`Delete file ${filesQuery.data.findIndex((f) => f.name === file.name) + 1}/${filesQuery.data.length}`}
                       >
                         {'X'}
-                      </button>
+                      </RedButton>
                     </li>
                   ))
               }
@@ -263,15 +264,18 @@ export default function FileUploader(): React.JSX.Element {
         }}
       >
         <div className='flex flex-col items-center gap-4 p-4'>
-          <div className='flex flex-row items-center justify-center gap-2'><h2 className='text-lg font-bold'>Delete</h2> <span className='rounded-md px-1 text-red-600 bg-slate-600'>{fileToDelete?.name}</span></div>
+          <div className='flex flex-row items-center justify-center gap-2'>
+            <h2 className='text-lg font-bold'>Delete</h2>{' '}
+            <span className='rounded-md bg-slate-600 px-1 text-red-600'>{fileToDelete?.name}</span>
+          </div>
           <p className='text-center'>Are you sure you want to delete this file?</p>
           <label className='label m-2 cursor-pointer rounded-xl bg-gray-600 p-2 text-black hover:bg-gray-700'>
             <span className='label-text text-balance'>Delete Permanently</span>
             <span className='w-2'></span>
-            <input 
-              type='checkbox' 
-              checked={isPermanentDelete} 
-              onChange={(e) => setIsPermanentDelete(e.target.checked)} 
+            <input
+              type='checkbox'
+              checked={isPermanentDelete}
+              onChange={(e) => setIsPermanentDelete(e.target.checked)}
               className='checkbox'
             />
           </label>
@@ -288,3 +292,4 @@ export default function FileUploader(): React.JSX.Element {
     </>
   )
 }
+

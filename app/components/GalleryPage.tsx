@@ -1,10 +1,11 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import ChevronLeft from '@/components/ChevronLeft'
 import { Link } from '@remix-run/react'
 import axios, { AxiosProgressEvent, AxiosResponse } from 'axios'
 import { apiRoute } from '@/lib/utils'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import Button from './Buttons'
+import Button, { RedButton } from './Buttons'
+import Loading from './loading'
 
 interface GalleryFileInfo {
   name: string
@@ -17,7 +18,7 @@ const fetchGallery = async () => {
   return response.data
 }
 
-const uploadFileApi = async (file: File, onUploadProgress: (progressEvent: AxiosProgressEvent) => void) => {
+const galleryUploadApi = async (file: File, onUploadProgress: (progressEvent: AxiosProgressEvent) => void) => {
   const formData = new FormData()
   formData.append('file', file)
   formData.append('gallery', 'true')
@@ -29,13 +30,19 @@ const uploadFileApi = async (file: File, onUploadProgress: (progressEvent: Axios
   })
 }
 
+const galleryDeleteApi = async (file: string) => {
+  console.log('Deleting file:', file)
+  await axios.delete(apiRoute(`/files/permanent-delete/${file}?gallery=true`))
+}
+
 export default function Gallery(): React.JSX.Element {
   const [uploadProgress, setUploadProgress] = useState<number>(0)
+  const inputButton = useRef<HTMLInputElement>(null)
   const queryClient = useQueryClient()
 
   const uploadMutation = useMutation({
     mutationFn: (file: File) =>
-      uploadFileApi(file, (progressEvent) => {
+      galleryUploadApi(file, (progressEvent) => {
         if (progressEvent.total) {
           const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
           setUploadProgress(percentCompleted)
@@ -50,6 +57,7 @@ export default function Gallery(): React.JSX.Element {
   const galleryQuery = useQuery<GalleryFileInfo[], Error>({ queryKey: ['gallery'], queryFn: fetchGallery, initialData: [] })
 
   async function uploadFile(event: React.ChangeEvent<HTMLInputElement>): Promise<void> {
+    queryClient.invalidateQueries({ queryKey: ['gallery'] })
     try {
       const files = event.target.files
       if (!files || files.length === 0) {
@@ -60,9 +68,17 @@ export default function Gallery(): React.JSX.Element {
       if (!file) return
 
       await uploadMutation.mutate(file)
+      if (inputButton.current) {
+        inputButton.current.value = ''
+      }
     } catch (error) {
       console.error('An error occurred while uploading file:', error)
     }
+  }
+
+  async function deleteFile(file: string) {
+    await galleryDeleteApi(file)
+    queryClient.invalidateQueries({ queryKey: ['gallery'] })
   }
 
   return (
@@ -70,29 +86,36 @@ export default function Gallery(): React.JSX.Element {
       <main className='flex min-h-screen flex-col items-center bg-gradient-to-b from-sky-950 to-[#1e210c] text-white'>
         <Link
           to={'/'}
-          className='fixed bottom-2 left-2 flex flex-row items-center justify-center pl-0 md:bottom-auto md:top-2'
+          className='fixed left-2 top-2 flex scale-50 flex-row items-center justify-center pl-0 sm:scale-75 md:bottom-auto md:scale-100'
         >
           <button className='btn flex flex-row items-center justify-center'>
             <ChevronLeft />
             {'Back'}
           </button>
         </Link>
-        <div className='top-2 flex flex-col items-center justify-center p-4 pt-16'>
-          <div className='top-2 flex flex-col items-center justify-center'>
+        <div className='flex flex-col items-center justify-center p-4 pt-16'>
+          <div className='flex scale-50 flex-col items-center justify-center sm:scale-75 md:scale-100'>
             <h1 className='text-2xl'>Gallery</h1>
             <h2 className='text-md pb-4'>A tribute to my best friend</h2>
             <p className='pb-12 text-xs'>{'(Currently only images are supported, will add videos later)'}</p>
           </div>
-          {galleryQuery.isLoading ?
-            <p>Loading...</p>
-          : <div className='flex flex-wrap justify-center gap-4'>
+          {galleryQuery.isPending || galleryQuery.isFetching || galleryQuery.isRefetching ?
+            <Loading />
+          : <div className='flex scale-50 flex-wrap justify-center gap-4 sm:scale-75 md:scale-100'>
               {galleryQuery.data.map((file) => (
-                <div key={file.name} className='flex flex-col items-center justify-center'>
+                <div key={file.name} className='group relative flex flex-col items-center justify-center'>
                   <img
                     src={apiRoute(`/files/download/${file.name}?gallery=true`)}
                     alt={file.name}
-                    className='max-h-64 max-w-64'
+                    className='bottom-0 left-0 right-0 top-0 max-h-64 max-w-64'
                   />
+                  <RedButton
+                    className='absolute right-2 top-2 opacity-0 group-hover:opacity-100'
+                    onClick={() => deleteFile(file.name)}
+                    title={`Delete file ${galleryQuery.data.findIndex((f) => f.name === file.name) + 1}/${galleryQuery.data.length}`}
+                  >
+                    X
+                  </RedButton>
                 </div>
               ))}
             </div>
@@ -100,7 +123,8 @@ export default function Gallery(): React.JSX.Element {
         </div>
         <input
           id='uploadBtn'
-          className='glass file-input file-input-primary fixed bottom-2 max-w-80 rounded-xl bg-black hover:animate-pulse'
+          ref={inputButton}
+          className='glass file-input file-input-primary fixed bottom-2 top-auto max-h-80 max-w-80 scale-50 rounded-xl bg-black text-xs hover:animate-pulse sm:scale-75 md:scale-100'
           type='file'
           accept='image/*'
           onChange={uploadFile}
