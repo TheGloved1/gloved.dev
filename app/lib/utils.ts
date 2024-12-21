@@ -27,9 +27,9 @@ export async function safeAwait<T, E = Error>(input: Promise<T> | T): Promise<[T
  * @param options - Optional request options.
  * @returns A promise that resolves to the JSON response.
  */
-export async function apiFetch(route: string, options?: RequestInit) {
+export async function apiFetch(route: string, options?: RequestInit): Promise<unknown> {
   const res = await fetch(apiRoute(route), options)
-  return res.json()
+  return res.json() as Promise<unknown>
 }
 
 /**
@@ -49,3 +49,4 @@ export function checkDevMode(): boolean {
   }
   return false
 }
+

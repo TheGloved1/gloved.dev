@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import ChevronLeft from '@/components/ChevronLeft'
 import { Link } from '@remix-run/react'
 import axios, { AxiosProgressEvent, AxiosResponse } from 'axios'
@@ -37,8 +37,29 @@ const galleryDeleteApi = async (file: string) => {
 
 export default function Gallery(): React.JSX.Element {
   const [uploadProgress, setUploadProgress] = useState<number>(0)
+  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 768)
   const inputButton = useRef<HTMLInputElement>(null)
   const queryClient = useQueryClient()
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth)
+    }
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', handleResize)
+    }
+
+    return () => {
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('resize', handleResize)
+      }
+    }
+  }, [])
+
+  function copyToClipboard(url: string) {
+    navigator.clipboard.writeText(url)
+  }
 
   const uploadMutation = useMutation({
     mutationFn: (file: File) =>
@@ -93,32 +114,50 @@ export default function Gallery(): React.JSX.Element {
             {'Back'}
           </button>
         </Link>
+        <button
+          className='btn btn-circle btn-sm fixed right-2 top-2 hover:animate-spin'
+          onClick={() => queryClient.invalidateQueries({ queryKey: ['gallery'] })}
+          title='Refresh Files'
+        >
+          ↻
+        </button>
         <div className='flex w-screen flex-col items-center justify-center p-4 pt-16'>
           <div className='flex scale-50 flex-col items-center justify-center text-center sm:scale-75 md:scale-100'>
             <h1 className='text-2xl'>Gallery</h1>
             <h2 className='text-md pb-4'>A tribute to my best friend</h2>
             <p className='pb-12 text-center text-xs'>{'(Currently only images are supported, will add videos later)'}</p>
           </div>
-          {galleryQuery.isPending || galleryQuery.isFetching || galleryQuery.isRefetching ?
+          {(
+            galleryQuery.isPending || galleryQuery.isFetching || galleryQuery.isRefetching || galleryQuery.data?.length === 0
+          ) ?
             <Loading />
-          : <div className='flex w-screen scale-50 flex-wrap justify-center sm:scale-75 md:scale-100'>
-              {galleryQuery.data.map((file) => (
+          : <div className='flex w-screen flex-wrap justify-center'>
+              {galleryQuery.data?.map((file) => (
                 <div
                   key={file.name}
-                  className='group relative flex h-48 w-48 flex-col items-center justify-center border-2 border-dashed border-slate-500'
+                  className='group relative flex h-24 w-24 flex-col items-center justify-center border-2 border-dashed border-slate-500 sm:h-32 sm:w-32 md:h-48 md:w-48'
                 >
-                  <img
-                    src={apiRoute(`/files/download/${file.name}?gallery=true`)}
-                    alt={file.name}
-                    className='bottom-0 left-0 right-0 top-0 max-h-full max-w-full cursor-pointer rounded-xl object-center p-2'
-                  />
-                  <RedButton
-                    className='absolute right-2 top-2 opacity-0 group-hover:opacity-100'
-                    onClick={() => deleteFile(file.name)}
-                    title={`Delete file ${galleryQuery.data.findIndex((f) => f.name === file.name) + 1} of ${galleryQuery.data.length}`}
+                  <Link
+                    to={apiRoute(`/files/download/${file.name}?gallery=true`)}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    className='relative flex h-24 w-24 flex-col items-center justify-center border-2 border-dashed border-slate-500 sm:h-32 sm:w-32 md:h-48 md:w-48'
                   >
-                    X
-                  </RedButton>
+                    <img
+                      src={apiRoute(`/files/download/${file.name}?gallery=true`)}
+                      alt={file.name}
+                      className='bottom-0 left-0 right-0 top-0 max-h-full max-w-full cursor-pointer rounded-xl object-center p-2'
+                    />
+                  </Link>
+                  {windowWidth >= 768 && (
+                    <RedButton
+                      className='absolute right-2 top-2 opacity-0 group-hover:opacity-100'
+                      onClick={() => deleteFile(file.name)}
+                      title={`Delete file ${galleryQuery.data.findIndex((f) => f.name === file.name) + 1} of ${galleryQuery.data.length}`}
+                    >
+                      X
+                    </RedButton>
+                  )}
                 </div>
               ))}
             </div>
