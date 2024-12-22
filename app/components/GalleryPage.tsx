@@ -49,7 +49,7 @@ const galleryUploadApi = async (file: File, onUploadProgress: (progressEvent: Ax
 
 const galleryDeleteApi = async (file: string) => {
   console.log('Deleting file:', file)
-  await axios.delete(apiRoute(`/files/permanent-delete/${file}?gallery=true`))
+  await axios.delete(apiRoute(`/files/delete/${file}?gallery=true`))
 }
 
 export default function Gallery(): React.JSX.Element {
