@@ -12,7 +12,7 @@ export const links: LinksFunction = () => {
   return [
     {
       rel: 'icon',
-      href: '/logo.png',
+      href: '/Leo.png',
       type: 'image/png',
     },
   ]

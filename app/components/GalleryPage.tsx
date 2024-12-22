@@ -16,10 +16,8 @@ interface GalleryFileInfo {
 const fetchGallery = async () => {
   const response: AxiosResponse<GalleryFileInfo[]> = await axios.get(apiRoute('/files/?gallery=true'))
 
-  let sortedFiles: GalleryFileInfo[]
-
   // Sort by numeric index in the filename
-  sortedFiles = response.data.sort((a, b) => {
+  const sortedFiles: GalleryFileInfo[] = response.data.sort((a, b) => {
     const indexA = extractIndexFromFilename(a.name)
     const indexB = extractIndexFromFilename(b.name)
     return indexA - indexB // Ascending order

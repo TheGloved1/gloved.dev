@@ -1,14 +1,25 @@
-import GalleryPage from "@/components/GalleryPage"
-import { MetaFunction } from "@remix-run/react"
+import GalleryPage from '@/components/GalleryPage'
+import { MetaFunction } from '@remix-run/react'
+import { NAME } from '@/lib/constants'
+import { LinksFunction } from '@remix-run/node'
 
 export const meta: MetaFunction = () => {
   return [
-    { title: 'gloved.dev | Gallery' },
+    { title: `${NAME} | Gallery` },
     {
       name: 'description',
       content: 'The gallery page to tribute the lost life of my best friend.',
     },
-    { name: 'icons', content: 'https://api.gloved.dev/files/download/Leo_1.jpg?gallery=true' },
+  ]
+}
+
+export const links: LinksFunction = () => {
+  return [
+    {
+      rel: 'icon',
+      href: '/Leo.png',
+      type: 'image/png',
+    },
   ]
 }
 
