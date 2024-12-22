@@ -15,7 +15,24 @@ interface GalleryFileInfo {
 
 const fetchGallery = async () => {
   const response: AxiosResponse<GalleryFileInfo[]> = await axios.get(apiRoute('/files/?gallery=true'))
-  return response.data
+
+  let sortedFiles: GalleryFileInfo[]
+
+  // Sort by numeric index in the filename
+  sortedFiles = response.data.sort((a, b) => {
+    const indexA = extractIndexFromFilename(a.name)
+    const indexB = extractIndexFromFilename(b.name)
+    return indexA - indexB // Ascending order
+  })
+
+  console.log(sortedFiles)
+  return sortedFiles
+}
+
+// Helper function to extract index from filename
+const extractIndexFromFilename = (filename: string): number => {
+  const match = filename.match(/gallery_(\d+)/)
+  return match ? parseInt(match[1], 10) : 0 // Default to 0 if no match
 }
 
 const galleryUploadApi = async (file: File, onUploadProgress: (progressEvent: AxiosProgressEvent) => void) => {
@@ -57,10 +74,6 @@ export default function Gallery(): React.JSX.Element {
     }
   }, [])
 
-  function copyToClipboard(url: string) {
-    navigator.clipboard.writeText(url)
-  }
-
   const uploadMutation = useMutation({
     mutationFn: (file: File) =>
       galleryUploadApi(file, (progressEvent) => {
@@ -85,10 +98,14 @@ export default function Gallery(): React.JSX.Element {
         console.error('No files found!')
         return
       }
-      const file = files[0]
-      if (!file) return
 
-      await uploadMutation.mutate(file)
+      // Iterate over each file and upload it
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i]
+        await uploadMutation.mutate(file)
+      }
+
+      // Clear the input field after uploading
       if (inputButton.current) {
         inputButton.current.value = ''
       }
@@ -100,6 +117,9 @@ export default function Gallery(): React.JSX.Element {
   async function deleteFile(file: string) {
     await galleryDeleteApi(file)
     queryClient.invalidateQueries({ queryKey: ['gallery'] })
+    setTimeout(() => {
+      queryClient.invalidateQueries({ queryKey: ['gallery'] })
+    }, 5000)
   }
 
   return (
@@ -144,9 +164,10 @@ export default function Gallery(): React.JSX.Element {
                     className='relative flex h-24 w-24 flex-col items-center justify-center border-2 border-dashed border-slate-500 sm:h-32 sm:w-32 md:h-48 md:w-48'
                   >
                     <img
-                      src={apiRoute(`/files/download/${file.name}?gallery=true`)}
+                      src={`${apiRoute(`/files/download/${file.name}?gallery=true`)}?t=${new Date().getTime()}`}
                       alt={file.name}
                       className='bottom-0 left-0 right-0 top-0 max-h-full max-w-full cursor-pointer rounded-xl object-center p-2'
+                      title={'Download ' + file.name}
                     />
                   </Link>
                   {windowWidth >= 768 && (
@@ -170,6 +191,7 @@ export default function Gallery(): React.JSX.Element {
           type='file'
           accept='image/*'
           onChange={uploadFile}
+          multiple
         />
         {uploadProgress > 0 && uploadProgress < 100 && (
           <div className='mt-2 w-full'>
