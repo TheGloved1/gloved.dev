@@ -256,8 +256,8 @@ export default function FileUploader(): React.JSX.Element {
       </div>
       {alert !== '' && <ErrorAlert alert={alert} />}
       <Dialog
-        isOpen={isDeleteDialogOpen}
-        onClose={() => {
+        open={isDeleteDialogOpen}
+        close={() => {
           setIsDeleteDialogOpen(false)
           setFileToDelete(null)
           setIsPermanentDelete(false)
