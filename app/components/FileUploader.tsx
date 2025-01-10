@@ -29,7 +29,12 @@ const permanentDeleteFileApi = async (file: string, isTemp: boolean) => {
   await axios.delete(apiRoute(`/files/permanent-delete/${file}?temp=${isTemp}`))
 }
 
-const uploadFileApi = async (file: File, isTemp: boolean, onUploadProgress: (progressEvent: AxiosProgressEvent) => void) => {
+const uploadFileApi = async (
+  file: File,
+  isTemp: boolean,
+  onUploadProgress: (progressEvent: AxiosProgressEvent) => void,
+  signal?: AbortSignal
+) => {
   const formData = new FormData()
   formData.append('file', file)
   formData.append('temp', isTemp.toString())
@@ -38,6 +43,7 @@ const uploadFileApi = async (file: File, isTemp: boolean, onUploadProgress: (pro
       'Content-Type': 'multipart/form-data',
     },
     onUploadProgress,
+    signal: signal,
   })
 }
 
@@ -51,7 +57,7 @@ export default function FileUploader(): React.JSX.Element {
   const inputButton = useRef<HTMLInputElement>(null)
   const [fileToDelete, setFileToDelete] = useState<{ name: string; isTemp: boolean } | null>(null)
   const [isPermanentDelete, setIsPermanentDelete] = useState<boolean>(false)
-
+  const [uploadRequest, setUploadRequest] = useState<AbortController | null>(null)
   const queryClient = useQueryClient()
 
   const filesQuery = useQuery<FileInfo[], Error>({ queryKey: ['files'], queryFn: fetchFiles, initialData: [] })
@@ -70,17 +76,35 @@ export default function FileUploader(): React.JSX.Element {
     },
   })
 
+  const handleCancelUpload = () => {
+    if (uploadRequest) {
+      uploadRequest.abort()
+      setUploadProgress(0)
+      setUploadRequest(null)
+    }
+  }
+
   const uploadMutation = useMutation({
-    mutationFn: (file: File) =>
-      uploadFileApi(file, isTemp, (progressEvent) => {
-        if (progressEvent.total) {
-          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
-          setUploadProgress(percentCompleted)
-        }
-      }),
+    mutationFn: (file: File) => {
+      const controller = new AbortController()
+      setUploadRequest(controller)
+
+      return uploadFileApi(
+        file,
+        isTemp,
+        (progressEvent) => {
+          if (progressEvent.total) {
+            const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+            setUploadProgress(percentCompleted)
+          }
+        },
+        controller.signal
+      )
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['files'] })
       setUploadProgress(0)
+      setUploadRequest(null)
       if (inputButton.current) {
         inputButton.current.value = ''
       }
@@ -176,8 +200,8 @@ export default function FileUploader(): React.JSX.Element {
         {uploadProgress > 0 && uploadProgress < 100 && (
           <div className='mt-2 w-full'>
             <progress className='progress progress-primary w-full' value={uploadProgress} max='100' />
-            <Button onClick={() => uploadMutation.reset()}>Cancel</Button>
             <p className='text-center'>{`Uploading: ${uploadProgress}%`}</p>
+            <Button onClick={handleCancelUpload}>Cancel</Button>
           </div>
         )}
 
