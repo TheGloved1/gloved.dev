@@ -1,5 +1,5 @@
 import Loading from '@/components/loading'
-import { apiRoute } from '@/lib/utils'
+import { apiRoute, safeAwait } from '@/lib/utils'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import axios, { type AxiosResponse, type AxiosProgressEvent } from 'axios'
 import React, { useEffect, useRef, useState } from 'react'
@@ -130,7 +130,7 @@ export default function FileUploader(): React.JSX.Element {
       if (!password) {
         return
       }
-      if (password === correctPassword) {
+      if (password.trim() === correctPassword) {
         window.localStorage.setItem('fileUploaderPasswordEntered', correctPassword)
         setPasswordEntered(true)
       } else {
@@ -138,19 +138,25 @@ export default function FileUploader(): React.JSX.Element {
         return
       }
     }
-    try {
-      if (permanent) {
-        await permanentDeleteMutation.mutate({ file: fileToDelete.name, isTemp: fileToDelete.isTemp })
-      } else {
-        await deleteMutation.mutate({ file: fileToDelete.name, isTemp: fileToDelete.isTemp })
+
+    if (permanent) {
+      const [, error] = await safeAwait(
+        permanentDeleteMutation.mutateAsync({ file: fileToDelete.name, isTemp: fileToDelete.isTemp })
+      )
+      if (error) {
+        setAlert(error.message)
+        return
       }
-      setAlert('')
-      setIsDeleteDialogOpen(false)
-      setFileToDelete(null)
-    } catch (error) {
-      console.error('An error occurred while deleting file:', error)
-      setAlert('An error occurred while deleting file')
+    } else {
+      const [, error] = await safeAwait(deleteMutation.mutateAsync({ file: fileToDelete.name, isTemp: fileToDelete.isTemp }))
+      if (error) {
+        setAlert(error.message)
+        return
+      }
     }
+    setAlert('')
+    setIsDeleteDialogOpen(false)
+    setFileToDelete(null)
   }
 
   async function uploadFile(event: React.ChangeEvent<HTMLInputElement>): Promise<void> {
@@ -164,7 +170,7 @@ export default function FileUploader(): React.JSX.Element {
       const file = files[0]
       if (!file) return
 
-      await uploadMutation.mutate(file)
+      uploadMutation.mutate(file)
       setAlert('')
     } catch (error) {
       console.error('An error occurred while uploading file:', error)
