@@ -28,12 +28,12 @@ export default {
           '100%': { opacity: '0' },
         },
         fadeInLeft: {
-          '0%': { opacity: '0', transform: 'translateX(-100px)' },
+          '0%': { opacity: '0', transform: 'translateX(-500px)' },
           '100%': { opacity: '1', transform: 'translateX(0)' },
         },
         fadeOutLeft: {
           '0%': { opacity: '1', transform: 'translateX(0)' },
-          '100%': { opacity: '0', transform: 'translateX(-100px)' },
+          '100%': { opacity: '0', transform: 'translateX(-500px)' },
         },
         'accordion-down': {
           from: { height: '0' },
