@@ -21,15 +21,17 @@ export default function Dialog({
 
   return (
     <div
-      className={`fixed bottom-0 left-0 right-0 top-0 z-50 flex items-center justify-center self-center bg-opacity-50`}
+      className={`fixed place-items-center place-self-center z-50 flex items-center justify-center align-middle bg-opacity-50 max-w-fit`}
     >
-      <div className={cn(`z-10 w-fit rounded-xl bg-gray-800 p-4 shadow-lg`, className)}>
-        {closeButton || (
-          <button onClick={close} className="absolute top-2 right-2 text-2xl hover:text-red-700">
-            ✕
-          </button>
-        )}
-        <div className="row-span-2 grid content-center items-center justify-center py-1">{children}</div>
+      <div className={cn(`z-10 max-w-fit rounded-xl bg-gray-800 p-4 shadow-lg`, className)}>
+        <div className="row-span-2 grid content-center items-center justify-center py-1">
+          {closeButton || (
+            <button onClick={close} className="absolute right-2 top-2 text-2xl hover:text-red-700">
+              ✕
+            </button>
+          )}
+          {children}
+        </div>
       </div>
     </div>
   )
