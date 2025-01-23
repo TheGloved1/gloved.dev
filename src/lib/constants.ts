@@ -1,10 +1,15 @@
 export const NAME: string = 'gloved.dev'
 export const API: string = 'https://api.gloved.dev'
-export const { Home, Todos, Hangman, Calc, Github, Black, Discord } = {
+export const { Home, FileUploader, Todos, Hangman, Calc, Github, Black, Discord } = {
   Home: {
     title: 'Home',
     link: '/home',
     description: 'The home page for my About Me based web project built with the Next.js React Web Framework.',
+  },
+  FileUploader: {
+    title: 'File Uploader',
+    link: '/file-uploader',
+    description: 'Just the simple file uploader from the home page.',
   },
   Todos: {
     title: 'Todo App',

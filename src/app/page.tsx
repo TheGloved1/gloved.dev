@@ -1,7 +1,7 @@
 import AdminComponent from '@/components/AdminComponent'
 import Counter from '@/components/Counter'
 import ScrollVisibility from '@/components/ScrollVisibility'
-import { Black, Calc, Discord, Github, Hangman, Home, NAME, Todos } from '@/lib/constants'
+import { Black, Calc, Discord, Github, Hangman, Home, NAME, Todos, FileUploader } from '@/lib/constants'
 import React from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -56,6 +56,20 @@ export default function Page(): React.JSX.Element {
             </Link>
             <Link
               className="group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
+              href={FileUploader.link}
+            >
+              <h3 className="text-2xl font-bold">
+                {FileUploader.title}{' '}
+                <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
+                  {'->'}
+                </span>
+              </h3>
+              <div className="text-lg">{FileUploader.description}</div>
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
+            <Link
+              className="group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
               href={Todos.link}
             >
               <h3 className="text-2xl font-bold">
@@ -66,8 +80,6 @@ export default function Page(): React.JSX.Element {
               </h3>
               <div className="text-lg">{Todos.description}</div>
             </Link>
-          </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
             <Link
               className="group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
               href={Hangman.link}
@@ -77,6 +89,20 @@ export default function Page(): React.JSX.Element {
                 <span className="inline-block transition-transform group-hover:translate-x-1">{'->'}</span>
               </h3>
               <div className="text-lg">{Hangman.description}</div>
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
+            <Link
+              className="group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
+              href={Calc.link}
+            >
+              <h3 className="text-2xl font-bold">
+                {Calc.title}{' '}
+                <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
+                  {'->'}
+                </span>
+              </h3>
+              <div className="text-lg">{Calc.description}</div>
             </Link>
             <Link
               className="group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
@@ -89,20 +115,6 @@ export default function Page(): React.JSX.Element {
                 </span>
               </h3>
               <div className="text-lg">{Github.description}</div>
-            </Link>
-          </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-1 md:gap-8">
-            <Link
-              className="group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-              href={Calc.link}
-            >
-              <h3 className="text-2xl font-bold">
-                {Calc.title}{' '}
-                <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-                  {'->'}
-                </span>
-              </h3>
-              <div className="text-lg">{Calc.description}</div>
             </Link>
           </div>
           <AdminComponent>

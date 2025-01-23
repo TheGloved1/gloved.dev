@@ -95,7 +95,7 @@ export default function FileButton({ file, temp, size }: FileButtonProps): React
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <Image src={previewUrl} alt={file} className="w-full max-w-md rounded-xl" />
+                <Image src={previewUrl} alt={file} width={250} height={250} className="w-full max-w-md rounded-xl" />
               </Link>
             </div>
           )) ||

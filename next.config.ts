@@ -11,6 +11,11 @@ const nextConfig: NextConfig = {
         hostname: 'avatars.githubusercontent.com',
         port: '',
       },
+      {
+        protocol: 'https',
+        hostname: 'api.gloved.dev',
+        port: '',
+      },
     ],
   },
   /* config options here */

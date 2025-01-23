@@ -11,7 +11,6 @@ export const metadata: Metadata = {
 }
 
 export default function Page(): React.JSX.Element {
-  console.log('Rendering FileManager...')
   return (
     <>
       <main className="flex min-h-screen flex-col items-center bg-gradient-to-b from-sky-950 to-[#1e210c] text-white">
