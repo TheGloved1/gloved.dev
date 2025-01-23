@@ -1,18 +1,21 @@
+'use client'
 import ChevronLeft from '@/components/ChevronLeft'
 import { NAME } from '@/lib/constants'
-import { Link, MetaFunction } from '@remix-run/react'
 import React, { useCallback, useEffect, useState } from 'react'
 import { HangmanDrawing } from './HangmanDrawing'
 import { HangmanWord } from './HangmanWord'
 import { Keyboard } from './Keyboard'
 import words from './wordList.json'
+import { Metadata } from 'next'
+import Link from 'next/link'
 
 function getWord() {
   return words[Math.floor(Math.random() * words.length)]!
 }
 
-export const meta: MetaFunction = () => {
-  return [{ title: NAME + ' | Hangman Game' }, { name: 'description', content: 'A simple hangman game web app. Guess the word. (Might be broken)' }]
+export const meta: Metadata = {
+  title: NAME + ' | Hangman Game',
+  description: 'A simple hangman game web app. Guess the word. (Might be broken)',
 }
 
 export default function Page(): React.JSX.Element {
@@ -68,21 +71,21 @@ export default function Page(): React.JSX.Element {
 
   return (
     <>
-      <main className='flex min-h-screen items-center justify-center bg-gradient-to-br from-sky-950 to-[#1e210c] text-white'>
-        <Link to={'/'} className='fixed left-2 top-2 flex flex-row items-center justify-center pl-0'>
-          <button className='btn flex flex-row items-center justify-center'>
+      <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-sky-950 to-[#1e210c] text-white">
+        <Link href={'/'} className="fixed left-2 top-2 flex flex-row items-center justify-center pl-0">
+          <button className="btn flex flex-row items-center justify-center">
             <ChevronLeft />
             {'Back'}
           </button>
         </Link>
-        <div className='flex max-w-4xl flex-col items-center gap-8'>
-          <div className='items-center text-[2rem]'>
+        <div className="flex max-w-4xl flex-col items-center gap-8">
+          <div className="items-center text-[2rem]">
             {isWinner && 'Winner! - Refresh to try again'}
             {isLoser && 'Nice Try - Refresh to try again'}
           </div>
           <HangmanDrawing numberOfGuesses={incorrectLetters.length} />
           <HangmanWord reveal={isLoser} guessedLetters={guessedLetters} wordToGuess={wordToGuess} />
-          <div className='min-w-4xl self-stretch text-xs'>
+          <div className="min-w-4xl self-stretch text-xs">
             <Keyboard
               disabled={isWinner || isLoser}
               activeLetters={guessedLetters.filter((letter) => wordToGuess.includes(letter))}

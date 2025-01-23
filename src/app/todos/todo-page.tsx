@@ -1,3 +1,4 @@
+'use client'
 import './styles.css'
 import React, { useEffect, useState } from 'react'
 import TodoList from './todo-list'
@@ -48,9 +49,9 @@ export default function TodoPage(): React.JSX.Element {
 
   return (
     <>
-      <main className='main place-items-center'>
+      <main className="main place-items-center">
         <NewTodoForm onSubmit={addTodo} />
-        <h1 className='mb-2 mt-6 text-[1.5rem]'>Todo List</h1>
+        <h1 className="mb-2 mt-6 text-[1.5rem]">Todo List</h1>
         <TodoList todos={todos} toggleTodo={toggleTodo} deleteTodo={deleteTodo} />
       </main>
     </>
