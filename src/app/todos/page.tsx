@@ -5,7 +5,7 @@ import { NAME, Todos } from '@/lib/constants'
 import { Metadata } from 'next'
 import Link from 'next/link'
 
-export const meta: Metadata = {
+export const metadata: Metadata = {
   title: NAME + ' | ' + Todos.title,
   description: Todos.description,
 }

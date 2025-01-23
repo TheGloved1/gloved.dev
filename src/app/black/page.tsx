@@ -4,7 +4,7 @@ import { Metadata } from 'next'
 import Link from 'next/link'
 import React from 'react'
 
-export const meta: Metadata = {
+export const metadata: Metadata = {
   title: NAME + ' | ' + Black.title,
   description: Black.description,
 }

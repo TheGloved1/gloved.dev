@@ -5,7 +5,7 @@ import { Metadata } from 'next'
 import { NAME } from '@/lib/constants'
 import Link from 'next/link'
 
-export const meta: Metadata = {
+export const metadata: Metadata = {
   title: `${NAME} | File Uploader`,
   description: 'Just the simple file uploader from the home page.',
 }

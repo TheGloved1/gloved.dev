@@ -8,7 +8,7 @@ import { WIPHeader } from './WIPHeader'
 import { Metadata } from 'next'
 import Link from 'next/link'
 
-export const meta: Metadata = {
+export const metadata: Metadata = {
   title: 'gloved.dev | Home',
   description: 'The home page for my About Me based web project built with the Next.js React Web Framework',
   icons: [{ rel: 'icon', url: 'https://avatars.githubusercontent.com/u/96776176?v=4' }],

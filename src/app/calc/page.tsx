@@ -3,7 +3,7 @@ import CalculatorPage from './CalculatorPage'
 import { Calc, NAME } from '@/lib/constants'
 import { Metadata } from 'next'
 
-export const meta: Metadata = {
+export const metadata: Metadata = {
   title: NAME + ' | ' + Calc.title,
   description: Calc.description,
 }
