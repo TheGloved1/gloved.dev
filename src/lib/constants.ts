@@ -4,7 +4,7 @@ export const { Home, Todos, Hangman, Calc, Github, Black, Discord } = {
   Home: {
     title: 'Home',
     link: '/home',
-    description: 'The home page for my About Me based web project built with the Remix Web Framework.',
+    description: 'The home page for my About Me based web project built with the Next.js React Web Framework.',
   },
   Todos: {
     title: 'Todo App',
