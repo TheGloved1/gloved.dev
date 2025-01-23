@@ -2,9 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'Geist Mono';
+  src: url('../lib/fonts/GeistMonoVF.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('../lib/fonts/JetBrainsMono.woff2') format('woff2');
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --font-geist: 'Geist Mono', monospace;
+  --font-jetbrains: 'JetBrains Mono', monospace;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -17,5 +29,52 @@
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-synthesis: none;
+}
+
+.fancy-link {
+  text-decoration: none;
+  background-image: linear-gradient(90deg, red, blue);
+  background-size: 0% 3px;
+  background-repeat: no-repeat;
+  color: grey;
+  background-position: left 1.5rem;
+  padding-block: 0.25rem;
+  transition: color 500ms, background-size 500ms;
+}
+
+.fancy-link:hover,
+.fancy-link:focus {
+  color: purple;
+  background-size: 100% 3px;
+}
+
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeOutLeft {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-100px);
+  }
+}
+
+.fade-in-left {
+  animation: fadeInLeft 1s ease-out forwards;
+}
+
+.fade-out-left {
+  animation: fadeOutLeft 1s ease-out forwards;
 }
