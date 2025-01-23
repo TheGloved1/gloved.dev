@@ -7,11 +7,12 @@ import React from 'react'
 import { WIPHeader } from './WIPHeader'
 import { Metadata } from 'next'
 import Link from 'next/link'
+import { NAME } from '@/lib/constants'
 
 export const metadata: Metadata = {
-  title: 'gloved.dev | Home',
+  title: `${NAME} | Home`,
   description: 'The home page for my About Me based web project built with the Next.js React Web Framework',
-  icons: [{ rel: 'icon', url: 'https://avatars.githubusercontent.com/u/96776176?v=4' }],
+  icons: 'https://avatars.githubusercontent.com/u/96776176?v=4',
 }
 
 const sections = ['Welcome', 'About', 'Robotics', 'Github', 'File Uploader']
