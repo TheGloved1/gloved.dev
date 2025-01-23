@@ -22,7 +22,6 @@ export default function Dialog({
   return (
     <div
       className={`fixed bottom-0 left-0 right-0 top-0 z-50 flex items-center justify-center self-center bg-opacity-50`}
-      onClick={close}
     >
       <div className={cn(`z-10 rounded-xl bg-gray-800 p-4 shadow-lg`, className)}>
         {closeButton || (
