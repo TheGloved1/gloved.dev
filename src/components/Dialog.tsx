@@ -21,7 +21,7 @@ export default function Dialog({
 
   return (
     <dialog
-      className={`fixed place-items-center place-self-center z-50 flex items-center justify-center align-middle bg-opacity-50 max-w-fit`}
+      className={`fixed rounded-xl place-items-center place-self-center z-50 flex items-center justify-center align-middle bg-opacity-50 max-w-fit`}
     >
       <div className={cn(`items-center justify-center self-center rounded-xl bg-gray-800 p-4 shadow-lg`, className)}>
         <div className="place-items-center row-span-2 grid content-center items-center justify-center py-1">
