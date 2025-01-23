@@ -1,5 +1,4 @@
 import { Hangman, NAME } from '@/lib/constants'
-import '@/tailwind.css'
 import HangmanPage from './HangmanPage'
 import { Metadata } from 'next'
 
