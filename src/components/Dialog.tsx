@@ -20,11 +20,11 @@ export default function Dialog({
   if (!open) return null
 
   return (
-    <div
+    <dialog
       className={`fixed place-items-center place-self-center z-50 flex items-center justify-center align-middle bg-opacity-50 max-w-fit`}
     >
-      <div className={cn(`z-10 max-w-fit rounded-xl bg-gray-800 p-4 shadow-lg`, className)}>
-        <div className="row-span-2 grid content-center items-center justify-center py-1">
+      <div className={cn(`items-center justify-center self-center rounded-xl bg-gray-800 p-4 shadow-lg`, className)}>
+        <div className="place-items-center row-span-2 grid content-center items-center justify-center py-1">
           {closeButton || (
             <button onClick={close} className="absolute right-2 top-2 text-2xl hover:text-red-700">
               ✕
@@ -33,6 +33,6 @@ export default function Dialog({
           {children}
         </div>
       </div>
-    </div>
+    </dialog>
   )
 }
