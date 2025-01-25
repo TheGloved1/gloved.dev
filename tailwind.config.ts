@@ -1,4 +1,6 @@
 import type { Config } from 'tailwindcss'
+import daisyui from 'daisyui'
+import tailwindcssAnimate from 'tailwindcss-animate'
 
 export default {
   content: [
@@ -61,7 +63,7 @@ export default {
       },
     },
   },
-  plugins: [require('tailwindcss-animate'), require('daisyui')],
+  plugins: [tailwindcssAnimate, daisyui],
   daisyui: {
     themes: false, // false: only light + dark | true: all themes | array: specific themes like this ["light", "dark", "cupcake"]
     darkTheme: 'dark', // name of one of the included themes for dark mode

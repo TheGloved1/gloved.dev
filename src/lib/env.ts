@@ -1,15 +1,15 @@
 import { z } from 'zod'
 
 const envSchema = z.object({
-  CLIENT_ENV_FILE_MANAGER_PASSKEY: z.string(),
+  NEXT_PUBLIC_FILE_MANAGER_PASSKEY: z.string(),
 })
 
-const { CLIENT_ENV_FILE_MANAGER_PASSKEY } = {
-  CLIENT_ENV_FILE_MANAGER_PASSKEY: '7693',
+const { NEXT_PUBLIC_FILE_MANAGER_PASSKEY } = {
+  NEXT_PUBLIC_FILE_MANAGER_PASSKEY: process.env.NEXT_PUBLIC_FILE_MANAGER_PASSKEY,
 }
 
 const parsedEnv = envSchema.safeParse({
-  CLIENT_ENV_FILE_MANAGER_PASSKEY,
+  NEXT_PUBLIC_FILE_MANAGER_PASSKEY,
 })
 
 if (!parsedEnv.success) {
