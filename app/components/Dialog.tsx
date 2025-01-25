@@ -1,5 +1,6 @@
 import React from 'react'
 import { cn } from '@/lib/utils'
+import { motion } from 'motion/react'
 
 type DialogProps = {
   open: boolean
@@ -19,20 +20,21 @@ export default function Dialog({
   if (!open) return null
 
   return (
-    <div className={`fixed inset-0 z-50 flex items-center justify-center self-center bg-opacity-50`}>
+    <motion.div
+      className={`fixed bottom-0 left-0 right-0 top-0 z-50 flex items-center justify-center self-center bg-opacity-50`}
+      initial={{ opacity: 0, scale: 0 }}
+      animate={{ opacity: 1, scale: 1 }}
+      onClick={close}
+    >
       <div className={cn(`z-10 rounded-xl bg-gray-800 p-4 shadow-lg`, className)}>
-        <div className='row-span-2 grid content-center items-center justify-center py-1'>
-          {children}
-          <div className='flex items-center justify-center'>
-            {closeButton || (
-              <button onClick={close} className='btn btn-circle btn-ghost btn-sm absolute right-2 top-2 hover:text-red-700'>
-                ✕
-              </button>
-            )}
-          </div>
-        </div>
+        {closeButton || (
+          <button onClick={close} className='float-end ml-1 text-2xl hover:text-red-700'>
+            ✕
+          </button>
+        )}
+        <div className='row-span-2 grid content-center items-center justify-center py-1'>{children}</div>
       </div>
-    </div>
+    </motion.div>
   )
 }
 

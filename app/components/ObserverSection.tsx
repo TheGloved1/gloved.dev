@@ -1,4 +1,5 @@
 import { cn } from '@/lib/utils'
+import { motion } from 'motion/react'
 import React, { ComponentPropsWithoutRef, useEffect, useRef, useState } from 'react'
 
 type ObserverSectionProps = {
@@ -7,7 +8,7 @@ type ObserverSectionProps = {
   className?: string
 } & ComponentPropsWithoutRef<'section'>
 
-export default function ObserverSection({ children, className, id, ...props }: ObserverSectionProps): React.JSX.Element {
+export default function ObserverSection({ children, className, id }: ObserverSectionProps): React.JSX.Element {
   const sectionRef = useRef<HTMLElement>(null)
   const [isInView, setIsInView] = useState(false)
 
@@ -35,19 +36,20 @@ export default function ObserverSection({ children, className, id, ...props }: O
       }
     }
   }, [])
-  
 
   return (
-    <section
+    <motion.section
       id={id}
+      initial={{ opacity: 0, scale: 0, x: -1000 }}
+      animate={{ opacity: 0, scale: 0, x: -1000 }}
+      whileInView={{ opacity: 1, scale: 1, x: 0 }}
       ref={sectionRef}
       className={cn(
         `flex min-h-svh flex-col items-center justify-center text-center tracking-tight ${isInView ? 'fade-in-left' : 'fade-out-left'}`,
         className ? ` ${className}` : ''
       )}
-      {...props}
     >
       {children}
-    </section>
+    </motion.section>
   )
 }
