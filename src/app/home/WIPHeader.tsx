@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 
 export function WIPHeader(): React.JSX.Element | null {
   const [isVisible, setIsVisible] = useState(true)

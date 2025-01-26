@@ -4,9 +4,7 @@ const envSchema = z.object({
   NEXT_PUBLIC_FILE_MANAGER_PASSKEY: z.string(),
 })
 
-const { NEXT_PUBLIC_FILE_MANAGER_PASSKEY } = {
-  NEXT_PUBLIC_FILE_MANAGER_PASSKEY: process.env.NEXT_PUBLIC_FILE_MANAGER_PASSKEY,
-}
+const { NEXT_PUBLIC_FILE_MANAGER_PASSKEY } = process.env
 
 const parsedEnv = envSchema.safeParse({
   NEXT_PUBLIC_FILE_MANAGER_PASSKEY,

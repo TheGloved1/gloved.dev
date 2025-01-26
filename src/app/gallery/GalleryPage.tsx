@@ -9,17 +9,17 @@ import Button, { RedButton } from '../../components/Buttons'
 import Loading from '../../components/loading'
 import Image from 'next/image'
 
-interface GalleryFileInfo {
+interface GalleryFile {
   name: string
   createdAt: string
   size: string
 }
 
 const fetchGallery = async () => {
-  const response: AxiosResponse<GalleryFileInfo[]> = await axios.get(apiRoute('/files/?gallery=true'))
+  const response: AxiosResponse<GalleryFile[]> = await axios.get(apiRoute('/files/?gallery=true'))
 
   // Sort by numeric index in the filename
-  const sortedFiles: GalleryFileInfo[] = response.data.sort((a, b) => {
+  const sortedFiles: GalleryFile[] = response.data.sort((a, b) => {
     const indexA = extractIndexFromFilename(a.name)
     const indexB = extractIndexFromFilename(b.name)
     return indexA - indexB // Ascending order
@@ -88,7 +88,7 @@ export default function Gallery(): React.JSX.Element {
     },
   })
 
-  const galleryQuery = useQuery<GalleryFileInfo[], Error>({
+  const galleryQuery = useQuery<GalleryFile[], Error>({
     queryKey: ['gallery'],
     queryFn: fetchGallery,
     initialData: [],
@@ -176,6 +176,10 @@ export default function Gallery(): React.JSX.Element {
                       alt={file.name}
                       className="bottom-0 left-0 right-0 top-0 max-h-full max-w-full cursor-pointer rounded-xl object-center p-2"
                       title={'Download ' + file.name}
+                      width={125}
+                      height={125}
+                      placeholder="blur"
+                      blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII="
                     />
                   </Link>
                   {windowWidth >= 768 && (
