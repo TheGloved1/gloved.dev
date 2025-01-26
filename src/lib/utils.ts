@@ -7,17 +7,25 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 /**
- * Safely awaits a promise or a value and returns the result or throws an error.
- * @param input - The promise or value to await.
- * @returns The result of the promise or value.
- * @throws The error if the promise or value rejects.
+ * Creates a promise that resolves after a specified amount of time.
+ * @param ms - The amount of milliseconds to wait.
+ * @returns A promise that resolves after the specified amount of time.
+ */
+export function wait(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+/**
+ * Safely await a promise or value, catching any errors that may occur.
+ * @param input - A promise or value to await.
+ * @returns A tuple containing the result of the input, or null if there was an error, and the error itself, or null if there was no error.
  */
 export async function safeAwait<T, E = Error>(input: Promise<T> | T): Promise<[T, null] | [null, E]> {
   try {
     const result = await Promise.resolve(input)
     return [result, null]
-  } catch (err) {
-    return [null, err as E]
+  } catch (error) {
+    return [null, error as E]
   }
 }
 
@@ -49,4 +57,3 @@ export function checkDevMode(): boolean {
   }
   return false
 }
-
