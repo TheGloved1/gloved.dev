@@ -16,7 +16,7 @@ type FileButtonProps = {
 export default function FileButton({ file, temp, size }: FileButtonProps): React.JSX.Element {
   const [showDialog, setShowDialog] = useState(false)
   const encodedFileName = encodeURIComponent(file)
-  const tempQuery = temp ? '?temp=true' : ''
+  const tempQuery = temp ? '?temp=true' : null
   const fileUrl = apiRoute(`/files/download/${encodedFileName}${tempQuery}`)
   const previewUrl = apiRoute(`/files/view/${encodedFileName}${tempQuery}`)
 
