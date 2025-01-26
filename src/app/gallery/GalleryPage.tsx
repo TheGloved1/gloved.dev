@@ -5,8 +5,8 @@ import Link from 'next/link'
 import axios, { AxiosProgressEvent, AxiosResponse } from 'axios'
 import { apiRoute } from '@/lib/utils'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import Button, { RedButton } from '../../components/Buttons'
-import Loading from '../../components/loading'
+import Button, { RedButton } from '@/components/Buttons'
+import Loading from '@/components/loading'
 import Image from 'next/image'
 
 interface GalleryFile {
@@ -25,7 +25,6 @@ const fetchGallery = async () => {
     return indexA - indexB // Ascending order
   })
 
-  console.log(sortedFiles)
   return sortedFiles
 }
 
@@ -53,7 +52,7 @@ const galleryDeleteApi = async (file: string) => {
 }
 
 export default function Gallery(): React.JSX.Element {
-  const [uploadProgress, setUploadProgress] = useState<number>(0)
+  const [uploadProgress, setUploadProgress] = useState(0)
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 768)
   const inputButton = useRef<HTMLInputElement>(null)
   const queryClient = useQueryClient()
