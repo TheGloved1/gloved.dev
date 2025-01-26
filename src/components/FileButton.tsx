@@ -21,7 +21,7 @@ export default function FileButton({ file, temp, size }: FileButtonProps): React
   const previewUrl = apiRoute(`/files/view/${encodedFileName}${tempQuery}`)
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(previewUrl)
+    navigator.clipboard.writeText(fileUrl)
     setShowDialog(false)
   }
 
