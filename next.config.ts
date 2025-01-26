@@ -4,6 +4,11 @@ const nextConfig: NextConfig = {
   env: {
     NEXT_PUBLIC_FILE_MANAGER_PASSKEY: '7693',
   },
+  experimental: {
+    reactCompiler: true,
+    dynamicIO: true,
+    ppr: true,
+  },
   images: {
     remotePatterns: [
       {
@@ -18,7 +23,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  /* config options here */
 }
 
 export default nextConfig

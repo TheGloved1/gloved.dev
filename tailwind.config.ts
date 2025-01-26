@@ -1,5 +1,5 @@
 import type { Config } from 'tailwindcss'
-import daisyui from 'daisyui'
+import daisyui, { Config as DaisyUIConfig } from 'daisyui'
 import tailwindcssAnimate from 'tailwindcss-animate'
 
 export default {
@@ -73,5 +73,5 @@ export default {
     prefix: '', // prefix for daisyUI classnames (components, modifiers and responsive class names. Not colors)
     logs: true, // Shows info about daisyUI version and used config in the console when building your CSS
     themeRoot: ':root', // The element that receives theme color CSS variables
-  },
+  } as DaisyUIConfig,
 } satisfies Config
