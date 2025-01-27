@@ -32,23 +32,16 @@ body {
   font-synthesis: none;
 }
 
-.fancy-link {
-  text-decoration: none;
-  background-image: linear-gradient(90deg, red, blue);
-  background-size: 0% 3px;
-  background-repeat: no-repeat;
-  color: grey;
-  background-position: left 1.5rem;
-  padding-block: 0.25rem;
-  transition:
-    color 500ms,
-    background-size 500ms;
-}
-
-.fancy-link:hover,
-.fancy-link:focus {
-  color: purple;
-  background-size: 100% 3px;
+@layer utilities {
+  .fancy-link {
+    @apply bg-gradient-to-r from-red-500 to-blue-500 bg-no-repeat py-1 text-gray-500 no-underline transition-all duration-500 ease-in-out;
+    background-size: 0% 3px; /* Custom style */
+    background-position: left 1.5rem; /* Custom style */
+  }
+  .fancy-link:hover,
+  .fancy-link:focus {
+    @apply bg-[length:100%_3px] text-purple-800;
+  }
 }
 
 @keyframes fadeInLeft {
