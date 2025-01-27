@@ -34,7 +34,7 @@ const uploadFileApi = async (
   file: File,
   isTemp: boolean,
   onUploadProgress: (progressEvent: AxiosProgressEvent) => void,
-  signal?: AbortSignal
+  signal?: AbortSignal,
 ) => {
   const formData = new FormData()
   formData.append('file', file)
@@ -99,7 +99,7 @@ export default function FileUploader(): React.JSX.Element {
             setUploadProgress(percentCompleted)
           }
         },
-        controller.signal
+        controller.signal,
       )
     },
     onSuccess: () => {
@@ -142,16 +142,14 @@ export default function FileUploader(): React.JSX.Element {
 
     if (permanent) {
       const [, error] = await safeAwait(
-        permanentDeleteMutation.mutateAsync({ file: fileToDelete.name, isTemp: fileToDelete.isTemp })
+        permanentDeleteMutation.mutateAsync({ file: fileToDelete.name, isTemp: fileToDelete.isTemp }),
       )
       if (error) {
         setAlert(error.message)
         return
       }
     } else {
-      const [, error] = await safeAwait(
-        deleteMutation.mutateAsync({ file: fileToDelete.name, isTemp: fileToDelete.isTemp })
-      )
+      const [, error] = await safeAwait(deleteMutation.mutateAsync({ file: fileToDelete.name, isTemp: fileToDelete.isTemp }))
       if (error) {
         setAlert(error.message)
         return
@@ -195,12 +193,7 @@ export default function FileUploader(): React.JSX.Element {
           <label className="label m-2 cursor-pointer rounded-xl bg-gray-600 p-2 text-black hover:bg-gray-700">
             <span className="label-text text-balance">{'Temporary file (24h)'}</span>
             <span className="w-2"></span>
-            <input
-              type="checkbox"
-              checked={isTemp}
-              onChange={(e) => setIsTemp(e.target.checked)}
-              className="checkbox"
-            />
+            <input type="checkbox" checked={isTemp} onChange={(e) => setIsTemp(e.target.checked)} className="checkbox" />
           </label>
         </div>
         <input

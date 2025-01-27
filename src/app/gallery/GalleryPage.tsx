@@ -148,14 +148,9 @@ export default function Gallery(): React.JSX.Element {
           <div className="flex scale-50 flex-col items-center justify-center text-center sm:scale-75 md:scale-100">
             <h1 className="text-2xl">Gallery</h1>
             <h2 className="text-md pb-4">A tribute to my best friend</h2>
-            <p className="pb-12 text-center text-xs">
-              {'(Currently only images are supported, will add videos later)'}
-            </p>
+            <p className="pb-12 text-center text-xs">{'(Currently only images are supported, will add videos later)'}</p>
           </div>
-          {galleryQuery.isPending ||
-          galleryQuery.isFetching ||
-          galleryQuery.isRefetching ||
-          galleryQuery.data?.length === 0 ? (
+          {galleryQuery.isFetching || galleryQuery.data?.length === 0 ? (
             <Loading />
           ) : (
             <div className="flex w-screen flex-wrap justify-center">

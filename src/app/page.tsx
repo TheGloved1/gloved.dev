@@ -85,8 +85,7 @@ export default function Page(): React.JSX.Element {
               href={Hangman.link}
             >
               <h3 className="text-2xl font-bold">
-                {Hangman.title}{' '}
-                <span className="inline-block transition-transform group-hover:translate-x-1">{'->'}</span>
+                {Hangman.title} <span className="inline-block transition-transform group-hover:translate-x-1">{'->'}</span>
               </h3>
               <div className="text-lg">{Hangman.description}</div>
             </Link>

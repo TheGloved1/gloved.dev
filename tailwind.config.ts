@@ -17,6 +17,9 @@ export default {
       },
     },
     extend: {
+      scrollSnapType: {
+        y: 'mandatory',
+      },
       screens: {
         sm: '40rem', // 640px / 16 = 40rem
         md: '48rem', // 768px / 16 = 48rem

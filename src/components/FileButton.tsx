@@ -81,7 +81,7 @@ export default function FileButton({ file, temp, size }: FileButtonProps): React
               </h2>
             ) : (
               <VideoPreview
-                className="w-full max-w-md rounded-xl max-h-[300px] object-contain"
+                className="max-h-[300px] w-full max-w-md rounded-xl object-contain"
                 src={previewUrl}
                 type={getMimeType(file)}
               />
@@ -91,7 +91,7 @@ export default function FileButton({ file, temp, size }: FileButtonProps): React
           (isImage(file) && (
             <div className="mb-4 w-full max-w-md items-center justify-center">
               <Link
-                className="w-full max-w-md rounded-xl self-center items-center justify-center object-center content-center flex"
+                className="flex w-full max-w-md content-center items-center justify-center self-center rounded-xl object-center"
                 href={previewUrl}
                 onClick={() => {
                   setShowDialog(false)
@@ -99,13 +99,7 @@ export default function FileButton({ file, temp, size }: FileButtonProps): React
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <Image
-                  src={previewUrl}
-                  alt={file}
-                  width={250}
-                  height={250}
-                  className="max-w-md max-h-[300px] rounded-xl"
-                />
+                <Image src={previewUrl} alt={file} width={250} height={250} className="max-h-[300px] max-w-md rounded-xl" />
               </Link>
             </div>
           )) ||

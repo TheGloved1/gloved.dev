@@ -40,7 +40,9 @@ body {
   color: grey;
   background-position: left 1.5rem;
   padding-block: 0.25rem;
-  transition: color 500ms, background-size 500ms;
+  transition:
+    color 500ms,
+    background-size 500ms;
 }
 
 .fancy-link:hover,
@@ -77,4 +79,8 @@ body {
 
 .fade-out-left {
   animation: fadeOutLeft 1s ease-out forwards;
+}
+
+.scroll-snap {
+  scroll-snap-type: y mandatory;
 }

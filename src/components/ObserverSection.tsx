@@ -21,7 +21,7 @@ export default function ObserverSection({ children, className, id }: ObserverSec
           setIsInView(false)
         }
       },
-      { threshold: 0.5 }
+      { threshold: 0.5 },
     )
 
     const sectionRefCurrent = sectionRef.current
@@ -42,10 +42,10 @@ export default function ObserverSection({ children, className, id }: ObserverSec
       id={id}
       ref={sectionRef}
       className={cn(
-        `flex min-h-svh flex-col items-center justify-center text-center tracking-tight ${
+        `flex min-h-svh snap-start flex-col items-center justify-center text-center tracking-tight ${
           isInView ? 'fade-in-left' : 'fade-out-left'
         }`,
-        className ? ` ${className}` : ''
+        className ? ` ${className}` : '',
       )}
     >
       {children}
