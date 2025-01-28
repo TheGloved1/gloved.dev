@@ -5,14 +5,31 @@ import { apiRoute } from '@/lib/utils'
 import VideoPreview from '@/components/VideoPreview'
 import Button, { LinkButton } from '@/components/Buttons'
 import Dialog from '@/components/Dialog'
-import Image from 'next/image'
+import ImageBlur from './ImageBlur'
 
+/**
+ * Props for the FileButton component
+ *
+ * @prop {string} file - name of the file to be downloaded
+ * @prop {boolean} [temp] - whether the file is temporary or not
+ * @prop {string} [size] - size of the file in human-readable format
+ */
 type FileButtonProps = {
   file: string
   temp?: boolean
   size?: string
 }
 
+/**
+ * Component to display a file with a button to copy or download it.
+ * When clicked, it shows a dialog with options to copy the URL or download the file.
+ * If the file is an image or video, it will be previewed in the dialog.
+ * @param {FileButtonProps} props
+ * @param {string} props.file - name of the file to be downloaded
+ * @param {boolean} [props.temp] - whether the file is temporary or not
+ * @param {string} [props.size] - size of the file in human-readable format
+ * @returns {React.JSX.Element}
+ */
 export default function FileButton({ file, temp, size }: FileButtonProps): React.JSX.Element {
   const [showDialog, setShowDialog] = useState(false)
   const encodedFileName = encodeURIComponent(file)
@@ -99,7 +116,13 @@ export default function FileButton({ file, temp, size }: FileButtonProps): React
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <Image src={previewUrl} alt={file} width={250} height={250} className="max-h-[300px] max-w-md rounded-xl" />
+                <ImageBlur
+                  src={previewUrl}
+                  alt={file}
+                  width={250}
+                  height={250}
+                  className="max-h-[300px] max-w-md rounded-xl"
+                />
               </Link>
             </div>
           )) ||
