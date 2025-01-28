@@ -20,6 +20,7 @@ export default function Page(): React.JSX.Element {
         <Link
           href={'/gallery'}
           className="fixed bottom-2 left-2 flex flex-row items-center justify-center pl-0 lg:bottom-auto lg:top-2"
+          prefetch
         >
           <Image
             src="/Leo.png"
@@ -33,6 +34,7 @@ export default function Page(): React.JSX.Element {
           <Link
             href={'/gallery'}
             className="fixed left-2 top-2 flex items-center justify-center self-center pl-0 sm:hidden lg:hidden"
+            prefetch
           >
             <button className="rounded bg-blue-500 px-4 py-2 text-white">Go to Gallery</button>
           </Link>
@@ -45,6 +47,7 @@ export default function Page(): React.JSX.Element {
             <Link
               className="group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
               href={Home.link}
+              prefetch
             >
               <h3 className="text-2xl font-bold">
                 {Home.title}{' '}
@@ -57,6 +60,7 @@ export default function Page(): React.JSX.Element {
             <Link
               className="group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
               href={FileUploader.link}
+              prefetch
             >
               <h3 className="text-2xl font-bold">
                 {FileUploader.title}{' '}
@@ -71,6 +75,7 @@ export default function Page(): React.JSX.Element {
             <Link
               className="group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
               href={Todos.link}
+              prefetch
             >
               <h3 className="text-2xl font-bold">
                 {Todos.title}{' '}
@@ -83,9 +88,13 @@ export default function Page(): React.JSX.Element {
             <Link
               className="group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
               href={Hangman.link}
+              prefetch
             >
               <h3 className="text-2xl font-bold">
-                {Hangman.title} <span className="inline-block transition-transform group-hover:translate-x-1">{'->'}</span>
+                {Hangman.title}{' '}
+                <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
+                  {'->'}
+                </span>
               </h3>
               <div className="text-lg">{Hangman.description}</div>
             </Link>
@@ -94,6 +103,7 @@ export default function Page(): React.JSX.Element {
             <Link
               className="group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
               href={Calc.link}
+              prefetch
             >
               <h3 className="text-2xl font-bold">
                 {Calc.title}{' '}
@@ -106,6 +116,7 @@ export default function Page(): React.JSX.Element {
             <Link
               className="group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
               href={Github.link}
+              prefetch
             >
               <h3 className="text-2xl font-bold">
                 {Github.title}{' '}
@@ -125,6 +136,7 @@ export default function Page(): React.JSX.Element {
               <Link
                 className="group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
                 href={Black.link}
+                prefetch
               >
                 <h3 className="text-2xl font-bold">
                   {Black.title}{' '}
@@ -137,6 +149,7 @@ export default function Page(): React.JSX.Element {
               <Link
                 className="group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
                 href={Discord.link}
+                prefetch
               >
                 <h3 className="text-2xl font-bold">
                   {Discord.title}{' '}
