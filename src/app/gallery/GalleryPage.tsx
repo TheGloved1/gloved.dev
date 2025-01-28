@@ -7,7 +7,7 @@ import { apiRoute } from '@/lib/utils'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import Button, { RedButton } from '@/components/Buttons'
 import Loading from '@/components/loading'
-import Image from 'next/image'
+import ImageBlur from '@/components/ImageBlur'
 
 interface GalleryFile {
   name: string
@@ -165,15 +165,11 @@ export default function Gallery(): React.JSX.Element {
                     rel="noopener noreferrer"
                     className="relative flex h-24 w-24 flex-col items-center justify-center border-2 border-dashed border-slate-500 sm:h-32 sm:w-32 md:h-48 md:w-48"
                   >
-                    <Image
-                      src={`${apiRoute(`/files/download/${file.name}?gallery=true`)}?t=${new Date().getTime()}`}
+                    <ImageBlur
+                      src={`${apiRoute(`/files/download/${file.name}?gallery=true`)}`}
                       alt={file.name}
                       className="bottom-0 left-0 right-0 top-0 max-h-full max-w-full cursor-pointer rounded-xl object-center p-2"
                       title={'Download ' + file.name}
-                      width={125}
-                      height={125}
-                      placeholder="blur"
-                      blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII="
                     />
                   </Link>
                   {windowWidth >= 768 && (
