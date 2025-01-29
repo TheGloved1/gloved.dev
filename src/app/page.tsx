@@ -1,6 +1,6 @@
 import AdminComponent from '@/components/AdminComponent'
 import Counter from '@/components/Counter'
-import ScrollVisibility from '@/components/ScrollVisibility'
+import TopScrollVisibility from '@/components/TopScrollVisibility'
 import { Black, Calc, Discord, Github, Hangman, Home, NAME, Todos, FileUploader } from '@/lib/constants'
 import React from 'react'
 import Link from 'next/link'
@@ -30,7 +30,7 @@ export default function Page(): React.JSX.Element {
             className="fixed left-1 top-1 hidden h-12 w-12 rounded-xl border-2 border-white shadow-lg sm:left-4 sm:top-4 sm:block sm:h-16 sm:w-16 sm:transform md:left-4 md:top-4 md:h-24 md:w-24 lg:left-4 lg:top-4 xl:left-4 xl:top-4 2xl:left-4 2xl:top-4"
           />
         </Link>
-        <ScrollVisibility offset={100}>
+        <TopScrollVisibility offset={100}>
           <Link
             href={'/gallery'}
             className="fixed left-2 top-2 flex items-center justify-center self-center pl-0 sm:hidden lg:hidden"
@@ -38,7 +38,7 @@ export default function Page(): React.JSX.Element {
           >
             <button className="rounded bg-blue-500 px-4 py-2 text-white">Go to Gallery</button>
           </Link>
-        </ScrollVisibility>
+        </TopScrollVisibility>
         <div className="container flex flex-col items-center justify-center gap-8 px-1 py-16 md:px-4">
           <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
             gloved<span className="text-[hsl(280,100%,40%)]">.</span>dev

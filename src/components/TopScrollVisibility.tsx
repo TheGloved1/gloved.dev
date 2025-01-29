@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 
-export default function ScrollVisibility({ children, offset }: { children: React.ReactNode; offset?: number }) {
+export default function TopScrollVisibility({ children, offset }: { children: React.ReactNode; offset?: number }) {
   const [isAtTop, setIsAtTop] = useState(true)
 
   useEffect(() => {

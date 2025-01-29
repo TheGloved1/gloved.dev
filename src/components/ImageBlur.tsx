@@ -3,37 +3,27 @@ import Image from 'next/image'
 import { useQuery } from '@tanstack/react-query'
 import { fetchImage } from '@/lib/actions'
 import Loading from './loading'
+import ErrorAlert from './ErrorAlert'
 
-export default function ImageBlur({
-  src,
-  title,
-  alt,
-  className,
-  width,
-  height,
-}: {
+type ImageBlurProps = {
   src: string
   title?: string
   alt?: string
   className?: string
   width?: number
   height?: number
-}): React.JSX.Element {
-  const { data, isError, error, isFetching } = useQuery({
+}
+
+export default function ImageBlur({ src, title, alt, className, width, height }: ImageBlurProps): React.JSX.Element {
+  const imageQuery = useQuery({
     queryKey: ['images', src],
     queryFn: () => fetchImage(src),
   })
 
-  const base64 = data?.toString('base64')
-  if (isError)
-    return (
-      <div role="alert" className="alert alert-error">
-        {' '}
-        {error.message}{' '}
-      </div>
-    )
+  const base64 = imageQuery?.data?.toString('base64')
 
-  if (isFetching) return <Loading />
+  if (imageQuery.isError) return <ErrorAlert>{imageQuery.error.message}</ErrorAlert>
+  if (imageQuery.isFetching || base64 === undefined) return <Loading />
 
   return (
     <Image
