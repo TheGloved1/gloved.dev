@@ -15,7 +15,7 @@ interface GalleryFile {
   size: string
 }
 
-const fetchGallery = async () => {
+async function fetchGallery() {
   const response: AxiosResponse<GalleryFile[]> = await axios.get(apiRoute('/files/?gallery=true'))
 
   // Sort by numeric index in the filename
@@ -29,12 +29,12 @@ const fetchGallery = async () => {
 }
 
 // Helper function to extract index from filename
-const extractIndexFromFilename = (filename: string): number => {
+function extractIndexFromFilename(filename: string): number {
   const match = filename.match(/gallery_(\d+)/)
   return match ? parseInt(match[1], 10) : 0 // Default to 0 if no match
 }
 
-const galleryUploadApi = async (file: File, onUploadProgress: (progressEvent: AxiosProgressEvent) => void) => {
+async function galleryUploadApi(file: File, onUploadProgress: (progressEvent: AxiosProgressEvent) => void) {
   const formData = new FormData()
   formData.append('file', file)
   formData.append('gallery', 'true')
@@ -46,7 +46,7 @@ const galleryUploadApi = async (file: File, onUploadProgress: (progressEvent: Ax
   })
 }
 
-const galleryDeleteApi = async (file: string) => {
+async function galleryDeleteApi(file: string) {
   console.log('Deleting file:', file)
   await axios.delete(apiRoute(`/files/delete/${file}?gallery=true`))
 }
