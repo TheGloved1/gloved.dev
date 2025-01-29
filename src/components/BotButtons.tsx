@@ -3,6 +3,7 @@ import { apiRoute } from '@/lib/utils'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import axios, { AxiosResponse } from 'axios'
 import { useEffect, useState } from 'react'
+import ErrorAlert from './ErrorAlert'
 
 const startDiscordBot = async (): Promise<{ message: string }> => {
   const response: AxiosResponse<{ message: string }> = await axios.post(apiRoute('/bot/start'))
@@ -28,28 +29,26 @@ export default function BotButtons(): React.JSX.Element {
   const [startButtonText, setStartButtonText] = useState<string>('Start Bot')
   const [stopButtonText, setStopButtonText] = useState<string>('Stop Bot')
 
-  const {
-    data: botStatus,
-    isLoading: isStatusLoading,
-    isError: isStatusError,
-  } = useQuery({
-    queryKey: ['botStatus'],
+  const botStatusKey = ['botStatus']
+
+  const botStatusQuery = useQuery({
+    queryKey: botStatusKey,
     queryFn: getBotStatus,
     initialData: { isRunning: false },
   })
 
   useEffect(() => {
-    if (isStatusError) {
+    if (botStatusQuery.isError) {
       setError('Failed to fetch bot status')
     }
-  }, [isStatusError])
+  }, [botStatusQuery.isError])
 
   const startBotMutation = useMutation({
     mutationFn: startDiscordBot,
     onSuccess: (data) => {
       setStartButtonText(data.message)
       setError(null)
-      queryClient.invalidateQueries({ queryKey: ['botStatus'] })
+      queryClient.invalidateQueries({ queryKey: botStatusKey })
       setTimeout(() => setStartButtonText('Start Bot'), 1000)
     },
     onError: (error: Error) => {
@@ -62,7 +61,7 @@ export default function BotButtons(): React.JSX.Element {
     onSuccess: (data) => {
       setStopButtonText(data.message)
       setError(null)
-      queryClient.invalidateQueries({ queryKey: ['botStatus'] })
+      queryClient.invalidateQueries({ queryKey: botStatusKey })
       setTimeout(() => setStopButtonText('Stop Bot'), 1000)
     },
     onError: (error: Error) => {
@@ -83,26 +82,26 @@ export default function BotButtons(): React.JSX.Element {
       <button
         className="btn mx-4"
         onClick={handleStartBot}
-        disabled={isStatusLoading || startBotMutation.isPending || botStatus.isRunning}
+        disabled={startBotMutation.isPending || botStatusQuery.isPending || botStatusQuery.data?.isRunning}
       >
         {startBotMutation.isPending
           ? 'Starting Bot...'
-          : botStatus.isRunning
-          ? 'Discord Bot is Online...'
-          : startButtonText}
+          : botStatusQuery.data?.isRunning
+            ? 'Discord Bot is Online...'
+            : startButtonText}
       </button>
       <button
         className="btn mx-4"
         onClick={handleStopBot}
-        disabled={isStatusLoading || stopBotMutation.isPending || !botStatus.isRunning}
+        disabled={stopBotMutation.isPending || botStatusQuery.isPending || !botStatusQuery.data?.isRunning}
       >
         {stopBotMutation.isPending
           ? 'Stopping Bot...'
-          : !botStatus.isRunning
-          ? 'Discord Bot is Offline...'
-          : stopButtonText}
+          : !botStatusQuery.data?.isRunning
+            ? 'Discord Bot is Offline...'
+            : stopButtonText}
       </button>
-      {error && <p className="alert-error">{error}</p>}
+      {error && <ErrorAlert>{error}</ErrorAlert>}
     </div>
   )
 }

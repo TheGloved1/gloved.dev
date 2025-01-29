@@ -4,13 +4,13 @@ import TopScrollVisibility from '@/components/TopScrollVisibility'
 import { Black, Calc, Discord, Github, Hangman, Home, NAME, Todos, FileUploader } from '@/lib/constants'
 import React from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
 import { Metadata } from 'next'
+import ImageBlur from '@/components/ImageBlur'
 
 export const metadata: Metadata = {
   title: NAME,
   description:
-    'Made by Kaden Hood. A personal website for my projects and interests. Built using Next.js React Web Framework.',
+    'Made by Kaden Hood. A personal website for my projects and interests. Built using the Next.js React Web Framework.',
 }
 
 export default function Page(): React.JSX.Element {
@@ -22,7 +22,7 @@ export default function Page(): React.JSX.Element {
           className="fixed bottom-2 left-2 flex flex-row items-center justify-center pl-0 lg:bottom-auto lg:top-2"
           prefetch
         >
-          <Image
+          <ImageBlur
             src="/Leo.png"
             alt=""
             width={100}
