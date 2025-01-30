@@ -17,7 +17,7 @@ type FileInfo = {
   size: string
 }
 
-const fetchFiles = async () => {
+const fetchFiles = async (): Promise<FileInfo[]> => {
   const response: AxiosResponse<FileInfo[]> = await axios.get(apiRoute('/files/'))
   return response.data
 }
@@ -49,6 +49,7 @@ const uploadFileApi = async (
 }
 
 export default function FileUploader(): React.JSX.Element {
+  const queryClient = useQueryClient()
   const correctPassword = env.FILE_MANAGER_PASSKEY
   const [alert, setAlert] = useState<string>('')
   const [passwordEntered, setPasswordEntered] = useState<boolean>(false)
@@ -59,9 +60,8 @@ export default function FileUploader(): React.JSX.Element {
   const [fileToDelete, setFileToDelete] = useState<{ name: string; isTemp: boolean } | null>(null)
   const [isPermanentDelete, setIsPermanentDelete] = useState<boolean>(false)
   const [uploadRequest, setUploadRequest] = useState<AbortController | null>(null)
-  const queryClient = useQueryClient()
 
-  const filesQuery = useQuery<FileInfo[], Error>({ queryKey: ['files'], queryFn: fetchFiles, initialData: [] })
+  const filesQuery = useQuery({ queryKey: ['files'], queryFn: fetchFiles, initialData: [] })
 
   const deleteMutation = useMutation({
     mutationFn: ({ file, isTemp }: { file: string; isTemp: boolean }) => deleteFileApi(file, isTemp),
