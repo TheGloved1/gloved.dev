@@ -4,6 +4,7 @@ import { NAME } from '@/lib/constants'
 import { Metadata } from 'next'
 import Link from 'next/link'
 import React from 'react'
+import './chatbot.css'
 
 export const metadata: Metadata = {
   title: `${NAME} | Chatbot`,

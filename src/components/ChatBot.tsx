@@ -50,7 +50,7 @@ export default function Chatbot(): React.JSX.Element {
           <div key={index} className={`flex ${m.role === Role.USER ? 'justify-end' : 'justify-start'}`}>
             <div
               className={`max-w-[70%] rounded-lg p-4 ${
-                m.role === Role.USER ? 'bg-primary text-white' : 'bg-gray-800 text-white'
+                m.role === Role.USER ? 'bg-primary text-black' : 'bg-gray-800 text-white'
               }`}
             >
               <div className="mb-2 flex items-center gap-2">
@@ -66,8 +66,8 @@ export default function Chatbot(): React.JSX.Element {
               <article
                 className={`prose max-w-none ${
                   m.role === Role.USER
-                    ? 'prose-invert prose-p:text-white prose-headings:text-white prose-strong:text-white prose-li:text-white'
-                    : 'prose-invert prose-p:text-white prose-headings:text-white prose-strong:text-white prose-li:text-white'
+                    ? 'prose-invert prose-p:text-black prose-headings:text-black prose-strong:text-black prose-li:text-black'
+                    : 'prose-invert prose-p:text-gray-100 prose-headings:text-gray-100 prose-strong:text-gray-100 prose-li:text-gray-100'
                 }`}
               >
                 <Markdown>{m.text}</Markdown>
