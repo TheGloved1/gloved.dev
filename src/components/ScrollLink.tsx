@@ -3,12 +3,13 @@ import React from 'react'
 
 type ScrollLinkProps = {
   children: React.ReactNode
-  to: string
+  href: string
+  onClick?: () => void
 } & React.ComponentPropsWithoutRef<'button'>
 
-export default function ScrollLink({ children, to: href, ...props }: ScrollLinkProps): React.JSX.Element {
-  function handleScroll(event: React.MouseEvent<HTMLButtonElement, MouseEvent>, href: string) {
-    event.preventDefault()
+export default function ScrollLink({ children, href, onClick, ...props }: ScrollLinkProps): React.JSX.Element {
+  function handleScroll(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+    e.preventDefault()
     const element = document.getElementById(href.replace('#', ''))
     if (element) {
       const offset = 25 // Adjust this value to set the desired offset
@@ -17,13 +18,16 @@ export default function ScrollLink({ children, to: href, ...props }: ScrollLinkP
 
       scrollTo({
         top: offsetPosition,
-        behavior: 'smooth', // Use 'smooth' for smooth scrolling
+        behavior: 'smooth',
       })
+    }
+    if (onClick) {
+      onClick()
     }
   }
 
   return (
-    <button onClick={(e) => handleScroll(e, href)} {...props}>
+    <button onClick={(e) => handleScroll(e)} {...props}>
       {children}
     </button>
   )

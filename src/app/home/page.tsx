@@ -8,6 +8,7 @@ import { WIPHeader } from './WIPHeader'
 import { Metadata } from 'next'
 import Link from 'next/link'
 import { NAME } from '@/lib/constants'
+import Dropdown from './Dropdown'
 
 export const metadata: Metadata = {
   title: `${NAME} | Home`,
@@ -25,46 +26,27 @@ export default function Page(): React.JSX.Element {
           <div className="navbar-start">
             <Link href={'/'} className="btn btn-ghost text-xl">
               <ChevronLeft />
-              Back
+              <span className="hidden p-1 sm:block">{'Back'}</span>
             </Link>
-          </div>
-          <div className="navbar-end flex md:hidden">
-            <div className="dropdown">
-              <div role="button" className="btn btn-ghost hidden">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h8m-8 6h16" />
-                </svg>
-              </div>
-              <ul className="menu dropdown-content menu-sm z-[1000] mt-3 w-44 -translate-x-48 rounded-box bg-zinc-800 p-2 shadow">
-                {sections.map((section) => (
-                  <li key={section}>
-                    <ScrollLink to={`#${section}`}>{section}</ScrollLink>
-                  </li>
-                ))}
-              </ul>
-            </div>
           </div>
           <div className="navbar-center hidden md:flex">
             <ul className="menu menu-horizontal px-1">
               {sections.map((section) => (
                 <li key={section}>
-                  <ScrollLink to={`#${section}`} className="mx-1">
+                  <ScrollLink href={`#${section}`} className="mx-1">
                     {section}
                   </ScrollLink>
                 </li>
               ))}
             </ul>
           </div>
-          <div className="navbar-end hidden lg:flex">
+          <div className="navbar-end hidden md:flex">
             <h1 className="p-2 text-lg font-extrabold tracking-tight text-white">
               gloved<span className="text-[hsl(280,93%,72%)]">.</span>dev
             </h1>
+          </div>
+          <div className="navbar-end flex md:hidden">
+            <Dropdown sections={sections} />
           </div>
         </div>
       </div>

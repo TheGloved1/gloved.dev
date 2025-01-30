@@ -2,7 +2,7 @@
 import Link from 'next/link'
 import ChevronLeft from './ChevronLeft'
 
-export default function PageBack(): React.JSX.Element {
+export default function PageBack({ stayTop }: { stayTop?: boolean }): React.JSX.Element {
   return (
     <Link
       href={'/'}
@@ -14,7 +14,11 @@ export default function PageBack(): React.JSX.Element {
           window.location.href = '/'
         }
       }}
-      className="fixed bottom-2 left-2 flex flex-row items-center justify-center pl-0 md:bottom-auto md:top-2"
+      className={
+        stayTop
+          ? 'fixed bottom-auto left-2 top-2 flex flex-row items-center justify-center pl-0'
+          : 'fixed bottom-2 left-2 flex flex-row items-center justify-center pl-0 md:bottom-auto md:top-2'
+      }
     >
       <button className="btn flex flex-row items-center justify-center">
         <ChevronLeft />

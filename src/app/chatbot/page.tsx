@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default function Page(): React.JSX.Element {
   return (
     <>
-      <PageBack />
+      <PageBack stayTop />
       <ChatBot />
     </>
   )
