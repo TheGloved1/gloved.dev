@@ -289,7 +289,7 @@ export default function FileUploader(): React.JSX.Element {
         )}
         {!filesQuery.isLoading && filesQuery.data.length === 0 && <li>{'No files found'}</li>}
       </div>
-      {alert !== '' && <ErrorAlert alert={alert} />}
+      {alert !== '' && <ErrorAlert>{alert}</ErrorAlert>}
       <Dialog
         open={isDeleteDialogOpen}
         close={() => {
