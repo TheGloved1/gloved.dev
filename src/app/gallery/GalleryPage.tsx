@@ -172,8 +172,7 @@ export default function Gallery(): React.JSX.Element {
                       title={'Download ' + file.name}
                       width={125}
                       height={125}
-                      placeholder="blur"
-                      blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFc90AAAADUlEQVQYV2NkYGAAYRgDf9hKJgAAAABJRU5ErkJggg=="
+                      placeholder="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFc90AAAADUlEQVQYV2NkYGAAYRgDf9hKJgAAAABJRU5ErkJggg=="
                     />
                   </Link>
                   {windowWidth >= 768 && (
