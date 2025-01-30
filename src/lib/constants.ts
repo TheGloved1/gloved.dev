@@ -1,6 +1,6 @@
 export const NAME: string = 'gloved.dev'
 export const API: string = 'https://api.gloved.dev'
-export const { Home, FileUploader, Todos, Hangman, Calc, Github, Black, Discord } = {
+export const { Home, FileUploader, Todos, Hangman, Calc, Github, Black, Discord, ChatBot } = {
   Home: {
     title: 'Home',
     link: '/home',
@@ -40,5 +40,10 @@ export const { Home, FileUploader, Todos, Hangman, Calc, Github, Black, Discord 
     title: 'Discord',
     link: '/discord',
     description: 'Join my Discord to chat!',
+  },
+  ChatBot: {
+    title: 'Chatbot',
+    link: '/chatbot',
+    description: 'A simple chatbot web interface',
   },
 }

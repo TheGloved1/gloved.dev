@@ -1,7 +1,7 @@
 import AdminComponent from '@/components/AdminComponent'
 import Counter from '@/components/Counter'
 import TopScrollVisibility from '@/components/TopScrollVisibility'
-import { Black, Calc, Discord, Github, Hangman, Home, NAME, Todos, FileUploader } from '@/lib/constants'
+import { Black, Calc, Discord, Github, Hangman, Home, NAME, Todos, FileUploader, ChatBot } from '@/lib/constants'
 import React from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -158,6 +158,21 @@ export default function Page(): React.JSX.Element {
                   </span>
                 </h3>
                 <div className="text-lg">{Discord.description}</div>
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 place-items-center content-center justify-center gap-4 sm:grid-cols-1 md:gap-8">
+              <Link
+                className="group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
+                href={ChatBot.link}
+                prefetch
+              >
+                <h3 className="text-2xl font-bold">
+                  {ChatBot.title}{' '}
+                  <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
+                    {'->'}
+                  </span>
+                </h3>
+                <div className="text-lg">{ChatBot.description}</div>
               </Link>
             </div>
             {/* <BotButtons /> */}

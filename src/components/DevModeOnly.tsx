@@ -3,7 +3,7 @@ import React from 'react'
 
 type DevModeOnlyProps = {
   children: React.ReactNode
-  fallback?: React.ReactNode | null
+  fallback?: React.ReactNode
 }
 
 export default function DevModeOnly({ children, fallback }: DevModeOnlyProps): React.JSX.Element {

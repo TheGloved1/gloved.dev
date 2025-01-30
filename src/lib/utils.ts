@@ -42,7 +42,7 @@ export async function apiFetch(route: string, options?: RequestInit): Promise<un
 
 /**
  * Generates the API route by concatenating the base API URL with the provided route.
- * @param route - The route to be appended to the base API URL.
+ * @param route - The API route to be appended to the base API URL.
  * @returns The complete API route.
  */
 export function apiRoute(route: string) {

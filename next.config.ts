@@ -1,8 +1,10 @@
 import type { NextConfig } from 'next'
+import 'dotenv/config'
 
 const nextConfig: NextConfig = {
   env: {
     NEXT_PUBLIC_FILE_MANAGER_PASSKEY: '7693',
+    GEMINI: process.env.GEMINI,
   },
   experimental: {
     reactCompiler: true,
