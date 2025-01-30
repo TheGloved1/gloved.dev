@@ -1,6 +1,5 @@
 'use client'
 import Button, { RedButton } from '@/components/Buttons'
-import ChevronLeft from '@/components/ChevronLeft'
 import Image from 'next/image'
 import Loading from '@/components/loading'
 import { apiRoute } from '@/lib/utils'
@@ -8,6 +7,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import axios, { AxiosProgressEvent, AxiosResponse } from 'axios'
 import Link from 'next/link'
 import React, { useEffect, useRef, useState } from 'react'
+import PageBack from '@/components/PageBack'
 
 type GalleryFile = {
   name: string
@@ -128,15 +128,7 @@ export default function Gallery(): React.JSX.Element {
   return (
     <>
       <main className="flex min-h-screen flex-col items-center bg-gradient-to-b from-sky-950 to-[#1e210c] text-white">
-        <Link
-          href={'/'}
-          className="fixed left-2 top-2 flex scale-50 flex-row items-center justify-center pl-0 sm:scale-75 md:bottom-auto md:scale-100"
-        >
-          <button className="btn flex flex-row items-center justify-center">
-            <ChevronLeft />
-            {'Back'}
-          </button>
-        </Link>
+        <PageBack />
         <button
           className="btn btn-circle btn-sm fixed right-2 top-2 hover:animate-spin"
           onClick={() => queryClient.invalidateQueries({ queryKey: ['gallery'] })}

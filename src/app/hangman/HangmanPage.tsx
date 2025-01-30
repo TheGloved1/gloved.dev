@@ -1,5 +1,4 @@
 'use client'
-import ChevronLeft from '@/components/ChevronLeft'
 import { NAME } from '@/lib/constants'
 import React, { useCallback, useEffect, useState } from 'react'
 import { HangmanDrawing } from './HangmanDrawing'
@@ -7,7 +6,7 @@ import { HangmanWord } from './HangmanWord'
 import { Keyboard } from './Keyboard'
 import words from './wordList.json'
 import { Metadata } from 'next'
-import Link from 'next/link'
+import PageBack from '@/components/PageBack'
 
 function getWord() {
   return words[Math.floor(Math.random() * words.length)]!
@@ -33,7 +32,7 @@ export default function Page(): React.JSX.Element {
 
       setGuessedLetters((currentLetters) => [...currentLetters, letter])
     },
-    [guessedLetters, isWinner, isLoser]
+    [guessedLetters, isWinner, isLoser],
   )
 
   useEffect(() => {
@@ -72,12 +71,7 @@ export default function Page(): React.JSX.Element {
   return (
     <>
       <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-sky-950 to-[#1e210c] text-white">
-        <Link href={'/'} className="fixed left-2 top-2 flex flex-row items-center justify-center pl-0">
-          <button className="btn flex flex-row items-center justify-center">
-            <ChevronLeft />
-            {'Back'}
-          </button>
-        </Link>
+        <PageBack />
         <div className="flex max-w-4xl flex-col items-center gap-8">
           <div className="items-center text-[2rem]">
             {isWinner && 'Winner! - Refresh to try again'}

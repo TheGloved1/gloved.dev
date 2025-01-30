@@ -1,8 +1,7 @@
 'use client'
-import ChevronLeft from '@/components/ChevronLeft'
 import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { NumberButton, OperatorButton, EqualsButton } from './Button'
-import Link from 'next/link'
+import PageBack from '@/components/PageBack'
 
 export default function CalculatorPage(): React.JSX.Element {
   const [display, setDisplay] = useState<string>('')
@@ -51,15 +50,7 @@ export default function CalculatorPage(): React.JSX.Element {
 
   return (
     <>
-      <Link
-        href={'/'}
-        className="fixed bottom-2 left-2 flex flex-row items-center justify-center pl-0 lg:bottom-auto lg:top-2"
-      >
-        <button className="btn flex flex-row items-center justify-center">
-          <ChevronLeft />
-          {'Back'}
-        </button>
-      </Link>
+      <PageBack />
       <div className="container flex h-dvh w-dvw flex-col items-center justify-center gap-12 px-4 py-16">
         <div
           id="calculator"
