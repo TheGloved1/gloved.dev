@@ -1,9 +1,7 @@
 'use client'
 import ChevronLeft from '@/components/ChevronLeft'
 import React, { useState, useEffect, useRef, useCallback } from 'react'
-import Button from './Button'
-import OperatorButton from './OperatorButton'
-import EqualsButton from './EqualsButton'
+import { NumberButton, OperatorButton, EqualsButton } from './Button'
 import Link from 'next/link'
 
 export default function CalculatorPage(): React.JSX.Element {
@@ -94,48 +92,48 @@ export default function CalculatorPage(): React.JSX.Element {
           </div>
           <div className="flex flex-col gap-2 p-2">
             <div id="regular-keys" className="grid grid-cols-4 gap-2 p-2">
-              <Button onClick={() => appendToDisplay('7')} disabled={isCalculating}>
+              <NumberButton onClick={() => appendToDisplay('7')} disabled={isCalculating}>
                 {'7'}
-              </Button>
-              <Button onClick={() => appendToDisplay('8')} disabled={isCalculating}>
+              </NumberButton>
+              <NumberButton onClick={() => appendToDisplay('8')} disabled={isCalculating}>
                 {'8'}
-              </Button>
-              <Button onClick={() => appendToDisplay('9')} disabled={isCalculating}>
+              </NumberButton>
+              <NumberButton onClick={() => appendToDisplay('9')} disabled={isCalculating}>
                 {'9'}
-              </Button>
+              </NumberButton>
               <OperatorButton onClick={() => appendToDisplay('+')} disabled={isCalculating}>
                 {'+'}
               </OperatorButton>
-              <Button onClick={() => appendToDisplay('4')} disabled={isCalculating}>
+              <NumberButton onClick={() => appendToDisplay('4')} disabled={isCalculating}>
                 {'4'}
-              </Button>
-              <Button onClick={() => appendToDisplay('5')} disabled={isCalculating}>
+              </NumberButton>
+              <NumberButton onClick={() => appendToDisplay('5')} disabled={isCalculating}>
                 {'5'}
-              </Button>
-              <Button onClick={() => appendToDisplay('6')} disabled={isCalculating}>
+              </NumberButton>
+              <NumberButton onClick={() => appendToDisplay('6')} disabled={isCalculating}>
                 {'6'}
-              </Button>
+              </NumberButton>
               <OperatorButton onClick={() => appendToDisplay('-')} disabled={isCalculating}>
                 {'-'}
               </OperatorButton>
-              <Button onClick={() => appendToDisplay('1')} disabled={isCalculating}>
+              <NumberButton onClick={() => appendToDisplay('1')} disabled={isCalculating}>
                 {'1'}
-              </Button>
-              <Button onClick={() => appendToDisplay('2')} disabled={isCalculating}>
+              </NumberButton>
+              <NumberButton onClick={() => appendToDisplay('2')} disabled={isCalculating}>
                 {'2'}
-              </Button>
-              <Button onClick={() => appendToDisplay('3')} disabled={isCalculating}>
+              </NumberButton>
+              <NumberButton onClick={() => appendToDisplay('3')} disabled={isCalculating}>
                 {'3'}
-              </Button>
+              </NumberButton>
               <OperatorButton onClick={() => appendToDisplay('*')} disabled={isCalculating}>
                 {'x'}
               </OperatorButton>
-              <Button onClick={() => appendToDisplay('.')} disabled={isCalculating}>
+              <NumberButton onClick={() => appendToDisplay('.')} disabled={isCalculating}>
                 {'.'}
-              </Button>
-              <Button onClick={() => appendToDisplay('0')} disabled={isCalculating}>
+              </NumberButton>
+              <NumberButton onClick={() => appendToDisplay('0')} disabled={isCalculating}>
                 {'0'}
-              </Button>
+              </NumberButton>
               <EqualsButton onClick={calculate} disabled={isCalculating}>
                 {'='}
               </EqualsButton>
