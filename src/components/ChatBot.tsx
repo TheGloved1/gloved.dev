@@ -15,7 +15,7 @@ type Message = {
   text: string
 }
 
-export default function Chatbot(): React.JSX.Element | null {
+export default function Chatbot(): React.JSX.Element {
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState<string>('')
   const [loading, setLoading] = useState<boolean>(false)
