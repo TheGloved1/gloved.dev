@@ -13,13 +13,10 @@ export const metadata: Metadata = {
 export default function Page(): React.JSX.Element {
   return (
     <>
-      <Link
-        href={'/'}
-        className="fixed bottom-2 left-2 flex flex-row items-center justify-center pl-0 md:bottom-auto md:top-2"
-      >
-        <button className="btn flex flex-row items-center justify-center">
+      <Link href={'/'} className="fixed bottom-auto left-2 top-2 flex flex-row items-center justify-center pl-0">
+        <button className="btn flex flex-row items-center justify-center" title="Back">
           <ChevronLeft />
-          {'Back'}
+          <span className="hidden p-1 sm:block">{'Back'}</span>
         </button>
       </Link>
       <ChatBot />
