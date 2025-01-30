@@ -4,8 +4,8 @@ import TopScrollVisibility from '@/components/TopScrollVisibility'
 import { Black, Calc, Discord, Github, Hangman, Home, NAME, Todos, FileUploader } from '@/lib/constants'
 import React from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Metadata } from 'next'
-import ImageBlur from '@/components/ImageBlur'
 
 export const metadata: Metadata = {
   title: NAME,
@@ -22,7 +22,7 @@ export default function Page(): React.JSX.Element {
           className="fixed bottom-2 left-2 flex flex-row items-center justify-center pl-0 lg:bottom-auto lg:top-2"
           prefetch
         >
-          <ImageBlur
+          <Image
             src="/Leo.png"
             alt=""
             width={100}
