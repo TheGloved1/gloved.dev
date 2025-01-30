@@ -44,7 +44,7 @@ export default function Chatbot(): React.JSX.Element | null {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-gray-900">
+    <div className="flex min-h-dvh flex-col bg-gray-900">
       <div className="container mx-auto max-w-4xl flex-1 space-y-4 p-4 pb-32">
         {messages.map((m, index) => (
           <div key={index} className={`flex ${m.role === Role.USER ? 'justify-end' : 'justify-start'}`}>
