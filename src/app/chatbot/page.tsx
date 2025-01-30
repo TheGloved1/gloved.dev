@@ -7,7 +7,7 @@ import React from 'react'
 
 export const metadata: Metadata = {
   title: `${NAME} | Chatbot`,
-  description: 'A simple chatbot web app. Ask me anything.',
+  description: 'A simple chatbot web app.',
 }
 
 export default function Page(): React.JSX.Element {
