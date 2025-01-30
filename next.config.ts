@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
     reactCompiler: true,
     dynamicIO: true,
     ppr: true,
+    webpackBuildWorker: true,
   },
   images: {
     remotePatterns: [

@@ -150,11 +150,11 @@ export default function Gallery(): React.JSX.Element {
             <h2 className="text-md pb-4">A tribute to my best friend</h2>
             <p className="pb-12 text-center text-xs">{'(Currently only images are supported, will add videos later)'}</p>
           </div>
-          {galleryQuery.isFetching || galleryQuery.data?.length === 0 ? (
+          {galleryQuery.isFetching || galleryQuery.data.length === 0 ? (
             <Loading />
           ) : (
             <div className="flex w-screen flex-wrap justify-center">
-              {galleryQuery.data?.map((file) => (
+              {galleryQuery.data.map((file) => (
                 <div
                   key={file.name}
                   className="group relative flex h-24 w-24 flex-col items-center justify-center border-2 border-dashed border-slate-500 sm:h-32 sm:w-32 md:h-48 md:w-48"
