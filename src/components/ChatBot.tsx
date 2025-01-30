@@ -30,12 +30,14 @@ export default function Chatbot(): React.JSX.Element | null {
   const handleSendMessage = async () => {
     setIsLoading(true)
     setMessages((msgs) => [...msgs, { sender: Role.USER, text: input }])
+    setMessages((msgs) => [...msgs, { sender: Role.MODEL, text: 'Loading...' }])
     const { message: updatedMessage, error } = await sendMessage(input, messages)
 
     if (error || !updatedMessage) {
       alert(error)
-      setMessages((msgs) => msgs.slice(0, -1))
+      setMessages((msgs) => msgs.slice(0, -2))
     } else {
+      setMessages((msgs) => msgs.slice(0, -1))
       setMessages((msgs) => [...msgs, updatedMessage])
     }
 
