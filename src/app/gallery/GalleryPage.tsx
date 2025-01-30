@@ -1,13 +1,13 @@
 'use client'
-import React, { useEffect, useRef, useState } from 'react'
+import Button, { RedButton } from '@/components/Buttons'
 import ChevronLeft from '@/components/ChevronLeft'
-import Link from 'next/link'
-import axios, { AxiosProgressEvent, AxiosResponse } from 'axios'
+import ImageBlur from '@/components/ImageBlur'
+import Loading from '@/components/loading'
 import { apiRoute } from '@/lib/utils'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import Button, { RedButton } from '@/components/Buttons'
-import Loading from '@/components/loading'
-import ImageBlur from '@/components/ImageBlur'
+import axios, { AxiosProgressEvent, AxiosResponse } from 'axios'
+import Link from 'next/link'
+import React, { useEffect, useRef, useState } from 'react'
 
 type GalleryFile = {
   name: string
