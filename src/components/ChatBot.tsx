@@ -39,7 +39,7 @@ export default function Chatbot(): React.JSX.Element | null {
       setMessages((msgs) => [...msgs, updatedMessage])
     }
 
-    setInput('') // Clear input after sending
+    setInput('')
     setLoading(false)
   }
 
@@ -49,8 +49,8 @@ export default function Chatbot(): React.JSX.Element | null {
         {messages.map((m, index) => (
           <div key={index} className={`flex ${m.role === Role.USER ? 'justify-end' : 'justify-start'}`}>
             <div
-              className={`max-w-[80%] rounded-lg p-4 ${
-                m.role === Role.USER ? 'bg-primary text-black' : 'bg-gray-800 text-gray-100'
+              className={`max-w-[70%] rounded-lg p-4 ${
+                m.role === Role.USER ? 'bg-primary text-gray-400' : 'bg-gray-800 text-gray-100'
               }`}
             >
               <div className="mb-2 flex items-center gap-2">
@@ -58,20 +58,20 @@ export default function Chatbot(): React.JSX.Element | null {
                 <span className="text-sm font-medium">{m.role === Role.USER ? 'You' : 'AI'}</span>
               </div>
               {loading && (
-                <div className="flex items-center gap-2 text-gray-400">
+                <div className="flex items-center gap-2 text-gray-100">
                   <Loader2 className="h-4 w-4 animate-spin" />
                   <span className="text-sm">Thinking...</span>
                 </div>
               )}
-              <article
+              <div
                 className={`prose max-w-none ${
                   m.role === Role.USER
-                    ? 'prose-invert prose-p:text-black prose-headings:text-black prose-strong:text-black prose-li:text-black'
+                    ? 'prose-invert prose-p:text-gray-100 prose-headings:text-gray-100 prose-strong:text-gray-100 prose-li:text-gray-100'
                     : 'prose-invert prose-p:text-gray-100 prose-headings:text-gray-100 prose-strong:text-gray-100 prose-li:text-gray-100'
                 }`}
               >
-                <Markdown>{m.text}</Markdown>
-              </article>
+                <p>{m.text}</p>
+              </div>
             </div>
           </div>
         ))}
