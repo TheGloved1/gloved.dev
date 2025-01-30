@@ -27,7 +27,7 @@ enum Role {
   MODEL = 'model',
 }
 type Message = {
-  sender: Role
+  role: Role
   text: string
 }
 
@@ -35,7 +35,7 @@ export async function sendMessage(input: string, messages: Message[]): Promise<{
   const genAI = getGenAI()
   if (!input.trim()) return { message: null, error: 'Input cannot be empty' }
 
-  const userMessage: Message = { sender: Role.USER, text: input }
+  const userMessage: Message = { role: Role.USER, text: input }
   const updatedMessages = [...messages, userMessage]
 
   try {
@@ -45,7 +45,7 @@ export async function sendMessage(input: string, messages: Message[]): Promise<{
     const message = {
       contents: [
         ...updatedMessages.map((message) => ({
-          role: message.sender,
+          role: message.role,
           parts: [{ text: message.text }],
         })),
         {
@@ -68,7 +68,7 @@ export async function sendMessage(input: string, messages: Message[]): Promise<{
 
     const botMessageText = result.response.text().trim()
     if (botMessageText) {
-      const botMessage: Message = { sender: Role.MODEL, text: botMessageText }
+      const botMessage: Message = { role: Role.MODEL, text: botMessageText }
       return { message: botMessage }
     } else {
       throw new Error('Invalid response structure')
