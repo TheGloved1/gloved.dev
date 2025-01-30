@@ -42,25 +42,23 @@ export default function FileButton({ file, temp, size }: FileButtonProps): React
     setShowDialog(false)
   }
 
-  const isVideo = (fileName: string) => {
+  const isVideo = (fileName: string): boolean => {
     const videoExtensions = ['.mp4', '.mov', '.avi', '.webm', '.mkv']
     return videoExtensions.some((ext) => fileName.toLowerCase().endsWith(ext))
   }
 
-  const isImage = (fileName: string) => {
+  const isImage = (fileName: string): boolean => {
     const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.svg', '.webp']
     return imageExtensions.some((ext) => fileName.toLowerCase().endsWith(ext))
   }
 
-  const getMimeType = (fileName: string) => {
+  const getMimeType = (fileName: string): `video/${string}` => {
     const extension = fileName.split('.').pop()?.toLowerCase()
     switch (extension) {
       case 'avi':
         return 'video/x-msvideo'
       case 'webm':
         return 'video/webm'
-      case 'mkv':
-        return 'video/x-matroska'
       default:
         return 'video/mp4'
     }
