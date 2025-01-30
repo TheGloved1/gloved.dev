@@ -105,7 +105,7 @@ export default function Gallery(): React.JSX.Element {
       // Iterate over each file and upload it
       for (let i = 0; i < files.length; i++) {
         const file = files[i]
-        await uploadMutation.mutate(file)
+        uploadMutation.mutate(file)
       }
 
       // Clear the input field after uploading
