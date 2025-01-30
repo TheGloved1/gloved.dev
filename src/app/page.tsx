@@ -10,7 +10,7 @@ import { Metadata } from 'next'
 export const metadata: Metadata = {
   title: NAME,
   description:
-    'Made by Kaden Hood. A personal website for my projects and interests. Built using the Next.js React Web Framework.',
+    'Made by Kaden Hood. A personal website for my projects and interests. Built using Next.js React Web Framework.',
 }
 
 export default function Page(): React.JSX.Element {
