@@ -9,7 +9,7 @@ import Button, { RedButton } from '@/components/Buttons'
 import Loading from '@/components/loading'
 import ImageBlur from '@/components/ImageBlur'
 
-interface GalleryFile {
+type GalleryFile = {
   name: string
   createdAt: string
   size: string
