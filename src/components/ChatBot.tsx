@@ -2,20 +2,22 @@
 import React, { useState } from 'react'
 import axios from 'axios'
 import { useQuery } from '@tanstack/react-query'
+import { getEnv } from '@/lib/actions'
 
 type Message = {
   sender: 'user' | 'model'
   text: string
 }
 
-function getApiKey() {
-  if (!process.env.GEMINI) {
+async function getApiKey() {
+  const env = await getEnv()
+  if (!env.GEMINI) {
     throw new Error('Missing API key')
   }
-  return process.env.GEMINI
+  return env.GEMINI
 }
 
-export default function Chatbot(): React.JSX.Element {
+export default function Chatbot(): React.JSX.Element | null {
   const apiKey = useQuery({ queryKey: ['apiKey'], queryFn: getApiKey })
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState<string>('')
@@ -68,7 +70,7 @@ export default function Chatbot(): React.JSX.Element {
           headers: {
             'Content-Type': 'application/json',
           },
-        }
+        },
       )
 
       const botMessageText = response.data?.contents?.[response.data.contents.length - 1]?.parts?.[0]?.text
@@ -87,16 +89,18 @@ export default function Chatbot(): React.JSX.Element {
     }
   }
 
+  if (!apiKey.data) {
+    return null
+  }
+
   return (
-    <div className="chatbot-container">
-      <div className="messages">
+    <div>
+      <div>
         {messages.map((message, index) => (
-          <div key={index} className={`message ${message.sender}`}>
-            {message.text}
-          </div>
+          <div key={index}>{message.text}</div>
         ))}
       </div>
-      <div className="input-container">
+      <div>
         <input type="text" value={input} onChange={handleInputChange} onKeyDown={handleKeyPress} disabled={isLoading} />
         <button onClick={sendMessage} disabled={isLoading}>
           Send

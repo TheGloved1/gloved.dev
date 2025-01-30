@@ -2,15 +2,18 @@ import { z } from 'zod'
 import 'dotenv/config'
 
 const envSchema = z.object({
-  NEXT_PUBLIC_FILE_MANAGER_PASSKEY: z.string(),
+  FILE_MANAGER_PASSKEY: z.string(),
+  GEMINI: z.string().optional(),
 })
 
-const { NEXT_PUBLIC_FILE_MANAGER_PASSKEY } = {
-  NEXT_PUBLIC_FILE_MANAGER_PASSKEY: process.env.NEXT_PUBLIC_FILE_MANAGER_PASSKEY,
+const { FILE_MANAGER_PASSKEY, GEMINI } = {
+  FILE_MANAGER_PASSKEY: process.env.NEXT_PUBLIC_FILE_MANAGER_PASSKEY,
+  GEMINI: process.env.NEXT_PUBLIC_GEMINI,
 }
 
 const parsedEnv = envSchema.safeParse({
-  NEXT_PUBLIC_FILE_MANAGER_PASSKEY,
+  FILE_MANAGER_PASSKEY,
+  GEMINI,
 })
 
 if (!parsedEnv.success) {

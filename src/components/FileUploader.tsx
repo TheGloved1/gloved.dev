@@ -49,7 +49,7 @@ const uploadFileApi = async (
 }
 
 export default function FileUploader(): React.JSX.Element {
-  const correctPassword = env.NEXT_PUBLIC_FILE_MANAGER_PASSKEY
+  const correctPassword = env.FILE_MANAGER_PASSKEY
   const [alert, setAlert] = useState<string>('')
   const [passwordEntered, setPasswordEntered] = useState<boolean>(false)
   const [uploadProgress, setUploadProgress] = useState<number>(0)
