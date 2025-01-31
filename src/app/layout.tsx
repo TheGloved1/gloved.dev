@@ -1,9 +1,9 @@
-import React from 'react'
-import { Metadata } from 'next'
-import './globals.css'
 import ReactQueryClientProvider from '@/components/ReactQueryClientProvider'
 import { NAME } from '@/lib/constants'
+import { Metadata } from 'next'
 import { JetBrains_Mono } from 'next/font/google'
+import React from 'react'
+import './globals.css'
 
 export const metadata: Metadata = {
   title: NAME,
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 const jetbrains = JetBrains_Mono({
   weight: ['100', '200', '300', '400', '500', '600', '700', '800'],
   style: ['normal', 'italic'],
-  subsets: ['latin', 'latin-ext', 'greek'],
+  subsets: ['latin', 'latin-ext'],
 })
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

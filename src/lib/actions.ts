@@ -44,7 +44,6 @@ type Message = {
 export async function sendMessage(input: string, messages: Message[]): Promise<{ message: Message | null; error?: string }> {
   const genAI = getGenAI()
   const systemPrompt = await fetchSystemPrompt()
-  console.log('System prompt:', systemPrompt)
   if (!input.trim()) return { message: null, error: 'Input cannot be empty' }
 
   const userMessage: Message = { role: Role.USER, text: input }
@@ -81,14 +80,13 @@ export async function sendMessage(input: string, messages: Message[]): Promise<{
     const result = await model.generateContent(message)
 
     const botMessageText = result.response.text().trim()
-    console.log('Bot message:', botMessageText)
     if (botMessageText) {
       const botMessage: Message = { role: Role.MODEL, text: botMessageText }
       return { message: botMessage }
     } else {
       throw new Error('Invalid response structure')
     }
-  } catch (error: unknown) {
+  } catch (error) {
     console.error('Error sending message:', error)
     return { message: null, error: `${error}` }
   }

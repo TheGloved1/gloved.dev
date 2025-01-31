@@ -15,14 +15,6 @@ type Message = {
   text: string
 }
 
-const Italic = ({ children }: { children: React.ReactNode }) => {
-  return <em className="italic">{children}</em>
-}
-
-const Bold = ({ children }: { children: React.ReactNode }) => {
-  return <strong className="font-bold">{children}</strong>
-}
-
 export default function Chatbot(): React.JSX.Element {
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState<string>('')
@@ -78,14 +70,7 @@ export default function Chatbot(): React.JSX.Element {
                     : 'prose-invert prose-p:text-gray-100 prose-headings:text-gray-100 prose-strong:text-gray-100 prose-li:text-gray-100'
                 }`}
               >
-                <Markdown
-                  components={{
-                    em: ({ children }) => <Italic>{children}</Italic>,
-                    strong: ({ children }) => <Bold>{children}</Bold>,
-                  }}
-                >
-                  {m.text}
-                </Markdown>
+                <Markdown>{m.text}</Markdown>
               </article>
             </div>
           </div>
