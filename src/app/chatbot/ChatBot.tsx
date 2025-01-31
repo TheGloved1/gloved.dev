@@ -15,6 +15,14 @@ type Message = {
   text: string
 }
 
+const Italic = ({ children }: { children: React.ReactNode }) => {
+  return <em className="italic">{children}</em>
+}
+
+const Bold = ({ children }: { children: React.ReactNode }) => {
+  return <strong className="font-bold">{children}</strong>
+}
+
 export default function Chatbot(): React.JSX.Element {
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState<string>('')
@@ -29,14 +37,14 @@ export default function Chatbot(): React.JSX.Element {
     setLoading(true)
     setMessages((msgs) => [...msgs, { role: Role.USER, text: input }])
     setMessages((msgs) => [...msgs, { role: Role.MODEL, text: 'Loading...' }])
-    const { message: updatedMessage, error } = await sendMessage(input, messages)
+    const { message: msg, error } = await sendMessage(input, messages)
 
-    if (error || !updatedMessage) {
+    if (error || !msg) {
       alert(error)
       setMessages((msgs) => msgs.slice(0, -2))
     } else {
       setMessages((msgs) => msgs.slice(0, -1))
-      setMessages((msgs) => [...msgs, updatedMessage])
+      setMessages((msgs) => [...msgs, msg])
     }
 
     setInput('')
@@ -70,7 +78,14 @@ export default function Chatbot(): React.JSX.Element {
                     : 'prose-invert prose-p:text-gray-100 prose-headings:text-gray-100 prose-strong:text-gray-100 prose-li:text-gray-100'
                 }`}
               >
-                <Markdown>{m.text}</Markdown>
+                <Markdown
+                  components={{
+                    em: ({ children }) => <Italic>{children}</Italic>,
+                    strong: ({ children }) => <Bold>{children}</Bold>,
+                  }}
+                >
+                  {m.text}
+                </Markdown>
               </article>
             </div>
           </div>

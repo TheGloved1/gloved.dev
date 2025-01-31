@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-@font-face {
+/* @font-face {
   font-family: 'Geist Mono';
   src: url('../lib/fonts/GeistMonoVF.woff') format('woff');
 }
@@ -10,13 +10,11 @@
 @font-face {
   font-family: 'JetBrains Mono';
   src: url('../lib/fonts/JetBrainsMono.woff2') format('woff2');
-}
+} */
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  --font-geist: 'Geist Mono', monospace;
-  --font-jetbrains: 'JetBrains Mono', monospace;
 }
 
 @media (prefers-color-scheme: dark) {

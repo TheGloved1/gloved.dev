@@ -1,8 +1,9 @@
 'use server'
-import sharp from 'sharp'
-import { env } from './env'
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import 'dotenv/config'
+import sharp from 'sharp'
+import { env } from './env'
+import { apiRoute } from '@/lib/utils'
 
 const getGenAI = () => {
   if (!process.env.GEMINI) {
@@ -22,6 +23,15 @@ export async function getEnv() {
   return env
 }
 
+async function fetchSystemPrompt() {
+  const response = await fetch(apiRoute('/system-prompt'))
+  const data: string = await response.text()
+  if (!data) {
+    return ''
+  }
+  return data
+}
+
 enum Role {
   USER = 'user',
   MODEL = 'model',
@@ -33,6 +43,8 @@ type Message = {
 
 export async function sendMessage(input: string, messages: Message[]): Promise<{ message: Message | null; error?: string }> {
   const genAI = getGenAI()
+  const systemPrompt = await fetchSystemPrompt()
+  console.log('System prompt:', systemPrompt)
   if (!input.trim()) return { message: null, error: 'Input cannot be empty' }
 
   const userMessage: Message = { role: Role.USER, text: input }
@@ -53,20 +65,23 @@ export async function sendMessage(input: string, messages: Message[]): Promise<{
           parts: [{ text: input }],
         },
       ],
-      generationConfig: {
-        temperature: 1,
-        topK: 64,
-        topP: 0.95,
-        maxOutputTokens: 8192,
-        responseMimeType: 'text/plain',
-      },
+    }
+    const generationConfig = {
+      temperature: 1,
+      topK: 64,
+      topP: 0.95,
+      maxOutputTokens: 8192,
+      responseMimeType: 'text/plain',
     }
     const model = genAI.getGenerativeModel({
       model: 'gemini-1.5-flash',
+      generationConfig: generationConfig,
+      systemInstruction: systemPrompt,
     })
     const result = await model.generateContent(message)
 
     const botMessageText = result.response.text().trim()
+    console.log('Bot message:', botMessageText)
     if (botMessageText) {
       const botMessage: Message = { role: Role.MODEL, text: botMessageText }
       return { message: botMessage }
