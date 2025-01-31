@@ -1,4 +1,4 @@
-import ChatBot from '@/components/ChatBot'
+import ChatBot from '@/app/chatbot/ChatBot'
 import PageBack from '@/components/PageBack'
 import { NAME } from '@/lib/constants'
 import { Metadata } from 'next'

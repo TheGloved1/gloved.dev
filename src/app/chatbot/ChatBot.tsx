@@ -3,7 +3,7 @@ import { sendMessage } from '@/lib/actions'
 import { Bot, Loader2, MessageSquare, Send, User2 } from 'lucide-react'
 import React, { useState } from 'react'
 import Markdown from 'react-markdown'
-import { Input } from './Input'
+import { Input } from '@/components/Input'
 
 enum Role {
   USER = 'user',
