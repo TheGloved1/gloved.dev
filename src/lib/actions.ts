@@ -41,10 +41,10 @@ type Message = {
   text: string
 }
 
-export async function sendMessage(input: string, messages: Message[]): Promise<{ message: Message | null; error?: string }> {
+export async function sendMessage(input: string, messages: Message[]): Promise<{ msg: Message | null; error?: string }> {
   const genAI = getGenAI()
   const systemPrompt = await fetchSystemPrompt()
-  if (!input.trim()) return { message: null, error: 'Input cannot be empty' }
+  if (!input.trim()) return { msg: null, error: 'Input cannot be empty' }
 
   const userMessage: Message = { role: Role.USER, text: input }
   const updatedMessages = [...messages, userMessage]
@@ -82,12 +82,12 @@ export async function sendMessage(input: string, messages: Message[]): Promise<{
     const botMessageText = result.response.text().trim()
     if (botMessageText) {
       const botMessage: Message = { role: Role.MODEL, text: botMessageText }
-      return { message: botMessage }
+      return { msg: botMessage }
     } else {
       throw new Error('Invalid response structure')
     }
   } catch (error) {
     console.error('Error sending message:', error)
-    return { message: null, error: `Error: ${error}` }
+    return { msg: null, error: `Error: ${error}` }
   }
 }
