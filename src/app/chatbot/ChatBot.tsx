@@ -85,7 +85,7 @@ export default function Chatbot(): React.JSX.Element {
                 className="flex-1 border-gray-700 bg-gray-900 pl-10 text-gray-100"
                 value={input}
                 disabled={loading}
-                placeholder="Say Hi..."
+                placeholder="Type a message... (WARNING: HE IS EVIL)"
                 onChange={(e) => setInput(e.target.value)}
               />
             </div>
