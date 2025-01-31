@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 const jetbrains = JetBrains_Mono({
   weight: ['100', '200', '300', '400', '500', '600', '700', '800'],
   style: ['normal', 'italic'],
-  subsets: ['latin'],
+  subsets: ['latin', 'latin-ext', 'greek'],
 })
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
