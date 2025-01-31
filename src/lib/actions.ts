@@ -88,6 +88,6 @@ export async function sendMessage(input: string, messages: Message[]): Promise<{
     }
   } catch (error) {
     console.error('Error sending message:', error)
-    return { message: null, error: `${error}` }
+    return { message: null, error: `Error: ${error}` }
   }
 }
