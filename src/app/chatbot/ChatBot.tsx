@@ -4,6 +4,7 @@ import { Bot, Loader2, MessageSquare, Plus, Send, User2 } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import Markdown from 'react-markdown'
 import { Input } from '@/components/Input'
+import PageBack from '@/components/PageBack'
 
 enum Role {
   USER = 'user',
@@ -149,8 +150,9 @@ export default function Chatbot(): React.JSX.Element {
           ))}
         </div>
       </div>
+      {!isSidebarOpen ? <PageBack stayTop /> : <PageBack stayTop className="hidden sm:block" />}
       <button
-        className={`btn absolute start-2 flex text-white sm:hidden ${isSidebarOpen ? 'left-44 top-2' : 'left-2 top-16'}`}
+        className={`btn absolute left-2 flex flex-auto sm:hidden ${isSidebarOpen ? 'top-2' : 'top-16'}`}
         onClick={toggleSidebar}
       >
         {isSidebarOpen ? '<-' : '->'}
