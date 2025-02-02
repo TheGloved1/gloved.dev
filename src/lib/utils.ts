@@ -30,14 +30,14 @@ export async function safeAwait<T, E = Error>(input: Promise<T> | T): Promise<[T
 }
 
 /**
- * Fetches data from the API.
- * @param route - The route to fetch data from.
- * @param options - Optional request options.
- * @returns A promise that resolves to the JSON response.
+ * Makes a request to the API with the given route and options.
+ * @param route - The route to make the request to.
+ * @param options - The optional options to use when making the request.
+ * @returns The response of the request, or null if an error occurred.
  */
-export async function apiFetch(route: string, options?: RequestInit): Promise<unknown> {
-  const res = await fetch(apiRoute(route), options)
-  return res.json() as Promise<unknown>
+export async function apiFetch(route: string, options?: RequestInit) {
+  const res = await safeAwait(fetch(apiRoute(route), options))
+  return res
 }
 
 /**

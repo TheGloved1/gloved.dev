@@ -4,6 +4,7 @@ import { Bot, Loader2, MessageSquare, Plus, Send, User2 } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import Markdown from 'react-markdown'
 import { Input } from '@/components/Input'
+import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupLabel, SidebarGroupContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarTrigger } from '@/components/ui/sidebar'
 import PageBack from '@/components/PageBack'
 
 enum Role {
@@ -28,7 +29,6 @@ export default function Chatbot(): React.JSX.Element {
   const [loading, setLoading] = useState<boolean>(false)
   const [currentChat, setCurrentChat] = useState<SavedChat | null>(null)
   const [savedChats, setSavedChats] = useState<SavedChat[]>([])
-  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false)
 
   useEffect(() => {
     if (currentChat) {
@@ -46,10 +46,6 @@ export default function Chatbot(): React.JSX.Element {
   useEffect(() => {
     localStorage.setItem('savedChats', JSON.stringify(savedChats))
   }, [savedChats])
-
-  const toggleSidebar = () => {
-    setIsSidebarOpen((prev) => !prev)
-  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -127,44 +123,40 @@ export default function Chatbot(): React.JSX.Element {
   }
 
   return (
-    <div className="flex min-h-dvh bg-gray-900">
-      <div
-        className={`collapse w-1/4 border-r border-gray-700 p-4 pt-16 ${isSidebarOpen ? 'collapse-open block' : 'hidden'} sm:block`}
-      >
-        <span className="flex items-center justify-between">
-          <h2 className="text-lg font-bold text-gray-100">Saved Chats</h2>
-          <button type="button" title="New chat" className="btn card bg-gray-700 hover:bg-gray-600" onClick={handleNewChat}>
-            <Plus className="h-4 w-4" />
-            <span className="sr-only">New chat</span>
-          </button>
-        </span>
-        <div className="mt-4 flex flex-col space-y-2">
-          {savedChats.map((chat) => (
-            <button
-              key={chat.id}
-              onClick={() => loadChatFromLocalStorage(chat.id)}
-              className="rounded bg-gray-700 p-2 text-gray-100 hover:bg-gray-600"
-            >
-              {chat.name}
-            </button>
-          ))}
-        </div>
+    <div className="flex min-h-dvh">
+      <Sidebar>
+        <SidebarContent>
+          <SidebarGroup>
+            <PageBack stayTop noFixed btnClassName="btn card bg-gray-700 hover:bg-gray-600" />
+            <SidebarGroupLabel>Chats</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <button type="button" title="New chat" className="btn card bg-gray-700 hover:bg-gray-600" onClick={handleNewChat}>
+                  <Plus className="h-4 w-4" />
+                  <span className="sr-only">New chat</span>
+                </button>
+                {savedChats.map((item) => (
+                  <SidebarMenuItem key={item.name}>
+                    <SidebarMenuButton onClick={() => setCurrentChat(item)} asChild>
+                      {item.name}
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </SidebarContent>
+      </Sidebar>
+      <div className='p-4'>
+        <SidebarTrigger />
       </div>
-      {!isSidebarOpen ? <PageBack stayTop /> : <PageBack stayTop className="hidden sm:block" />}
-      <button
-        className={`btn absolute left-2 flex flex-auto sm:hidden ${isSidebarOpen ? 'top-2' : 'top-16'}`}
-        onClick={toggleSidebar}
-      >
-        {isSidebarOpen ? '<-' : '->'}
-      </button>
       <div className="flex-1 p-4">
         <div className="container mx-auto max-w-4xl flex-1 space-y-4 pb-32">
           {messages.map((m, index) => (
             <div key={index} className={`flex ${m.role === Role.USER ? 'justify-end' : 'justify-start'}`}>
               <div
-                className={`max-w-[70%] rounded-lg p-4 ${
-                  m.role === Role.USER ? 'bg-primary text-black' : 'bg-gray-800 text-white'
-                }`}
+                className={`max-w-[70%] rounded-lg p-4 ${m.role === Role.USER ? 'bg-primary text-black' : 'bg-gray-800 text-white'
+                  }`}
               >
                 <div className="mb-2 flex items-center gap-2">
                   {m.role === Role.USER ? <User2 className="h-4 w-4" /> : <Bot className="h-4 w-4" />}
@@ -185,7 +177,7 @@ export default function Chatbot(): React.JSX.Element {
             </div>
           ))}
         </div>
-        <div className="fixed bottom-0 left-0 right-0 border-t border-gray-700 bg-gray-800 p-4">
+        <div className="fixed z-50 bottom-0 left-0 right-0 border-t border-gray-700 bg-gray-800 p-4">
           <form onSubmit={handleSubmit} className="container mx-auto max-w-4xl">
             <div className="flex gap-2">
               <div className="relative flex-1">

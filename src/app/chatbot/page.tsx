@@ -1,4 +1,5 @@
 import ChatBot from '@/app/chatbot/ChatBot'
+import { SidebarProvider } from '@/components/ui/sidebar'
 import * as constants from '@/lib/constants'
 import { Metadata } from 'next'
 import React from 'react'
@@ -11,8 +12,8 @@ export const metadata: Metadata = {
 
 export default function Page(): React.JSX.Element {
   return (
-    <>
+    <SidebarProvider defaultOpen>
       <ChatBot />
-    </>
+    </SidebarProvider>
   )
 }
