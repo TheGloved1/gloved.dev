@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function Page(): React.JSX.Element {
   return (
-    <SidebarProvider defaultOpen={false}>
+    <SidebarProvider>
       <ChatBot />
     </SidebarProvider>
   )
