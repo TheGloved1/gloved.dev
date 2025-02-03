@@ -43,7 +43,7 @@ export const { Home, FileUploader, Todos, Hangman, Calc, Github, Black, Discord,
   },
   ChatBot: {
     title: 'Chatbot',
-    link: '/chatbot',
+    link: '/chat',
     description: 'A simple chatbot web app, WARNING: HE IS EVIL',
   },
 }
