@@ -133,7 +133,7 @@ export default function Chatbot(): React.JSX.Element {
   }
 
   return (
-    <div className="flex min-h-dvh justify-end w-full">
+    <div className="flex min-h-dvh w-dvw mx-auto">
       <Sidebar>
         <SidebarContent>
           <SidebarGroup>
@@ -165,12 +165,12 @@ export default function Chatbot(): React.JSX.Element {
       <div className="p-4">
         <SidebarTrigger />
       </div>
-      <div className="flex-1 p-4">
+      <div className="flex-1 p-4 mx-auto max-w-7xl">
         <div className="space-y-4 pb-32">
           {messages.map((m, index) => (
             <div key={index} className={`flex ${m.role === Role.USER ? 'justify-end' : 'justify-start'}`}>
               <div
-                className={`max-w-[80%] rounded-lg p-4 ${m.role === Role.USER ? 'bg-primary text-black' : 'bg-gray-800 text-white'
+                className={`max-w-[75%] rounded-lg p-4 ${m.role === Role.USER ? 'bg-primary text-black' : 'bg-gray-800 text-white'
                   }`}
               >
                 <div className="mb-2 flex items-center gap-2">
