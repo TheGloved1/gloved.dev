@@ -1,4 +1,4 @@
-import ChevronLeft from '@/components/ChevronLeft'
+import { ChevronLeft } from 'lucide-react'
 import FileUploader from '@/components/FileUploader'
 import GitUser from '@/components/GitUser'
 import ObserverSection from '@/components/ObserverSection'
