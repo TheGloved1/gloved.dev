@@ -134,16 +134,16 @@ export default function Chatbot(): React.JSX.Element {
   return (
     <div className="flex min-h-dvh w-dvw mx-auto">
       <Sidebar>
-        <SidebarContent>
+        <SidebarContent className='bg-gradient-to-bl from-gray-200 to-gray-600'>
           <SidebarGroup>
-            <PageBack stayTop noFixed btnClassName="btn card bg-gray-700 hover:bg-gray-600" />
-            <SidebarGroupLabel>Chats</SidebarGroupLabel>
+            <PageBack stayTop noFixed btnClassName="btn bg-gray-700 hover:bg-gray-600" />
+            <SidebarGroupLabel className='text-black font-bold'>Chats</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 <SidebarMenuButton
                   type="button"
                   title="New chat"
-                  className="btn card bg-gray-700 hover:bg-gray-600"
+                  className="btn card bg-gray-700 hover:bg-gray-600 rounded-xl"
                   onClick={handleNewChat}
                 >
                   <Plus className="h-4 w-4" />
