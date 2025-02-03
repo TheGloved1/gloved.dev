@@ -18,7 +18,7 @@ type CustomLinkProps = {
 
 function getClassName(
   className: string | undefined,
-  Default: string = 'btn m-2 rounded-xl p-4 hover:animate-pulse hover:bg-gray-700'
+  Default: string = 'btn m-2 rounded-xl p-4 hover:animate-pulse hover:bg-gray-700',
 ): string {
   return cn(Default, className)
 }

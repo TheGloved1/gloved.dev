@@ -4,7 +4,17 @@ import { Bot, Loader2, MessageSquare, Plus, RefreshCcw, Send, User2 } from 'luci
 import React, { useEffect, useState } from 'react'
 import Markdown from 'react-markdown'
 import { Input } from '@/components/Input'
-import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupLabel, SidebarGroupContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarTrigger } from '@/components/ui/sidebar'
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarGroupContent,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+  SidebarTrigger,
+} from '@/components/ui/sidebar'
 import PageBack from '@/components/PageBack'
 
 enum Role {
@@ -29,7 +39,7 @@ export default function Chatbot(): React.JSX.Element {
   const [loading, setLoading] = useState<boolean>(false)
   const [currentChat, setCurrentChat] = useState<SavedChat | null>(null)
   const [savedChats, setSavedChats] = useState<SavedChat[]>([])
-  
+
   useEffect(() => {
     if (currentChat) {
       loadChatFromLocalStorage(currentChat.id)
@@ -131,7 +141,12 @@ export default function Chatbot(): React.JSX.Element {
             <SidebarGroupLabel>Chats</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                <button type="button" title="New chat" className="btn card bg-gray-700 hover:bg-gray-600" onClick={handleNewChat}>
+                <button
+                  type="button"
+                  title="New chat"
+                  className="btn card bg-gray-700 hover:bg-gray-600"
+                  onClick={handleNewChat}
+                >
                   <Plus className="h-4 w-4" />
                   <span className="sr-only">New chat</span>
                 </button>
@@ -147,16 +162,17 @@ export default function Chatbot(): React.JSX.Element {
           </SidebarGroup>
         </SidebarContent>
       </Sidebar>
-      <div className='p-4'>
+      <div className="p-4">
         <SidebarTrigger />
       </div>
-      <div className="flex-1 p-4">
-        <div className="container mx-auto max-w-4xl flex-1 space-y-4 pb-32">
+      <div className="flex-1 flex-col justify-between p-4">
+        <div className="justify-end space-y-4 pb-32">
           {messages.map((m, index) => (
             <div key={index} className={`flex ${m.role === Role.USER ? 'justify-end' : 'justify-start'}`}>
               <div
-                className={`max-w-[70%] rounded-lg p-4 ${m.role === Role.USER ? 'bg-primary text-black' : 'bg-gray-800 text-white'
-                  }`}
+                className={`max-w-[80%] rounded-lg p-4 ${
+                  m.role === Role.USER ? 'bg-primary text-black' : 'bg-gray-800 text-white'
+                }`}
               >
                 <div className="mb-2 flex items-center gap-2">
                   {m.role === Role.USER ? <User2 className="h-4 w-4" /> : <Bot className="h-4 w-4" />}
@@ -177,10 +193,15 @@ export default function Chatbot(): React.JSX.Element {
             </div>
           ))}
         </div>
-        <div className="fixed z-50 bottom-0 left-0 right-0 border-t border-gray-700 bg-gray-800 p-4">
+        <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-gray-700 bg-gray-800 p-4">
           <form onSubmit={handleSubmit} className="container mx-auto max-w-4xl">
             <div className="flex gap-2">
-              <button type="button" title="Restart Chat" className="btn card bg-gray-700 hover:bg-gray-600" onClick={() => setCurrentChat(null)}>
+              <button
+                type="button"
+                title="Restart Chat"
+                className="btn card bg-gray-700 hover:bg-gray-600"
+                onClick={() => setCurrentChat(null)}
+              >
                 <span className="sr-only">Restart Chat</span>
                 <RefreshCcw className="h-4 w-4" />
               </button>

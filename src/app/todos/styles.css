@@ -1,4 +1,3 @@
-
 .main {
   background: #333;
   color: hsl(200, 100%, 90%);
@@ -93,7 +92,7 @@
 }
 
 .list li label::before {
-  content: "";
+  content: '';
   display: block;
   width: 0.9rem;
   height: 0.9rem;
@@ -109,7 +108,7 @@
 }
 
 .list li:has(input:checked) label::before {
-  content: "✔";
+  content: '✔';
   background: hsl(200, 100%, 40%);
   color: hsl(200, 100%, 90%);
   font-size: 0.75rem;
