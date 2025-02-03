@@ -64,8 +64,7 @@ export default function Chatbot(): React.JSX.Element {
 
   const handleSendMessage = async () => {
     setLoading(true)
-    setMessages((msgs) => [...msgs, { role: Role.USER, text: input }])
-    setMessages((msgs) => [...msgs, { role: Role.MODEL, text: 'Loading...' }])
+    setMessages((msgs) => [...msgs, { role: Role.USER, text: input }, { role: Role.MODEL, text: 'Loading...' }])
 
     try {
       const { msg, error } = await sendMessage(input, messages)
@@ -141,7 +140,7 @@ export default function Chatbot(): React.JSX.Element {
             <SidebarGroupLabel>Chats</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                <button
+                <SidebarMenuButton
                   type="button"
                   title="New chat"
                   className="btn card bg-gray-700 hover:bg-gray-600"
@@ -149,7 +148,7 @@ export default function Chatbot(): React.JSX.Element {
                 >
                   <Plus className="h-4 w-4" />
                   <span className="sr-only">New chat</span>
-                </button>
+                </SidebarMenuButton>
                 {savedChats?.map((item) => (
                   <SidebarMenuItem key={item?.name}>
                     <SidebarMenuButton onClick={() => setCurrentChat(item)} asChild>
