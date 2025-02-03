@@ -14,6 +14,7 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarTrigger,
+  SidebarHeader,
 } from '@/components/ui/sidebar'
 import PageBack from '@/components/PageBack'
 
@@ -135,8 +136,10 @@ export default function Chatbot(): React.JSX.Element {
     <div className="flex min-h-dvh w-dvw mx-auto">
       <Sidebar>
         <SidebarContent className='bg-gradient-to-bl from-gray-200 to-gray-600'>
-          <SidebarGroup>
+          <SidebarHeader>
             <PageBack stayTop noFixed btnClassName="btn bg-gray-700 hover:bg-gray-600" />
+          </SidebarHeader>
+          <SidebarGroup>
             <SidebarGroupLabel className='text-black font-bold'>Chats</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>

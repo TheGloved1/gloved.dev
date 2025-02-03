@@ -1,4 +1,4 @@
-import ChatBot from '@/app/chat/ChatBot'
+import ChatBot from './ChatBot'
 import { SidebarProvider } from '@/components/ui/sidebar'
 import * as constants from '@/lib/constants'
 import { Metadata } from 'next'

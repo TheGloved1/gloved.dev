@@ -1,14 +1,14 @@
 import AdminComponent from '@/components/AdminComponent'
 import Counter from '@/components/Counter'
 import TopScrollVisibility from '@/components/TopScrollVisibility'
-import { Black, Calc, Discord, Github, Hangman, Home, NAME, Todos, FileUploader, ChatBot } from '@/lib/constants'
+import * as constants from '@/lib/constants'
 import React from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: NAME,
+  title: constants.NAME,
   description:
     'Made by Kaden Hood. A personal website for my projects and interests. Built using Next.js React Web Framework.',
 }
@@ -46,100 +46,100 @@ export default function Page(): React.JSX.Element {
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
             <Link
               className="group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-              href={Home.link}
+              href={constants.Home.link}
               prefetch
             >
               <h3 className="text-2xl font-bold">
-                {Home.title}{' '}
+                {constants.Home.title}{' '}
                 <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
                   {'->'}
                 </span>
               </h3>
-              <div className="text-lg">{Home.description}</div>
+              <div className="text-lg">{constants.Home.description}</div>
             </Link>
             <Link
               className="group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-              href={FileUploader.link}
+              href={constants.FileUploader.link}
               prefetch
             >
               <h3 className="text-2xl font-bold">
-                {FileUploader.title}{' '}
+                {constants.FileUploader.title}{' '}
                 <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
                   {'->'}
                 </span>
               </h3>
-              <div className="text-lg">{FileUploader.description}</div>
-            </Link>
-          </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
-            <Link
-              className="group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-              href={Todos.link}
-              prefetch
-            >
-              <h3 className="text-2xl font-bold">
-                {Todos.title}{' '}
-                <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-                  {'->'}
-                </span>
-              </h3>
-              <div className="text-lg">{Todos.description}</div>
-            </Link>
-            <Link
-              className="group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-              href={Hangman.link}
-              prefetch
-            >
-              <h3 className="text-2xl font-bold">
-                {Hangman.title}{' '}
-                <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-                  {'->'}
-                </span>
-              </h3>
-              <div className="text-lg">{Hangman.description}</div>
+              <div className="text-lg">{constants.FileUploader.description}</div>
             </Link>
           </div>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
             <Link
               className="group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-              href={Calc.link}
+              href={constants.Todos.link}
               prefetch
             >
               <h3 className="text-2xl font-bold">
-                {Calc.title}{' '}
+                {constants.Todos.title}{' '}
                 <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
                   {'->'}
                 </span>
               </h3>
-              <div className="text-lg">{Calc.description}</div>
+              <div className="text-lg">{constants.Todos.description}</div>
             </Link>
             <Link
               className="group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-              href={ChatBot.link}
+              href={constants.Hangman.link}
               prefetch
             >
               <h3 className="text-2xl font-bold">
-                {ChatBot.title}{' '}
+                {constants.Hangman.title}{' '}
                 <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
                   {'->'}
                 </span>
               </h3>
-              <div className="text-lg">{ChatBot.description}</div>
+              <div className="text-lg">{constants.Hangman.description}</div>
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
+            <Link
+              className="group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
+              href={constants.Calc.link}
+              prefetch
+            >
+              <h3 className="text-2xl font-bold">
+                {constants.Calc.title}{' '}
+                <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
+                  {'->'}
+                </span>
+              </h3>
+              <div className="text-lg">{constants.Calc.description}</div>
+            </Link>
+            <Link
+              className="group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
+              href={constants.ChatBot.link}
+              prefetch
+            >
+              <h3 className="text-2xl font-bold">
+                {constants.ChatBot.title}{' '}
+                <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
+                  {'->'}
+                </span>
+              </h3>
+              <div className="text-lg">{constants.ChatBot.description}</div>
             </Link>
           </div>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-1 md:gap-8">
             <Link
               className="group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-              href={Github.link}
+              href={constants.Github.link}
               prefetch
             >
               <h3 className="text-2xl font-bold">
-                {Github.title}{' '}
+                {constants.Github.title}{' '}
                 <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
                   {'->'}
                 </span>
               </h3>
-              <div className="text-lg">{Github.description}</div>
+              <div className="text-lg">{constants.Github.description}</div>
             </Link>
           </div>
           <AdminComponent>
@@ -150,29 +150,29 @@ export default function Page(): React.JSX.Element {
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
               <Link
                 className="group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-                href={Black.link}
+                href={constants.Black.link}
                 prefetch
               >
                 <h3 className="text-2xl font-bold">
-                  {Black.title}{' '}
+                  {constants.Black.title}{' '}
                   <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
                     {'->'}
                   </span>
                 </h3>
-                <div className="text-lg">{Black.description}</div>
+                <div className="text-lg">{constants.Black.description}</div>
               </Link>
               <Link
                 className="group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-                href={Discord.link}
+                href={constants.Discord.link}
                 prefetch
               >
                 <h3 className="text-2xl font-bold">
-                  {Discord.title}{' '}
+                  {constants.Discord.title}{' '}
                   <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
                     {'->'}
                   </span>
                 </h3>
-                <div className="text-lg">{Discord.description}</div>
+                <div className="text-lg">{constants.Discord.description}</div>
               </Link>
             </div>
             {/* <BotButtons /> */}

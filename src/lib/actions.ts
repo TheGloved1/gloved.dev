@@ -1,26 +1,16 @@
 'use server'
-import { GoogleGenerativeAI } from '@google/generative-ai'
-import 'dotenv/config'
-import sharp from 'sharp'
-import { env } from './env'
+import { env } from '@/env'
 import { apiRoute } from '@/lib/utils'
+import { GoogleGenerativeAI } from '@google/generative-ai'
+import sharp from 'sharp'
 
-const getGenAI = () => {
-  if (!process.env.GEMINI) {
-    return null
-  }
-  return new GoogleGenerativeAI(process.env.GEMINI)
-}
+const genAI = new GoogleGenerativeAI(env.GEMINI)
 
 export async function fetchImage(src: string) {
   const buffer = await fetch(src).then(async (res) => Buffer.from(await res.arrayBuffer()))
   const resizedBuffer = await sharp(buffer).blur(1).resize(10).toBuffer() // Convert to buffer
   console.log(`Fetched image buffer data for ${src}: ${resizedBuffer.toString('base64')}`)
   return resizedBuffer
-}
-
-export async function getEnv() {
-  return env
 }
 
 async function fetchSystemPrompt() {
@@ -36,13 +26,13 @@ enum Role {
   USER = 'user',
   MODEL = 'model',
 }
+
 type Message = {
   role: Role
   text: string
 }
 
 export async function sendMessage(input: string, messages: Message[]): Promise<{ msg: Message | null; error?: string }> {
-  const genAI = getGenAI()
   const systemPrompt = await fetchSystemPrompt()
   if (!input.trim()) return { msg: null, error: 'Input cannot be empty' }
 
@@ -50,9 +40,6 @@ export async function sendMessage(input: string, messages: Message[]): Promise<{
   const updatedMessages = [...messages, userMessage]
 
   try {
-    if (!genAI) {
-      throw new Error('Missing API key')
-    }
     const message = {
       contents: [
         ...updatedMessages.map((message) => ({
@@ -65,6 +52,7 @@ export async function sendMessage(input: string, messages: Message[]): Promise<{
         },
       ],
     }
+
     const generationConfig = {
       temperature: 1,
       topK: 64,
@@ -72,11 +60,13 @@ export async function sendMessage(input: string, messages: Message[]): Promise<{
       maxOutputTokens: 8192,
       responseMimeType: 'text/plain',
     }
+
     const model = genAI.getGenerativeModel({
       model: 'gemini-1.5-flash',
       generationConfig: generationConfig,
       systemInstruction: systemPrompt,
     })
+
     const result = await model.generateContent(message)
 
     const botMessageText = result.response.text().trim()

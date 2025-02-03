@@ -1,6 +1,7 @@
 import { API } from '@/lib/constants'
 import { type ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
+import { env } from '@/env'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -50,7 +51,7 @@ export function apiRoute(route: string) {
 }
 
 export function checkDevMode(): boolean {
-  const environment = process.env.NODE_ENV
+  const environment = env.NODE_ENV
 
   if (environment === 'development') {
     return true

@@ -4,7 +4,7 @@ import { apiRoute, safeAwait } from '@/lib/utils'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import axios, { type AxiosResponse, type AxiosProgressEvent } from 'axios'
 import React, { useEffect, useRef, useState } from 'react'
-import { env } from '@/lib/env'
+import { env } from '@/env'
 import FileButton from '@/components/FileButton'
 import ErrorAlert from '@/components/ErrorAlert'
 import Button, { RedButton } from './Buttons'
@@ -50,7 +50,7 @@ const uploadFileApi = async (
 
 export default function FileUploader(): React.JSX.Element {
   const queryClient = useQueryClient()
-  const correctPassword = env.FILE_MANAGER_PASSKEY
+  const correctPassword = env.NEXT_PUBLIC_FILE_MANAGER_PASSKEY
   const [alert, setAlert] = useState<string>('')
   const [passwordEntered, setPasswordEntered] = useState<boolean>(false)
   const [uploadProgress, setUploadProgress] = useState<number>(0)
@@ -245,9 +245,8 @@ export default function FileUploader(): React.JSX.Element {
                           setFileToDelete({ name: file.name, isTemp: file.isTemp })
                           setIsDeleteDialogOpen(true)
                         }}
-                        title={`Delete file ${filesQuery.data.findIndex((f) => f.name === file.name) + 1} of ${
-                          filesQuery.data.length
-                        }`}
+                        title={`Delete file ${filesQuery.data.findIndex((f) => f.name === file.name) + 1} of ${filesQuery.data.length
+                          }`}
                       >
                         {'X'}
                       </RedButton>

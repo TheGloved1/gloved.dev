@@ -1,12 +1,12 @@
 import ReactQueryClientProvider from '@/components/ReactQueryClientProvider'
-import { NAME } from '@/lib/constants'
+import * as constants from '@/lib/constants'
 import { Metadata } from 'next'
 import { JetBrains_Mono } from 'next/font/google'
 import React from 'react'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: NAME,
+  title: constants.NAME,
   description:
     'Made by Kaden Hood. A personal website for my projects and interests. Built using Next.js React Web Framework.',
   icons: 'https://avatars.githubusercontent.com/u/96776176?v=4',
