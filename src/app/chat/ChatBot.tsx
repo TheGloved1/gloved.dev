@@ -1,7 +1,7 @@
 'use client'
 import { sendMessage } from '@/lib/actions'
 import { Bot, Loader2, MessageSquare, Plus, RefreshCcw, Send, User2 } from 'lucide-react'
-import React, { useEffect, useState } from 'react'
+import * as React from 'react'
 import Markdown from 'react-markdown'
 import { Input } from '@/components/Input'
 import {
@@ -34,26 +34,26 @@ type SavedChat = {
 }
 
 export default function Chatbot(): React.JSX.Element {
-  const [messages, setMessages] = useState<Message[]>([])
-  const [input, setInput] = useState<string>('')
-  const [loading, setLoading] = useState<boolean>(false)
-  const [currentChat, setCurrentChat] = useState<SavedChat | null>(null)
-  const [savedChats, setSavedChats] = useState<SavedChat[]>([])
+  const [messages, setMessages] = React.useState<Message[]>([])
+  const [input, setInput] = React.useState<string>('')
+  const [loading, setLoading] = React.useState<boolean>(false)
+  const [currentChat, setCurrentChat] = React.useState<SavedChat | null>(null)
+  const [savedChats, setSavedChats] = React.useState<SavedChat[]>([])
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (currentChat) {
       loadChatFromLocalStorage(currentChat.id)
     }
   }, [currentChat])
 
-  useEffect(() => {
+  React.useEffect(() => {
     const storedChats = localStorage.getItem('savedChats')
     if (storedChats) {
       setSavedChats(JSON.parse(storedChats))
     }
   }, [])
 
-  useEffect(() => {
+  React.useEffect(() => {
     localStorage.setItem('savedChats', JSON.stringify(savedChats))
   }, [savedChats])
 
@@ -101,7 +101,7 @@ export default function Chatbot(): React.JSX.Element {
         const chatTitle = titleMessage.text.trim() // Trim the generated title
         if (chatTitle) {
           // Check for duplicates
-          const chatExists = savedChats.some((chat) => chat.name === chatTitle)
+          const chatExists = savedChats.some((chat) => chat?.name === chatTitle)
           if (!chatExists) {
             const chatId = Date.now().toString() // Generate a unique ID using timestamp
             const newChat: SavedChat = { id: chatId, name: chatTitle, messages } // Create a new SavedChat object
@@ -116,7 +116,7 @@ export default function Chatbot(): React.JSX.Element {
   }
 
   const saveChatToLocalStorage = (chat: SavedChat) => {
-    if (chat.name.trim()) {
+    if (chat?.name.trim()) {
       setSavedChats((prev) => [...prev, chat])
     }
   }
@@ -125,7 +125,7 @@ export default function Chatbot(): React.JSX.Element {
     const chatData = localStorage.getItem('savedChats')
     if (chatData) {
       const parsedChat: SavedChat[] = JSON.parse(chatData)
-      const chat = parsedChat.find((c) => c.id === chatId)
+      const chat = parsedChat.find((chat) => chat?.id === chatId)
       if (chat) {
         setCurrentChat(chat)
       }
@@ -150,10 +150,10 @@ export default function Chatbot(): React.JSX.Element {
                   <Plus className="h-4 w-4" />
                   <span className="sr-only">New chat</span>
                 </button>
-                {savedChats.map((item) => (
-                  <SidebarMenuItem key={item.name}>
+                {savedChats?.map((item) => (
+                  <SidebarMenuItem key={item?.name}>
                     <SidebarMenuButton onClick={() => setCurrentChat(item)} asChild>
-                      {item.name}
+                      {item?.name}
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 ))}
@@ -170,9 +170,8 @@ export default function Chatbot(): React.JSX.Element {
           {messages.map((m, index) => (
             <div key={index} className={`flex ${m.role === Role.USER ? 'justify-end' : 'justify-start'}`}>
               <div
-                className={`max-w-[80%] rounded-lg p-4 ${
-                  m.role === Role.USER ? 'bg-primary text-black' : 'bg-gray-800 text-white'
-                }`}
+                className={`max-w-[80%] rounded-lg p-4 ${m.role === Role.USER ? 'bg-primary text-black' : 'bg-gray-800 text-white'
+                  }`}
               >
                 <div className="mb-2 flex items-center gap-2">
                   {m.role === Role.USER ? <User2 className="h-4 w-4" /> : <Bot className="h-4 w-4" />}
@@ -200,7 +199,11 @@ export default function Chatbot(): React.JSX.Element {
                 type="button"
                 title="Restart Chat"
                 className="btn card bg-gray-700 hover:bg-gray-600"
-                onClick={() => setCurrentChat(null)}
+                onClick={() => {
+                  setCurrentChat(null)
+                  setMessages([])
+                }}
+                disabled={!messages.length || loading}
               >
                 <span className="sr-only">Restart Chat</span>
                 <RefreshCcw className="h-4 w-4" />
