@@ -1,6 +1,6 @@
 'use client'
 import { sendMessage } from '@/lib/actions'
-import { Bot, Loader2, MessageSquare, Plus, Send, User2 } from 'lucide-react'
+import { Bot, Loader2, MessageSquare, Plus, RefreshCcw, Send, User2 } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import Markdown from 'react-markdown'
 import { Input } from '@/components/Input'
@@ -29,7 +29,7 @@ export default function Chatbot(): React.JSX.Element {
   const [loading, setLoading] = useState<boolean>(false)
   const [currentChat, setCurrentChat] = useState<SavedChat | null>(null)
   const [savedChats, setSavedChats] = useState<SavedChat[]>([])
-
+  
   useEffect(() => {
     if (currentChat) {
       loadChatFromLocalStorage(currentChat.id)
@@ -180,6 +180,10 @@ export default function Chatbot(): React.JSX.Element {
         <div className="fixed z-50 bottom-0 left-0 right-0 border-t border-gray-700 bg-gray-800 p-4">
           <form onSubmit={handleSubmit} className="container mx-auto max-w-4xl">
             <div className="flex gap-2">
+              <button type="button" title="Restart Chat" className="btn card bg-gray-700 hover:bg-gray-600" onClick={() => setCurrentChat(null)}>
+                <span className="sr-only">Restart Chat</span>
+                <RefreshCcw className="h-4 w-4" />
+              </button>
               <div className="relative flex-1">
                 <MessageSquare className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
                 <Input
