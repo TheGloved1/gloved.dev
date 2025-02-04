@@ -1,5 +1,4 @@
-import * as React from 'react'
-
+import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 /**
  * Custom hook to manage a state variable that is synchronized with localStorage.
  *
@@ -8,8 +7,8 @@ import * as React from 'react'
  * @param {T} initialValue - The initial value of the state if not found in localStorage.
  * @returns {[T, React.Dispatch<React.SetStateAction<T>>]} - The current state and a function to update it.
  */
-export function useSemiPersistentState<T>(key: string, initialValue: T): [T, React.Dispatch<React.SetStateAction<T>>] {
-  const [state, setState] = React.useState<T>(() => {
+export function useSemiPersistentState<T>(key: string, initialValue: T): [T, Dispatch<SetStateAction<T>>] {
+  const [state, setState] = useState<T>(() => {
     if (typeof window !== 'undefined') {
       try {
         const storedState = localStorage.getItem(key);
@@ -22,7 +21,7 @@ export function useSemiPersistentState<T>(key: string, initialValue: T): [T, Rea
     return initialValue; // Return initial value if not in the browser
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (typeof window !== 'undefined') {
       // Save the value to localStorage whenever it changes
       localStorage.setItem(key, JSON.stringify(state));

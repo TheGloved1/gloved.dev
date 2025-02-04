@@ -16,7 +16,7 @@ import {
 import { useSemiPersistentState } from '@/hooks/use-persistent-state'
 import { sendMessage } from '@/lib/actions'
 import { Bot, Loader2, MessageSquare, Plus, RefreshCcw, Send, User2 } from 'lucide-react'
-import * as React from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Markdown from 'react-markdown'
 
 enum Role {
@@ -38,9 +38,9 @@ type SavedChat = {
 export default function Chatbot(): React.JSX.Element {
   const [messages, setMessages] = useSemiPersistentState<Message[]>('messages', [])
   const [savedChats, setSavedChats] = useSemiPersistentState<SavedChat[]>('savedChats', [])
-  const [input, setInput] = React.useState<string>('')
-  const [loading, setLoading] = React.useState<boolean>(false)
-  const messagesEndRef = React.useRef<HTMLDivElement>(null)
+  const [input, setInput] = useState<string>('')
+  const [loading, setLoading] = useState<boolean>(false)
+  const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const scrollToBottom = () => {
     if (messagesEndRef.current) {
@@ -48,7 +48,7 @@ export default function Chatbot(): React.JSX.Element {
     }
   }
 
-  React.useEffect(() => {
+  useEffect(() => {
     // Scroll to the bottom of the chat log when the messages change
     scrollToBottom()
   }, [messages])
