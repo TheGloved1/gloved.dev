@@ -1,22 +1,23 @@
 'use client'
-import { sendMessage } from '@/lib/actions'
-import { Bot, Loader2, MessageSquare, Plus, RefreshCcw, Send, User2 } from 'lucide-react'
-import * as React from 'react'
-import Markdown from 'react-markdown'
 import { Input } from '@/components/Input'
+import PageBack from '@/components/PageBack'
 import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
-  SidebarGroupLabel,
   SidebarGroupContent,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-  SidebarTrigger,
+  SidebarGroupLabel,
   SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarTrigger,
 } from '@/components/ui/sidebar'
-import PageBack from '@/components/PageBack'
+import { useSemiPersistentState } from '@/hooks/use-persistent-state'
+import { sendMessage } from '@/lib/actions'
+import { Bot, Loader2, MessageSquare, Plus, RefreshCcw, Send, User2 } from 'lucide-react'
+import * as React from 'react'
+import Markdown from 'react-markdown'
 
 enum Role {
   USER = 'user',
@@ -35,10 +36,10 @@ type SavedChat = {
 }
 
 export default function Chatbot(): React.JSX.Element {
-  const [messages, setMessages] = React.useState<Message[]>([])
+  const [messages, setMessages] = useSemiPersistentState<Message[]>('messages', [])
+  const [savedChats, setSavedChats] = useSemiPersistentState<SavedChat[]>('savedChats', [])
   const [input, setInput] = React.useState<string>('')
   const [loading, setLoading] = React.useState<boolean>(false)
-  const [savedChats, setSavedChats] = React.useState<SavedChat[]>([])
   const messagesEndRef = React.useRef<HTMLDivElement>(null)
 
   const scrollToBottom = () => {
@@ -48,36 +49,9 @@ export default function Chatbot(): React.JSX.Element {
   }
 
   React.useEffect(() => {
-    // Load saved chats from local storage
-    const storedChats = localStorage.getItem('savedChats')
-    if (storedChats) {
-      console.log('Saving chats:', JSON.parse(storedChats))
-      setSavedChats(JSON.parse(storedChats))
-    }
-
-  }, [])
-
-  React.useEffect(() => {
-    // Save chats to local storage when they change
-    localStorage.setItem('savedChats', JSON.stringify(savedChats))
-  }, [savedChats])
-
-  React.useEffect(() => {
-    // Save messages to local storage when they change
-    if (messages.length > 0) {
-      localStorage.setItem('messages', JSON.stringify(messages))
-    }
-
+    // Scroll to the bottom of the chat log when the messages change
     scrollToBottom()
   }, [messages])
-
-  React.useEffect(() => {
-    // Load messages from local storage
-    const storedMessages = localStorage.getItem('messages')
-    if (storedMessages) {
-      setMessages(JSON.parse(storedMessages))
-    }
-  }, [])
 
   /**
    * Handles the submission of the chat input form by preventing the default
@@ -102,7 +76,7 @@ export default function Chatbot(): React.JSX.Element {
    */
   const handleSendMessage = async () => {
     setLoading(true)
-    setMessages((msgs) => [...msgs, { role: Role.USER, text: input }, { role: Role.MODEL, text: 'Loading...' }])
+    setMessages((msgs) => [...msgs, { role: Role.USER, text: input }, { role: Role.MODEL, text: '...' }])
 
     try {
       const { msg, error } = await sendMessage(input, messages)
