@@ -52,6 +52,8 @@ export default function Chatbot(): React.JSX.Element {
     localStorage.setItem('savedChats', JSON.stringify(savedChats))
   }, [savedChats])
 
+
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     await handleSendMessage()
@@ -89,7 +91,7 @@ export default function Chatbot(): React.JSX.Element {
     if (messages.length > 0) {
       // Generate a title based on the current messages
       const { msg: titleMessage } = await sendMessage(
-        'Generate a small title for the following chat: ' + messages.map((m) => m.text).join(' '),
+        'Generate a small title for the following chat: ' + messages.map((m) => m.text).join(' \n'),
         messages,
       )
       if (titleMessage) {
@@ -101,6 +103,8 @@ export default function Chatbot(): React.JSX.Element {
             const chatId = Date.now().toString() // Generate a unique ID using timestamp
             const newChat: SavedChat = { id: chatId, name: chatTitle, messages } // Create a new SavedChat object
             saveChatToLocalStorage(newChat) // Save the chat with the generated title
+          } else {
+
           }
         }
       }
@@ -122,6 +126,7 @@ export default function Chatbot(): React.JSX.Element {
       const chat = parsedChat.find((chat) => chat?.id === chatId)
       if (chat) {
         setMessages(chat.messages)
+        setSavedChats(savedChats.filter((chat) => chat.id !== chatId))
       }
     }
   }
