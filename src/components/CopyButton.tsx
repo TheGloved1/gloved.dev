@@ -4,9 +4,10 @@ import { ClipboardCopy } from 'lucide-react'
 interface CopyButtonProps {
   text: string
   className?: string
+  title?: string
 }
 
-const CopyButton: React.FC<CopyButtonProps> = ({ text, className }) => {
+const CopyButton: React.FC<CopyButtonProps> = ({ text, className, title = 'Copy message' }) => {
   const [copied, setCopied] = useState(false)
 
   const handleCopy = () => {
@@ -17,7 +18,7 @@ const CopyButton: React.FC<CopyButtonProps> = ({ text, className }) => {
 
   return (
     <div>
-      <button onClick={handleCopy} disabled={copied} title="Copy message">
+      <button onClick={handleCopy} disabled={copied} title={title}>
         {!copied && (
           <div className={className}>
             <ClipboardCopy />

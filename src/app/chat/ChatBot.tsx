@@ -208,6 +208,7 @@ export default function Chatbot(): React.JSX.Element {
                     <CopyButton
                       className="block size-4 text-sm text-gray-600 hover:block group-hover:block md:hidden"
                       text={m.text}
+                      title="Copy raw message"
                     />
                   </div>
                   {loading && (
