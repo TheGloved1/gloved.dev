@@ -138,15 +138,9 @@ export default function Chatbot(): React.JSX.Element {
       if (titleMessage) {
         const chatTitle = titleMessage.text.trim() // Trim the generated title
         if (chatTitle) {
-          // Check for duplicates
-          const chatExists = savedChats.some((chat) => chat?.name === chatTitle)
-          if (!chatExists) {
-            const chatId = Date.now().toString() // Generate a unique ID using timestamp
-            const newChat: SavedChat = { id: chatId, name: chatTitle, messages } // Create a new SavedChat object
-            setSavedChats((prev) => [...prev, newChat])
-          } else {
-
-          }
+          const chatId = Date.now().toString() // Generate a unique ID using timestamp
+          const newChat: SavedChat = { id: chatId, name: chatTitle, messages } // Create a new SavedChat object
+          setSavedChats((prev) => [...prev, newChat])
         }
       }
     }
