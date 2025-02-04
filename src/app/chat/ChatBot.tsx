@@ -52,7 +52,18 @@ export default function Chatbot(): React.JSX.Element {
     localStorage.setItem('savedChats', JSON.stringify(savedChats))
   }, [savedChats])
 
+  React.useEffect(() => {
+    if (messages.length > 0) {
+      localStorage.setItem('messages', JSON.stringify(messages))
+    }
+  }, [messages])
 
+  React.useEffect(() => {
+    const storedMessages = localStorage.getItem('messages')
+    if (storedMessages) {
+      setMessages(JSON.parse(storedMessages))
+    }
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
