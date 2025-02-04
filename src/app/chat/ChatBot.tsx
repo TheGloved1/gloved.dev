@@ -1,4 +1,5 @@
 'use client'
+import CopyButton from '@/components/CopyButton'
 import PageBack from '@/components/PageBack'
 import {
   Sidebar,
@@ -181,12 +182,13 @@ export default function Chatbot(): React.JSX.Element {
           {messages.map((m, index) => (
             <div key={index} className={`flex ${m.role === Role.USER ? 'justify-end' : 'justify-start'}`}>
               <div
-                className={`max-w-[75%] rounded-lg p-4 ${m.role === Role.USER ? 'bg-primary text-black' : 'bg-gray-800 text-white'
+                className={`max-w-[75%] group rounded-lg p-4 cursor-pointer select-none ${m.role === Role.USER ? 'bg-primary text-black' : 'bg-gray-800 text-white'
                   }`}
               >
                 <div className="mb-2 flex items-center gap-2">
                   {m.role === Role.USER ? <User2 className="h-4 w-4" /> : <Bot className="h-4 w-4" />}
                   <span className="text-sm font-medium">{m.role === Role.USER ? 'You' : 'AI'}</span>
+                  <CopyButton className="block md:hidden group-hover:block hover:block text-sm p-0 m-0 text-gray-600" text={m.text} />
                 </div>
                 {loading && (
                   <div className="flex items-center gap-2 text-white">
