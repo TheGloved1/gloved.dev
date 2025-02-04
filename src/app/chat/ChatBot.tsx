@@ -39,8 +39,10 @@ export default function Chatbot(): React.JSX.Element {
   const [input, setInput] = React.useState<string>('')
   const [loading, setLoading] = React.useState<boolean>(false)
   const [savedChats, setSavedChats] = React.useState<SavedChat[]>([])
+  const messagesEndRef = React.useRef<HTMLDivElement>(null)
 
   React.useEffect(() => {
+    // Load saved chats from local storage
     const storedChats = localStorage.getItem('savedChats')
     if (storedChats) {
       console.log('Saving chats:', JSON.parse(storedChats))
@@ -49,29 +51,51 @@ export default function Chatbot(): React.JSX.Element {
   }, [])
 
   React.useEffect(() => {
+    // Save chats to local storage when they change
     localStorage.setItem('savedChats', JSON.stringify(savedChats))
   }, [savedChats])
 
   React.useEffect(() => {
+    // Save messages to local storage when they change
     if (messages.length > 0) {
       localStorage.setItem('messages', JSON.stringify(messages))
+    }
+
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' })
     }
   }, [messages])
 
   React.useEffect(() => {
+    // Load messages from local storage
     const storedMessages = localStorage.getItem('messages')
     if (storedMessages) {
       setMessages(JSON.parse(storedMessages))
     }
   }, [])
 
+  /**
+   * Handles the submission of the chat input form by preventing the default
+   * form submission behavior and calling `handleSendMessage` to send the
+   * message to the server.
+   * @param e The form submission event.
+   */
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     await handleSendMessage()
   }
 
+  /**
+   * Handles sending a message to the server by adding a loading message to the
+   * chat log, sending the message to the server, and updating the chat log with
+   * the server's response.
+   *
+   * If there is an error, an alert will be shown with the error message. If the
+   * server responds with an error message, the error message will be shown in an
+   * alert. If the server does not respond with an error message, the AI's
+   * response will be added to the chat log.
+   */
   const handleSendMessage = async () => {
-
     setLoading(true)
     setMessages((msgs) => [...msgs, { role: Role.USER, text: input }, { role: Role.MODEL, text: 'Loading...' }])
 
@@ -98,6 +122,12 @@ export default function Chatbot(): React.JSX.Element {
     }
   }
 
+  /**
+   * Handles the creation of a new chat by generating a title for the current
+   * chat messages, checking for duplicates, and saving the chat to local
+   * storage if it does not already exist. Clears the current messages and input
+   * after processing.
+   */
   const handleNewChat = async () => {
     if (messages.length > 0) {
       // Generate a title based on the current messages
@@ -113,7 +143,7 @@ export default function Chatbot(): React.JSX.Element {
           if (!chatExists) {
             const chatId = Date.now().toString() // Generate a unique ID using timestamp
             const newChat: SavedChat = { id: chatId, name: chatTitle, messages } // Create a new SavedChat object
-            saveChatToLocalStorage(newChat) // Save the chat with the generated title
+            setSavedChats((prev) => [...prev, newChat])
           } else {
 
           }
@@ -122,12 +152,6 @@ export default function Chatbot(): React.JSX.Element {
     }
     setMessages([]) // Clear the messages
     setInput('') // Clear the input
-  }
-
-  const saveChatToLocalStorage = (chat: SavedChat) => {
-    if (chat?.name.trim()) {
-      setSavedChats((prev) => [...prev, chat])
-    }
   }
 
   const loadChatFromLocalStorage = (chatId: string) => {
@@ -174,8 +198,8 @@ export default function Chatbot(): React.JSX.Element {
           </SidebarGroup>
         </SidebarContent>
       </Sidebar>
-      <div className="p-4">
-        <SidebarTrigger />
+      <div className="p-2">
+        <SidebarTrigger className='fixed left-2 top-2 z-50' />
       </div>
       <div className="flex-1 p-4 mx-auto max-w-7xl">
         <div className="space-y-4 pb-32">
@@ -203,6 +227,7 @@ export default function Chatbot(): React.JSX.Element {
               </div>
             </div>
           ))}
+          <div ref={messagesEndRef} />
         </div>
         <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-gray-700 bg-gray-800 p-4">
           <form onSubmit={handleSubmit} className="container mx-auto max-w-4xl">
