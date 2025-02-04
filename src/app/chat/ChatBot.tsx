@@ -41,6 +41,12 @@ export default function Chatbot(): React.JSX.Element {
   const [savedChats, setSavedChats] = React.useState<SavedChat[]>([])
   const messagesEndRef = React.useRef<HTMLDivElement>(null)
 
+  const scrollToBottom = () => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' })
+    }
+  }
+
   React.useEffect(() => {
     // Load saved chats from local storage
     const storedChats = localStorage.getItem('savedChats')
@@ -48,6 +54,7 @@ export default function Chatbot(): React.JSX.Element {
       console.log('Saving chats:', JSON.parse(storedChats))
       setSavedChats(JSON.parse(storedChats))
     }
+
   }, [])
 
   React.useEffect(() => {
@@ -61,9 +68,7 @@ export default function Chatbot(): React.JSX.Element {
       localStorage.setItem('messages', JSON.stringify(messages))
     }
 
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' })
-    }
+    scrollToBottom()
   }, [messages])
 
   React.useEffect(() => {
@@ -129,19 +134,23 @@ export default function Chatbot(): React.JSX.Element {
    * after processing.
    */
   const handleNewChat = async () => {
+    setLoading(true)
     if (messages.length > 0) {
       // Generate a title based on the current messages
-      const { msg: titleMessage } = await sendMessage(
+      const { msg: titleMessage, error } = await sendMessage(
         'Generate a small title for the following chat: ' + messages.map((m) => m.text).join(' \n'),
         messages,
       )
-      if (titleMessage) {
-        const chatTitle = titleMessage.text.trim() // Trim the generated title
-        if (chatTitle) {
-          const chatId = Date.now().toString() // Generate a unique ID using timestamp
-          const newChat: SavedChat = { id: chatId, name: chatTitle, messages } // Create a new SavedChat object
-          setSavedChats((prev) => [...prev, newChat])
-        }
+
+      if (error || !titleMessage || !titleMessage.text.trim()) {
+        alert(error || 'An error occurred while generating a title for the chat.')
+        setLoading(false)
+      } else {
+        const chatTitle = titleMessage.text.trim()
+        const chatId = Date.now().toString() // Generate a unique ID using timestamp
+        const newChat: SavedChat = { id: chatId, name: chatTitle, messages } // Create a new SavedChat object
+        setSavedChats((prev) => [...prev, newChat])
+        setLoading(false)
       }
     }
     setMessages([]) // Clear the messages
