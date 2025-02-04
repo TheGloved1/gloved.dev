@@ -48,7 +48,7 @@ export async function sendMessage(input: string, messages: Message[]): Promise<{
           parts: [{ text: message.text }],
         })),
         {
-          role: 'user',
+          role: Role.USER,
           parts: [{ text: input }],
         },
       ],
