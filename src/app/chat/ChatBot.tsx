@@ -38,18 +38,12 @@ export default function Chatbot(): React.JSX.Element {
   const [messages, setMessages] = React.useState<Message[]>([])
   const [input, setInput] = React.useState<string>('')
   const [loading, setLoading] = React.useState<boolean>(false)
-  const [currentChat, setCurrentChat] = React.useState<SavedChat | null>(null)
   const [savedChats, setSavedChats] = React.useState<SavedChat[]>([])
-
-  React.useEffect(() => {
-    if (currentChat) {
-      loadChatFromLocalStorage(currentChat.id)
-    }
-  }, [currentChat])
 
   React.useEffect(() => {
     const storedChats = localStorage.getItem('savedChats')
     if (storedChats) {
+      console.log('Saving chats:', JSON.parse(storedChats))
       setSavedChats(JSON.parse(storedChats))
     }
   }, [])
@@ -64,6 +58,7 @@ export default function Chatbot(): React.JSX.Element {
   }
 
   const handleSendMessage = async () => {
+
     setLoading(true)
     setMessages((msgs) => [...msgs, { role: Role.USER, text: input }, { role: Role.MODEL, text: 'Loading...' }])
 
@@ -105,7 +100,6 @@ export default function Chatbot(): React.JSX.Element {
           if (!chatExists) {
             const chatId = Date.now().toString() // Generate a unique ID using timestamp
             const newChat: SavedChat = { id: chatId, name: chatTitle, messages } // Create a new SavedChat object
-            setCurrentChat(newChat) // Set the generated title as the current chat name
             saveChatToLocalStorage(newChat) // Save the chat with the generated title
           }
         }
@@ -127,7 +121,7 @@ export default function Chatbot(): React.JSX.Element {
       const parsedChat: SavedChat[] = JSON.parse(chatData)
       const chat = parsedChat.find((chat) => chat?.id === chatId)
       if (chat) {
-        setCurrentChat(chat)
+        setMessages(chat.messages)
       }
     }
   }
@@ -154,7 +148,7 @@ export default function Chatbot(): React.JSX.Element {
                 </SidebarMenuButton>
                 {savedChats?.map((item) => (
                   <SidebarMenuItem key={item?.name}>
-                    <SidebarMenuButton onClick={() => setCurrentChat(item)} asChild>
+                    <SidebarMenuButton onClick={() => loadChatFromLocalStorage(item?.id)}>
                       {item?.name}
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -202,7 +196,6 @@ export default function Chatbot(): React.JSX.Element {
                 title="Restart Chat"
                 className="btn card bg-gray-700 hover:bg-gray-600"
                 onClick={() => {
-                  setCurrentChat(null)
                   setMessages([])
                 }}
                 disabled={!messages.length || loading}

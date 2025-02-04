@@ -33,6 +33,7 @@ type Message = {
 }
 
 export async function sendMessage(input: string, messages: Message[]): Promise<{ msg: Message | null; error?: string }> {
+  console.log('Running sendMessage action!')
   const systemPrompt = await fetchSystemPrompt()
   if (!input.trim()) return { msg: null, error: 'Input cannot be empty' }
 
