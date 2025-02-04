@@ -54,6 +54,17 @@ export default function Chatbot(): React.JSX.Element {
     scrollToBottom()
   }, [messages])
 
+  useEffect(() => {
+    const handleResize = () => {
+      scrollToBottom()
+    }
+
+    window.addEventListener('resize', handleResize)
+    return () => {
+      window.removeEventListener('resize', handleResize)
+    }
+  }, [])
+
   /**
    * Handles the submission of the chat input form by preventing the default
    * form submission behavior and calling `handleSendMessage` to send the
@@ -182,13 +193,16 @@ export default function Chatbot(): React.JSX.Element {
           {messages.map((m, index) => (
             <div key={index} className={`flex ${m.role === Role.USER ? 'justify-end' : 'justify-start'}`}>
               <div
-                className={`max-w-[75%] group rounded-lg p-4 cursor-pointer select-none ${m.role === Role.USER ? 'bg-primary text-black' : 'bg-gray-800 text-white'
+                className={`group max-w-[75%] cursor-pointer select-none rounded-lg p-4 ${m.role === Role.USER ? 'bg-primary text-black' : 'bg-gray-800 text-white'
                   }`}
               >
                 <div className="mb-2 flex items-center gap-2">
                   {m.role === Role.USER ? <User2 className="h-4 w-4" /> : <Bot className="h-4 w-4" />}
                   <span className="text-sm font-medium">{m.role === Role.USER ? 'You' : 'AI'}</span>
-                  <CopyButton className="block md:hidden group-hover:block hover:block text-sm p-0 m-0 text-gray-600" text={m.text} />
+                  <CopyButton
+                    className="m-0 block p-0 text-sm text-gray-600 hover:block group-hover:block md:hidden"
+                    text={m.text}
+                  />
                 </div>
                 {loading && (
                   <div className="flex items-center gap-2 text-white">
