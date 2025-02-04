@@ -206,7 +206,7 @@ export default function Chatbot(): React.JSX.Element {
                     {m.role === Role.USER ? <User2 className="h-4 w-4" /> : <Bot className="h-4 w-4" />}
                     <span className="text-sm font-medium">{m.role === Role.USER ? 'You' : 'AI'}</span>
                     <CopyButton
-                      className="m-0 block p-0 text-sm text-gray-600 hover:block group-hover:block md:hidden"
+                      className="block size-4 text-sm text-gray-600 hover:block group-hover:block md:hidden"
                       text={m.text}
                     />
                   </div>
