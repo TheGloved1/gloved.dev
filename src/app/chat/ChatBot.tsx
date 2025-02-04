@@ -1,5 +1,4 @@
 'use client'
-import { Input } from '@/components/Input'
 import PageBack from '@/components/PageBack'
 import {
   Sidebar,
@@ -13,6 +12,7 @@ import {
   SidebarMenuItem,
   SidebarTrigger,
 } from '@/components/ui/sidebar'
+import { Textarea } from '@/components/ui/textarea'
 import { usePersistentState } from '@/hooks/use-persistent-state'
 import { sendMessage } from '@/lib/actions'
 import { Bot, Loader2, MessageSquare, Plus, RefreshCcw, Send, User2 } from 'lucide-react'
@@ -144,20 +144,20 @@ export default function Chatbot(): React.JSX.Element {
   }
 
   return (
-    <div className="flex min-h-dvh w-dvw mx-auto">
+    <div className="mx-auto flex min-h-dvh w-dvw">
       <Sidebar>
-        <SidebarContent className='bg-gradient-to-bl from-gray-200 to-gray-600'>
+        <SidebarContent className="bg-gradient-to-bl from-gray-200 to-gray-600">
           <SidebarHeader>
             <PageBack stayTop noFixed btnClassName="btn bg-gray-700 hover:bg-gray-600" />
           </SidebarHeader>
           <SidebarGroup>
-            <SidebarGroupLabel className='text-black font-bold'>Chats</SidebarGroupLabel>
+            <SidebarGroupLabel className="font-bold text-black">Chats</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 <SidebarMenuButton
                   type="button"
                   title="New chat"
-                  className="btn card bg-gray-700 hover:bg-gray-600 rounded-xl"
+                  className="btn card rounded-xl bg-gray-700 hover:bg-gray-600"
                   onClick={handleNewChat}
                 >
                   <Plus className="h-4 w-4" />
@@ -165,9 +165,7 @@ export default function Chatbot(): React.JSX.Element {
                 </SidebarMenuButton>
                 {savedChats?.map((item) => (
                   <SidebarMenuItem key={item?.name}>
-                    <SidebarMenuButton onClick={() => loadChatFromLocalStorage(item?.id)}>
-                      {item?.name}
-                    </SidebarMenuButton>
+                    <SidebarMenuButton onClick={() => loadChatFromLocalStorage(item?.id)}>{item?.name}</SidebarMenuButton>
                   </SidebarMenuItem>
                 ))}
               </SidebarMenu>
@@ -176,15 +174,16 @@ export default function Chatbot(): React.JSX.Element {
         </SidebarContent>
       </Sidebar>
       <div className="p-2">
-        <SidebarTrigger className='fixed left-2 top-2 z-50' />
+        <SidebarTrigger className="fixed left-2 top-2 z-50" />
       </div>
-      <div className="flex-1 p-4 mx-auto max-w-7xl">
+      <div className="mx-auto max-w-7xl flex-1 p-4">
         <div className="space-y-4 pb-32">
           {messages.map((m, index) => (
             <div key={index} className={`flex ${m.role === Role.USER ? 'justify-end' : 'justify-start'}`}>
               <div
-                className={`max-w-[75%] rounded-lg p-4 ${m.role === Role.USER ? 'bg-primary text-black' : 'bg-gray-800 text-white'
-                  }`}
+                className={`max-w-[75%] rounded-lg p-4 ${
+                  m.role === Role.USER ? 'bg-primary text-black' : 'bg-gray-800 text-white'
+                }`}
               >
                 <div className="mb-2 flex items-center gap-2">
                   {m.role === Role.USER ? <User2 className="h-4 w-4" /> : <Bot className="h-4 w-4" />}
@@ -208,7 +207,7 @@ export default function Chatbot(): React.JSX.Element {
         </div>
         <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-gray-700 bg-gray-800 p-4">
           <form onSubmit={handleSubmit} className="container mx-auto max-w-4xl">
-            <div className="flex gap-2">
+            <div className="flex items-center gap-2">
               <button
                 type="button"
                 title="Restart Chat"
@@ -223,8 +222,8 @@ export default function Chatbot(): React.JSX.Element {
               </button>
               <div className="relative flex-1">
                 <MessageSquare className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
-                <Input
-                  className="flex-1 border-gray-700 bg-gray-900 pl-10 text-gray-100"
+                <Textarea
+                  className="rounded-xl bg-gray-900 pl-10 text-gray-100"
                   value={input}
                   disabled={loading}
                   placeholder="Type a message..."
