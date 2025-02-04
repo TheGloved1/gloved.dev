@@ -7,7 +7,7 @@ import { Dispatch, SetStateAction, useEffect, useState } from 'react'
  * @param {T} initialValue - The initial value of the state if not found in localStorage.
  * @returns {[T, React.Dispatch<React.SetStateAction<T>>]} - The current state and a function to update it.
  */
-export function useSemiPersistentState<T>(key: string, initialValue: T): [T, Dispatch<SetStateAction<T>>] {
+export function usePersistentState<T>(key: string, initialValue: T): [T, Dispatch<SetStateAction<T>>] {
   const [state, setState] = useState<T>(() => {
     if (typeof window !== 'undefined') {
       try {

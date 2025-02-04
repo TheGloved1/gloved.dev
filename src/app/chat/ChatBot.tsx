@@ -13,7 +13,7 @@ import {
   SidebarMenuItem,
   SidebarTrigger,
 } from '@/components/ui/sidebar'
-import { useSemiPersistentState } from '@/hooks/use-persistent-state'
+import { usePersistentState } from '@/hooks/use-persistent-state'
 import { sendMessage } from '@/lib/actions'
 import { Bot, Loader2, MessageSquare, Plus, RefreshCcw, Send, User2 } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
@@ -36,8 +36,8 @@ type SavedChat = {
 }
 
 export default function Chatbot(): React.JSX.Element {
-  const [messages, setMessages] = useSemiPersistentState<Message[]>('messages', [])
-  const [savedChats, setSavedChats] = useSemiPersistentState<SavedChat[]>('savedChats', [])
+  const [messages, setMessages] = usePersistentState<Message[]>('messages', [])
+  const [savedChats, setSavedChats] = usePersistentState<SavedChat[]>('savedChats', [])
   const [input, setInput] = useState<string>('')
   const [loading, setLoading] = useState<boolean>(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
