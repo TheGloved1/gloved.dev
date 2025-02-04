@@ -18,10 +18,10 @@ const CopyButton: React.FC<CopyButtonProps> = ({ text, className }) => {
 
   return (
     <div>
-      <button onClick={handleCopy} className={cn('text-gray-600', className)} title="Copy message">
-        <ClipboardCopy />
+      <button onClick={handleCopy} disabled={copied} className={cn('mx-2 text-gray-600', className)} title="Copy message">
+        {!copied && <ClipboardCopy />}
+        {copied && <span className="p-2 text-sm text-green-500">Copied!</span>}
       </button>
-      {copied && <span className="p-2 text-sm text-green-500">Copied!</span>}
     </div>
   )
 }
