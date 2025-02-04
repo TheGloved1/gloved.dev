@@ -124,7 +124,7 @@ export default function Chatbot(): React.JSX.Element {
     if (messages.length > 0) {
       // Generate a title based on the current messages
       const { msg: titleMessage, error } = await sendMessage(
-        'Generate a small title for the following chat: ' + messages.map((m) => m.text).join(' \n'),
+        'Generate a small title for the following chat: ' + messages.map((m) => m.role + ': ' + m.text).join('\n\n'),
         messages,
       )
 
@@ -137,17 +137,17 @@ export default function Chatbot(): React.JSX.Element {
         const newChat: SavedChat = { id: chatId, name: chatTitle, messages } // Create a new SavedChat object
         setSavedChats((prev) => [...prev, newChat])
         setLoading(false)
+        setMessages([]) // Clear the messages
+        setInput('') // Clear the input
       }
     }
-    setMessages([]) // Clear the messages
-    setInput('') // Clear the input
   }
 
   const loadChatFromLocalStorage = (chatId: string) => {
     const chatData = localStorage.getItem('savedChats')
     if (chatData) {
       const parsedChat: SavedChat[] = JSON.parse(chatData)
-      const chat = parsedChat.find((chat) => chat?.id === chatId)
+      const chat = parsedChat.find((chat) => chat.id === chatId)
       if (chat) {
         setMessages(chat.messages)
         setSavedChats(savedChats.filter((chat) => chat.id !== chatId))
