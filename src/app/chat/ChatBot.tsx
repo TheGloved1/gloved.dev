@@ -175,9 +175,9 @@ export default function Chatbot(): React.JSX.Element {
                   <Plus className="h-4 w-4" />
                   <span className="sr-only">New chat</span>
                 </SidebarMenuButton>
-                {savedChats?.map((item) => (
-                  <SidebarMenuItem key={item?.name}>
-                    <SidebarMenuButton onClick={() => loadChatFromLocalStorage(item?.id)}>{item?.name}</SidebarMenuButton>
+                {savedChats.map((item) => (
+                  <SidebarMenuItem key={item.name}>
+                    <SidebarMenuButton onClick={() => loadChatFromLocalStorage(item.id)}>{item.name}</SidebarMenuButton>
                   </SidebarMenuItem>
                 ))}
               </SidebarMenu>
@@ -193,8 +193,9 @@ export default function Chatbot(): React.JSX.Element {
           {messages.map((m, index) => (
             <div key={index} className={`flex ${m.role === Role.USER ? 'justify-end' : 'justify-start'}`}>
               <div
-                className={`group max-w-[75%] select-none rounded-lg p-4 ${m.role === Role.USER ? 'bg-primary text-black' : 'bg-gray-800 text-white'
-                  }`}
+                className={`group max-w-[75%] select-none rounded-lg p-4 ${
+                  m.role === Role.USER ? 'bg-primary text-black' : 'bg-gray-800 text-white'
+                }`}
               >
                 <div className="mb-2 flex items-center gap-2">
                   {m.role === Role.USER ? <User2 className="h-4 w-4" /> : <Bot className="h-4 w-4" />}
