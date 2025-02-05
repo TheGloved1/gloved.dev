@@ -40,9 +40,9 @@ type SavedChat = {
 export default function Chatbot(): React.JSX.Element {
   const [messages, setMessages] = usePersistentState<Message[]>('messages', [])
   const [savedChats, setSavedChats] = usePersistentState<SavedChat[]>('savedChats', [])
-  const [input, setInput] = useState<string>('')
+  const [input, setInput] = usePersistentState<string>('chatInput', '')
+  const [open, setOpen] = usePersistentState<boolean>('sidebarOpen', false)
   const [loading, setLoading] = useState<boolean>(false)
-  const [open, setOpen] = useState<boolean>(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const scrollToBottom = () => {
