@@ -165,7 +165,11 @@ export default function Chatbot(): React.JSX.Element {
       ...props
     }: ClassAttributes<HTMLElement> & HTMLAttributes<HTMLElement> & ExtraProps): React.JSX.Element => {
       const language = className?.split('-').pop() || 'plaintext'
-      return <CodeBlock value={String(children)} language={language} {...props} />
+      return (
+        <CodeBlock language={language} {...props}>
+          {children}
+        </CodeBlock>
+      )
     },
   }
 

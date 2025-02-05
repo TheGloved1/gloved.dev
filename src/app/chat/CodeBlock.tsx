@@ -2,7 +2,7 @@ import React from 'react'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { vscDarkPlus as styles } from 'react-syntax-highlighter/dist/esm/styles/prism'
 
-const CodeBlock = ({ value = '', language = 'plaintext' }: { value: string; language?: string }) => {
+const CodeBlock = ({ children = '', language = 'plaintext' }: { children?: React.ReactNode; language?: string }) => {
   return (
     <SyntaxHighlighter
       customStyle={{
@@ -13,7 +13,7 @@ const CodeBlock = ({ value = '', language = 'plaintext' }: { value: string; lang
       language={language}
       style={styles}
     >
-      {value}
+      {String(children)}
     </SyntaxHighlighter>
   )
 }
