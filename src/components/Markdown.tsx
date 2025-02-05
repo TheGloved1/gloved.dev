@@ -17,9 +17,7 @@ const MarkdownComponents: Components = {
   },
 }
 
-type MarkdownProps = Options
-
-export default function MarkdownComponent({ children, ...props }: MarkdownProps) {
+export default function MarkdownComponent({ children, ...props }: Options) {
   return (
     <Markdown components={MarkdownComponents} {...props}>
       {children}
