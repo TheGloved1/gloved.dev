@@ -234,14 +234,14 @@ export default function Chatbot(): React.JSX.Element {
               <div className='flex items-center gap-2'>
                 <button
                   type='button'
-                  title='Restart Chat'
+                  title='Reset Chat'
                   className='btn card bg-gray-700 hover:bg-gray-600'
                   onClick={() => {
                     setMessages([])
                   }}
                   disabled={!messages.length || loading}
                 >
-                  <span className='sr-only'>Restart Chat</span>
+                  <span className='sr-only'>Reset Chat</span>
                   <RefreshCcw className='h-4 w-4' />
                 </button>
                 <div className='relative flex-1'>
