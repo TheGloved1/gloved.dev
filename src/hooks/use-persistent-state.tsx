@@ -1,5 +1,9 @@
 import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 
+function inBrowser() {
+  return typeof window !== 'undefined'
+}
+
 /**
  * Custom hook to manage a state variable that is synchronized with localStorage.
  *
@@ -10,7 +14,7 @@ import { Dispatch, SetStateAction, useEffect, useState } from 'react'
  */
 export function usePersistentState<T>(key: string, initialValue: T): [T, Dispatch<SetStateAction<T>>] {
   const [state, setState] = useState<T>(() => {
-    if (typeof window !== 'undefined') {
+    if (inBrowser()) {
       try {
         const storedState = localStorage.getItem(key)
         return storedState ? JSON.parse(storedState) : initialValue
@@ -23,7 +27,7 @@ export function usePersistentState<T>(key: string, initialValue: T): [T, Dispatc
   })
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (inBrowser()) {
       // Save the value to localStorage whenever it changes
       localStorage.setItem(key, JSON.stringify(state))
     }
