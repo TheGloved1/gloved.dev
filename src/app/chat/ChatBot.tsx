@@ -255,7 +255,10 @@ export default function Chatbot(): React.JSX.Element {
                         e.preventDefault()
                         setInput((prev) => prev + '\n')
                       } else if (e.key === 'Enter') {
-                        if (!input.trim()) return
+                        if (!input.trim()) {
+                          e.preventDefault()
+                          return
+                        }
                         handleSubmit(e)
                       }
                     }}
