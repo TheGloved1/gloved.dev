@@ -1,6 +1,6 @@
 'use client'
 import CopyButton from '@/components/CopyButton'
-import MarkdownComponent from '@/components/Markdown'
+import Markdown from '@/components/Markdown'
 import PageBack from '@/components/PageBack'
 import {
   Sidebar,
@@ -222,7 +222,7 @@ export default function Chatbot(): React.JSX.Element {
                   <article
                     className={`prose max-w-none ${m.role === Role.USER ? 'prose-invert' : 'prose-invert prose-p:text-gray-100'}`}
                   >
-                    <MarkdownComponent>{m.text}</MarkdownComponent>
+                    <Markdown>{m.text}</Markdown>
                   </article>
                 </div>
               </div>
