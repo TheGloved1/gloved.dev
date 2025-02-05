@@ -73,7 +73,7 @@ export default function Chatbot(): React.JSX.Element {
    * message to the server.
    * @param e The form submission event.
    */
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement> | React.KeyboardEvent<HTMLTextAreaElement>) => {
     e.preventDefault()
     await handleSendMessage()
   }
@@ -248,8 +248,17 @@ export default function Chatbot(): React.JSX.Element {
                     className="rounded-xl bg-gray-900 pl-10 text-gray-100"
                     value={input}
                     disabled={loading}
-                    placeholder="Enter message here..."
+                    placeholder="Enter message here... (Shift+Enter for new line)"
                     onChange={(e) => setInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && e.shiftKey) {
+                        e.preventDefault()
+                        setInput((prev) => prev + '\n')
+                      } else if (e.key === 'Enter') {
+                        if (!input.trim()) return
+                        handleSubmit(e)
+                      }
+                    }}
                   />
                 </div>
                 <button type="submit" disabled={loading || !input.trim()} className="btn bg-primary hover:bg-primary/90">
