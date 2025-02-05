@@ -2,10 +2,10 @@ import AdminComponent from '@/components/AdminComponent'
 import Counter from '@/components/Counter'
 import TopScrollVisibility from '@/components/TopScrollVisibility'
 import * as constants from '@/lib/constants'
-import React from 'react'
-import Link from 'next/link'
-import Image from 'next/image'
 import { Metadata } from 'next'
+import Image from 'next/image'
+import Link from 'next/link'
+import React from 'react'
 
 export const metadata: Metadata = {
   title: constants.NAME,

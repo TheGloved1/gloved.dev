@@ -1,8 +1,8 @@
-import TodoPage from './todo-page'
-import React from 'react'
+import PageBack from '@/components/PageBack'
 import { NAME, Todos } from '@/lib/constants'
 import { Metadata } from 'next'
-import PageBack from '@/components/PageBack'
+import React from 'react'
+import TodoPage from './todo-page'
 
 export const metadata: Metadata = {
   title: NAME + ' | ' + Todos.title,

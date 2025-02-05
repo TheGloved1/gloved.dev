@@ -1,8 +1,8 @@
-import React from 'react'
 import FileUploader from '@/components/FileUploader'
-import { Metadata } from 'next'
-import { NAME } from '@/lib/constants'
 import PageBack from '@/components/PageBack'
+import { NAME } from '@/lib/constants'
+import { Metadata } from 'next'
+import React from 'react'
 
 export const metadata: Metadata = {
   title: `${NAME} | File Uploader`,

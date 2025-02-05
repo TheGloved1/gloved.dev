@@ -1,7 +1,7 @@
 'use client'
-import React, { useState, useEffect, useRef, useCallback } from 'react'
-import { NumberButton, OperatorButton, EqualsButton } from './Button'
 import PageBack from '@/components/PageBack'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
+import { EqualsButton, NumberButton, OperatorButton } from './Button'
 
 export default function CalculatorPage(): React.JSX.Element {
   const [display, setDisplay] = useState<string>('')

@@ -1,6 +1,6 @@
 import { Hangman, NAME } from '@/lib/constants'
-import HangmanPage from './HangmanPage'
 import { Metadata } from 'next'
+import HangmanPage from './HangmanPage'
 
 export const metadata: Metadata = {
   title: NAME + ' | ' + Hangman.title,

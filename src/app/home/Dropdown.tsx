@@ -1,6 +1,6 @@
 'use client'
 import ScrollLink from '@/components/ScrollLink'
-import React, { useState } from 'react'
+import { useState } from 'react'
 
 const DropdownMenu = ({ sections }: { sections: string[] }) => {
   const [isOpen, setIsOpen] = useState(false)

@@ -1,9 +1,9 @@
 'use client'
-import Image from 'next/image'
-import { useQuery } from '@tanstack/react-query'
 import { fetchImage } from '@/lib/actions'
-import Loading from './loading'
+import { useQuery } from '@tanstack/react-query'
+import Image from 'next/image'
 import ErrorAlert from './ErrorAlert'
+import Loading from './loading'
 
 type ImageBlurProps = {
   src: string

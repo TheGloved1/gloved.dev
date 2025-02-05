@@ -1,7 +1,7 @@
-import ChatBot from './ChatBot'
 import * as constants from '@/lib/constants'
 import { Metadata } from 'next'
 import React from 'react'
+import ChatBot from './ChatBot'
 import './chatbot.css'
 
 export const metadata: Metadata = {

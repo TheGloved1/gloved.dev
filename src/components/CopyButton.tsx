@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
 import { ClipboardCopy } from 'lucide-react'
+import React, { useState } from 'react'
 
 interface CopyButtonProps {
   text: string

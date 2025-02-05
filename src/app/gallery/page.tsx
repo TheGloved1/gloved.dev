@@ -1,6 +1,6 @@
-import GalleryPage from './GalleryPage'
 import { NAME } from '@/lib/constants'
 import { Metadata } from 'next'
+import GalleryPage from './GalleryPage'
 
 export const metadata: Metadata = {
   title: `${NAME} | Gallery`,

@@ -1,12 +1,12 @@
 'use client'
+import PageBack from '@/components/PageBack'
 import { NAME } from '@/lib/constants'
+import { Metadata } from 'next'
 import React, { useCallback, useEffect, useState } from 'react'
 import { HangmanDrawing } from './HangmanDrawing'
 import { HangmanWord } from './HangmanWord'
 import { Keyboard } from './Keyboard'
 import words from './wordList.json'
-import { Metadata } from 'next'
-import PageBack from '@/components/PageBack'
 
 function getWord() {
   return words[Math.floor(Math.random() * words.length)]!

@@ -1,14 +1,14 @@
-import { ChevronLeft } from 'lucide-react'
 import FileUploader from '@/components/FileUploader'
 import GitUser from '@/components/GitUser'
 import ObserverSection from '@/components/ObserverSection'
 import ScrollLink from '@/components/ScrollLink'
-import React from 'react'
-import { WIPHeader } from './WIPHeader'
+import { NAME } from '@/lib/constants'
+import { ChevronLeft } from 'lucide-react'
 import { Metadata } from 'next'
 import Link from 'next/link'
-import { NAME } from '@/lib/constants'
+import React from 'react'
 import Dropdown from './Dropdown'
+import { WIPHeader } from './WIPHeader'
 
 export const metadata: Metadata = {
   title: `${NAME} | Home`,

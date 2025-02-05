@@ -1,5 +1,5 @@
 import PageBack from '@/components/PageBack'
-import { NAME, Black } from '@/lib/constants'
+import { Black, NAME } from '@/lib/constants'
 import { Metadata } from 'next'
 import React from 'react'
 

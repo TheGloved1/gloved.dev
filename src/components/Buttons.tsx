@@ -1,7 +1,7 @@
 'use client'
 import { cn } from '@/lib/utils'
-import { ComponentPropsWithoutRef } from 'react'
 import Link, { LinkProps } from 'next/link'
+import { ComponentPropsWithoutRef } from 'react'
 
 type CustomButtonProps = {
   children: React.ReactNode
