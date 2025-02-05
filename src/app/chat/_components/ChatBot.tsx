@@ -125,23 +125,35 @@ export default function Chatbot(): React.JSX.Element {
     setLoading(true)
     if (messages.length > 0) {
       // Generate a title based on the current messages
-      const { msg: titleMessage, error } = await sendMessage(
+      let title: string | null = null
+      const { msg: response, error } = await sendMessage(
         'Generate a small title for the following chat: ' + messages.map((m) => m.role + ': ' + m.text).join('\n\n'),
         messages,
       )
-
-      if (error || !titleMessage || !titleMessage.text.trim()) {
-        alert(error || 'An error occurred while generating a title for the chat.')
-        setLoading(false)
+      if (error || !response) {
+        alert(
+          (error || 'An error occurred while generating a title for the chat. Using default title.') +
+            '\nUsing default title.',
+        )
+        title = null
       } else {
-        const chatTitle = titleMessage.text.trim()
-        const chatId = Date.now().toString() // Generate a unique ID using timestamp
-        const newChat: SavedChat = { id: chatId, name: chatTitle, messages } // Create a new SavedChat object
-        setSavedChats((prev) => [...prev, newChat])
-        setLoading(false)
-        setMessages([]) // Clear the messages
-        setInput('') // Clear the input
+        title = response.text.trim()
       }
+
+      let chatTitle: string | null = null
+      const chatId = Date.now().toString() // Generate a unique ID using timestamp
+
+      if (title) {
+        chatTitle = title
+      } else {
+        chatTitle = `Chat-${chatId}`
+      }
+
+      const newChat: SavedChat = { id: chatId, name: chatTitle, messages } // Create a new SavedChat object
+      setSavedChats((prev) => [...prev, newChat])
+      setLoading(false)
+      setMessages([]) // Clear the messages
+      setInput('') // Clear the input
     }
   }
 
