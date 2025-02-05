@@ -3,6 +3,12 @@ import { API } from '@/lib/constants'
 import { type ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
+/**
+ * A wrapper around `tailwind-merge` and `clsx` to concisely merge classnames.
+ *
+ * @param inputs - The classnames to merge.
+ * @returns The merged classnames.
+ */
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }

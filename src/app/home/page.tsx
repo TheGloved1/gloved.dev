@@ -7,8 +7,8 @@ import { ChevronLeft } from 'lucide-react'
 import { Metadata } from 'next'
 import Link from 'next/link'
 import React from 'react'
-import Dropdown from './Dropdown'
-import { WIPHeader } from './WIPHeader'
+import Dropdown from './_components/Dropdown'
+import { WIPHeader } from './_components/WIPHeader'
 
 export const metadata: Metadata = {
   title: `${NAME} | Home`,
