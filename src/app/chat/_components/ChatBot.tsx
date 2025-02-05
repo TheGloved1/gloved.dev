@@ -210,7 +210,7 @@ export default function Chatbot(): React.JSX.Element {
             {messages.map((m, index) => (
               <div key={index} className={`flex ${m.role === Role.USER ? 'justify-end' : 'justify-start'}`}>
                 <div
-                  className={`group max-w-[75%] select-none rounded-lg p-4 ${
+                  className={`group max-w-[75%] rounded-lg p-4 ${
                     m.role === Role.USER ? 'bg-primary text-black' : 'bg-gray-800 text-white'
                   }`}
                 >
