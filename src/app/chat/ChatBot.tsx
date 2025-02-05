@@ -1,5 +1,6 @@
 'use client'
 import CopyButton from '@/components/CopyButton'
+import MarkdownComponent from '@/components/Markdown'
 import PageBack from '@/components/PageBack'
 import {
   Sidebar,
@@ -18,9 +19,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { usePersistentState } from '@/hooks/use-persistent-state'
 import { sendMessage } from '@/lib/actions'
 import { Bot, Loader2, MessageSquare, Plus, RefreshCcw, Send, User2 } from 'lucide-react'
-import React, { ClassAttributes, HTMLAttributes, useEffect, useRef, useState } from 'react'
-import Markdown, { Components, ExtraProps } from 'react-markdown'
-import CodeBlock from './CodeBlock'
+import React, { useEffect, useRef, useState } from 'react'
 
 enum Role {
   USER = 'user',
@@ -158,21 +157,6 @@ export default function Chatbot(): React.JSX.Element {
     }
   }
 
-  const MarkdownComponents: Components = {
-    code: ({
-      children,
-      className,
-      ...props
-    }: ClassAttributes<HTMLElement> & HTMLAttributes<HTMLElement> & ExtraProps): React.JSX.Element => {
-      const language = className?.split('-').pop() || 'plaintext'
-      return (
-        <CodeBlock language={language} {...props}>
-          {children}
-        </CodeBlock>
-      )
-    },
-  }
-
   return (
     <SidebarProvider defaultOpen={false} open={open} onOpenChange={setOpen}>
       <div className="mx-auto flex min-h-dvh w-dvw">
@@ -236,9 +220,7 @@ export default function Chatbot(): React.JSX.Element {
                   <article
                     className={`prose max-w-none ${m.role === Role.USER ? 'prose-invert' : 'prose-invert prose-p:text-gray-100'}`}
                   >
-                    <Markdown skipHtml components={MarkdownComponents}>
-                      {m.text}
-                    </Markdown>
+                    <MarkdownComponent>{m.text}</MarkdownComponent>
                   </article>
                 </div>
               </div>
