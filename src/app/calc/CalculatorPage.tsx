@@ -51,13 +51,13 @@ export default function CalculatorPage(): React.JSX.Element {
   return (
     <>
       <PageBack />
-      <div className="container flex h-dvh w-dvw flex-col items-center justify-center gap-12 px-4 py-16">
+      <div className='container flex h-dvh w-dvw flex-col items-center justify-center gap-12 px-4 py-16'>
         <div
-          id="calculator"
-          className="font-primary w-full max-w-xs rounded-2xl bg-gray-900 sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl"
+          id='calculator'
+          className='font-primary w-full max-w-xs rounded-2xl bg-gray-900 sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl'
         >
           <textarea
-            id="display"
+            id='display'
             ref={textareaRef}
             className={`max-h-44 w-full resize-none overflow-hidden rounded-t-2xl border-none p-2 text-left text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl ${
               isError ? 'text-red-500' : 'text-white'
@@ -65,8 +65,8 @@ export default function CalculatorPage(): React.JSX.Element {
             readOnly
             value={isError ? 'Error' : display}
           />
-          <div className="flex flex-col gap-2 p-2">
-            <div className="grid grid-cols-4 gap-2 p-2">
+          <div className='flex flex-col gap-2 p-2'>
+            <div className='grid grid-cols-4 gap-2 p-2'>
               <OperatorButton onClick={() => appendToDisplay('(')} disabled={isCalculating}>
                 {'('}
               </OperatorButton>
@@ -81,8 +81,8 @@ export default function CalculatorPage(): React.JSX.Element {
               </OperatorButton>
             </div>
           </div>
-          <div className="flex flex-col gap-2 p-2">
-            <div id="regular-keys" className="grid grid-cols-4 gap-2 p-2">
+          <div className='flex flex-col gap-2 p-2'>
+            <div id='regular-keys' className='grid grid-cols-4 gap-2 p-2'>
               <NumberButton onClick={() => appendToDisplay('7')} disabled={isCalculating}>
                 {'7'}
               </NumberButton>

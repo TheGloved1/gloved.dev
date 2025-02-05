@@ -70,16 +70,16 @@ export default function Page(): React.JSX.Element {
 
   return (
     <>
-      <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-sky-950 to-[#1e210c] text-white">
+      <main className='flex min-h-screen items-center justify-center bg-gradient-to-br from-sky-950 to-[#1e210c] text-white'>
         <PageBack />
-        <div className="flex max-w-4xl flex-col items-center gap-8">
-          <div className="items-center text-[2rem]">
+        <div className='flex max-w-4xl flex-col items-center gap-8'>
+          <div className='items-center text-[2rem]'>
             {isWinner && 'Winner! - Refresh to try again'}
             {isLoser && 'Nice Try - Refresh to try again'}
           </div>
           <HangmanDrawing numberOfGuesses={incorrectLetters.length} />
           <HangmanWord reveal={isLoser} guessedLetters={guessedLetters} wordToGuess={wordToGuess} />
-          <div className="min-w-4xl self-stretch text-xs">
+          <div className='min-w-4xl self-stretch text-xs'>
             <Keyboard
               disabled={isWinner || isLoser}
               activeLetters={guessedLetters.filter((letter) => wordToGuess.includes(letter))}

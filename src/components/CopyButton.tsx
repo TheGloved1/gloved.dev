@@ -24,7 +24,7 @@ const CopyButton: React.FC<CopyButtonProps> = ({ text, className, title = 'Copy 
             <ClipboardCopy />
           </div>
         )}
-        {copied && <span className="text-sm text-green-500">Copied!</span>}
+        {copied && <span className='text-sm text-green-500'>Copied!</span>}
       </button>
     </div>
   )

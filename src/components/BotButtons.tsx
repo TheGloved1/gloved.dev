@@ -80,26 +80,26 @@ export default function BotButtons(): React.JSX.Element {
   return (
     <div>
       <button
-        className="btn mx-4"
+        className='btn mx-4'
         onClick={handleStartBot}
         disabled={startBotMutation.isPending || botStatusQuery.isPending || botStatusQuery.data?.isRunning}
       >
-        {startBotMutation.isPending
-          ? 'Starting Bot...'
-          : botStatusQuery.data?.isRunning
-            ? 'Discord Bot is Online...'
-            : startButtonText}
+        {startBotMutation.isPending ?
+          'Starting Bot...'
+        : botStatusQuery.data?.isRunning ?
+          'Discord Bot is Online...'
+        : startButtonText}
       </button>
       <button
-        className="btn mx-4"
+        className='btn mx-4'
         onClick={handleStopBot}
         disabled={stopBotMutation.isPending || botStatusQuery.isPending || !botStatusQuery.data?.isRunning}
       >
-        {stopBotMutation.isPending
-          ? 'Stopping Bot...'
-          : !botStatusQuery.data?.isRunning
-            ? 'Discord Bot is Offline...'
-            : stopButtonText}
+        {stopBotMutation.isPending ?
+          'Stopping Bot...'
+        : !botStatusQuery.data?.isRunning ?
+          'Discord Bot is Offline...'
+        : stopButtonText}
       </button>
       {error && <ErrorAlert>{error}</ErrorAlert>}
     </div>

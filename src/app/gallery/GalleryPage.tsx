@@ -127,53 +127,52 @@ export default function Gallery(): React.JSX.Element {
 
   return (
     <>
-      <main className="flex min-h-screen flex-col items-center bg-gradient-to-b from-sky-950 to-[#1e210c] text-white">
+      <main className='flex min-h-screen flex-col items-center bg-gradient-to-b from-sky-950 to-[#1e210c] text-white'>
         <PageBack />
         <button
-          className="btn btn-circle btn-sm fixed right-2 top-2 hover:animate-spin"
+          className='btn btn-circle btn-sm fixed right-2 top-2 hover:animate-spin'
           onClick={() => queryClient.invalidateQueries({ queryKey: ['gallery'] })}
-          title="Refresh Files"
+          title='Refresh Files'
         >
           ↻
         </button>
-        <div className="flex w-screen flex-col items-center justify-center p-4 pt-16">
-          <div className="flex scale-50 flex-col items-center justify-center text-center sm:scale-75 md:scale-100">
-            <h1 className="text-2xl">Gallery</h1>
-            <h2 className="text-md pb-4">A tribute to my best friend</h2>
-            <p className="pb-12 text-center text-xs">{'(Currently only images are supported, will add videos later)'}</p>
+        <div className='flex w-screen flex-col items-center justify-center p-4 pt-16'>
+          <div className='flex scale-50 flex-col items-center justify-center text-center sm:scale-75 md:scale-100'>
+            <h1 className='text-2xl'>Gallery</h1>
+            <h2 className='text-md pb-4'>A tribute to my best friend</h2>
+            <p className='pb-12 text-center text-xs'>{'(Currently only images are supported, will add videos later)'}</p>
           </div>
-          {galleryQuery.isFetching ? (
+          {galleryQuery.isFetching ?
             <Loading />
-          ) : galleryQuery.data.length === 0 ? (
-            <div className="flex w-screen flex-wrap justify-center">
+          : galleryQuery.data.length === 0 ?
+            <div className='flex w-screen flex-wrap justify-center'>
               <p>No files found.</p>
             </div>
-          ) : (
-            <div className="flex w-screen flex-wrap justify-center">
+          : <div className='flex w-screen flex-wrap justify-center'>
               {galleryQuery.data.map((file) => (
                 <div
                   key={file.name}
-                  className="group relative flex h-24 w-24 flex-col items-center justify-center border-2 border-dashed border-slate-500 sm:h-32 sm:w-32 md:h-48 md:w-48"
+                  className='group relative flex h-24 w-24 flex-col items-center justify-center border-2 border-dashed border-slate-500 sm:h-32 sm:w-32 md:h-48 md:w-48'
                 >
                   <Link
                     href={apiRoute(`/files/download/${file.name}?gallery=true`)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="relative flex h-24 w-24 flex-col items-center justify-center border-2 border-dashed border-slate-500 sm:h-32 sm:w-32 md:h-48 md:w-48"
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    className='relative flex h-24 w-24 flex-col items-center justify-center border-2 border-dashed border-slate-500 sm:h-32 sm:w-32 md:h-48 md:w-48'
                   >
                     <Image
                       src={`${apiRoute(`/files/download/${file.name}?gallery=true`)}`}
                       alt={file.name}
-                      className="bottom-0 left-0 right-0 top-0 max-h-full max-w-full cursor-pointer rounded-xl object-center p-2"
+                      className='bottom-0 left-0 right-0 top-0 max-h-full max-w-full cursor-pointer rounded-xl object-center p-2'
                       title={'Download ' + file.name}
                       width={125}
                       height={125}
-                      placeholder="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFc90AAAADUlEQVQYV2NkYGAAYRgDf9hKJgAAAABJRU5ErkJggg=="
+                      placeholder='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFc90AAAADUlEQVQYV2NkYGAAYRgDf9hKJgAAAABJRU5ErkJggg=='
                     />
                   </Link>
                   {windowWidth >= 768 && (
                     <RedButton
-                      className="absolute right-2 top-2 opacity-0 group-hover:opacity-100"
+                      className='absolute right-2 top-2 opacity-0 group-hover:opacity-100'
                       onClick={() => deleteFile(file.name)}
                       title={`Delete file ${galleryQuery.data.findIndex((f) => f.name === file.name) + 1} of ${
                         galleryQuery.data.length
@@ -185,22 +184,22 @@ export default function Gallery(): React.JSX.Element {
                 </div>
               ))}
             </div>
-          )}
+          }
         </div>
         <input
-          id="uploadBtn"
+          id='uploadBtn'
           ref={inputButton}
-          className="glass file-input file-input-primary fixed bottom-2 top-auto max-h-80 max-w-80 scale-50 rounded-xl bg-black text-xs hover:animate-pulse sm:scale-75 md:scale-100"
-          type="file"
-          accept="image/*"
+          className='glass file-input file-input-primary fixed bottom-2 top-auto max-h-80 max-w-80 scale-50 rounded-xl bg-black text-xs hover:animate-pulse sm:scale-75 md:scale-100'
+          type='file'
+          accept='image/*'
           onChange={uploadFile}
           multiple
         />
         {uploadProgress > 0 && uploadProgress < 100 && (
-          <div className="mt-2 w-full">
-            <progress className="progress progress-primary w-full" value={uploadProgress} max="100" />
+          <div className='mt-2 w-full'>
+            <progress className='progress progress-primary w-full' value={uploadProgress} max='100' />
             <Button onClick={() => uploadMutation.reset()}>Cancel</Button>
-            <p className="text-center">{`Uploading: ${uploadProgress}%`}</p>
+            <p className='text-center'>{`Uploading: ${uploadProgress}%`}</p>
           </div>
         )}
       </main>

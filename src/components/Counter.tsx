@@ -29,26 +29,26 @@ export default function Counter(): React.JSX.Element {
   }, [])
 
   return (
-    <div className="grid items-center justify-center text-center">
+    <div className='grid items-center justify-center text-center'>
       <h1>Test React State Buttons</h1>
       <h2 className={isAnimating ? 'animate-ping' : ''}>Count: {count}</h2>
-      <div className="flex scale-75 md:scale-100">
+      <div className='flex scale-75 md:scale-100'>
         <button
-          className="btn btn-primary m-4 grid h-12 w-32 grid-cols-2 p-2 active:btn-active hover:bg-pink-500 active:bg-pink-700"
+          className='btn btn-primary m-4 grid h-12 w-32 grid-cols-2 p-2 active:btn-active hover:bg-pink-500 active:bg-pink-700'
           onClick={() => handleButtonClick(count + 1)}
         >
           Increase Count
-          <span className="text-xs">+</span>
+          <span className='text-xs'>+</span>
         </button>
         <button
-          className="btn btn-primary m-4 grid h-12 w-32 grid-cols-2 p-2 active:btn-active hover:bg-pink-500 active:bg-pink-700"
+          className='btn btn-primary m-4 grid h-12 w-32 grid-cols-2 p-2 active:btn-active hover:bg-pink-500 active:bg-pink-700'
           onClick={() => handleButtonClick(count - 1)}
         >
           Decrease Count
-          <span className="text-xs">-</span>
+          <span className='text-xs'>-</span>
         </button>
         <button
-          className="btn btn-primary m-4 h-12 w-32 p-2 active:btn-active hover:bg-pink-500 active:bg-pink-700"
+          className='btn btn-primary m-4 h-12 w-32 p-2 active:btn-active hover:bg-pink-500 active:bg-pink-700'
           onClick={() => handleButtonClick(0)}
         >
           Reset Count

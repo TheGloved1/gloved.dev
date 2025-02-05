@@ -9,7 +9,7 @@ const HEAD = (
       top: '50px',
       right: '-20px',
     }}
-    className="absolute right-[-20px] top-[50px] h-[50px] w-[50px] rounded-[100%] border-[10px] border-solid border-black"
+    className='absolute right-[-20px] top-[50px] h-[50px] w-[50px] rounded-[100%] border-[10px] border-solid border-black'
   />
 )
 

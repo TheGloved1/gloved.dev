@@ -15,8 +15,11 @@
     "printWidth": 125,
     "semi": false,
     "singleQuote": true,
+    "jsxSingleQuote": true,
     "tabWidth": 2,
     "bracketSpacing": true,
+    "experimentalTernaries": true,
+    "htmlWhitespaceSensitivity": "strict",
     "plugins": [
       "prettier-plugin-tailwindcss",
       "prettier-plugin-organize-imports"

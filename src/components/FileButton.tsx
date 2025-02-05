@@ -66,23 +66,23 @@ export default function FileButton({ file, temp, size }: FileButtonProps): React
 
   return (
     <>
-      <div className="mx-2 w-64 truncate rounded-xl">
+      <div className='mx-2 w-64 truncate rounded-xl'>
         <button
           onClick={() => setShowDialog(true)}
-          className="btn mx-2 rounded-xl p-3 hover:animate-pulse hover:bg-gray-700"
+          className='btn mx-2 rounded-xl p-3 hover:animate-pulse hover:bg-gray-700'
         >
           {file}
         </button>
       </div>
 
       <Dialog open={showDialog} close={() => setShowDialog(false)}>
-        <h2 className="justify-center self-center p-4 text-center text-base">
+        <h2 className='justify-center self-center p-4 text-center text-base'>
           {file} ({size})
         </h2>
         {(isVideo(file) && (
-          <div className="mb-4 w-full max-w-md items-center justify-center self-center">
-            {file.toLowerCase().endsWith('.mkv') ? (
-              <h2 className="rounded-xl bg-gray-700 p-4 text-center text-base">
+          <div className='mb-4 w-full max-w-md items-center justify-center self-center'>
+            {file.toLowerCase().endsWith('.mkv') ?
+              <h2 className='rounded-xl bg-gray-700 p-4 text-center text-base'>
                 MKV format cannot be previewed here.
                 <LinkButton
                   href={previewUrl}
@@ -94,38 +94,37 @@ export default function FileButton({ file, temp, size }: FileButtonProps): React
                   Preview
                 </LinkButton>
               </h2>
-            ) : (
-              <VideoPreview
-                className="max-h-[300px] w-full max-w-md rounded-xl object-contain"
+            : <VideoPreview
+                className='max-h-[300px] w-full max-w-md rounded-xl object-contain'
                 src={previewUrl}
                 type={getMimeType(file)}
               />
-            )}
+            }
           </div>
         )) ||
           (isImage(file) && (
-            <div className="mb-4 w-full max-w-md items-center justify-center">
+            <div className='mb-4 w-full max-w-md items-center justify-center'>
               <Link
-                className="flex w-full max-w-md content-center items-center justify-center self-center rounded-xl object-center"
+                className='flex w-full max-w-md content-center items-center justify-center self-center rounded-xl object-center'
                 href={previewUrl}
                 onClick={() => {
                   setShowDialog(false)
                 }}
-                target="_blank"
-                rel="noopener noreferrer"
+                target='_blank'
+                rel='noopener noreferrer'
               >
                 <ImageBlur
                   src={previewUrl}
                   alt={file}
                   width={250}
                   height={250}
-                  className="max-h-[300px] max-w-md rounded-xl"
+                  className='max-h-[300px] max-w-md rounded-xl'
                 />
               </Link>
             </div>
           )) ||
           null}
-        <div className="grid grid-cols-2 items-center justify-center">
+        <div className='grid grid-cols-2 items-center justify-center'>
           <Button onClick={() => copyToClipboard()}>Copy</Button>
           <LinkButton href={fileUrl} onClick={() => setShowDialog(false)}>
             Download

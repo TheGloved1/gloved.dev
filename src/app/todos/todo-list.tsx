@@ -7,7 +7,7 @@ export default function TodoList(props: {
   deleteTodo: (id: string) => void
 }): React.JSX.Element {
   return (
-    <ul className="list">
+    <ul className='list'>
       {props.todos.length === 0 && 'No Todos'}
       {props.todos.map((todo) => {
         return <TodoItem {...todo} key={todo.id} toggleTodo={props.toggleTodo} deleteTodo={props.deleteTodo} />

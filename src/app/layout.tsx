@@ -20,7 +20,7 @@ const jetbrains = JetBrains_Mono({
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
+    <html lang='en'>
       <body className={`snap-x snap-mandatory antialiased ${jetbrains.className}`}>
         <ReactQueryClientProvider>{children}</ReactQueryClientProvider>
       </body>

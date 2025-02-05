@@ -17,18 +17,18 @@ export function WIPHeader(): React.JSX.Element | null {
     return () => clearTimeout(timerFadeOut)
   }, [])
 
-  return isVisible ? (
-    <div
-      className={`fixed top-[10vh] flex items-center justify-center p-1 text-center font-bold md:text-[0.75rem] lg:text-5xl ${
-        isFading ? 'opacity-0 transition-opacity duration-1000' : 'opacity-100'
-      }`}
-    >
-      <div>{'gloved'}</div>
-      <div className="text-[hsl(280,100%,40%)]">{'.'}</div>
-      <div>{'dev'}</div>
-      <div className="text-[hsl(280,100%,40%)]">{'/'}</div>
-      <div className="pr-2">{'home '}</div>
-      <div className="rounded-xl bg-gray-700 p-2 text-slate-900">{'Work in progress...'}</div>
-    </div>
-  ) : null
+  return isVisible ?
+      <div
+        className={`fixed top-[10vh] flex items-center justify-center p-1 text-center font-bold md:text-[0.75rem] lg:text-5xl ${
+          isFading ? 'opacity-0 transition-opacity duration-1000' : 'opacity-100'
+        }`}
+      >
+        <div>{'gloved'}</div>
+        <div className='text-[hsl(280,100%,40%)]'>{'.'}</div>
+        <div>{'dev'}</div>
+        <div className='text-[hsl(280,100%,40%)]'>{'/'}</div>
+        <div className='pr-2'>{'home '}</div>
+        <div className='rounded-xl bg-gray-700 p-2 text-slate-900'>{'Work in progress...'}</div>
+      </div>
+    : null
 }

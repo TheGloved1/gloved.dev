@@ -6,7 +6,7 @@ type HangmanWordProps = {
 
 export function HangmanWord({ guessedLetters, wordToGuess, reveal = false }: HangmanWordProps) {
   return (
-    <div className="flex gap-[0.25em] font-mono text-[6rem] font-bold uppercase">
+    <div className='flex gap-[0.25em] font-mono text-[6rem] font-bold uppercase'>
       {wordToGuess.split('').map((letter, index) => (
         <span style={{ borderBottom: '.5rem solid black' }} key={index}>
           <span

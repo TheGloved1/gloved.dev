@@ -33,7 +33,7 @@ export default function ImageBlur({ src, title, alt, className, width, height }:
       alt={alt || 'image'}
       width={width || 125}
       height={height || 125}
-      placeholder="blur"
+      placeholder='blur'
       blurDataURL={base64}
     />
   )

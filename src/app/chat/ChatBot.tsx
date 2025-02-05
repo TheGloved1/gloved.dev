@@ -159,24 +159,24 @@ export default function Chatbot(): React.JSX.Element {
 
   return (
     <SidebarProvider defaultOpen={false} open={open} onOpenChange={setOpen}>
-      <div className="mx-auto flex min-h-dvh w-dvw">
+      <div className='mx-auto flex min-h-dvh w-dvw'>
         <Sidebar>
-          <SidebarContent className="bg-gradient-to-bl from-gray-200 to-gray-600">
+          <SidebarContent className='bg-gradient-to-bl from-gray-200 to-gray-600'>
             <SidebarHeader>
-              <PageBack stayTop noFixed btnClassName="btn bg-gray-700 hover:bg-gray-600" />
+              <PageBack stayTop noFixed btnClassName='btn bg-gray-700 hover:bg-gray-600' />
             </SidebarHeader>
             <SidebarGroup>
-              <SidebarGroupLabel className="font-bold text-black">Chats</SidebarGroupLabel>
+              <SidebarGroupLabel className='font-bold text-black'>Chats</SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
                   <SidebarMenuButton
-                    type="button"
-                    title="New chat"
-                    className="btn card rounded-xl bg-gray-700 hover:bg-gray-600"
+                    type='button'
+                    title='New chat'
+                    className='btn card rounded-xl bg-gray-700 hover:bg-gray-600'
                     onClick={handleNewChat}
                   >
-                    <Plus className="h-4 w-4" />
-                    <span className="sr-only">New chat</span>
+                    <Plus className='h-4 w-4' />
+                    <span className='sr-only'>New chat</span>
                   </SidebarMenuButton>
                   {savedChats.map((item) => (
                     <SidebarMenuItem key={item.name}>
@@ -188,13 +188,13 @@ export default function Chatbot(): React.JSX.Element {
             </SidebarGroup>
           </SidebarContent>
         </Sidebar>
-        <div className="p-2">
+        <div className='p-2'>
           <SidebarTrigger
             className={`fixed left-2 top-2 z-50 ${open ? 'text-gray-800 hover:bg-gray-800 hover:text-gray-200' : 'text-gray-200 hover:bg-gray-200 hover:text-gray-800'}`}
           />
         </div>
-        <div className="mx-auto max-w-7xl flex-1 p-4">
-          <div className="space-y-4 pb-32">
+        <div className='mx-auto max-w-7xl flex-1 p-4'>
+          <div className='space-y-4 pb-32'>
             {messages.map((m, index) => (
               <div key={index} className={`flex ${m.role === Role.USER ? 'justify-end' : 'justify-start'}`}>
                 <div
@@ -202,19 +202,21 @@ export default function Chatbot(): React.JSX.Element {
                     m.role === Role.USER ? 'bg-primary text-black' : 'bg-gray-800 text-white'
                   }`}
                 >
-                  <div className="mb-2 flex items-center gap-2">
-                    {m.role === Role.USER ? <User2 className="h-4 w-4" /> : <Bot className="h-4 w-4" />}
-                    <span className="text-sm font-medium">{m.role === Role.USER ? 'You' : 'AI'}</span>
+                  <div className='mb-2 flex items-center gap-2'>
+                    {m.role === Role.USER ?
+                      <User2 className='h-4 w-4' />
+                    : <Bot className='h-4 w-4' />}
+                    <span className='text-sm font-medium'>{m.role === Role.USER ? 'You' : 'AI'}</span>
                     <CopyButton
-                      className="block size-4 text-sm text-gray-600 hover:block group-hover:block md:hidden"
+                      className='block size-4 text-sm text-gray-600 hover:block group-hover:block md:hidden'
                       text={m.text}
-                      title="Copy raw message"
+                      title='Copy raw message'
                     />
                   </div>
                   {loading && (
-                    <div className="flex items-center gap-2 text-white">
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      <span className="text-sm">Thinking...</span>
+                    <div className='flex items-center gap-2 text-white'>
+                      <Loader2 className='h-4 w-4 animate-spin' />
+                      <span className='text-sm'>Thinking...</span>
                     </div>
                   )}
                   <article
@@ -227,28 +229,28 @@ export default function Chatbot(): React.JSX.Element {
             ))}
             <div ref={messagesEndRef} />
           </div>
-          <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-gray-700 bg-gray-800 p-4">
-            <form onSubmit={handleSubmit} className="container mx-auto max-w-4xl">
-              <div className="flex items-center gap-2">
+          <div className='fixed bottom-0 left-0 right-0 z-50 border-t border-gray-700 bg-gray-800 p-4'>
+            <form onSubmit={handleSubmit} className='container mx-auto max-w-4xl'>
+              <div className='flex items-center gap-2'>
                 <button
-                  type="button"
-                  title="Restart Chat"
-                  className="btn card bg-gray-700 hover:bg-gray-600"
+                  type='button'
+                  title='Restart Chat'
+                  className='btn card bg-gray-700 hover:bg-gray-600'
                   onClick={() => {
                     setMessages([])
                   }}
                   disabled={!messages.length || loading}
                 >
-                  <span className="sr-only">Restart Chat</span>
-                  <RefreshCcw className="h-4 w-4" />
+                  <span className='sr-only'>Restart Chat</span>
+                  <RefreshCcw className='h-4 w-4' />
                 </button>
-                <div className="relative flex-1">
-                  <MessageSquare className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
+                <div className='relative flex-1'>
+                  <MessageSquare className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-400' />
                   <Textarea
-                    className="rounded-xl bg-gray-900 pl-10 text-gray-100"
+                    className='rounded-xl bg-gray-900 pl-10 text-gray-100'
                     value={input}
                     disabled={loading}
-                    placeholder="Enter message here... (Shift+Enter for new line)"
+                    placeholder='Enter message here... (Shift+Enter for new line)'
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' && e.shiftKey) {
@@ -264,9 +266,11 @@ export default function Chatbot(): React.JSX.Element {
                     }}
                   />
                 </div>
-                <button type="submit" disabled={loading || !input.trim()} className="btn bg-primary hover:bg-primary/90">
-                  {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-                  <span className="sr-only">Send</span>
+                <button type='submit' disabled={loading || !input.trim()} className='btn bg-primary hover:bg-primary/90'>
+                  {loading ?
+                    <Loader2 className='h-4 w-4 animate-spin' />
+                  : <Send className='h-4 w-4' />}
+                  <span className='sr-only'>Send</span>
                 </button>
               </div>
             </form>

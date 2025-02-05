@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function Page(): React.JSX.Element {
   return (
     <>
-      <div className="h-dvh w-dvw bg-[#333]">
+      <div className='h-dvh w-dvw bg-[#333]'>
         <PageBack />
         <TodoPage />
       </div>

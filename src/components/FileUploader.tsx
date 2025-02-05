@@ -181,48 +181,48 @@ export default function FileUploader(): React.JSX.Element {
 
   return (
     <>
-      <div className="flex flex-col items-center justify-center self-center rounded-xl border-4 border-white bg-gray-700/50 p-4 text-[10px] md:text-[1rem]">
-        <h1 className="font-bold">{'Simple File Uploader'}</h1>
-        <p className="text-[0.5rem] md:text-sm">{"(Don't download random files off the internet)"}</p>
+      <div className='flex flex-col items-center justify-center self-center rounded-xl border-4 border-white bg-gray-700/50 p-4 text-[10px] md:text-[1rem]'>
+        <h1 className='font-bold'>{'Simple File Uploader'}</h1>
+        <p className='text-[0.5rem] md:text-sm'>{"(Don't download random files off the internet)"}</p>
         <br />
 
-        <label htmlFor="uploadBtn" className="label mt-2 pt-2">
+        <label htmlFor='uploadBtn' className='label mt-2 pt-2'>
           {'Upload File'}
         </label>
-        <div className="form-control">
-          <label className="label m-2 cursor-pointer rounded-xl bg-gray-600 p-2 text-black hover:bg-gray-700">
-            <span className="label-text text-balance">{'Temporary file (24h)'}</span>
-            <span className="w-2"></span>
-            <input type="checkbox" checked={isTemp} onChange={(e) => setIsTemp(e.target.checked)} className="checkbox" />
+        <div className='form-control'>
+          <label className='label m-2 cursor-pointer rounded-xl bg-gray-600 p-2 text-black hover:bg-gray-700'>
+            <span className='label-text text-balance'>{'Temporary file (24h)'}</span>
+            <span className='w-2'></span>
+            <input type='checkbox' checked={isTemp} onChange={(e) => setIsTemp(e.target.checked)} className='checkbox' />
           </label>
         </div>
         <input
-          id="uploadBtn"
+          id='uploadBtn'
           ref={inputButton}
-          className="glass file-input file-input-primary max-w-80 rounded-xl bg-black hover:animate-pulse"
-          type="file"
+          className='glass file-input file-input-primary max-w-80 rounded-xl bg-black hover:animate-pulse'
+          type='file'
           onChange={uploadFile}
         />
 
         {uploadProgress > 0 && uploadProgress < 100 && (
-          <div className="mt-2 w-full">
-            <progress className="progress progress-primary w-full" value={uploadProgress} max="100" />
-            <p className="text-center">{`Uploading: ${uploadProgress}%`}</p>
+          <div className='mt-2 w-full'>
+            <progress className='progress progress-primary w-full' value={uploadProgress} max='100' />
+            <p className='text-center'>{`Uploading: ${uploadProgress}%`}</p>
             <Button onClick={handleCancelUpload}>Cancel</Button>
           </div>
         )}
 
-        <h2 className="place-items-center content-center justify-center pb-4 pt-4 text-center">
+        <h2 className='place-items-center content-center justify-center pb-4 pt-4 text-center'>
           {'Download Files '}
           <button
-            className="btn btn-circle btn-sm hover:animate-spin"
+            className='btn btn-circle btn-sm hover:animate-spin'
             onClick={() => queryClient.invalidateQueries({ queryKey: ['files'] })}
-            title="Refresh Files"
+            title='Refresh Files'
           >
             ↻
           </button>
         </h2>
-        <h3 className="rounded-2xl bg-gray-500 bg-opacity-50 px-2 py-1 text-sm underline">
+        <h3 className='rounded-2xl bg-gray-500 bg-opacity-50 px-2 py-1 text-sm underline'>
           {'(Click file to Copy or Download)'}
         </h3>
 
@@ -230,14 +230,13 @@ export default function FileUploader(): React.JSX.Element {
         {!filesQuery.isLoading && filesQuery.data.length > 0 && (
           <>
             {filesQuery.data.some((file) => file.isTemp) && <h4>Permanent Files</h4>}
-            <ul className="flex max-h-48 max-w-96 flex-col flex-wrap overflow-x-auto rounded-xl border-2 border-white p-[.2rem] md:max-h-60 lg:max-h-72">
-              {filesQuery.isError ? (
-                <div className="alert alert-error">An error occurred while fetching files.</div>
-              ) : (
-                filesQuery.data
+            <ul className='flex max-h-48 max-w-96 flex-col flex-wrap overflow-x-auto rounded-xl border-2 border-white p-[.2rem] md:max-h-60 lg:max-h-72'>
+              {filesQuery.isError ?
+                <div className='alert alert-error'>An error occurred while fetching files.</div>
+              : filesQuery.data
                   .filter((file) => !file.isTemp)
                   .map((file) => (
-                    <li className="flex w-64 flex-row p-1 text-[.2rem]" key={file.name}>
+                    <li className='flex w-64 flex-row p-1 text-[.2rem]' key={file.name}>
                       <FileButton file={file.name} size={file.size} />
                       <RedButton
                         disabled={false}
@@ -253,35 +252,34 @@ export default function FileUploader(): React.JSX.Element {
                       </RedButton>
                     </li>
                   ))
-              )}
+              }
             </ul>
 
             {filesQuery.data.some((file) => file.isTemp) && (
               <>
                 <h4>Temporary Files</h4>
-                <ul className="flex max-h-48 max-w-96 flex-col flex-wrap overflow-x-auto rounded-xl border-2 border-white p-[.2rem] md:max-h-60 lg:max-h-72">
-                  {filesQuery.isError ? (
-                    <div className="alert alert-error">An error occurred while fetching files.</div>
-                  ) : (
-                    filesQuery.data
+                <ul className='flex max-h-48 max-w-96 flex-col flex-wrap overflow-x-auto rounded-xl border-2 border-white p-[.2rem] md:max-h-60 lg:max-h-72'>
+                  {filesQuery.isError ?
+                    <div className='alert alert-error'>An error occurred while fetching files.</div>
+                  : filesQuery.data
                       .filter((file) => file.isTemp)
                       .map((file) => (
-                        <li className="flex w-64 flex-row p-1 text-[.2rem]" key={file.name}>
+                        <li className='flex w-64 flex-row p-1 text-[.2rem]' key={file.name}>
                           <FileButton file={file.name} size={file.size} temp />
                           <button
                             disabled={false}
-                            className="btn btn-square btn-warning rounded-xl bg-red-500 hover:bg-red-400"
+                            className='btn btn-square btn-warning rounded-xl bg-red-500 hover:bg-red-400'
                             onClick={() => {
                               setFileToDelete({ name: file.name, isTemp: file.isTemp })
                               setIsDeleteDialogOpen(true)
                             }}
-                            title="Delete File"
+                            title='Delete File'
                           >
                             {'X'}
                           </button>
                         </li>
                       ))
-                  )}
+                  }
                 </ul>
               </>
             )}
@@ -298,26 +296,26 @@ export default function FileUploader(): React.JSX.Element {
           setIsPermanentDelete(false)
         }}
       >
-        <div className="flex flex-col items-center gap-4 p-4">
-          <div className="flex flex-row items-center justify-center gap-2">
-            <h2 className="text-lg font-bold">Delete</h2>{' '}
-            <span className="rounded-md bg-slate-600 px-1 text-red-600">{fileToDelete?.name}</span>
+        <div className='flex flex-col items-center gap-4 p-4'>
+          <div className='flex flex-row items-center justify-center gap-2'>
+            <h2 className='text-lg font-bold'>Delete</h2>{' '}
+            <span className='rounded-md bg-slate-600 px-1 text-red-600'>{fileToDelete?.name}</span>
           </div>
-          <p className="text-center">Are you sure you want to delete this file?</p>
-          <label className="label m-2 cursor-pointer rounded-xl bg-gray-600 p-2 text-black hover:bg-gray-700">
-            <span className="label-text text-balance">Delete Permanently</span>
-            <span className="w-2"></span>
+          <p className='text-center'>Are you sure you want to delete this file?</p>
+          <label className='label m-2 cursor-pointer rounded-xl bg-gray-600 p-2 text-black hover:bg-gray-700'>
+            <span className='label-text text-balance'>Delete Permanently</span>
+            <span className='w-2'></span>
             <input
-              type="checkbox"
+              type='checkbox'
               checked={isPermanentDelete}
               onChange={(e) => setIsPermanentDelete(e.target.checked)}
-              className="checkbox"
+              className='checkbox'
             />
           </label>
-          <div className="flex gap-4">
+          <div className='flex gap-4'>
             <button
               onClick={() => handleDelete(isPermanentDelete)}
-              className="btn btn-error rounded-xl bg-red-500 px-4 py-2 hover:bg-red-400"
+              className='btn btn-error rounded-xl bg-red-500 px-4 py-2 hover:bg-red-400'
             >
               Delete
             </button>
