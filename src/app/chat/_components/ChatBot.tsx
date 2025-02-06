@@ -2,6 +2,7 @@
 import CopyButton from '@/components/CopyButton'
 import Markdown from '@/components/Markdown'
 import PageBack from '@/components/PageBack'
+import { Button } from '@/components/ui/button'
 import {
   Sidebar,
   SidebarContent,
@@ -13,12 +14,13 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarProvider,
-  SidebarTrigger,
+  useSidebar,
 } from '@/components/ui/sidebar'
 import { Textarea } from '@/components/ui/textarea'
 import { usePersistentState } from '@/hooks/use-persistent-state'
 import { sendMessage } from '@/lib/actions'
-import { Bot, Loader2, MessageSquare, Plus, RefreshCcw, Send, User2 } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { Bot, Loader2, MessageSquare, PanelLeftClose, PanelLeftOpen, Plus, RefreshCcw, Send, User2 } from 'lucide-react'
 import React, { useEffect, useRef, useState } from 'react'
 
 enum Role {
@@ -36,6 +38,31 @@ type SavedChat = {
   name: string
   messages: Message[]
 }
+
+const CustomSidebarTrigger = React.forwardRef<React.ComponentRef<typeof Button>, React.ComponentProps<typeof Button>>(
+  ({ className, onClick, ...props }, ref) => {
+    const { open, toggleSidebar } = useSidebar()
+
+    return (
+      <Button
+        ref={ref}
+        data-sidebar='trigger'
+        variant='ghost'
+        className={cn('h-7 w-7', className)}
+        onClick={(event) => {
+          onClick?.(event)
+          toggleSidebar()
+        }}
+        {...props}
+      >
+        {open ?
+          <PanelLeftClose />
+        : <PanelLeftOpen />}
+      </Button>
+    )
+  },
+)
+CustomSidebarTrigger.displayName = 'CustomSidebarTrigger'
 
 export default function Chatbot(): React.JSX.Element {
   const [messages, setMessages] = usePersistentState<Message[]>('messages', [])
@@ -170,40 +197,40 @@ export default function Chatbot(): React.JSX.Element {
   }
 
   return (
-    <SidebarProvider defaultOpen={false} open={open} onOpenChange={setOpen}>
+    <SidebarProvider open={open} onOpenChange={setOpen}>
       <div className='mx-auto flex min-h-dvh w-dvw'>
-        <Sidebar>
-          <SidebarContent className='bg-gradient-to-bl from-gray-200 to-gray-600'>
-            <SidebarHeader>
-              <PageBack stayTop noFixed btnClassName='btn bg-gray-700 hover:bg-gray-600' />
-            </SidebarHeader>
-            <SidebarGroup>
-              <SidebarGroupLabel className='font-bold text-black'>Chats</SidebarGroupLabel>
-              <SidebarGroupContent>
-                <SidebarMenu>
-                  <SidebarMenuButton
-                    type='button'
-                    title='New chat'
-                    className='btn card rounded-xl bg-gray-700 hover:bg-gray-600'
-                    onClick={handleNewChat}
-                  >
-                    <Plus className='h-4 w-4' />
-                    <span className='sr-only'>New chat</span>
-                  </SidebarMenuButton>
-                  {savedChats.map((item) => (
-                    <SidebarMenuItem key={item.name}>
-                      <SidebarMenuButton onClick={() => loadChatFromLocalStorage(item.id)}>{item.name}</SidebarMenuButton>
-                    </SidebarMenuItem>
-                  ))}
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </SidebarGroup>
-          </SidebarContent>
-        </Sidebar>
-        <div className='p-2'>
-          <SidebarTrigger
-            className={`fixed left-2 top-2 z-50 ${open ? 'text-gray-800 hover:bg-gray-800 hover:text-gray-200' : 'text-gray-200 hover:bg-gray-200 hover:text-gray-800'}`}
-          />
+        <div>
+          <Sidebar>
+            <SidebarContent className='bg-gradient-to-bl from-gray-200 to-gray-600'>
+              <SidebarHeader>
+                <PageBack stayTop noFixed btnClassName='btn bg-gray-700 hover:bg-gray-600' />
+              </SidebarHeader>
+              <SidebarGroup>
+                <SidebarGroupLabel className='font-bold text-black'>Chats</SidebarGroupLabel>
+                <SidebarGroupContent>
+                  <SidebarMenu>
+                    <SidebarMenuButton
+                      type='button'
+                      title='New chat'
+                      className='btn card rounded-xl bg-gray-700 hover:bg-gray-600'
+                      onClick={handleNewChat}
+                    >
+                      <Plus className='h-4 w-4' />
+                      <span className='sr-only'>New chat</span>
+                    </SidebarMenuButton>
+                    {savedChats.map((item) => (
+                      <SidebarMenuItem key={item.name}>
+                        <SidebarMenuButton onClick={() => loadChatFromLocalStorage(item.id)}>{item.name}</SidebarMenuButton>
+                      </SidebarMenuItem>
+                    ))}
+                  </SidebarMenu>
+                </SidebarGroupContent>
+              </SidebarGroup>
+            </SidebarContent>
+            <CustomSidebarTrigger
+              className={`fixed left-2 top-2 z-50 ${open ? 'text-gray-800 hover:bg-gray-800 hover:text-gray-200' : 'text-gray-200 hover:bg-gray-200 hover:text-gray-800'}`}
+            />
+          </Sidebar>
         </div>
         <div className='mx-auto max-w-7xl flex-1 p-4'>
           <div className='space-y-4 pb-32'>
