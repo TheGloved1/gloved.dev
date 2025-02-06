@@ -17,6 +17,7 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar'
 import { Textarea } from '@/components/ui/textarea'
+import { useIsMobile } from '@/hooks/use-mobile'
 import { usePersistentState } from '@/hooks/use-persistent-state'
 import { sendMessage } from '@/lib/actions'
 import { cn } from '@/lib/utils'
@@ -71,6 +72,7 @@ export default function Chatbot(): React.JSX.Element {
   const [open, setOpen] = usePersistentState<boolean>('sidebarOpen', false)
   const [loading, setLoading] = useState<boolean>(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const isMobile = useIsMobile()
 
   const scrollToBottom = () => {
     if (messagesEndRef.current) {
@@ -289,7 +291,7 @@ export default function Chatbot(): React.JSX.Element {
                     className='rounded-xl bg-gray-900 pl-10 text-gray-100'
                     value={input}
                     disabled={loading}
-                    placeholder='Enter message here... (Shift+Enter for new line)'
+                    placeholder={`Enter message here... ${isMobile ? '' : '(Shift + Enter for new line)'}`}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' && e.shiftKey) {
