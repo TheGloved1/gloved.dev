@@ -229,10 +229,12 @@ export default function Chatbot(): React.JSX.Element {
                 </SidebarGroupContent>
               </SidebarGroup>
             </SidebarContent>
+          </Sidebar>
+          <div className='p-4'>
             <CustomSidebarTrigger
               className={`fixed left-2 top-2 z-50 ${open ? 'text-gray-800 hover:bg-gray-800 hover:text-gray-200' : 'text-gray-200 hover:bg-gray-200 hover:text-gray-800'}`}
             />
-          </Sidebar>
+          </div>
         </div>
         <div className='mx-auto max-w-7xl flex-1 p-4'>
           <div className='space-y-4 pb-32'>
