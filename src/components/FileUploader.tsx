@@ -9,6 +9,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import axios, { type AxiosProgressEvent, type AxiosResponse } from 'axios'
 import React, { useEffect, useRef, useState } from 'react'
 import Button, { RedButton } from './Buttons'
+import { usePersistentState } from '@/hooks/use-persistent-state'
 
 type FileInfo = {
   name: string
@@ -49,33 +50,32 @@ const uploadFileApi = async (
 }
 
 export default function FileUploader(): React.JSX.Element {
-  const queryClient = useQueryClient()
   const correctPassword = env.NEXT_PUBLIC_FILE_MANAGER_PASSKEY
+  const queryClient = useQueryClient()
+
+  const [passwordEntered, setPasswordEntered] = usePersistentState<boolean>('fileUploaderPasswordEntered', false)
   const [alert, setAlert] = useState<string>('')
-  const [passwordEntered, setPasswordEntered] = useState<boolean>(false)
   const [uploadProgress, setUploadProgress] = useState<number>(0)
   const [isTemp, setIsTemp] = useState<boolean>(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false)
-  const inputButton = useRef<HTMLInputElement>(null)
   const [fileToDelete, setFileToDelete] = useState<{ name: string; isTemp: boolean } | null>(null)
   const [isPermanentDelete, setIsPermanentDelete] = useState<boolean>(false)
   const [uploadRequest, setUploadRequest] = useState<AbortController | null>(null)
+  const inputButton = useRef<HTMLInputElement>(null)
 
-  const filesKey = 'files'
-
-  const filesQuery = useQuery({ queryKey: [filesKey], queryFn: fetchFiles, initialData: [] })
+  const filesQuery = useQuery({ queryKey: ['files'], queryFn: fetchFiles, initialData: [] })
 
   const deleteMutation = useMutation({
     mutationFn: ({ file, isTemp }: { file: string; isTemp: boolean }) => deleteFileApi(file, isTemp),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [filesKey] })
+      queryClient.invalidateQueries({ queryKey: ['files'] })
     },
   })
 
   const permanentDeleteMutation = useMutation({
     mutationFn: ({ file, isTemp }: { file: string; isTemp: boolean }) => permanentDeleteFileApi(file, isTemp),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [filesKey] })
+      queryClient.invalidateQueries({ queryKey: ['files'] })
     },
   })
 
@@ -105,7 +105,7 @@ export default function FileUploader(): React.JSX.Element {
       )
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [filesKey] })
+      queryClient.invalidateQueries({ queryKey: ['files'] })
       setUploadProgress(0)
       setUploadRequest(null)
       if (inputButton.current) {
@@ -113,10 +113,6 @@ export default function FileUploader(): React.JSX.Element {
       }
     },
   })
-
-  useEffect(() => {
-    setPasswordEntered(window.localStorage.getItem('fileUploaderPasswordEntered') === correctPassword)
-  }, [correctPassword])
 
   useEffect(() => {
     if (alert === '') return
@@ -129,12 +125,11 @@ export default function FileUploader(): React.JSX.Element {
   async function handleDelete(permanent: boolean = false): Promise<void> {
     if (!fileToDelete) return
     if (!passwordEntered) {
-      const password = prompt(`Enter passkey to delete files`)
+      const password = prompt(`Enter passkey to delete files`)?.trim()
       if (!password) {
         return
       }
-      if (password.trim() === correctPassword) {
-        window.localStorage.setItem('fileUploaderPasswordEntered', correctPassword)
+      if (password === correctPassword) {
         setPasswordEntered(true)
       } else {
         setAlert('Incorrect passkey')
@@ -218,7 +213,7 @@ export default function FileUploader(): React.JSX.Element {
           {'Download Files '}
           <button
             className='btn btn-circle btn-sm hover:animate-spin'
-            onClick={() => queryClient.invalidateQueries({ queryKey: [filesKey] })}
+            onClick={() => queryClient.invalidateQueries({ queryKey: ['files'] })}
             title='Refresh Files'
           >
             ↻
