@@ -54,6 +54,8 @@ export default function FileButton({ file, temp, size }: FileButtonProps): React
   const getMimeType = (fileName: string): `video/${string}` => {
     const extension = fileName.split('.').pop()?.toLowerCase()
     switch (extension) {
+      case 'mov':
+        return 'video/quicktime'
       case 'avi':
         return 'video/x-msvideo'
       case 'webm':
@@ -79,7 +81,7 @@ export default function FileButton({ file, temp, size }: FileButtonProps): React
           {file} ({size})
         </h2>
         {(isVideo(file) && (
-          <div className='mb-4 w-full max-w-md items-center justify-center self-center'>
+          <div className='mb-4 max-h-[80dvh] max-w-[80vw] items-center justify-center self-center'>
             {file.toLowerCase().endsWith('.mkv') ?
               <h2 className='rounded-xl bg-gray-700 p-4 text-center text-base'>
                 MKV format cannot be previewed here.
@@ -94,7 +96,7 @@ export default function FileButton({ file, temp, size }: FileButtonProps): React
                 </LinkButton>
               </h2>
             : <VideoPreview
-                className='max-h-[300px] w-full max-w-md rounded-xl object-contain'
+                className='max-w-md max-h-[250px] rounded-xl object-contain'
                 src={previewUrl}
                 type={getMimeType(file)}
               />
