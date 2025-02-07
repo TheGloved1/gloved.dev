@@ -293,7 +293,7 @@ export default function Chatbot(): React.JSX.Element {
                     className='rounded-xl bg-gray-900 pl-10 text-gray-100'
                     value={input}
                     disabled={loading}
-                    placeholder={`Enter message here... ${isMobile ? '(Shift + Enter for new line)' : ''}`}
+                    placeholder={`Enter message here... ${isMobile ? '' : '(Shift + Enter for new line)'}`}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' && e.shiftKey) {
