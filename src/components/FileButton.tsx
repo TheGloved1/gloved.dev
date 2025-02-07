@@ -2,6 +2,7 @@
 import Button, { LinkButton } from '@/components/Buttons'
 import Dialog from '@/components/Dialog'
 import VideoPreview from '@/components/VideoPreview'
+import { useIsMobile } from '@/hooks/use-mobile'
 import { apiRoute } from '@/lib/utils'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -35,6 +36,7 @@ export default function FileButton({ file, temp, size }: FileButtonProps): React
   const tempQuery = temp ? '?temp=true' : ''
   const fileUrl = apiRoute(`/files/download/${encodedFileName}${tempQuery}`)
   const previewUrl = apiRoute(`/files/view/${encodedFileName}${tempQuery}`)
+  const isMobile = useIsMobile()
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(fileUrl)
@@ -70,20 +72,22 @@ export default function FileButton({ file, temp, size }: FileButtonProps): React
       <div className='mx-2 w-64 truncate rounded-xl'>
         <button
           onClick={() => setShowDialog(true)}
-          className='btn mx-2 rounded-xl p-3 hover:animate-pulse hover:bg-gray-700'
+          className='p-3 mx-2 rounded-xl btn hover:animate-pulse hover:bg-gray-700'
         >
           {file}
         </button>
       </div>
 
       <Dialog open={showDialog} close={() => setShowDialog(false)}>
-        <h2 className='justify-center self-center p-4 text-center text-base'>
+        <h2
+          className={`justify-center self-center max-w-[70vw] m-2 pt-8 px-2 text-center overscroll-contain ${isMobile ? 'text-xs scale-75' : 'text-base'}`}
+        >
           {file} ({size})
         </h2>
         {(isVideo(file) && (
           <div className='mb-4 max-h-[80dvh] max-w-[80vw] items-center justify-center self-center'>
             {file.toLowerCase().endsWith('.mkv') ?
-              <h2 className='rounded-xl bg-gray-700 p-4 text-center text-base'>
+              <h2 className='p-4 text-base text-center bg-gray-700 rounded-xl'>
                 MKV format cannot be previewed here.
                 <LinkButton
                   href={previewUrl}
@@ -95,18 +99,13 @@ export default function FileButton({ file, temp, size }: FileButtonProps): React
                   Preview
                 </LinkButton>
               </h2>
-            : <VideoPreview
-                className='max-w-md max-h-[250px] rounded-xl object-contain'
-                src={previewUrl}
-                type={getMimeType(file)}
-              />
-            }
+            : <VideoPreview className='max-w-md max-h-[250px] rounded-xl object-contain' src={previewUrl} />}
           </div>
         )) ||
           (isImage(file) && (
-            <div className='mb-4 w-full max-w-md items-center justify-center'>
+            <div className='justify-center items-center mb-4 w-full max-w-md'>
               <Link
-                className='flex w-full max-w-md content-center items-center justify-center self-center rounded-xl object-center'
+                className='flex object-center justify-center content-center items-center self-center w-full max-w-md rounded-xl'
                 href={previewUrl}
                 onClick={() => {
                   setShowDialog(false)
@@ -119,7 +118,7 @@ export default function FileButton({ file, temp, size }: FileButtonProps): React
             </div>
           )) ||
           null}
-        <div className='grid grid-cols-2 items-center justify-center'>
+        <div className='grid grid-cols-2 justify-center items-center'>
           <Button onClick={() => copyToClipboard()}>Copy</Button>
           <LinkButton href={fileUrl} onClick={() => setShowDialog(false)}>
             Download

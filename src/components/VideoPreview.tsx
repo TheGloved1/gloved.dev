@@ -1,9 +1,17 @@
-const VideoPreview = ({ src, type, className }: { src: string; type: string; className?: string }): React.JSX.Element => {
+'use client'
+
+import { useIsMobile } from '@/hooks/use-mobile'
+
+const VideoPreview = ({ src, className }: { src: string; className?: string }): React.JSX.Element => {
+  const isMobile = useIsMobile()
   return (
-    <video width='250' height='250' controls className={className}>
-      <source src={src} type={type} />
-      {"Can't load video preview"}
-    </video>
+    <video
+      width={isMobile ? '250' : '500'}
+      height={isMobile ? '250' : '500'}
+      controls
+      src={src}
+      className={className}
+    ></video>
   )
 }
 

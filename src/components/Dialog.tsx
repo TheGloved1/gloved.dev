@@ -14,18 +14,16 @@ export default function Dialog({ open, close, children, closeButton, ...props }:
 
   return (
     <dialog
-      className={`fixed left-0 right-0 top-0 bottom-0 max-w-[70vw] max-h-[70vh] z-50 flex place-items-center items-center justify-center place-self-center rounded-xl bg-opacity-50 align-middle`}
+      className={`flex fixed top-0 right-0 bottom-0 left-0 z-50 justify-center items-center place-items-center place-self-center p-0 m-0 align-middle bg-gray-800 rounded-xl sm:max-w-[70vw] sm:max-h-[70vh]`}
       {...props}
     >
-      <div className='items-center justify-center self-center rounded-xl bg-gray-800 p-4 shadow-lg'>
-        <div className='row-span-2 grid place-items-center content-center items-center justify-center py-1'>
-          {closeButton || (
-            <button onClick={close} className='absolute right-2 top-2 text-2xl hover:text-red-700'>
-              ✕
-            </button>
-          )}
-          {children}
-        </div>
+      <div className='grid row-span-2 justify-center content-center items-center place-items-center p-4'>
+        {closeButton || (
+          <button onClick={close} className='absolute top-2 right-2 p-0 m-0 mx-auto text-2xl hover:text-red-700'>
+            ✕
+          </button>
+        )}
+        {children}
       </div>
     </dialog>
   )
