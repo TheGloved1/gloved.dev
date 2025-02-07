@@ -61,19 +61,21 @@ export default function FileUploader(): React.JSX.Element {
   const [isPermanentDelete, setIsPermanentDelete] = useState<boolean>(false)
   const [uploadRequest, setUploadRequest] = useState<AbortController | null>(null)
 
-  const filesQuery = useQuery({ queryKey: ['files'], queryFn: fetchFiles, initialData: [] })
+  const filesKey = 'files'
+
+  const filesQuery = useQuery({ queryKey: [filesKey], queryFn: fetchFiles, initialData: [] })
 
   const deleteMutation = useMutation({
     mutationFn: ({ file, isTemp }: { file: string; isTemp: boolean }) => deleteFileApi(file, isTemp),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['files'] })
+      queryClient.invalidateQueries({ queryKey: [filesKey] })
     },
   })
 
   const permanentDeleteMutation = useMutation({
     mutationFn: ({ file, isTemp }: { file: string; isTemp: boolean }) => permanentDeleteFileApi(file, isTemp),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['files'] })
+      queryClient.invalidateQueries({ queryKey: [filesKey] })
     },
   })
 
@@ -103,7 +105,7 @@ export default function FileUploader(): React.JSX.Element {
       )
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['files'] })
+      queryClient.invalidateQueries({ queryKey: [filesKey] })
       setUploadProgress(0)
       setUploadRequest(null)
       if (inputButton.current) {
@@ -141,7 +143,7 @@ export default function FileUploader(): React.JSX.Element {
     }
 
     if (permanent) {
-      const [, error] = await safeAwait(
+      const [_, error] = await safeAwait(
         permanentDeleteMutation.mutateAsync({ file: fileToDelete.name, isTemp: fileToDelete.isTemp }),
       )
       if (error) {
@@ -149,7 +151,7 @@ export default function FileUploader(): React.JSX.Element {
         return
       }
     } else {
-      const [, error] = await safeAwait(deleteMutation.mutateAsync({ file: fileToDelete.name, isTemp: fileToDelete.isTemp }))
+      const [_, error] = await safeAwait(deleteMutation.mutateAsync({ file: fileToDelete.name, isTemp: fileToDelete.isTemp }))
       if (error) {
         setAlert(error.message)
         return
@@ -216,7 +218,7 @@ export default function FileUploader(): React.JSX.Element {
           {'Download Files '}
           <button
             className='btn btn-circle btn-sm hover:animate-spin'
-            onClick={() => queryClient.invalidateQueries({ queryKey: ['files'] })}
+            onClick={() => queryClient.invalidateQueries({ queryKey: [filesKey] })}
             title='Refresh Files'
           >
             ↻
