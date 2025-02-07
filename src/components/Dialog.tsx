@@ -8,7 +8,7 @@ type DialogProps = {
   children: React.ReactNode
   className?: string
   closeButton?: React.ReactNode
-}
+} & React.ComponentProps<'dialog'>
 
 export default function Dialog({
   open,
@@ -16,12 +16,14 @@ export default function Dialog({
   children,
   className = '',
   closeButton,
+  ...props
 }: DialogProps): React.JSX.Element | null {
   if (!open) return null
 
   return (
     <dialog
-      className={`fixed z-50 flex max-w-fit place-items-center items-center justify-center place-self-center rounded-xl bg-opacity-50 align-middle`}
+      className={`fixed left-0 right-0 top-0 bottom-0 max-w-screen-sm max-h-screen z-50 flex place-items-center items-center justify-center place-self-center rounded-xl bg-opacity-50 align-middle`}
+      {...props}
     >
       <div className={cn(`items-center justify-center self-center rounded-xl bg-gray-800 p-4 shadow-lg`, className)}>
         <div className='row-span-2 grid place-items-center content-center items-center justify-center py-1'>

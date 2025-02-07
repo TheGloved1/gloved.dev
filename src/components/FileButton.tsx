@@ -3,10 +3,9 @@ import Button, { LinkButton } from '@/components/Buttons'
 import Dialog from '@/components/Dialog'
 import VideoPreview from '@/components/VideoPreview'
 import { apiRoute } from '@/lib/utils'
+import Image from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
-import ImageBlur from './ImageBlur'
-
 /**
  * Props for the FileButton component
  *
@@ -113,13 +112,7 @@ export default function FileButton({ file, temp, size }: FileButtonProps): React
                 target='_blank'
                 rel='noopener noreferrer'
               >
-                <ImageBlur
-                  src={previewUrl}
-                  alt={file}
-                  width={250}
-                  height={250}
-                  className='max-h-[300px] max-w-md rounded-xl'
-                />
+                <Image src={previewUrl} alt={file} width={250} height={250} className='max-h-[300px] max-w-md rounded-xl' />
               </Link>
             </div>
           )) ||
