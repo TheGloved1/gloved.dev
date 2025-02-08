@@ -82,3 +82,12 @@ export async function sendMessage(input: string, messages: Message[]): Promise<{
     return { msg: null, error: `Error: ${error}` }
   }
 }
+
+export function checkDevMode(): boolean {
+  const environment = env.NODE_ENV
+
+  if (environment === 'development') {
+    return true
+  }
+  return false
+}

@@ -1,4 +1,3 @@
-import { env } from '@/env'
 import { API } from '@/lib/constants'
 import { type ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
@@ -54,13 +53,4 @@ export async function apiFetch(route: string, options?: RequestInit) {
  */
 export function apiRoute(route: string) {
   return `${API}${route}`
-}
-
-export function checkDevMode(): boolean {
-  const environment = env.NODE_ENV
-
-  if (environment === 'development') {
-    return true
-  }
-  return false
 }

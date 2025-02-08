@@ -4,12 +4,12 @@ import ErrorAlert from '@/components/ErrorAlert'
 import FileButton from '@/components/FileButton'
 import Loading from '@/components/loading'
 import { env } from '@/env'
+import { usePersistentState } from '@/hooks/use-persistent-state'
 import { apiRoute, safeAwait } from '@/lib/utils'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import axios, { type AxiosProgressEvent, type AxiosResponse } from 'axios'
+import axios, { type AxiosProgressEvent } from 'axios'
 import React, { useEffect, useRef, useState } from 'react'
 import Button, { RedButton } from './Buttons'
-import { usePersistentState } from '@/hooks/use-persistent-state'
 
 type FileInfo = {
   name: string
@@ -19,7 +19,8 @@ type FileInfo = {
 }
 
 const fetchFiles = async (): Promise<FileInfo[]> => {
-  const response: AxiosResponse<FileInfo[]> = await axios.get(apiRoute('/files/'))
+  const [response, error] = await safeAwait(axios.get<FileInfo[]>(apiRoute('/files/')))
+  if (error) throw error
   return response.data
 }
 
@@ -138,7 +139,7 @@ export default function FileUploader(): React.JSX.Element {
     }
 
     if (permanent) {
-      const [_, error] = await safeAwait(
+      const [_, error]: [void | null, Error | null] = await safeAwait(
         permanentDeleteMutation.mutateAsync({ file: fileToDelete.name, isTemp: fileToDelete.isTemp }),
       )
       if (error) {
@@ -146,7 +147,9 @@ export default function FileUploader(): React.JSX.Element {
         return
       }
     } else {
-      const [_, error] = await safeAwait(deleteMutation.mutateAsync({ file: fileToDelete.name, isTemp: fileToDelete.isTemp }))
+      const [_, error]: [void | null, Error | null] = await safeAwait(
+        deleteMutation.mutateAsync({ file: fileToDelete.name, isTemp: fileToDelete.isTemp }),
+      )
       if (error) {
         setAlert(error.message)
         return
