@@ -25,6 +25,7 @@ export function usePersistentState<T>(key: string, initialValue: T): [T, Dispatc
 
   useEffect(() => {
     if (inBrowser()) {
+      console.log(`Setting state for key '${key}' to: `, state)
       localStorage.setItem(key, JSON.stringify(state))
     }
   }, [key, state])

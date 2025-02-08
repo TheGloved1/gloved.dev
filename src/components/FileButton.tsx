@@ -7,6 +7,7 @@ import { apiRoute } from '@/lib/utils'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useState } from 'react'
+
 /**
  * Props for the FileButton component
  *
@@ -39,6 +40,7 @@ export default function FileButton({ file, temp, size }: FileButtonProps): React
   const isMobile = useIsMobile()
 
   const copyToClipboard = () => {
+    console.log('Copied file URL:', fileUrl)
     navigator.clipboard.writeText(fileUrl)
     setShowDialog(false)
   }
