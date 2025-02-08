@@ -16,7 +16,7 @@ export function usePersistentState<T>(key: string, initialValue: T): [T, Dispatc
         const storedState = localStorage.getItem(key)
         return storedState ? JSON.parse(storedState) : initialValue
       } catch (error) {
-        console.error('Error parsing localStorage data:', error)
+        console.error(`Error parsing localStorage data for key '${key}': `, error)
         return initialValue
       }
     }
@@ -25,7 +25,7 @@ export function usePersistentState<T>(key: string, initialValue: T): [T, Dispatc
 
   useEffect(() => {
     if (inBrowser()) {
-      console.log(`Setting state for key '${key}' to: `, state)
+      console.log(`Setting state for key '${key}' to:`, state)
       localStorage.setItem(key, JSON.stringify(state))
     }
   }, [key, state])
