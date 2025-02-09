@@ -88,7 +88,7 @@ export default function FileButton({ file }: FileButtonProps): React.JSX.Element
                 className='max-w-full h-auto rounded-xl'
               />
             )}
-            {isVideo && <VideoPreview className='max-w-md max-h-[250px] md:h-[350px] rounded-xl' src={previewUrl} />}
+            {isVideo && <VideoPreview className='max-w-md max-h-[250px] md:h-[350px] lg:h-[650px] rounded-xl' src={previewUrl} />}
             {!isImage && !isVideo && null}
           </div>
           <div className='grid grid-cols-2 justify-center self-center items-center'>
