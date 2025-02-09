@@ -1,5 +1,7 @@
 import ReactQueryClientProvider from '@/components/ReactQueryClientProvider'
 import * as constants from '@/lib/constants'
+import { Analytics } from '@vercel/analytics/react'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 import { Metadata } from 'next'
 import { JetBrains_Mono } from 'next/font/google'
 import React from 'react'
@@ -22,7 +24,11 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang='en'>
       <body className={`dark snap-x snap-mandatory antialiased bg-background ${jetbrains.className}`}>
-        <ReactQueryClientProvider>{children}</ReactQueryClientProvider>
+        <ReactQueryClientProvider>
+          <Analytics />
+          <SpeedInsights />
+          {children}
+        </ReactQueryClientProvider>
       </body>
     </html>
   )
