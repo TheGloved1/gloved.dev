@@ -229,7 +229,7 @@ export default function FileUploader(): React.JSX.Element {
         {!filesQuery.isLoading && filesQuery.data.length > 0 && (
           <>
             {filesQuery.data.some((file) => file.isTemp) && <h4>Permanent Files</h4>}
-            <ul className='flex max-h-48 max-w-96 resize-x flex-col flex-wrap overflow-x-scroll rounded-xl border-2 border-white p-[.2rem] md:max-w-[600px] lg:max-w-[800px] md:max-h-60 lg:max-h-72'>
+            <ul className='flex max-h-48 min-w-48 max-w-96 resize-x flex-col flex-wrap overflow-x-scroll rounded-xl border-2 border-white p-[.2rem] md:max-w-[600px] lg:max-w-[800px] md:max-h-60 lg:max-h-72'>
               {filesQuery.isError ?
                 <div className='alert alert-error'>An error occurred while fetching files.</div>
               : filesQuery.data
