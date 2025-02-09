@@ -74,7 +74,7 @@ export async function sendMessage(input: string, messages: Message[]): Promise<{
   }
 }
 
-export function checkDevMode(): boolean {
+export async function checkDevMode(): Promise<boolean> {
   const environment = env.NODE_ENV
 
   if (environment === 'development') {
