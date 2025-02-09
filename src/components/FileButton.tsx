@@ -80,9 +80,9 @@ export default function FileButton({ file }: FileButtonProps): React.JSX.Element
           </DialogHeader>
           <div className='mt-4 flex justify-center items-center'>
             {isImage && (
-              <Image width={500} height={500} src={previewUrl} alt={file.name} className='max-w-full h-auto rounded-xl' />
+              <Image width={isMobile ? 250 : 450} height={isMobile ? 250 : 450} src={previewUrl} alt={file.name} className='max-w-full h-auto rounded-xl' />
             )}
-            {isVideo && <VideoPreview className='rounded-xl max-w-full h-auto' src={previewUrl} />}
+            {isVideo && <VideoPreview className='max-w-md max-h-[250px] md:h-[350px] rounded-xl' src={previewUrl} />}
             {!isImage && !isVideo && null}
           </div>
           <div className='grid grid-cols-2 justify-center self-center items-center'>

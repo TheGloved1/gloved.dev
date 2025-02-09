@@ -1,11 +1,11 @@
 'use client'
-
 import { useIsMobile } from '@/hooks/use-mobile'
 
 const VideoPreview = ({ src, className }: { src: string; className?: string }): React.JSX.Element => {
   const isMobile = useIsMobile()
+  const size = isMobile ? '250' : '350'
   return (
-    <video width={isMobile ? '250' : '450'} height={isMobile ? '250' : '450'} controls src={src} className={className} />
+    <video width={size} height={size} controls src={src} className={className} />
   )
 }
 
