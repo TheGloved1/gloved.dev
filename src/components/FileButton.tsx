@@ -88,7 +88,9 @@ export default function FileButton({ file }: FileButtonProps): React.JSX.Element
                 className='max-w-full h-auto rounded-xl'
               />
             )}
-            {isVideo && <VideoPreview className='max-w-md max-h-[250px] md:h-[350px] lg:h-[650px] rounded-xl' src={previewUrl} />}
+            {isVideo && (
+              <VideoPreview className='max-w-md max-h-[250px] md:h-[350px] lg:h-[650px] rounded-xl' src={previewUrl} />
+            )}
             {!isImage && !isVideo && null}
           </div>
           <div className='grid grid-cols-2 justify-center self-center items-center'>
@@ -99,62 +101,6 @@ export default function FileButton({ file }: FileButtonProps): React.JSX.Element
           </div>
         </DialogContent>
       </Dialog>
-
-      {/* {showDialog ?
-        <Dialog open={showDialog} close={() => setShowDialog(false)}>
-          <h2
-            className={`justify-center self-center max-w-[70vw] m-2 pt-8 px-2 text-center overscroll-contain ${isMobile ? 'text-xs scale-75' : 'text-base'}`}
-          >
-            {file.name} ({file.size})
-          </h2>
-          {(isVideo(file.name) && (
-            <div className='mb-4 max-h-[80dvh] max-w-[80vw] items-center justify-center self-center'>
-              {file.name.toLowerCase().endsWith('.mkv') ?
-                <h2 className='p-4 text-base text-center bg-gray-700 rounded-xl'>
-                  MKV format cannot be previewed here.
-                  <LinkButton
-                    href={previewUrl}
-                    onClick={() => {
-                      setShowDialog(false)
-                    }}
-                    targetAndRel
-                  >
-                    Preview
-                  </LinkButton>
-                </h2>
-                : <VideoPreview className='max-w-md max-h-[250px] rounded-xl object-contain' src={previewUrl} />}
-            </div>
-          )) ||
-            (isImage(file.name) && (
-              <div className='justify-center items-center mb-4 w-full max-w-md'>
-                <Link
-                  className='flex object-center justify-center content-center items-center self-center w-full max-w-md rounded-xl'
-                  href={previewUrl}
-                  onClick={() => {
-                    setShowDialog(false)
-                  }}
-                  target='_blank'
-                  rel='noopener noreferrer'
-                >
-                  <Image
-                    src={previewUrl}
-                    alt={file.name}
-                    width={isMobile ? 250 : 450}
-                    height={isMobile ? 250 : 450}
-                    className='max-h-[300px] max-w-md rounded-xl'
-                  />
-                </Link>
-              </div>
-            )) ||
-            null}
-          <div className='grid grid-cols-2 justify-center items-center'>
-            <Button onClick={() => copyToClipboard()}>Copy</Button>
-            <LinkButton href={fileUrl} onClick={() => setShowDialog(false)}>
-              Download
-            </LinkButton>
-          </div>
-        </Dialog>
-        : null} */}
     </>
   )
 }

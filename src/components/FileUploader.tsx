@@ -180,7 +180,7 @@ export default function FileUploader(): React.JSX.Element {
 
   return (
     <>
-      <div className='flex flex-col items-center justify-center self-center rounded-xl border-4 border-white bg-gray-700/50 p-4 text-[10px] md:text-[1rem]'>
+      <div className='flex flex-col items-center container justify-center self-center rounded-xl border-4 border-white bg-gray-700/50 p-4 text-[10px] md:text-[1rem]'>
         <h1 className='font-bold'>{'Simple File Uploader'}</h1>
         <p className='text-[0.5rem] md:text-sm'>{"(Don't download random files off the internet)"}</p>
         <br />
@@ -229,7 +229,7 @@ export default function FileUploader(): React.JSX.Element {
         {!filesQuery.isLoading && filesQuery.data.length > 0 && (
           <>
             {filesQuery.data.some((file) => file.isTemp) && <h4>Permanent Files</h4>}
-            <ul className='flex max-h-48 max-w-96 flex-col flex-wrap overflow-x-auto rounded-xl border-2 border-white p-[.2rem] md:max-h-60 lg:max-h-72'>
+            <ul className='flex max-h-48 max-w-96 resize-x flex-col flex-wrap overflow-x-scroll rounded-xl border-2 border-white p-[.2rem] md:max-w-[600px] lg:max-w-[800px] md:max-h-60 lg:max-h-72'>
               {filesQuery.isError ?
                 <div className='alert alert-error'>An error occurred while fetching files.</div>
               : filesQuery.data
@@ -256,27 +256,24 @@ export default function FileUploader(): React.JSX.Element {
             {filesQuery.data.some((file) => file.isTemp) && (
               <>
                 <h4>Temporary Files</h4>
-                <ul className='flex max-h-48 max-w-96 flex-col flex-wrap overflow-x-auto rounded-xl border-2 border-white p-[.2rem] md:max-h-60 lg:max-h-72'>
-                  {filesQuery.isError ?
-                    <div className='alert alert-error'>An error occurred while fetching files.</div>
-                  : filesQuery.data
-                      .filter((file) => file.isTemp)
-                      .map((file) => (
-                        <li className='flex w-64 flex-row p-1 text-[.2rem]' key={file.name}>
-                          <FileButton file={file} />
-                          <button
-                            disabled={false}
-                            className='btn btn-square btn-warning rounded-xl bg-red-500 hover:bg-red-400'
-                            onClick={() => {
-                              setFileToDelete({ name: file.name, isTemp: file.isTemp })
-                            }}
-                            title='Delete File'
-                          >
-                            {'X'}
-                          </button>
-                        </li>
-                      ))
-                  }
+                <ul className='flex max-h-48 max-w-96 resize-x flex-col flex-wrap overflow-x-scroll rounded-xl border-2 border-white p-[.2rem] md:max-h-60 lg:max-h-72'>
+                  {filesQuery.data
+                    .filter((file) => file.isTemp)
+                    .map((file) => (
+                      <li className='flex w-64 flex-row p-1 text-[.2rem]' key={file.name}>
+                        <FileButton file={file} />
+                        <button
+                          disabled={false}
+                          className='btn btn-square btn-warning rounded-xl bg-red-500 hover:bg-red-400'
+                          onClick={() => {
+                            setFileToDelete({ name: file.name, isTemp: file.isTemp })
+                          }}
+                          title='Delete File'
+                        >
+                          {'X'}
+                        </button>
+                      </li>
+                    ))}
                 </ul>
               </>
             )}
