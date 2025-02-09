@@ -71,16 +71,22 @@ export default function FileButton({ file }: FileButtonProps): React.JSX.Element
         </button>
       </div>
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
-        <DialogContent className='sm:max-w-[425px]'>
+        <DialogContent className='sm:max-w-[425px] w-fit md:max-w-[650px]'>
           <DialogHeader>
-            <DialogTitle>{file.name}</DialogTitle>
+            <DialogTitle className='text-base font-semibold'>{file.name}</DialogTitle>
             <DialogDescription className='text-xs'>
               Size: {file.size} • Uploaded: {new Date(file.createdAt).toLocaleString()}
             </DialogDescription>
           </DialogHeader>
           <div className='mt-4 flex justify-center items-center'>
             {isImage && (
-              <Image width={isMobile ? 250 : 450} height={isMobile ? 250 : 450} src={previewUrl} alt={file.name} className='max-w-full h-auto rounded-xl' />
+              <Image
+                width={isMobile ? 250 : 450}
+                height={isMobile ? 250 : 450}
+                src={previewUrl}
+                alt={file.name}
+                className='max-w-full h-auto rounded-xl'
+              />
             )}
             {isVideo && <VideoPreview className='max-w-md max-h-[250px] md:h-[350px] rounded-xl' src={previewUrl} />}
             {!isImage && !isVideo && null}
@@ -133,8 +139,8 @@ export default function FileButton({ file }: FileButtonProps): React.JSX.Element
                   <Image
                     src={previewUrl}
                     alt={file.name}
-                    width={250}
-                    height={250}
+                    width={isMobile ? 250 : 450}
+                    height={isMobile ? 250 : 450}
                     className='max-h-[300px] max-w-md rounded-xl'
                   />
                 </Link>
