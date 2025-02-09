@@ -2,7 +2,6 @@
 import CopyButton from '@/components/CopyButton'
 import Markdown from '@/components/Markdown'
 import PageBack from '@/components/PageBack'
-import { Button } from '@/components/ui/button'
 import {
   Sidebar,
   SidebarContent,
@@ -14,56 +13,21 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarProvider,
-  useSidebar,
+  SidebarTrigger,
 } from '@/components/ui/sidebar'
 import { Textarea } from '@/components/ui/textarea'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { usePersistentState } from '@/hooks/use-persistent-state'
 import { sendMessage } from '@/lib/actions'
-import { cn } from '@/lib/utils'
-import { Bot, Loader2, MessageSquare, PanelLeftClose, PanelLeftOpen, Plus, RefreshCcw, Send, User2 } from 'lucide-react'
+import { Message, Role } from '@/lib/types'
+import { Bot, Loader2, MessageSquare, Plus, RefreshCcw, Send, User2 } from 'lucide-react'
 import React, { useEffect, useRef, useState } from 'react'
-
-enum Role {
-  USER = 'user',
-  MODEL = 'model',
-}
-
-type Message = {
-  role: Role
-  text: string
-}
 
 type SavedChat = {
   id: string
   name: string
   messages: Message[]
 }
-
-const CustomSidebarTrigger = React.forwardRef<React.ComponentRef<typeof Button>, React.ComponentProps<typeof Button>>(
-  ({ className, onClick, ...props }, ref) => {
-    const { open, toggleSidebar } = useSidebar()
-
-    return (
-      <Button
-        ref={ref}
-        data-sidebar='trigger'
-        variant='ghost'
-        className={cn('h-7 w-7', className)}
-        onClick={(event) => {
-          onClick?.(event)
-          toggleSidebar()
-        }}
-        {...props}
-      >
-        {open ?
-          <PanelLeftClose />
-        : <PanelLeftOpen />}
-      </Button>
-    )
-  },
-)
-CustomSidebarTrigger.displayName = 'CustomSidebarTrigger'
 
 export default function Chatbot(): React.JSX.Element {
   const [messages, setMessages] = usePersistentState<Message[]>('messages', [])
@@ -231,7 +195,7 @@ export default function Chatbot(): React.JSX.Element {
             </SidebarContent>
           </Sidebar>
           <div className='p-4'>
-            <CustomSidebarTrigger
+            <SidebarTrigger
               className={`fixed left-2 top-2 z-50 ${open ? 'text-gray-800 hover:bg-gray-800 hover:text-gray-200' : 'text-gray-200 hover:bg-gray-200 hover:text-gray-800'}`}
             />
           </div>

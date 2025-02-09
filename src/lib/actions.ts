@@ -3,6 +3,7 @@ import { env } from '@/env'
 import { apiRoute } from '@/lib/utils'
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import sharp from 'sharp'
+import { Message, Role } from './types'
 
 const genAI = new GoogleGenerativeAI(env.GEMINI)
 
@@ -20,16 +21,6 @@ async function fetchSystemPrompt() {
     return ''
   }
   return data
-}
-
-enum Role {
-  USER = 'user',
-  MODEL = 'model',
-}
-
-type Message = {
-  role: Role
-  text: string
 }
 
 export async function sendMessage(input: string, messages: Message[]): Promise<{ msg: Message | null; error?: string }> {
