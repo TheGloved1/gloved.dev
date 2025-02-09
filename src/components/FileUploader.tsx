@@ -58,7 +58,7 @@ export default function FileUploader(): React.JSX.Element {
   const [alert, setAlert] = useState<string>('')
   const [uploadProgress, setUploadProgress] = useState<number>(0)
   const [isTemp, setIsTemp] = useState<boolean>(false)
-  const [fileToDelete, setFileToDelete] = useState<{ name: string; isTemp: boolean } | null>(null)
+  const [fileToDelete, setFileToDelete] = useState<FileInfo | null>(null)
   const [fileToPreview, setFileToPreview] = useState<FileInfo | null>(null)
   const [uploadRequest, setUploadRequest] = useState<AbortController | null>(null)
   const inputButton = useRef<HTMLInputElement>(null)
@@ -240,7 +240,7 @@ export default function FileUploader(): React.JSX.Element {
                       <RedButton
                         disabled={false}
                         onClick={() => {
-                          setFileToDelete({ name: file.name, isTemp: file.isTemp })
+                          setFileToDelete(file)
                         }}
                         title={`Delete file ${filesQuery.data.findIndex((f) => f.name === file.name) + 1} of ${
                           filesQuery.data.length
@@ -256,7 +256,7 @@ export default function FileUploader(): React.JSX.Element {
             {filesQuery.data.some((file) => file.isTemp) && (
               <>
                 <h4>Temporary Files</h4>
-                <ul className='flex max-h-48 max-w-96 resize-x flex-col flex-wrap overflow-x-scroll rounded-xl border-2 border-white p-[.2rem] md:max-h-60 lg:max-h-72'>
+                <ul className='flex max-h-48 min-w-48 max-w-96 resize-x flex-col flex-wrap overflow-x-scroll rounded-xl border-2 border-white p-[.2rem] md:max-h-60 lg:max-h-72'>
                   {filesQuery.data
                     .filter((file) => file.isTemp)
                     .map((file) => (
@@ -266,7 +266,7 @@ export default function FileUploader(): React.JSX.Element {
                           disabled={false}
                           className='btn btn-square btn-warning rounded-xl bg-red-500 hover:bg-red-400'
                           onClick={() => {
-                            setFileToDelete({ name: file.name, isTemp: file.isTemp })
+                            setFileToDelete(file)
                           }}
                           title='Delete File'
                         >
