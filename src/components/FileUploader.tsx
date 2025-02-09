@@ -1,5 +1,4 @@
 'use client'
-import Dialog from '@/components/Dialog'
 import ErrorAlert from '@/components/ErrorAlert'
 import FileButton from '@/components/FileButton'
 import Loading from '@/components/loading'
@@ -10,8 +9,9 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import axios, { type AxiosProgressEvent } from 'axios'
 import React, { useEffect, useRef, useState } from 'react'
 import Button, { RedButton } from './Buttons'
+import { DeleteConfirmDialog } from './DeleteConfirmDialog'
 
-type FileInfo = {
+export type FileInfo = {
   name: string
   isTemp: boolean
   createdAt: string
@@ -58,9 +58,8 @@ export default function FileUploader(): React.JSX.Element {
   const [alert, setAlert] = useState<string>('')
   const [uploadProgress, setUploadProgress] = useState<number>(0)
   const [isTemp, setIsTemp] = useState<boolean>(false)
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false)
   const [fileToDelete, setFileToDelete] = useState<{ name: string; isTemp: boolean } | null>(null)
-  const [isPermanentDelete, setIsPermanentDelete] = useState<boolean>(false)
+  const [fileToPreview, setFileToPreview] = useState<FileInfo | null>(null)
   const [uploadRequest, setUploadRequest] = useState<AbortController | null>(null)
   const inputButton = useRef<HTMLInputElement>(null)
 
@@ -134,6 +133,7 @@ export default function FileUploader(): React.JSX.Element {
         setPasswordEntered(true)
       } else {
         setAlert('Incorrect passkey')
+        setFileToDelete(null)
         return
       }
     }
@@ -156,7 +156,6 @@ export default function FileUploader(): React.JSX.Element {
       }
     }
     setAlert('')
-    setIsDeleteDialogOpen(false)
     setFileToDelete(null)
   }
 
@@ -237,12 +236,11 @@ export default function FileUploader(): React.JSX.Element {
                   .filter((file) => !file.isTemp)
                   .map((file) => (
                     <li className='flex w-64 flex-row p-1 text-[.2rem]' key={file.name}>
-                      <FileButton file={file.name} size={file.size} />
+                      <FileButton file={file} />
                       <RedButton
                         disabled={false}
                         onClick={() => {
                           setFileToDelete({ name: file.name, isTemp: file.isTemp })
-                          setIsDeleteDialogOpen(true)
                         }}
                         title={`Delete file ${filesQuery.data.findIndex((f) => f.name === file.name) + 1} of ${
                           filesQuery.data.length
@@ -265,13 +263,12 @@ export default function FileUploader(): React.JSX.Element {
                       .filter((file) => file.isTemp)
                       .map((file) => (
                         <li className='flex w-64 flex-row p-1 text-[.2rem]' key={file.name}>
-                          <FileButton file={file.name} size={file.size} temp />
+                          <FileButton file={file} />
                           <button
                             disabled={false}
                             className='btn btn-square btn-warning rounded-xl bg-red-500 hover:bg-red-400'
                             onClick={() => {
                               setFileToDelete({ name: file.name, isTemp: file.isTemp })
-                              setIsDeleteDialogOpen(true)
                             }}
                             title='Delete File'
                           >
@@ -288,40 +285,14 @@ export default function FileUploader(): React.JSX.Element {
         {!filesQuery.isLoading && filesQuery.data.length === 0 && <li>{'No files found'}</li>}
       </div>
       {alert !== '' && <ErrorAlert>{alert}</ErrorAlert>}
-      <Dialog
-        open={isDeleteDialogOpen}
-        close={() => {
-          setIsDeleteDialogOpen(false)
-          setFileToDelete(null)
-          setIsPermanentDelete(false)
-        }}
-      >
-        <div className='flex flex-col items-center gap-4 p-4'>
-          <div className='flex flex-row items-center justify-center gap-2'>
-            <h2 className='text-lg font-bold'>Delete</h2>{' '}
-            <span className='rounded-md bg-slate-600 px-1 text-red-600'>{fileToDelete?.name}</span>
-          </div>
-          <p className='text-center'>Are you sure you want to delete this file?</p>
-          <label className='label m-2 cursor-pointer rounded-xl bg-gray-600 p-2 text-black hover:bg-gray-700'>
-            <span className='label-text text-balance'>Delete Permanently</span>
-            <span className='w-2'></span>
-            <input
-              type='checkbox'
-              checked={isPermanentDelete}
-              onChange={(e) => setIsPermanentDelete(e.target.checked)}
-              className='checkbox'
-            />
-          </label>
-          <div className='flex gap-4'>
-            <button
-              onClick={() => handleDelete(isPermanentDelete)}
-              className='btn btn-error rounded-xl bg-red-500 px-4 py-2 hover:bg-red-400'
-            >
-              Delete
-            </button>
-          </div>
-        </div>
-      </Dialog>
+      {fileToDelete && (
+        <DeleteConfirmDialog
+          fileName={fileToDelete.name}
+          onConfirm={() => handleDelete()}
+          onPermanentDelete={() => handleDelete(true)}
+          onCancel={() => setFileToDelete(null)}
+        />
+      )}
     </>
   )
 }

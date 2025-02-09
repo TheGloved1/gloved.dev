@@ -1,12 +1,12 @@
 'use client'
 import Button, { LinkButton } from '@/components/Buttons'
-import Dialog from '@/components/Dialog'
-import VideoPreview from '@/components/VideoPreview'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { apiRoute } from '@/lib/utils'
 import Image from 'next/image'
-import Link from 'next/link'
 import { useState } from 'react'
+import { FileInfo } from './FileUploader'
+import VideoPreview from './VideoPreview'
 
 /**
  * Props for the FileButton component
@@ -16,9 +16,7 @@ import { useState } from 'react'
  * @prop {string} [size] - size of the file in human-readable format
  */
 type FileButtonProps = {
-  file: string
-  temp?: boolean
-  size?: string
+  file: FileInfo
 }
 
 /**
@@ -31,10 +29,10 @@ type FileButtonProps = {
  * @param {string} [props.size] - size of the file in human-readable format
  * @returns {React.JSX.Element}
  */
-export default function FileButton({ file, temp, size }: FileButtonProps): React.JSX.Element {
+export default function FileButton({ file }: FileButtonProps): React.JSX.Element {
   const [showDialog, setShowDialog] = useState(false)
-  const encodedFileName = encodeURIComponent(file)
-  const tempQuery = temp ? '?temp=true' : ''
+  const encodedFileName = encodeURIComponent(file.name)
+  const tempQuery = file.isTemp ? '?temp=true' : ''
   const fileUrl = apiRoute(`/files/download/${encodedFileName}${tempQuery}`)
   const previewUrl = apiRoute(`/files/view/${encodedFileName}${tempQuery}`)
   const isMobile = useIsMobile()
@@ -45,15 +43,8 @@ export default function FileButton({ file, temp, size }: FileButtonProps): React
     setShowDialog(false)
   }
 
-  const isVideo = (fileName: string): boolean => {
-    const videoExtensions = ['.mp4', '.mov', '.avi', '.webm', '.mkv']
-    return videoExtensions.some((ext) => fileName.toLowerCase().endsWith(ext))
-  }
-
-  const isImage = (fileName: string): boolean => {
-    const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.svg', '.webp']
-    return imageExtensions.some((ext) => fileName.toLowerCase().endsWith(ext))
-  }
+  const isImage = file.name.match(/\.(jpeg|jpg|gif|png|webp)$/i)
+  const isVideo = file.name.match(/\.(mp4|webm|ogg|mov|avi)$/i)
 
   const getMimeType = (fileName: string): `video/${string}` => {
     const extension = fileName.split('.').pop()?.toLowerCase()
@@ -76,57 +67,88 @@ export default function FileButton({ file, temp, size }: FileButtonProps): React
           onClick={() => setShowDialog(true)}
           className='p-3 mx-2 rounded-xl btn hover:animate-pulse hover:bg-gray-700'
         >
-          {file}
+          {file.name}
         </button>
       </div>
+      <Dialog open={showDialog} onOpenChange={setShowDialog}>
+        <DialogContent className='sm:max-w-[425px]'>
+          <DialogHeader>
+            <DialogTitle>{file.name}</DialogTitle>
+            <DialogDescription className='text-xs md:text-base'>
+              Size: {file.size} • Uploaded: {new Date(file.createdAt).toLocaleString()}
+            </DialogDescription>
+          </DialogHeader>
+          <div className='mt-4 flex justify-center items-center'>
+            {isImage && (
+              <Image width={500} height={500} src={previewUrl} alt={file.name} className='max-w-full h-auto rounded-xl' />
+            )}
+            {isVideo && <VideoPreview className='rounded-xl max-w-full h-auto' src={previewUrl} />}
+            {!isImage && !isVideo && null}
+          </div>
+          <div className='grid grid-cols-2 justify-center self-center items-center'>
+            <Button onClick={() => copyToClipboard()}>Copy</Button>
+            <LinkButton href={fileUrl} onClick={() => setShowDialog(false)}>
+              Download
+            </LinkButton>
+          </div>
+        </DialogContent>
+      </Dialog>
 
-      <Dialog open={showDialog} close={() => setShowDialog(false)}>
-        <h2
-          className={`justify-center self-center max-w-[70vw] m-2 pt-8 px-2 text-center overscroll-contain ${isMobile ? 'text-xs scale-75' : 'text-base'}`}
-        >
-          {file} ({size})
-        </h2>
-        {(isVideo(file) && (
-          <div className='mb-4 max-h-[80dvh] max-w-[80vw] items-center justify-center self-center'>
-            {file.toLowerCase().endsWith('.mkv') ?
-              <h2 className='p-4 text-base text-center bg-gray-700 rounded-xl'>
-                MKV format cannot be previewed here.
-                <LinkButton
+      {/* {showDialog ?
+        <Dialog open={showDialog} close={() => setShowDialog(false)}>
+          <h2
+            className={`justify-center self-center max-w-[70vw] m-2 pt-8 px-2 text-center overscroll-contain ${isMobile ? 'text-xs scale-75' : 'text-base'}`}
+          >
+            {file.name} ({file.size})
+          </h2>
+          {(isVideo(file.name) && (
+            <div className='mb-4 max-h-[80dvh] max-w-[80vw] items-center justify-center self-center'>
+              {file.name.toLowerCase().endsWith('.mkv') ?
+                <h2 className='p-4 text-base text-center bg-gray-700 rounded-xl'>
+                  MKV format cannot be previewed here.
+                  <LinkButton
+                    href={previewUrl}
+                    onClick={() => {
+                      setShowDialog(false)
+                    }}
+                    targetAndRel
+                  >
+                    Preview
+                  </LinkButton>
+                </h2>
+                : <VideoPreview className='max-w-md max-h-[250px] rounded-xl object-contain' src={previewUrl} />}
+            </div>
+          )) ||
+            (isImage(file.name) && (
+              <div className='justify-center items-center mb-4 w-full max-w-md'>
+                <Link
+                  className='flex object-center justify-center content-center items-center self-center w-full max-w-md rounded-xl'
                   href={previewUrl}
                   onClick={() => {
                     setShowDialog(false)
                   }}
-                  targetAndRel
+                  target='_blank'
+                  rel='noopener noreferrer'
                 >
-                  Preview
-                </LinkButton>
-              </h2>
-            : <VideoPreview className='max-w-md max-h-[250px] rounded-xl object-contain' src={previewUrl} />}
+                  <Image
+                    src={previewUrl}
+                    alt={file.name}
+                    width={250}
+                    height={250}
+                    className='max-h-[300px] max-w-md rounded-xl'
+                  />
+                </Link>
+              </div>
+            )) ||
+            null}
+          <div className='grid grid-cols-2 justify-center items-center'>
+            <Button onClick={() => copyToClipboard()}>Copy</Button>
+            <LinkButton href={fileUrl} onClick={() => setShowDialog(false)}>
+              Download
+            </LinkButton>
           </div>
-        )) ||
-          (isImage(file) && (
-            <div className='justify-center items-center mb-4 w-full max-w-md'>
-              <Link
-                className='flex object-center justify-center content-center items-center self-center w-full max-w-md rounded-xl'
-                href={previewUrl}
-                onClick={() => {
-                  setShowDialog(false)
-                }}
-                target='_blank'
-                rel='noopener noreferrer'
-              >
-                <Image src={previewUrl} alt={file} width={250} height={250} className='max-h-[300px] max-w-md rounded-xl' />
-              </Link>
-            </div>
-          )) ||
-          null}
-        <div className='grid grid-cols-2 justify-center items-center'>
-          <Button onClick={() => copyToClipboard()}>Copy</Button>
-          <LinkButton href={fileUrl} onClick={() => setShowDialog(false)}>
-            Download
-          </LinkButton>
-        </div>
-      </Dialog>
+        </Dialog>
+        : null} */}
     </>
   )
 }
