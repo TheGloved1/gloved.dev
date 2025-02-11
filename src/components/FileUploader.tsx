@@ -24,12 +24,12 @@ const fetchFiles = async (): Promise<FileInfo[]> => {
   return response.data
 }
 
-const deleteFileApi = async (file: string, isTemp: boolean) => {
-  await axios.delete(apiRoute(`/files/delete/${file}?temp=${isTemp}`))
+const deleteFileApi = async (file: FileInfo, isTemp: boolean) => {
+  await axios.delete(apiRoute(`/files/delete/${file.name}?temp=${isTemp}`))
 }
 
-const permanentDeleteFileApi = async (file: string, isTemp: boolean) => {
-  await axios.delete(apiRoute(`/files/permanent-delete/${file}?temp=${isTemp}`))
+const permanentDeleteFileApi = async (file: FileInfo, isTemp: boolean) => {
+  await axios.delete(apiRoute(`/files/permanent-delete/${file.name}?temp=${isTemp}`))
 }
 
 const uploadFileApi = async (
@@ -66,14 +66,14 @@ export default function FileUploader(): React.JSX.Element {
   const filesQuery = useQuery({ queryKey: ['files'], queryFn: fetchFiles, initialData: [] })
 
   const deleteMutation = useMutation({
-    mutationFn: ({ file, isTemp }: { file: string; isTemp: boolean }) => deleteFileApi(file, isTemp),
+    mutationFn: ({ file, isTemp }: { file: FileInfo; isTemp: boolean }) => deleteFileApi(file, isTemp),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['files'] })
     },
   })
 
   const permanentDeleteMutation = useMutation({
-    mutationFn: ({ file, isTemp }: { file: string; isTemp: boolean }) => permanentDeleteFileApi(file, isTemp),
+    mutationFn: ({ file, isTemp }: { file: FileInfo; isTemp: boolean }) => permanentDeleteFileApi(file, isTemp),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['files'] })
     },
@@ -140,7 +140,7 @@ export default function FileUploader(): React.JSX.Element {
 
     if (permanent) {
       const [_, error]: [void | null, Error | null] = await safeAwait(
-        permanentDeleteMutation.mutateAsync({ file: fileToDelete.name, isTemp: fileToDelete.isTemp }),
+        permanentDeleteMutation.mutateAsync({ file: fileToDelete, isTemp: fileToDelete.isTemp }),
       )
       if (error) {
         setAlert(error.message)
@@ -148,7 +148,7 @@ export default function FileUploader(): React.JSX.Element {
       }
     } else {
       const [_, error]: [void | null, Error | null] = await safeAwait(
-        deleteMutation.mutateAsync({ file: fileToDelete.name, isTemp: fileToDelete.isTemp }),
+        deleteMutation.mutateAsync({ file: fileToDelete, isTemp: fileToDelete.isTemp }),
       )
       if (error) {
         setAlert(error.message)
@@ -242,9 +242,7 @@ export default function FileUploader(): React.JSX.Element {
                         onClick={() => {
                           setFileToDelete(file)
                         }}
-                        title={`Delete file ${filesQuery.data.findIndex((f) => f.name === file.name) + 1} of ${
-                          filesQuery.data.length
-                        }`}
+                        title={`Delete file ${filesQuery.data.findIndex((f) => f.name === file.name) + 1} of ${filesQuery.data.length}`}
                       >
                         {'X'}
                       </RedButton>
@@ -262,16 +260,15 @@ export default function FileUploader(): React.JSX.Element {
                     .map((file) => (
                       <li className='flex w-64 flex-row p-1 text-[.2rem]' key={file.name}>
                         <FileButton file={file} />
-                        <button
+                        <RedButton
                           disabled={false}
-                          className='btn btn-square btn-warning rounded-xl bg-red-500 hover:bg-red-400'
                           onClick={() => {
                             setFileToDelete(file)
                           }}
-                          title='Delete File'
+                          title={`Delete file ${filesQuery.data.findIndex((f) => f.name === file.name) + 1} of ${filesQuery.data.length}`}
                         >
                           {'X'}
-                        </button>
+                        </RedButton>
                       </li>
                     ))}
                 </ul>
