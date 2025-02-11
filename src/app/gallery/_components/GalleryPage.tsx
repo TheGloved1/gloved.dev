@@ -127,7 +127,7 @@ export default function Gallery(): React.JSX.Element {
 
   return (
     <>
-      <main className='flex min-h-screen flex-col items-center bg-gradient-to-b from-sky-950 to-[#1e210c] text-white'>
+      <main className='flex min-h-screen flex-col items-center from-sky-950 to-[#1e210c] text-white'>
         <PageBack />
         <button
           className='btn btn-circle btn-sm fixed right-2 top-2 hover:animate-spin'

@@ -14,24 +14,24 @@ import { useState } from 'react'
 
 interface DeleteConfirmDialogProps {
   fileName: string
-  onConfirm: () => void
-  onPermanentDelete: () => void
-  onCancel: () => void
+  onConfirmAction: () => void
+  onPermDeleteAction: () => void
+  onCancelAction: () => void
 }
 
 export function DeleteConfirmDialog({
   fileName,
-  onConfirm,
-  onPermanentDelete,
-  onCancel,
+  onConfirmAction,
+  onPermDeleteAction,
+  onCancelAction,
 }: DeleteConfirmDialogProps): React.JSX.Element {
-  const [isPermanentDelete, setIsPermanentDelete] = useState(false)
+  const [isPermDelete, setIsPermDelete] = useState(false)
 
   const handleDelete = () => {
-    if (isPermanentDelete) {
-      onPermanentDelete()
+    if (isPermDelete) {
+      onPermDeleteAction()
     } else {
-      onConfirm()
+      onConfirmAction()
     }
   }
 
@@ -41,16 +41,16 @@ export function DeleteConfirmDialog({
         <AlertDialogHeader>
           <AlertDialogTitle>Are you sure you want to delete this file?</AlertDialogTitle>
           <AlertDialogDescription>
-            {`This action cannot be undone. This will ${isPermanentDelete ? 'permanently ' : ''}delete the file: `}
+            {`This action cannot be undone. This will ${isPermDelete ? 'permanently ' : ''}delete the file: `}
             <span className='font-semibold'>{fileName}</span>
           </AlertDialogDescription>
         </AlertDialogHeader>
         <div className='flex items-center space-x-2 py-4'>
-          <Switch id='permanent-delete' checked={isPermanentDelete} onCheckedChange={setIsPermanentDelete} />
-          <label htmlFor='permanent-delete'>Permanent Delete</label>
+          <Switch id='perm-delete' checked={isPermDelete} onCheckedChange={setIsPermDelete} />
+          <label htmlFor='perm-delete'>Permanent Delete</label>
         </div>
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={onCancel}>Cancel</AlertDialogCancel>
+          <AlertDialogCancel onClick={onCancelAction}>Cancel</AlertDialogCancel>
           <AlertDialogAction onClick={handleDelete}>Delete</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

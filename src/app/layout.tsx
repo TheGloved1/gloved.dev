@@ -1,3 +1,4 @@
+import RainingLetters from '@/components/RainingLetters'
 import ReactQueryClientProvider from '@/components/ReactQueryClientProvider'
 import * as constants from '@/lib/constants'
 import { Analytics } from '@vercel/analytics/react'
@@ -27,7 +28,15 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <ReactQueryClientProvider>
           <Analytics />
           <SpeedInsights />
-          {children}
+          <RainingLetters
+            characterCount={300}
+            characterSet='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?'
+            backgroundColor='bg-transparent'
+            characterColor='text-slate-600'
+            activeCharacterColor='text-[#00ff00]'
+          >
+            {children}
+          </RainingLetters>
         </ReactQueryClientProvider>
       </body>
     </html>

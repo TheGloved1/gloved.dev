@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 export default function Page(): React.JSX.Element {
   return (
     <>
-      <main className='flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-sky-950 to-[#1e210c] text-white'>
+      <main className='flex min-h-screen flex-col items-center justify-center bg-transparent z-50 text-white'>
         <Link
           href={'/gallery'}
           className='fixed bottom-2 left-2 flex flex-row items-center justify-center pl-0 lg:bottom-auto lg:top-2'
