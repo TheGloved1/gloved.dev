@@ -75,7 +75,7 @@ export default function FileButton({ file }: FileButtonProps): React.JSX.Element
           <DialogHeader>
             <DialogTitle className='text-base font-semibold'>{file.name}</DialogTitle>
             <DialogDescription className='text-xs'>
-              Size: {file.size} • Uploaded: {new Date(file.createdAt).toLocaleString()}
+              Size: {file.size} • Uploaded: {new Date(file.createdAt).toString()}
             </DialogDescription>
           </DialogHeader>
           <div className='mt-4 flex justify-center items-center'>

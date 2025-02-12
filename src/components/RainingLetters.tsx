@@ -1,5 +1,7 @@
 'use client'
 
+import { checkDevMode } from '@/lib/actions'
+import { useQuery } from '@tanstack/react-query'
 import type React from 'react'
 import { ReactNode, useCallback, useEffect, useRef, useState } from 'react'
 
@@ -141,12 +143,14 @@ const RainingLetters: React.FC<RainingLettersProps> = ({
   activeCharacterColor = 'text-[#00ff00]',
 }) => {
   const [characters, setCharacters] = useState<Character[]>([])
+  const [charCount, setCharCount] = useState<number>(characterCount)
   const [activeIndices, setActiveIndices] = useState<Set<number>>(new Set())
+  const isDev = useQuery({ queryKey: ['devMode'], queryFn: checkDevMode, initialData: false })
 
   const createCharacters = useCallback(() => {
     const newCharacters: Character[] = []
 
-    for (let i = 0; i < characterCount; i++) {
+    for (let i = 0; i < charCount; i++) {
       newCharacters.push({
         char: characterSet[Math.floor(Math.random() * characterSet.length)],
         x: Math.random() * 100,
@@ -156,7 +160,7 @@ const RainingLetters: React.FC<RainingLettersProps> = ({
     }
 
     return newCharacters
-  }, [characterCount, characterSet])
+  }, [charCount, characterSet])
 
   useEffect(() => {
     setCharacters(createCharacters())
@@ -200,6 +204,20 @@ const RainingLetters: React.FC<RainingLettersProps> = ({
 
   return (
     <div className={`relative w-full h-full ${backgroundColor}`}>
+      {isDev && (
+        <div className='p-4 fixed z-50 flex items-center flex-wrap max-w-72 top-1/2 right-0 transform -translate-y-1/2'>
+          <h1 title='Character Count' className='text-sm text-white'>
+            Character Count: {charCount}
+          </h1>
+          <input
+            title='Character Count'
+            className='input input-sm input-accent bg-background'
+            type='number'
+            value={charCount}
+            onChange={(e) => setCharCount(parseInt(e.target.value))}
+          />
+        </div>
+      )}
       {/* Raining Characters - Fixed Background */}
       <div className='absolute inset-0 overflow-hidden pointer-events-none z-0'>
         {characters.map((char, index) => (

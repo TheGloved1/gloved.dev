@@ -51,7 +51,7 @@ async function galleryDeleteApi(file: string) {
   await axios.delete(apiRoute(`/files/delete/${file}?gallery=true`))
 }
 
-export default function Gallery(): React.JSX.Element {
+export default function GalleryPage(): React.JSX.Element {
   const [uploadProgress, setUploadProgress] = useState(0)
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 768)
   const inputButton = useRef<HTMLInputElement>(null)

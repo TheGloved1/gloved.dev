@@ -59,7 +59,6 @@ export default function FileUploader(): React.JSX.Element {
   const [uploadProgress, setUploadProgress] = useState<number>(0)
   const [isTemp, setIsTemp] = useState<boolean>(false)
   const [fileToDelete, setFileToDelete] = useState<FileInfo | null>(null)
-  const [fileToPreview, setFileToPreview] = useState<FileInfo | null>(null)
   const [uploadRequest, setUploadRequest] = useState<AbortController | null>(null)
   const inputButton = useRef<HTMLInputElement>(null)
 

@@ -119,22 +119,22 @@ export default function Chatbot(): React.JSX.Element {
     if (messages.length > 0) {
       // Generate a title based on the current messages
       let title: string | null = null
-      const { msg: response, error } = await sendMessage(
+      const { msg, error } = await sendMessage(
         'Generate a small title for the following chat: ' + messages.map((m) => m.role + ': ' + m.text).join('\n\n'),
         messages,
       )
-      if (error || !response) {
+      if (error || !msg) {
         alert(
           (error || 'An error occurred while generating a title for the chat. Using default title.') +
             '\nUsing default title.',
         )
         title = null
       } else {
-        title = response.text.trim()
+        title = msg.text.trim()
       }
 
       let chatTitle: string | null = null
-      const chatId = Date.now().toString() // Generate a unique ID using timestamp
+      const chatId = performance.now().toString() // Generate a unique ID using timestamp
 
       if (title) {
         chatTitle = title

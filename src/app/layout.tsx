@@ -1,5 +1,5 @@
+import Providers from '@/components/Providers'
 import RainingLetters from '@/components/RainingLetters'
-import ReactQueryClientProvider from '@/components/ReactQueryClientProvider'
 import * as constants from '@/lib/constants'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
@@ -25,19 +25,17 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang='en'>
       <body className={`dark snap-x snap-mandatory antialiased bg-background ${jetbrains.className}`}>
-        <ReactQueryClientProvider>
+        <Providers>
           <Analytics />
           <SpeedInsights />
           <RainingLetters
-            characterCount={300}
-            characterSet='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?'
             backgroundColor='bg-transparent'
             characterColor='text-slate-600'
             activeCharacterColor='text-[#00ff00]'
           >
             {children}
           </RainingLetters>
-        </ReactQueryClientProvider>
+        </Providers>
       </body>
     </html>
   )
