@@ -1,9 +1,7 @@
 'use client'
-
 import { checkDevMode } from '@/lib/actions'
 import { useQuery } from '@tanstack/react-query'
-import type React from 'react'
-import { ReactNode, useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 
 interface Character {
   char: string
@@ -13,7 +11,7 @@ interface Character {
 }
 
 interface RainingLettersProps {
-  children?: ReactNode
+  children?: React.ReactNode
   characterCount?: number
   characterSet?: string
   backgroundColor?: string
@@ -21,127 +19,14 @@ interface RainingLettersProps {
   activeCharacterColor?: string
 }
 
-class TextScramble {
-  el: HTMLElement
-  chars: string
-  queue: Array<{
-    from: string
-    to: string
-    start: number
-    end: number
-    char?: string
-  }>
-  frame: number
-  frameRequest: number
-  resolve: (value: void | PromiseLike<void>) => void
-
-  constructor(el: HTMLElement) {
-    this.el = el
-    this.chars = '!<>-_\\/[]{}—=+*^?#'
-    this.queue = []
-    this.frame = 0
-    this.frameRequest = 0
-    this.resolve = () => {}
-    this.update = this.update.bind(this)
-  }
-
-  setText(newText: string) {
-    const oldText = this.el.innerText
-    const length = Math.max(oldText.length, newText.length)
-    const promise = new Promise<void>((resolve) => (this.resolve = resolve))
-    this.queue = []
-
-    for (let i = 0; i < length; i++) {
-      const from = oldText[i] || ''
-      const to = newText[i] || ''
-      const start = Math.floor(Math.random() * 40)
-      const end = start + Math.floor(Math.random() * 40)
-      this.queue.push({ from, to, start, end })
-    }
-
-    cancelAnimationFrame(this.frameRequest)
-    this.frame = 0
-    this.update()
-    return promise
-  }
-
-  update() {
-    let output = ''
-    let complete = 0
-
-    for (let i = 0, n = this.queue.length; i < n; i++) {
-      const { from, to, start, end, char } = this.queue[i]
-      if (this.frame >= end) {
-        complete++
-        output += to
-      } else if (this.frame >= start) {
-        if (!char || Math.random() < 0.28) {
-          const char = this.chars[Math.floor(Math.random() * this.chars.length)]
-          this.queue[i].char = char
-        }
-        output += `<span class="dud">${char}</span>`
-      } else {
-        output += from
-      }
-    }
-
-    this.el.innerHTML = output
-    if (complete === this.queue.length) {
-      this.resolve()
-    } else {
-      this.frameRequest = requestAnimationFrame(this.update)
-      this.frame++
-    }
-  }
-}
-
-const ScrambledTitle: React.FC = () => {
-  const elementRef = useRef<HTMLHeadingElement>(null)
-  const scramblerRef = useRef<TextScramble | null>(null)
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    if (elementRef.current && !scramblerRef.current) {
-      scramblerRef.current = new TextScramble(elementRef.current)
-      setMounted(true)
-    }
-  }, [])
-
-  useEffect(() => {
-    if (mounted && scramblerRef.current) {
-      const phrases = ['Welcome!', "I'm Gloves", "I'm a Software Developer"]
-
-      let counter = 0
-      const next = () => {
-        if (scramblerRef.current) {
-          scramblerRef.current.setText(phrases[counter]).then(() => {
-            setTimeout(next, 2000)
-          })
-          counter = (counter + 1) % phrases.length
-        }
-      }
-
-      next()
-    }
-  }, [mounted])
-
-  return (
-    <h1
-      ref={elementRef}
-      className='text-white text-6xl font-bold tracking-wider justify-center'
-      style={{ fontFamily: 'monospace' }}
-    ></h1>
-  )
-}
-
-const RainingLetters: React.FC<RainingLettersProps> = ({
+export default function RainingLetters({
   children,
   characterCount = 300,
   characterSet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?',
   backgroundColor = 'bg-black',
   characterColor = 'text-slate-600',
   activeCharacterColor = 'text-[#00ff00]',
-}) => {
+}: RainingLettersProps): React.JSX.Element {
   const [characters, setCharacters] = useState<Character[]>([])
   const [charCount, setCharCount] = useState<number>(characterCount)
   const [activeIndices, setActiveIndices] = useState<Set<number>>(new Set())
@@ -225,7 +110,7 @@ const RainingLetters: React.FC<RainingLettersProps> = ({
             key={index}
             className={`absolute text-xs transition-colors duration-100 ${
               activeIndices.has(index) ?
-                `${activeCharacterColor} text-base scale-125 z-10 font-bold animate-pulse`
+              `${activeCharacterColor} text-base scale-125 z-10 font-bold animate-pulse`
               : `${characterColor} font-light`
             }`}
             style={{
@@ -247,15 +132,6 @@ const RainingLetters: React.FC<RainingLettersProps> = ({
 
       {/* Page Content - Positioned Above Background */}
       <div className='relative z-10'>{children}</div>
-
-      <style jsx global>{`
-        .dud {
-          color: #0f0;
-          opacity: 0.7;
-        }
-      `}</style>
     </div>
   )
 }
-
-export default RainingLetters
