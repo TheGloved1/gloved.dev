@@ -32,9 +32,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             backgroundColor='bg-transparent'
             characterColor='text-slate-600'
             activeCharacterColor='text-[#00ff00]'
-          >
-            {children}
-          </RainingLetters>
+          />
+          <div className='relative z-10'>{children}</div>
         </Providers>
       </body>
     </html>

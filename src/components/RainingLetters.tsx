@@ -97,52 +97,51 @@ function RainingLetters({
   }, [characterSet])
 
   return (
-    <div className={`relative w-full h-full ${backgroundColor}`}>
-      {isDev.data && (
-        <div className='p-4 fixed z-50 flex items-center flex-wrap max-w-72 top-1/2 right-0 transform -translate-y-1/2'>
-          <h1 title='Character Count' className='text-sm text-white'>
-            Character Count: {charCount}
-          </h1>
-          <input
-            title='Character Count'
-            className='input input-sm input-accent bg-background'
-            type='number'
-            step={10}
-            value={charCount}
-            onChange={(e) => setCharCount(parseInt(e.target.value))}
-          />
+    <>
+      <div className={`relative w-full h-full ${backgroundColor}`}>
+        {isDev.data && (
+          <div className='p-4 fixed z-50 flex items-center flex-wrap max-w-72 top-1/2 right-0 transform -translate-y-1/2'>
+            <h1 title='Character Count' className='text-sm text-white'>
+              Character Count: {charCount}
+            </h1>
+            <input
+              title='Character Count'
+              className='input input-sm input-accent bg-background'
+              type='number'
+              step={10}
+              value={charCount}
+              onChange={(e) => setCharCount(parseInt(e.target.value))}
+            />
+          </div>
+        )}
+        {/* Raining Characters - Fixed Background */}
+        <div className='fixed top-0 inset-0 overflow-hidden pointer-events-none z-0'>
+          {characters.map((char, index) => (
+            <span
+              key={index}
+              className={`absolute text-xs transition-colors duration-100 ${
+                activeIndices.has(index) ?
+                  `${activeCharacterColor} text-base scale-125 z-10 font-bold animate-pulse`
+                : `${characterColor} font-light`
+              }`}
+              style={{
+                left: `${char.x}vw`,
+                top: `${char.y}vh`,
+                transform: `translate(-50%, -50%) ${activeIndices.has(index) ? 'scale(1.25)' : 'scale(1)'}`,
+                textShadow:
+                  activeIndices.has(index) ? '0 0 8px rgba(255,255,255,0.8), 0 0 12px rgba(255,255,255,0.4)' : 'none',
+                opacity: activeIndices.has(index) ? 1 : 0.4,
+                transition: 'color 0.1s, transform 0.1s, text-shadow 0.1s',
+                willChange: 'transform, top',
+                fontSize: '1.8rem',
+              }}
+            >
+              {char.char}
+            </span>
+          ))}
         </div>
-      )}
-      {/* Raining Characters - Fixed Background */}
-      <div className='fixed top-0 inset-0 overflow-hidden pointer-events-none z-0'>
-        {characters.map((char, index) => (
-          <span
-            key={index}
-            className={`absolute text-xs transition-colors duration-100 ${
-              activeIndices.has(index) ?
-                `${activeCharacterColor} text-base scale-125 z-10 font-bold animate-pulse`
-              : `${characterColor} font-light`
-            }`}
-            style={{
-              left: `${char.x}vw`,
-              top: `${char.y}vh`,
-              transform: `translate(-50%, -50%) ${activeIndices.has(index) ? 'scale(1.25)' : 'scale(1)'}`,
-              textShadow:
-                activeIndices.has(index) ? '0 0 8px rgba(255,255,255,0.8), 0 0 12px rgba(255,255,255,0.4)' : 'none',
-              opacity: activeIndices.has(index) ? 1 : 0.4,
-              transition: 'color 0.1s, transform 0.1s, text-shadow 0.1s',
-              willChange: 'transform, top',
-              fontSize: '1.8rem',
-            }}
-          >
-            {char.char}
-          </span>
-        ))}
       </div>
-
-      {/* Page Content - Positioned Above Background */}
-      <div className='relative z-10'>{children}</div>
-    </div>
+    </>
   )
 }
 
