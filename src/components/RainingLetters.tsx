@@ -23,7 +23,7 @@ interface RainingLettersProps {
 function RainingLetters({
   characterCount = 200,
   characterSet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?',
-  backgroundColor = 'bg-black',
+  backgroundColor = 'bg-transparent',
   characterColor = 'text-slate-600',
   activeCharacterColor = 'text-[#00ff00]',
 }: RainingLettersProps): React.JSX.Element {

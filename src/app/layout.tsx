@@ -28,11 +28,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <Providers>
           <Analytics />
           <SpeedInsights />
-          <RainingLetters
-            backgroundColor='bg-transparent'
-            characterColor='text-slate-600'
-            activeCharacterColor='text-[#00ff00]'
-          />
+          <RainingLetters />
           <main className='flex relative z-10 min-h-screen flex-col items-center from-sky-950 to-[#1e210c] text-white'>
             {children}
           </main>
