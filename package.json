@@ -64,6 +64,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/react-syntax-highlighter": "^15.5.13",
+    "critters": "^0.0.23",
     "eslint": "^9",
     "eslint-config-next": "canary",
     "postcss": "^8",
