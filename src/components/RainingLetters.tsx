@@ -21,7 +21,6 @@ interface RainingLettersProps {
 }
 
 function RainingLetters({
-  children,
   characterCount = 200,
   characterSet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?',
   backgroundColor = 'bg-black',
@@ -48,7 +47,7 @@ function RainingLetters({
             char: characterSet[Math.floor(Math.random() * characterSet.length)],
             x: Math.random() * 100,
             y: Math.random() * 100,
-            speed: 0.1 + Math.random() * 0.3, // Random speed between 0.1 and 0.4
+            speed: 0.2 + Math.random() * 0.8, // Random speed between 0.1 and 0.4
           })
         }
       } else if (newCharacters.length > charCount) {
@@ -76,19 +75,26 @@ function RainingLetters({
 
   useEffect(() => {
     let animationFrameId: number
+    let lastUpdate = Date.now()
+    const throttleDelay = 35 // Update every 25 milliseconds
 
     const updatePositions = () => {
-      setCharacters((prevChars) =>
-        prevChars.map((char) => ({
-          ...char,
-          y: char.y + char.speed,
-          ...(char.y >= 100 && {
-            y: -5,
-            x: Math.random() * 100,
-            char: characterSet[Math.floor(Math.random() * characterSet.length)],
-          }),
-        })),
-      )
+      const now = Date.now()
+      if (now - lastUpdate >= throttleDelay) {
+        setCharacters((prevChars) => {
+          const updatedChars = prevChars.map((char) => ({
+            ...char,
+            y: char.y + char.speed,
+            ...(char.y >= 100 && {
+              y: -5,
+              x: Math.random() * 100,
+              char: characterSet[Math.floor(Math.random() * characterSet.length)],
+            }),
+          }))
+          return updatedChars // Return the updated characters in one go
+        })
+        lastUpdate = now // Update the last update time
+      }
       animationFrameId = requestAnimationFrame(updatePositions)
     }
 
@@ -121,8 +127,8 @@ function RainingLetters({
               key={index}
               className={`absolute text-xs transition-colors duration-100 ${
                 activeIndices.has(index) ?
-                  `${activeCharacterColor} text-base scale-125 z-10 font-bold animate-pulse`
-                : `${characterColor} font-light`
+                `${activeCharacterColor} text-base scale-125 z-10 font-bold animate-pulse opacity-100`
+                : `${characterColor} font-light opacity-40`
               }`}
               style={{
                 left: `${char.x}vw`,
@@ -130,7 +136,6 @@ function RainingLetters({
                 transform: `translate(-50%, -50%) ${activeIndices.has(index) ? 'scale(1.25)' : 'scale(1)'}`,
                 textShadow:
                   activeIndices.has(index) ? '0 0 8px rgba(255,255,255,0.8), 0 0 12px rgba(255,255,255,0.4)' : 'none',
-                opacity: activeIndices.has(index) ? 1 : 0.4,
                 transition: 'color 0.1s, transform 0.1s, text-shadow 0.1s',
                 willChange: 'transform, top',
                 fontSize: '1.8rem',
