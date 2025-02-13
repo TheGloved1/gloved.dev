@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   icons: 'https://avatars.githubusercontent.com/u/96776176?v=4',
 }
 
-const sections = ['Welcome', 'About', 'Robotics', 'Github', 'File Uploader']
+const sections = ['Welcome', 'Robotics', 'Github', 'File Uploader']
 
 export default function Page(): React.JSX.Element {
   return (
@@ -60,16 +60,16 @@ export default function Page(): React.JSX.Element {
             <p>{'a self taught software engineer.'}</p>
           </ObserverSection>
           <div className='divider w-[75vw] max-w-[1000px]' />
-          <ObserverSection id={sections[1]}>
+          {/* <ObserverSection id={sections[1]}>
             <p className='font-extrabold'>{'About Me'}</p>
             <p className='p-3 text-xl'></p>
             <p>{'I wear gloves, and go by Gloves online.'}</p>
             <p>{"And if you couldn't tell already, I like to code."}</p>
             <p className='p-3 text-xl'></p>
             <p>{'I started programming in my 2nd year of high school.'}</p>
-          </ObserverSection>
+          </ObserverSection> */}
           <div className='divider w-[75vw] max-w-[1000px]' />
-          <ObserverSection id={sections[2]}>
+          <ObserverSection id={sections[1]}>
             <p>
               <strong>
                 <Link className='fancy-link' href='https://meporobotics.com/'>
@@ -94,13 +94,13 @@ export default function Page(): React.JSX.Element {
             </p>
           </ObserverSection>
           <div className='divider w-[75vw] max-w-[1000px]' />
-          <ObserverSection id={sections[3]}>
+          <ObserverSection id={sections[2]}>
             <p className='font-extrabold'>{'My Github Profile'}</p>
             <p className='p-3 text-xl'></p>
             <GitUser name='TheGloved1' />
           </ObserverSection>
           <div className='divider w-[75vw] max-w-[1000px]' />
-          <ObserverSection id={sections[4]}>
+          <ObserverSection id={sections[3]}>
             <FileUploader />
             <Link href={'/file-uploader'} className='group btn m-4 text-xl'>
               Standalone Version{' '}
