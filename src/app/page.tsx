@@ -175,7 +175,6 @@ export default function Page(): React.JSX.Element {
               <div className='text-lg'>{constants.Discord.description}</div>
             </Link>
           </div>
-          {/* <BotButtons /> */}
           <Counter />
         </AdminComponent>
       </div>
