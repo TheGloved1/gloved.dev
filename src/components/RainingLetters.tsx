@@ -30,6 +30,7 @@ function RainingLetters({
   const [characters, setCharacters] = useState<Character[]>([])
   const [charCount, setCharCount] = useState<number>(characterCount)
   const [activeIndices, setActiveIndices] = useState<Set<number>>(new Set())
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState<boolean>(false)
   const isDev = useQuery({ queryKey: ['devMode'], queryFn: checkDevMode, initialData: false })
 
   useEffect(() => {
@@ -74,9 +75,20 @@ function RainingLetters({
   }, [charCount])
 
   useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+    setPrefersReducedMotion(mediaQuery.matches)
+    const onPrefersReducedMotionChange = (e: MediaQueryListEvent) => {
+      setPrefersReducedMotion(e.matches)
+    }
+    mediaQuery.addEventListener('change', onPrefersReducedMotionChange)
+    return () => mediaQuery.removeEventListener('change', onPrefersReducedMotionChange)
+  }, [])
+
+  useEffect(() => {
+    if (prefersReducedMotion) return
     let animationFrameId: number
     let lastUpdate = Date.now()
-    const throttleDelay = 35 // Update every 25 milliseconds
+    const throttleDelay = 35 // Update every 35 milliseconds
 
     const updatePositions = () => {
       const now = Date.now()
@@ -100,7 +112,7 @@ function RainingLetters({
 
     animationFrameId = requestAnimationFrame(updatePositions)
     return () => cancelAnimationFrame(animationFrameId)
-  }, [characterSet])
+  }, [characterSet, prefersReducedMotion])
 
   return (
     <>
@@ -127,7 +139,7 @@ function RainingLetters({
               key={index}
               className={`absolute text-xs transition-colors duration-100 ${
                 activeIndices.has(index) ?
-                `${activeCharacterColor} text-base scale-125 z-10 font-bold animate-pulse opacity-100`
+                  `${activeCharacterColor} text-base scale-125 z-10 font-bold animate-pulse opacity-100`
                 : `${characterColor} font-light opacity-40`
               }`}
               style={{
