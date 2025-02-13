@@ -1,5 +1,6 @@
 import AdminComponent from '@/components/AdminComponent'
 import Counter from '@/components/Counter'
+import { PageVisits } from '@/components/PageVisits'
 import TopScrollVisibility from '@/components/TopScrollVisibility'
 import * as constants from '@/lib/constants'
 import { Metadata } from 'next'
@@ -187,6 +188,7 @@ export default function Page(): React.JSX.Element {
           </Link>
         </p>
       </div>
+      <PageVisits />
     </>
   )
 }

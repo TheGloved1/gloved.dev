@@ -1,4 +1,5 @@
 import { API } from '@/lib/constants'
+import axios from 'axios'
 import { type ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
@@ -53,4 +54,10 @@ export async function apiFetch(route: string, options?: RequestInit) {
  */
 export function apiRoute(route: string) {
   return `${API}${route}`
+}
+
+export async function fetchIp() {
+  const response = await axios.get<{ ip: string }>('https://api64.ipify.org?format=json')
+  console.log('Client IP:', response.data.ip)
+  return response.data.ip
 }
