@@ -1,7 +1,8 @@
 'use client'
 import { checkDevMode } from '@/lib/actions'
 import { useQuery } from '@tanstack/react-query'
-import React, { useCallback, useEffect, useState } from 'react'
+import dynamic from 'next/dynamic'
+import React, { useEffect, useState } from 'react'
 
 interface Character {
   char: string
@@ -19,7 +20,7 @@ interface RainingLettersProps {
   activeCharacterColor?: string
 }
 
-export default function RainingLetters({
+function RainingLetters({
   children,
   characterCount = 200,
   characterSet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?',
@@ -62,7 +63,7 @@ export default function RainingLetters({
   useEffect(() => {
     const updateActiveIndices = () => {
       const newActiveIndices = new Set<number>()
-      const numActive = Math.floor(Math.random() * (charCount / 100)) + (charCount / 100)
+      const numActive = Math.floor(Math.random() * (charCount / 100)) + charCount / 100
       for (let i = 0; i < numActive; i++) {
         newActiveIndices.add(Math.floor(Math.random() * charCount))
       }
@@ -117,10 +118,11 @@ export default function RainingLetters({
         {characters.map((char, index) => (
           <span
             key={index}
-            className={`absolute text-xs transition-colors duration-100 ${activeIndices.has(index) ?
-              `${activeCharacterColor} text-base scale-125 z-10 font-bold animate-pulse`
+            className={`absolute text-xs transition-colors duration-100 ${
+              activeIndices.has(index) ?
+                `${activeCharacterColor} text-base scale-125 z-10 font-bold animate-pulse`
               : `${characterColor} font-light`
-              }`}
+            }`}
             style={{
               left: `${char.x}vw`,
               top: `${char.y}vh`,
@@ -143,3 +145,5 @@ export default function RainingLetters({
     </div>
   )
 }
+
+export default dynamic(() => Promise.resolve(RainingLetters), { ssr: false })

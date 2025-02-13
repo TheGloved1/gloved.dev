@@ -14,24 +14,24 @@ import { useState } from 'react'
 
 interface DeleteConfirmDialogProps {
   fileName: string
-  onConfirmAction: () => void
-  onPermDeleteAction: () => void
-  onCancelAction: () => void
+  onConfirm: () => void
+  onPermDelete: () => void
+  onCancel: () => void
 }
 
 export function DeleteConfirmDialog({
   fileName,
-  onConfirmAction,
-  onPermDeleteAction,
-  onCancelAction,
+  onConfirm,
+  onPermDelete,
+  onCancel,
 }: DeleteConfirmDialogProps): React.JSX.Element {
   const [isPermDelete, setIsPermDelete] = useState(false)
 
   const handleDelete = () => {
     if (isPermDelete) {
-      onPermDeleteAction()
+      onPermDelete()
     } else {
-      onConfirmAction()
+      onConfirm()
     }
   }
 
@@ -50,7 +50,7 @@ export function DeleteConfirmDialog({
           <label htmlFor='perm-delete'>Permanent Delete</label>
         </div>
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={onCancelAction}>Cancel</AlertDialogCancel>
+          <AlertDialogCancel onClick={onCancel}>Cancel</AlertDialogCancel>
           <AlertDialogAction onClick={handleDelete}>Delete</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

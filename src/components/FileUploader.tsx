@@ -281,9 +281,9 @@ export default function FileUploader(): React.JSX.Element {
       {fileToDelete && (
         <DeleteConfirmDialog
           fileName={fileToDelete.name}
-          onConfirmAction={() => handleDelete()}
-          onPermDeleteAction={() => handleDelete(true)}
-          onCancelAction={() => setFileToDelete(null)}
+          onConfirm={() => handleDelete()}
+          onPermDelete={() => handleDelete(true)}
+          onCancel={() => setFileToDelete(null)}
         />
       )}
     </>
