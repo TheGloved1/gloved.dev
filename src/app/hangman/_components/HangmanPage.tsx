@@ -70,7 +70,6 @@ export default function Page(): React.JSX.Element {
 
   return (
     <>
-      <main className='flex min-h-screen items-center justify-center from-sky-950 to-[#1e210c] text-white'>
         <PageBack />
         <div className='flex max-w-4xl flex-col items-center gap-8'>
           <div className='items-center text-[2rem]'>
@@ -87,8 +86,7 @@ export default function Page(): React.JSX.Element {
               addGuessedLetter={addGuessedLetter}
             />
           </div>
-        </div>
-      </main>
+      </div>
     </>
   )
 }

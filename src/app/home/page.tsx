@@ -50,7 +50,7 @@ export default function Page(): React.JSX.Element {
           </div>
         </div>
       </div>
-      <main className='flex min-h-screen flex-col items-center from-sky-950 to-[#1e210c] font-jetbrains text-white'>
+      <div>
         <WIPHeader />
         <div className='flex flex-col items-center justify-center gap-12 px-4 py-16'>
           <ObserverSection id={sections[0]}>
@@ -110,7 +110,7 @@ export default function Page(): React.JSX.Element {
             </Link>
           </ObserverSection>
         </div>
-      </main>
+      </div>
     </>
   )
 }

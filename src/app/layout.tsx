@@ -33,7 +33,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             characterColor='text-slate-600'
             activeCharacterColor='text-[#00ff00]'
           />
-          <div className='relative z-10'>{children}</div>
+          <main className='flex relative z-10 min-h-screen flex-col items-center from-sky-950 to-[#1e210c] text-white'>
+            {children}
+          </main>
         </Providers>
       </body>
     </html>
