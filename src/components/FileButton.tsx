@@ -74,8 +74,9 @@ export default function FileButton({ file }: FileButtonProps): React.JSX.Element
         <DialogContent className='sm:max-w-[425px] w-fit md:max-w-[650px]'>
           <DialogHeader>
             <DialogTitle className='text-base font-semibold'>{file.name}</DialogTitle>
-            <DialogDescription className='text-xs'>
-              Size: {file.size} • Uploaded: {new Date(file.createdAt).toString()}
+            <DialogDescription className='text-xs font-light flex'>
+              Size: <span className='badge badge-sm mx-1'>{file.size}</span> • Uploaded:{' '}
+              <span className='badge badge-sm mx-1'>{new Date(file.createdAt).toLocaleString()}</span>
             </DialogDescription>
           </DialogHeader>
           <div className='mt-4 flex justify-center items-center'>
