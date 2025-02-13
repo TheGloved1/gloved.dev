@@ -12,9 +12,9 @@ export const metadata: Metadata = {
 export default function Page(): React.JSX.Element {
   return (
     <>
-        <PageBack />
-        <div className='flex flex-col items-center justify-center gap-12 self-center px-4 py-32'>
-          <FileUploader />
+      <PageBack />
+      <div className='flex flex-col items-center justify-center gap-12 self-center px-4 py-32'>
+        <FileUploader />
       </div>
     </>
   )
