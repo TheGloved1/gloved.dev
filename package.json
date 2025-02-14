@@ -39,7 +39,7 @@
     "@vercel/analytics": "^1.4.1",
     "@vercel/speed-insights": "^1.1.0",
     "axios": "^1.7.9",
-    "babel-plugin-react-compiler": "^19.0.0-beta-decd7b8-20250118",
+    "babel-plugin-react-compiler": "^19.0.0-beta-30d8a17-20250209",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "daisyui": "^4.12.23",
