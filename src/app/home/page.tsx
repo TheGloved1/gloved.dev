@@ -51,7 +51,7 @@ export default function Page(): React.JSX.Element {
         </div>
       </div>
       <div>
-        <WIPHeader />
+        {/* <WIPHeader /> */}
         <div className='flex flex-col items-center justify-center gap-12 px-4 py-16'>
           <ObserverSection id={sections[0]}>
             <p className='text-xl font-extrabold'>{'Welcome to my website!'}</p>
