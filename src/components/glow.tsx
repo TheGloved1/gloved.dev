@@ -1,32 +1,21 @@
-"use client"
-import { cn } from "@/lib/utils"
-import React, {
-  ComponentPropsWithoutRef,
-  CSSProperties,
-  useEffect,
-  useRef,
-} from "react"
+'use client'
+import { cn } from '@/lib/utils'
+import React, { ComponentPropsWithoutRef, CSSProperties, useEffect, useRef } from 'react'
 
-interface GlowAreaProps extends ComponentPropsWithoutRef<"div"> {
+interface GlowAreaProps extends ComponentPropsWithoutRef<'div'> {
   size?: number
 }
 
 export const GlowArea = (props: GlowAreaProps) => {
-  const { className = "", size = 300, ...rest } = props
+  const { className = '', size = 300, ...rest } = props
   const element = useRef<HTMLDivElement>(null)
   const frameId = useRef<number | null>(null)
   const latestCoords = useRef<{ x: number; y: number } | null>(null)
 
   const updateGlow = () => {
     if (latestCoords.current && element.current) {
-      element.current.style.setProperty(
-        "--glow-x",
-        `${latestCoords.current.x}px`,
-      )
-      element.current.style.setProperty(
-        "--glow-y",
-        `${latestCoords.current.y}px`,
-      )
+      element.current.style.setProperty('--glow-x', `${latestCoords.current.x}px`)
+      element.current.style.setProperty('--glow-y', `${latestCoords.current.y}px`)
       frameId.current = null
     }
   }
@@ -44,49 +33,43 @@ export const GlowArea = (props: GlowAreaProps) => {
   }
 
   const handleMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => {
-    e.currentTarget.style.removeProperty("--glow-x")
-    e.currentTarget.style.removeProperty("--glow-y")
+    e.currentTarget.style.removeProperty('--glow-x')
+    e.currentTarget.style.removeProperty('--glow-y')
   }
   return (
     <div
       ref={element}
       style={
         {
-          position: "relative",
-          "--glow-size": `${size}px`,
+          position: 'relative',
+          '--glow-size': `${size}px`,
         } as CSSProperties
       }
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className={cn(className, "")}
+      className={cn(className, '')}
       {...rest}
     />
   )
 }
 
-GlowArea.displayName = "GlowArea"
+GlowArea.displayName = 'GlowArea'
 
-interface GlowProps extends ComponentPropsWithoutRef<"div"> {
+interface GlowProps extends ComponentPropsWithoutRef<'div'> {
   color?: string
 }
 
 export const Glow = (props: GlowProps) => {
-  const { className, color = "blue", children, ...rest } = props
+  const { className, color = 'blue', children, ...rest } = props
   const element = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    element.current?.style.setProperty(
-      "--glow-top",
-      `${element.current?.offsetTop}px`,
-    )
-    element.current?.style.setProperty(
-      "--glow-left",
-      `${element.current?.offsetLeft}px`,
-    )
+    element.current?.style.setProperty('--glow-top', `${element.current?.offsetTop}px`)
+    element.current?.style.setProperty('--glow-left', `${element.current?.offsetLeft}px`)
   }, [])
 
   return (
-    <div ref={element} className={cn(className, "relative")}>
+    <div ref={element} className={cn(className, 'relative')}>
       <div
         {...rest}
         style={{
@@ -107,4 +90,4 @@ export const Glow = (props: GlowProps) => {
   )
 }
 
-Glow.displayName = "Glow"
+Glow.displayName = 'Glow'
