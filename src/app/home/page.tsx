@@ -5,7 +5,7 @@ import ScrollLink from '@/components/ScrollLink'
 import { NAME } from '@/lib/constants'
 import { ChevronLeft } from 'lucide-react'
 import { Metadata } from 'next'
-import Link from 'next/link'
+import { Link } from 'next-view-transitions'
 import React from 'react'
 import Dropdown from './_components/Dropdown'
 

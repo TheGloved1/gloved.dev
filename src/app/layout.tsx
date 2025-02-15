@@ -4,6 +4,7 @@ import * as constants from '@/lib/constants'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { Metadata } from 'next'
+import { ViewTransitions } from 'next-view-transitions'
 import { JetBrains_Mono } from 'next/font/google'
 import React from 'react'
 import './globals.css'
@@ -23,17 +24,19 @@ const jetbrains = JetBrains_Mono({
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang='en'>
-      <body className={`dark snap-x snap-mandatory antialiased bg-background ${jetbrains.className}`}>
-        <Providers>
-          <Analytics />
-          <SpeedInsights />
-          <RainingLetters />
-          <main className='flex relative z-10 min-h-screen flex-col items-center from-sky-950 to-[#1e210c] text-white'>
-            {children}
-          </main>
-        </Providers>
-      </body>
-    </html>
+    <ViewTransitions>
+      <html lang='en'>
+        <body className={`dark snap-x snap-mandatory antialiased bg-background ${jetbrains.className}`}>
+          <Providers>
+            <Analytics />
+            <SpeedInsights />
+            <RainingLetters />
+            <main className='flex relative z-10 min-h-screen flex-col items-center from-sky-950 to-[#1e210c] text-white'>
+              {children}
+            </main>
+          </Providers>
+        </body>
+      </html>
+    </ViewTransitions>
   )
 }

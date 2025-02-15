@@ -6,7 +6,7 @@ import { apiRoute } from '@/lib/utils'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import axios, { AxiosProgressEvent, AxiosResponse } from 'axios'
 import Image from 'next/image'
-import Link from 'next/link'
+import { Link } from 'next-view-transitions'
 import React, { useEffect, useRef, useState } from 'react'
 
 type GalleryFile = {

@@ -1,6 +1,7 @@
 'use client'
 import { cn } from '@/lib/utils'
-import Link, { LinkProps } from 'next/link'
+import { Link } from 'next-view-transitions'
+import { LinkProps } from 'next/link'
 import { ComponentPropsWithoutRef } from 'react'
 
 type CustomButtonProps = {

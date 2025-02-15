@@ -1,6 +1,6 @@
 import { Discord, NAME } from '@/lib/constants'
 import { Metadata } from 'next'
-import Link from 'next/link'
+import { Link } from 'next-view-transitions'
 
 export const metadata: Metadata = { title: NAME + ' | ' + Discord.title, description: Discord.description }
 

@@ -1,7 +1,7 @@
 'use client'
 import { cn } from '@/lib/utils'
 import { ChevronLeft } from 'lucide-react'
-import Link from 'next/link'
+import { Link } from 'next-view-transitions'
 
 export default function PageBack({
   stayTop,
