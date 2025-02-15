@@ -18,7 +18,7 @@ export function PageVisits(): React.JSX.Element | null {
   if (visitorId === null) {
     setVisitorId(crypto.randomUUID())
   }
-  const ipQuery = useQuery({ queryKey: ['pageVisits', visitorId], queryFn: () => getVisits(visitorId || null), initialData: { visitorIds: [], visits: 0 } })
+  const ipQuery = useQuery({ queryKey: ['pageVisits'], queryFn: () => getVisits(visitorId || null), initialData: { visitorIds: [], visits: 0 } })
   if (ipQuery.isError) return null
   if (ipQuery.isFetching) return null
   return (
