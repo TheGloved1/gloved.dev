@@ -20,7 +20,7 @@ export function PageVisits(): React.JSX.Element | null {
   if (ipQuery.isFetching) return null
   return (
     <div className='fixed bottom-0 items-center justify-center gap-4'>
-      <div className='text-center text-[0.5rem] sm:text-[0.6rem] md:text-[0.7rem] lg:text-[0.8rem]'>{`This page has been loaded a total of ${ipQuery.data.visits} time(s)`}</div>
+      <div className='text-center text-[0.5rem] sm:text-[0.6rem] md:text-[0.7rem] lg:text-[0.8rem]'>{`This page has been loaded ${ipQuery.data.visits} time(s) by ${ipQuery.data.visitorIps.length} visitor(s)}`}</div>
     </div>
   )
 }
