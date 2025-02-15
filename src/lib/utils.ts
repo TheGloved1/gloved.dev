@@ -18,7 +18,7 @@ export function cn(...inputs: ClassValue[]) {
  * @param ms - The amount of milliseconds to wait.
  * @returns A promise that resolves after the specified amount of time.
  */
-export function wait(ms: number) {
+export function wait(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
