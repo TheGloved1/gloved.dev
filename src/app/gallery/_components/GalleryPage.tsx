@@ -5,8 +5,8 @@ import PageBack from '@/components/PageBack'
 import { apiRoute } from '@/lib/utils'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import axios, { AxiosProgressEvent, AxiosResponse } from 'axios'
-import Image from 'next/image'
 import { Link } from 'next-view-transitions'
+import Image from 'next/image'
 import React, { useEffect, useRef, useState } from 'react'
 
 type GalleryFile = {

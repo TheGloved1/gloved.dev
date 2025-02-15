@@ -4,8 +4,8 @@ import { PageVisits } from '@/components/PageVisits'
 import TopScrollVisibility from '@/components/TopScrollVisibility'
 import * as constants from '@/lib/constants'
 import { Metadata } from 'next'
-import Image from 'next/image'
 import { Link } from 'next-view-transitions'
+import Image from 'next/image'
 import React from 'react'
 
 export const metadata: Metadata = {

@@ -1,8 +1,8 @@
 'use client'
 import Loading from '@/components/loading'
 import { useQuery } from '@tanstack/react-query'
-import Image from 'next/image'
 import { Link } from 'next-view-transitions'
+import Image from 'next/image'
 import React from 'react'
 
 type UserData = {
