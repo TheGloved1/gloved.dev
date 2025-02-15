@@ -134,12 +134,12 @@ export default function Chatbot(): React.JSX.Element {
       }
 
       let chatTitle: string | null = null
-      const chatId = performance.now().toString() // Generate a unique ID using timestamp
+      const chatId = crypto.randomUUID() // Generate a unique ID using timestamp
 
       if (title) {
         chatTitle = title
       } else {
-        chatTitle = `Chat-${chatId}`
+        chatTitle = `Chat-${chatId.slice(0, 5)}`
       }
 
       const newChat: SavedChat = { id: chatId, name: chatTitle, messages } // Create a new SavedChat object
