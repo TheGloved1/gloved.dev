@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function Page(): React.JSX.Element {
   return (
-    <main className='flex min-h-screen flex-col items-center justify-center bg-black text-white'>
+    <main className='flex min-h-screen w-screen flex-col items-center justify-center bg-black text-white'>
       <PageBack />
       <p className='rounded-xl bg-neutral-950 p-2 text-sm text-neutral-900'>{"This is a black screen... that's it."}</p>
     </main>
