@@ -67,6 +67,7 @@ function addColors(color1: string, color2: string): string {
 }
 
 interface ColorButton {
+  id: number
   color: string
   level: number
   progress: number
@@ -81,11 +82,11 @@ interface Skill {
 }
 
 export function Colors(): React.JSX.Element {
-  const [colorButtons, setColorButtons] = usePersistentState<ColorButton[]>('colorButtons', [
-    { color: getRandomColor(initialColorClasses), level: 1, progress: 0 },
-    { color: getRandomColor(initialColorClasses), level: 1, progress: 0 },
-    { color: getRandomColor(initialColorClasses), level: 1, progress: 0 },
-    { color: getRandomColor(initialColorClasses), level: 1, progress: 0 },
+  const [colorButtons, setColorButtons] = useState<ColorButton[]>([
+    { id: 0, color: getRandomColor(initialColorClasses), level: 1, progress: 0 },
+    { id: 1, color: getRandomColor(initialColorClasses), level: 1, progress: 0 },
+    { id: 2, color: getRandomColor(initialColorClasses), level: 1, progress: 0 },
+    { id: 3, color: getRandomColor(initialColorClasses), level: 1, progress: 0 },
   ])
   const [score, setScore] = useState(0)
   const [prestigeLevel, setPrestigeLevel] = useState(0)
@@ -218,12 +219,14 @@ export function Colors(): React.JSX.Element {
         Math.floor((newButtons[index1].level + newButtons[index2].level) / 2) + 1
 
       newButtons[index1] = {
+        ...newButtons[index1],
         color: combinedColor,
         level: combinedLevel,
         progress: 0,
       }
 
       newButtons[index2] = {
+        ...newButtons[index2],
         color: getRandomColor(availableColors),
         level: 1,
         progress: 0,
@@ -289,10 +292,10 @@ export function Colors(): React.JSX.Element {
     setPrestigeLevel((prev) => prev + 1)
     setScore(0)
     setColorButtons([
-      { color: getRandomColor(availableColors), level: 1, progress: 0 },
-      { color: getRandomColor(availableColors), level: 1, progress: 0 },
-      { color: getRandomColor(availableColors), level: 1, progress: 0 },
-      { color: getRandomColor(availableColors), level: 1, progress: 0 },
+      { id: 0, color: getRandomColor(availableColors), level: 1, progress: 0 },
+      { id: 1, color: getRandomColor(availableColors), level: 1, progress: 0 },
+      { id: 2, color: getRandomColor(availableColors), level: 1, progress: 0 },
+      { id: 3, color: getRandomColor(availableColors), level: 1, progress: 0 },
     ])
     toast({
       duration: 5000,
@@ -317,7 +320,28 @@ export function Colors(): React.JSX.Element {
     }, 1000)
 
     return () => clearInterval(interval)
-  }, [skills, prestigeLevel, effect, setColorButtons])
+  }, [skills, prestigeLevel, effect])
+
+  useEffect(() => {
+    // check if all colors that are at 100% progress
+    const isComplete = colorButtons.filter((button) => button.progress === 100)
+    isComplete.map((button) => {
+      button.level++
+      button.progress = 0
+    })
+    if (isComplete.length > 0) {
+      // increase the level of the color class
+      setColorButtons((prevButtons) => {
+        return prevButtons.map((button) => {
+          if (button.progress === 100) {
+            return { ...button, progress: 0, level: button.level + 1 }
+          } else {
+            return button
+          }
+        })
+      })
+    }
+  }, [colorButtons])
 
   return (
     <ToastProvider>
