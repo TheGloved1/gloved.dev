@@ -67,6 +67,7 @@
     "critters": "^0.0.23",
     "eslint": "^9",
     "eslint-config-next": "canary",
+    "fluid-tailwind": "^1.0.4",
     "postcss": "^8",
     "prettier": "^3.4.2",
     "prettier-plugin-organize-imports": "^4.1.0",

@@ -1,14 +1,17 @@
-import { Config as DaisyUIConfig } from 'daisyui'
+import daisyui, { Config as DaisyUIConfig } from 'daisyui'
+import fluid, { extract, fontSize, screens } from 'fluid-tailwind'
 import type { Config } from 'tailwindcss'
+import tailwindcssAnimate from 'tailwindcss-animate'
 
 export default {
   darkMode: ['class'],
-  content: [
-    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
-  ],
+  content: {
+    files: ['./src/components/**/*.{js,ts,jsx,tsx,mdx}', './src/app/**/*.{js,ts,jsx,tsx,mdx}'],
+    extract,
+  },
   theme: {
+    screens,
+    fontSize,
     container: {
       center: true,
       padding: '2rem',
@@ -70,11 +73,7 @@ export default {
         },
       },
       screens: {
-        sm: '40rem',
-        md: '48rem',
-        lg: '64rem',
-        xl: '80rem',
-        '2xl': '96rem',
+        xs: '20rem',
       },
       keyframes: {
         fadeOut: {
@@ -140,7 +139,7 @@ export default {
       },
     },
   },
-  plugins: [require('daisyui'), require('tailwindcss-animate')],
+  plugins: [daisyui, tailwindcssAnimate, fluid],
   daisyui: {
     themes: false, // false: only light + dark | true: all themes | array: specific themes like this ["light", "dark", "cupcake"]
     darkTheme: 'dark', // name of one of the included themes for dark mode
@@ -152,3 +151,4 @@ export default {
     themeRoot: ':root', // The element that receives theme color CSS variables
   } as DaisyUIConfig,
 } satisfies Config
+
