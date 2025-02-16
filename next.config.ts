@@ -1,5 +1,5 @@
-import type { NextConfig } from 'next'
 import 'dotenv/config'
+import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
   env: {
@@ -17,6 +17,7 @@ const nextConfig: NextConfig = {
     reactOwnerStack: true,
     optimizeCss: true,
     newDevOverlay: true,
+    useLightningcss: true,
     parallelServerCompiles: true,
   },
   images: {
