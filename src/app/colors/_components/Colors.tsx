@@ -330,7 +330,7 @@ export default function ColorEvolutionGame(): React.JSX.Element {
           <h1 className='text-4xl font-bold mb-4'>Stupid Color Game (WIP)</h1>
           <div className='text-2xl mb-4'>Score: {Math.floor(score)}</div>
           <div className='text-xl mb-4'>Prestige Level: {prestigeLevel}</div>
-          <div className='text-xl mb-4'>Prestige Points: {Math.floor(prestigePoints)}</div>
+          <div className='text-xl mb-4'>Prestige Points (PP): {Math.floor(prestigePoints)}</div>
           <div className='text-lg mb-4'>Available Colors: {availableColors.length}</div>
           <div className='grid grid-cols-2 gap-4'>
             {colorButtons.map((button, index) => (

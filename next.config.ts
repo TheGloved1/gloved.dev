@@ -16,7 +16,6 @@ const nextConfig: NextConfig = {
     reactOwnerStack: true,
     optimizeCss: true,
     newDevOverlay: true,
-    useLightningcss: true,
     parallelServerCompiles: true,
   },
   images: {
