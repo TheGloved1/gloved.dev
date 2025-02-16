@@ -8,8 +8,11 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Toaster } from '@/components/ui/toaster'
 import { toast } from '@/hooks/use-toast'
 import { Menu, X } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import PageBack from '@/components/PageBack'
+import { usePersistentState } from '@/hooks/use-persistent-state'
+import dynamic from 'next/dynamic'
+import { ToastProvider } from '@/components/ui/toast'
 
 const initialColorClasses = [
   '#FF6900',
@@ -70,14 +73,15 @@ interface ColorButton {
 }
 
 interface Skill {
+  id: number
   name: string
   level: number
   cost: number
   effect: (level: number) => number
 }
 
-export default function ColorEvolutionGame(): React.JSX.Element {
-  const [colorButtons, setColorButtons] = useState<ColorButton[]>([
+export function Colors(): React.JSX.Element {
+  const [colorButtons, setColorButtons] = usePersistentState<ColorButton[]>('colorButtons', [
     { color: getRandomColor(initialColorClasses), level: 1, progress: 0 },
     { color: getRandomColor(initialColorClasses), level: 1, progress: 0 },
     { color: getRandomColor(initialColorClasses), level: 1, progress: 0 },
@@ -93,11 +97,44 @@ export default function ColorEvolutionGame(): React.JSX.Element {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   const [skills, setSkills] = useState<Skill[]>([
-    { name: 'Click Power', level: 1, cost: 10, effect: (level) => level * 0.1 },
-    { name: 'Auto Progress', level: 0, cost: 50, effect: (level) => level * 0.05 },
-    { name: 'Combo Boost', level: 0, cost: 100, effect: (level) => level * 0.2 },
-    { name: 'Color Mastery', level: 0, cost: 200, effect: (level) => level * 0.1 },
+    { id: 0, name: 'Click Power', level: 1, cost: 10, effect: (level) => level * 0.1 },
+    { id: 1, name: 'Auto Progress', level: 0, cost: 50, effect: (level) => level * 0.05 },
+    { id: 2, name: 'Combo Boost', level: 0, cost: 100, effect: (level) => level * 0.2 },
+    { id: 3, name: 'Color Mastery', level: 0, cost: 200, effect: (level) => level * 0.1 },
   ])
+
+
+
+  const effect = useCallback((skillId: number, level: number) => {
+    const skillEffects = [
+      {
+        id: 0,
+        effect: (level: number) => {
+          return level * 0.1
+        },
+      },
+      {
+        id: 1,
+        effect: (level: number) => {
+          return level * 0.05
+        },
+      },
+      {
+        id: 2,
+        effect: (level: number) => {
+          return level * 0.2
+        },
+      },
+      {
+        id: 3,
+        effect: (level: number) => {
+          return level * 0.1
+        },
+      },
+    ]
+    // use skillEffects funtions to update the skill effect
+    return skillEffects.find((skill) => skill.id === skillId)?.effect(level) ?? 0
+  }, [])
 
   const checkAntiCheat = () => {
     const now = Date.now()
@@ -111,7 +148,7 @@ export default function ColorEvolutionGame(): React.JSX.Element {
           description: "You're clicking too fast. Please wait a moment.",
           variant: 'destructive',
         })
-        setTimeout(() => setClickCooldown(false), 5000)
+        setTimeout(() => setClickCooldown(false), 2000)
         return false
       }
     } else {
@@ -126,17 +163,16 @@ export default function ColorEvolutionGame(): React.JSX.Element {
 
     setColorButtons((prevButtons) => {
       const newButtons = [...prevButtons]
-      const clickPowerSkill = skills.find((skill) => skill.name === 'Click Power')
-      const clickPowerBonus = clickPowerSkill ? clickPowerSkill.effect(clickPowerSkill.level) : 0
+      const clickPowerSkill = skills.find((skill) => skill.id === 0)
+      const clickPowerBonus = effect(clickPowerSkill?.id ?? 0, clickPowerSkill?.level ?? 0)
       newButtons[index].progress += 10 * (1 + clickPowerBonus) * (1 + prestigeLevel * 0.1)
       if (newButtons[index].progress >= 100) {
         newButtons[index].progress = 0
         newButtons[index].level += 1
         newButtons[index].color = getRandomColor(availableColors)
 
-        const colorMasterySkill = skills.find((skill) => skill.name === 'Color Mastery')
-        const colorMasteryBonus =
-          colorMasterySkill ? colorMasterySkill.effect(colorMasterySkill.level) : 0
+        const colorMasterySkill = skills.find((skill) => skill.id === 3)
+        const colorMasteryBonus = effect(colorMasterySkill?.id ?? 0, colorMasterySkill?.level ?? 0)
         const pointsEarned =
           newButtons[index].level * 10 * (1 + colorMasteryBonus) * (1 + prestigeLevel * 0.2)
         setScore((prevScore) => prevScore + pointsEarned)
@@ -193,7 +229,7 @@ export default function ColorEvolutionGame(): React.JSX.Element {
         progress: 0,
       }
 
-      const comboBoostSkill = skills.find((skill) => skill.name === 'Combo Boost')
+      const comboBoostSkill = skills.find((skill) => skill.id === 2)
       const comboBoostBonus = comboBoostSkill ? comboBoostSkill.effect(comboBoostSkill.level) : 0
       newButtons.forEach((button, idx) => {
         if (idx !== index1 && idx !== index2) {
@@ -268,9 +304,8 @@ export default function ColorEvolutionGame(): React.JSX.Element {
   useEffect(() => {
     const interval = setInterval(() => {
       setColorButtons((prevButtons) => {
-        const autoProgressSkill = skills.find((skill) => skill.name === 'Auto Progress')
-        const autoProgressBonus =
-          autoProgressSkill ? autoProgressSkill.effect(autoProgressSkill.level) : 0
+        const autoProgressSkill = skills.find((skill) => skill.id === 1)
+        const autoProgressBonus = effect(autoProgressSkill?.id ?? 0, autoProgressSkill?.level ?? 0)
         return prevButtons.map((button) => ({
           ...button,
           progress: Math.min(
@@ -282,92 +317,96 @@ export default function ColorEvolutionGame(): React.JSX.Element {
     }, 1000)
 
     return () => clearInterval(interval)
-  }, [skills, prestigeLevel])
+  }, [skills, prestigeLevel, effect, setColorButtons])
 
   return (
-    <div className='flex h-dvh select-none w-dvw bg-gray-100 dark:bg-gray-800'>
-      {/* Sidebar */}
-      <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-gray-900 p-4 overflow-y-auto border-r border-gray-200 dark:border-gray-700 transition-transform duration-300 ease-in-out transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0`}
-      >
-        <Button
-          className='md:hidden absolute top-4 right-4'
-          variant='ghost'
-          size='icon'
-          onClick={() => setIsSidebarOpen(false)}
+    <ToastProvider>
+      <div className='flex h-dvh select-none w-dvw '>
+        {/* Sidebar */}
+        <aside
+          className={`fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-gray-900 p-4 overflow-y-auto border-r border-gray-200 dark:border-gray-700 transition-transform duration-300 ease-in-out transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0`}
         >
-          <X className='h-4 w-4' />
-        </Button>
-        <h2 className='text-2xl font-bold mb-4 text-right'>Skills</h2>
-        <ScrollArea className='h-[calc(100vh-5rem)]'>
-          {skills.map((skill, index) => (
-            <div
-              key={skill.name}
-              className='mb-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg shadow'
-            >
-              <h3 className='text-lg font-semibold'>{skill.name}</h3>
-              <p>Level: {skill.level}</p>
-              <p>Effect: {(skill.effect(skill.level) * 100).toFixed(1)}%</p>
-              <p>Cost: {skill.cost} PP</p>
-              <Button
-                onClick={() => upgradeSkill(index)}
-                className='mt-2'
-                disabled={prestigePoints < skill.cost}
+          <Button
+            className='md:hidden absolute top-4 right-4'
+            variant='ghost'
+            size='icon'
+            onClick={() => setIsSidebarOpen(false)}
+          >
+            <X className='h-4 w-4' />
+          </Button>
+          <h2 className='text-2xl font-bold mb-4 text-right'>Skills</h2>
+          <ScrollArea className='h-[calc(100vh-5rem)]'>
+            {skills.map((skill, index) => (
+              <div
+                key={skill.name}
+                className='mb-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg shadow'
               >
-                Upgrade
-              </Button>
-            </div>
-          ))}
-        </ScrollArea>
-      </aside>
-
-      {/* PageBack component positioned to the right of the sidebar */}
-      <PageBack className='md:ml-64 z-50' /> {/* Adjust margin as needed to align properly */}
-
-
-      {/* Main content */}
-      <main className='flex-1 p-8 overflow-y-auto'>
-        <Button className='md:hidden mb-4' variant='outline' onClick={() => setIsSidebarOpen(true)}>
-          <Menu className='h-4 w-4 mr-2' />
-          Open Skills
-        </Button>
-        <div className='flex flex-col items-center justify-center pt-36 gap-4'>
-          <h1 className='text-4xl font-bold mb-4'>Stupid Color Game (WIP)</h1>
-          <div className='text-2xl mb-4'>Score: {Math.floor(score)}</div>
-          <div className='text-xl mb-4'>Prestige Level: {prestigeLevel}</div>
-          <div className='text-xl mb-4'>Prestige Points (PP): {Math.floor(prestigePoints)}</div>
-          <div className='text-lg mb-4'>Available Colors: {availableColors.length}</div>
-          <div className='grid grid-cols-2 gap-4'>
-            {colorButtons.map((button, index) => (
-              <div key={index} className='flex flex-col items-center'>
+                <h3 className='text-lg font-semibold'>{skill.name}</h3>
+                <p>Level: {skill.level}</p>
+                <p>Effect: {(skill.effect(skill.level) * 100).toFixed(1)}%</p>
+                <p>Cost: {skill.cost} PP</p>
                 <Button
-                  onClick={() => handleColorClick(index)}
-                  className='w-24 h-24 rounded-full'
-                  style={{ backgroundColor: button.color }}
-                  disabled={clickCooldown}
+                  onClick={() => upgradeSkill(index)}
+                  className='mt-2'
+                  disabled={prestigePoints < skill.cost}
                 >
-                  Level {button.level}
+                  Upgrade
                 </Button>
-                <Progress value={button.progress} className='w-24 mt-2' />
               </div>
             ))}
+          </ScrollArea>
+        </aside>
+
+        {/* PageBack component positioned to the right of the sidebar */}
+        <PageBack className='md:ml-64 z-50' /> {/* Adjust margin as needed to align properly */}
+
+
+        {/* Main content */}
+        <main className='flex-1 p-8 overflow-y-auto'>
+          <Button className='md:hidden mb-4' variant='outline' onClick={() => setIsSidebarOpen(true)}>
+            <Menu className='h-4 w-4 mr-2' />
+            Open Skills
+          </Button>
+          <div className='flex flex-col items-center justify-center pt-36 gap-4'>
+            <h1 className='text-4xl font-bold mb-4'>Stupid Color Game (WIP)</h1>
+            <div className='text-2xl mb-4'>Score: {Math.floor(score)}</div>
+            <div className='text-xl mb-4'>Prestige Level: {prestigeLevel}</div>
+            <div className='text-xl mb-4'>Prestige Points (PP): {Math.floor(prestigePoints)}</div>
+            <div className='text-lg mb-4'>Available Colors: {availableColors.length}</div>
+            <div className='grid grid-cols-2 gap-4'>
+              {colorButtons.map((button, index) => (
+                <div key={index} className='flex flex-col items-center'>
+                  <Button
+                    onClick={() => handleColorClick(index)}
+                    className='w-24 h-24 rounded-full'
+                    style={{ backgroundColor: button.color }}
+                    disabled={clickCooldown}
+                  >
+                    Level {button.level}
+                  </Button>
+                  <Progress value={button.progress} className='w-24 mt-2' />
+                </div>
+              ))}
+            </div>
+            <div className='mt-4'>
+              <Button onClick={() => combineColors(0, 1)} className='mr-2' disabled={clickCooldown}>
+                Combine 1 & 2
+              </Button>
+              <Button onClick={() => combineColors(2, 3)} disabled={clickCooldown}>
+                Combine 3 & 4
+              </Button>
+            </div>
+            <div className='mt-4'>
+              <Button onClick={prestige} variant='outline' disabled={clickCooldown}>
+                Prestige (Requires {10000 * (prestigeLevel + 1)} points)
+              </Button>
+            </div>
           </div>
-          <div className='mt-4'>
-            <Button onClick={() => combineColors(0, 1)} className='mr-2' disabled={clickCooldown}>
-              Combine 1 & 2
-            </Button>
-            <Button onClick={() => combineColors(2, 3)} disabled={clickCooldown}>
-              Combine 3 & 4
-            </Button>
-          </div>
-          <div className='mt-4'>
-            <Button onClick={prestige} variant='outline' disabled={clickCooldown}>
-              Prestige (Requires {10000 * (prestigeLevel + 1)} points)
-            </Button>
-          </div>
-        </div>
-      </main>
-      <Toaster />
-    </div>
+        </main>
+        <Toaster />
+      </div>
+    </ToastProvider>
   )
 }
+
+export default dynamic(() => Promise.resolve(Colors), { ssr: false })
