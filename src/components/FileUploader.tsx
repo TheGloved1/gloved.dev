@@ -54,7 +54,10 @@ export default function FileUploader(): React.JSX.Element {
   const correctPassword = env.NEXT_PUBLIC_FILE_MANAGER_PASSKEY
   const queryClient = useQueryClient()
 
-  const [passwordEntered, setPasswordEntered] = usePersistentState<boolean>('fileUploaderPasswordEntered', false)
+  const [passwordEntered, setPasswordEntered] = usePersistentState<boolean>(
+    'fileUploaderPasswordEntered',
+    false,
+  )
   const [alert, setAlert] = useState<string>('')
   const [uploadProgress, setUploadProgress] = useState<number>(0)
   const [isTemp, setIsTemp] = useState<boolean>(false)
@@ -65,14 +68,16 @@ export default function FileUploader(): React.JSX.Element {
   const filesQuery = useQuery({ queryKey: ['files'], queryFn: fetchFiles, initialData: [] })
 
   const deleteMutation = useMutation({
-    mutationFn: ({ file, isTemp }: { file: FileInfo; isTemp: boolean }) => deleteFileApi(file, isTemp),
+    mutationFn: ({ file, isTemp }: { file: FileInfo; isTemp: boolean }) =>
+      deleteFileApi(file, isTemp),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['files'] })
     },
   })
 
   const permanentDeleteMutation = useMutation({
-    mutationFn: ({ file, isTemp }: { file: FileInfo; isTemp: boolean }) => permanentDeleteFileApi(file, isTemp),
+    mutationFn: ({ file, isTemp }: { file: FileInfo; isTemp: boolean }) =>
+      permanentDeleteFileApi(file, isTemp),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['files'] })
     },
@@ -181,7 +186,9 @@ export default function FileUploader(): React.JSX.Element {
     <>
       <div className='flex w-full flex-col items-center container justify-center self-center rounded-xl border-4 border-white bg-gray-700/50 p-4 text-[0.5rem] md:text-[1rem]'>
         <h1 className='font-bold'>{'Simple File Uploader'}</h1>
-        <p className='text-[0.5rem] md:text-sm'>{"(Don't download random files off the internet)"}</p>
+        <p className='text-[0.5rem] md:text-sm'>
+          {"(Don't download random files off the internet)"}
+        </p>
         <br />
 
         <label htmlFor='uploadBtn' className='label mt-2 pt-2'>
@@ -191,7 +198,12 @@ export default function FileUploader(): React.JSX.Element {
           <label className='label m-2 cursor-pointer rounded-xl bg-gray-600 p-2 text-black hover:bg-gray-700'>
             <span className='label-text text-balance'>{'Temporary file (24h)'}</span>
             <span className='w-2'></span>
-            <input type='checkbox' checked={isTemp} onChange={(e) => setIsTemp(e.target.checked)} className='checkbox' />
+            <input
+              type='checkbox'
+              checked={isTemp}
+              onChange={(e) => setIsTemp(e.target.checked)}
+              className='checkbox'
+            />
           </label>
         </div>
         <input
@@ -204,7 +216,11 @@ export default function FileUploader(): React.JSX.Element {
 
         {uploadProgress > 0 && uploadProgress < 100 && (
           <div className='mt-2 w-full'>
-            <progress className='progress progress-primary w-full' value={uploadProgress} max='100' />
+            <progress
+              className='progress progress-primary w-full'
+              value={uploadProgress}
+              max='100'
+            />
             <p className='text-center'>{`Uploading: ${uploadProgress}%`}</p>
             <Button onClick={handleCancelUpload}>Cancel</Button>
           </div>

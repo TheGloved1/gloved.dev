@@ -68,7 +68,14 @@ export default function GitUser({ name }: { name: string }): React.JSX.Element |
       <div className='container flex flex-col items-center justify-center gap-4 rounded-3xl border-4 border-dashed border-white bg-gray-600/50 p-4'>
         <div>
           <Link href={user.data.html_url} target='_blank' rel='noopener noreferrer'>
-            <Image className='rounded-full' width={200} height={200} src={user.data.avatar_url} alt='' loading='lazy' />
+            <Image
+              className='rounded-full'
+              width={200}
+              height={200}
+              src={user.data.avatar_url}
+              alt=''
+              loading='lazy'
+            />
           </Link>
         </div>
         <div className='flex flex-col gap-1'>
@@ -76,7 +83,12 @@ export default function GitUser({ name }: { name: string }): React.JSX.Element |
           <span>{user.data.name}</span>
         </div>
         <p className='flex flex-col rounded-xl bg-gray-600 p-1'>{user.data.bio}</p>
-        <Link className='fancy-link' href={user.data.html_url} target='_blank' rel='noopener noreferrer'>
+        <Link
+          className='fancy-link'
+          href={user.data.html_url}
+          target='_blank'
+          rel='noopener noreferrer'
+        >
           {user.data.html_url}
         </Link>
       </div>

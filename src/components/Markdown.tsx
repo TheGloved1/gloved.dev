@@ -7,7 +7,9 @@ const components: Components = {
     children,
     className,
     ...props
-  }: ClassAttributes<HTMLElement> & HTMLAttributes<HTMLElement> & ExtraProps): React.JSX.Element => {
+  }: ClassAttributes<HTMLElement> &
+    HTMLAttributes<HTMLElement> &
+    ExtraProps): React.JSX.Element => {
     const language = className?.split('-').pop() || 'plaintext'
     return (
       <CodeBlock language={language} {...props}>

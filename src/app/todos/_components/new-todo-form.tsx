@@ -1,6 +1,8 @@
 import { useState } from 'react'
 
-export default function NewTodoForm(props: { onSubmit: (title: string) => void }): React.JSX.Element {
+export default function NewTodoForm(props: {
+  onSubmit: (title: string) => void
+}): React.JSX.Element {
   const [newItem, setNewItem] = useState('')
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>): void {

@@ -82,7 +82,9 @@ export default function BotButtons(): React.JSX.Element {
       <button
         className='btn mx-4'
         onClick={handleStartBot}
-        disabled={startBotMutation.isPending || botStatusQuery.isPending || botStatusQuery.data?.isRunning}
+        disabled={
+          startBotMutation.isPending || botStatusQuery.isPending || botStatusQuery.data?.isRunning
+        }
       >
         {startBotMutation.isPending ?
           'Starting Bot...'
@@ -93,7 +95,9 @@ export default function BotButtons(): React.JSX.Element {
       <button
         className='btn mx-4'
         onClick={handleStopBot}
-        disabled={stopBotMutation.isPending || botStatusQuery.isPending || !botStatusQuery.data?.isRunning}
+        disabled={
+          stopBotMutation.isPending || botStatusQuery.isPending || !botStatusQuery.data?.isRunning
+        }
       >
         {stopBotMutation.isPending ?
           'Stopping Bot...'

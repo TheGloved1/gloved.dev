@@ -27,7 +27,9 @@ export function wait(ms: number): Promise<void> {
  * @param input - A promise or value to await.
  * @returns A tuple containing the result of the input, or null if there was an error, and the error itself, or null if there was no error.
  */
-export async function safeAwait<T, E = Error>(input: Promise<T> | T): Promise<[T, null] | [null, E]> {
+export async function safeAwait<T, E = Error>(
+  input: Promise<T> | T,
+): Promise<[T, null] | [null, E]> {
   try {
     const result = await Promise.resolve(input)
     return [result, null]

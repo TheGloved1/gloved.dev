@@ -66,7 +66,9 @@ export default function Chatbot(): React.JSX.Element {
    * message to the server.
    * @param e The form submission event.
    */
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement> | React.KeyboardEvent<HTMLTextAreaElement>) => {
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement> | React.KeyboardEvent<HTMLTextAreaElement>,
+  ) => {
     e.preventDefault()
     await handleSendMessage()
   }
@@ -83,7 +85,11 @@ export default function Chatbot(): React.JSX.Element {
    */
   const handleSendMessage = async () => {
     setLoading(true)
-    setMessages((msgs) => [...msgs, { role: Role.USER, text: input }, { role: Role.MODEL, text: ' ' }])
+    setMessages((msgs) => [
+      ...msgs,
+      { role: Role.USER, text: input },
+      { role: Role.MODEL, text: ' ' },
+    ])
 
     try {
       const { msg, error } = await sendMessage(input, messages)
@@ -120,12 +126,14 @@ export default function Chatbot(): React.JSX.Element {
       // Generate a title based on the current messages
       let title: string | null = null
       const { msg, error } = await sendMessage(
-        'Generate a small title for the following chat: ' + messages.map((m) => m.role + ': ' + m.text).join('\n\n'),
+        'Generate a small title for the following chat: ' +
+          messages.map((m) => m.role + ': ' + m.text).join('\n\n'),
         messages,
       )
       if (error || !msg) {
         alert(
-          (error || 'An error occurred while generating a title for the chat. Using default title.') +
+          (error ||
+            'An error occurred while generating a title for the chat. Using default title.') +
             '\nUsing default title.',
         )
         title = null
@@ -186,7 +194,9 @@ export default function Chatbot(): React.JSX.Element {
                     </SidebarMenuButton>
                     {savedChats.map((item) => (
                       <SidebarMenuItem key={item.name}>
-                        <SidebarMenuButton onClick={() => loadChatFromLocalStorage(item.id)}>{item.name}</SidebarMenuButton>
+                        <SidebarMenuButton onClick={() => loadChatFromLocalStorage(item.id)}>
+                          {item.name}
+                        </SidebarMenuButton>
                       </SidebarMenuItem>
                     ))}
                   </SidebarMenu>
@@ -203,7 +213,10 @@ export default function Chatbot(): React.JSX.Element {
         <div className='mx-auto max-w-7xl flex-1 p-4'>
           <div className='space-y-4 pb-32'>
             {messages.map((m, index) => (
-              <div key={index} className={`flex ${m.role === Role.USER ? 'justify-end' : 'justify-start'}`}>
+              <div
+                key={index}
+                className={`flex ${m.role === Role.USER ? 'justify-end' : 'justify-start'}`}
+              >
                 <div
                   className={`group max-w-[75%] rounded-lg p-4 ${
                     m.role === Role.USER ? 'bg-primary text-black' : 'bg-gray-800 text-white'
@@ -213,7 +226,9 @@ export default function Chatbot(): React.JSX.Element {
                     {m.role === Role.USER ?
                       <User2 className='h-4 w-4' />
                     : <Bot className='h-4 w-4' />}
-                    <span className='text-sm font-medium'>{m.role === Role.USER ? 'You' : 'AI'}</span>
+                    <span className='text-sm font-medium'>
+                      {m.role === Role.USER ? 'You' : 'AI'}
+                    </span>
                     <CopyButton
                       className='block size-4 text-sm text-gray-600 hover:block group-hover:block md:hidden'
                       text={m.text}
@@ -273,7 +288,11 @@ export default function Chatbot(): React.JSX.Element {
                     }}
                   />
                 </div>
-                <button type='submit' disabled={loading || !input.trim()} className='btn bg-primary hover:bg-primary/90'>
+                <button
+                  type='submit'
+                  disabled={loading || !input.trim()}
+                  className='btn bg-primary hover:bg-primary/90'
+                >
                   {loading ?
                     <Loader2 className='h-4 w-4 animate-spin' />
                   : <Send className='h-4 w-4' />}

@@ -147,7 +147,9 @@ function RainingLetters({
                 top: `${char.y}vh`,
                 transform: `translate(-50%, -50%) ${activeIndices.has(index) ? 'scale(1.25)' : 'scale(1)'}`,
                 textShadow:
-                  activeIndices.has(index) ? '0 0 8px rgba(255,255,255,0.8), 0 0 12px rgba(255,255,255,0.4)' : 'none',
+                  activeIndices.has(index) ?
+                    '0 0 8px rgba(255,255,255,0.8), 0 0 12px rgba(255,255,255,0.4)'
+                  : 'none',
                 transition: 'color 0.1s, transform 0.1s, text-shadow 0.1s',
                 willChange: 'transform, top',
                 fontSize: '1.8rem',

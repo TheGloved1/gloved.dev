@@ -24,7 +24,11 @@ function getClassName(
   return cn(Default, className)
 }
 
-export default function DefaultButton({ children, className, ...props }: CustomButtonProps): React.JSX.Element {
+export default function DefaultButton({
+  children,
+  className,
+  ...props
+}: CustomButtonProps): React.JSX.Element {
   return (
     <button className={getClassName(className)} {...props}>
       {children}
@@ -35,7 +39,10 @@ export default function DefaultButton({ children, className, ...props }: CustomB
 export function RedButton({ children, className, ...props }: CustomButtonProps): React.JSX.Element {
   return (
     <button
-      className={getClassName(className, 'btn btn-square btn-warning rounded-xl bg-red-500 hover:bg-red-400')}
+      className={getClassName(
+        className,
+        'btn btn-square btn-warning rounded-xl bg-red-500 hover:bg-red-400',
+      )}
       {...props}
     >
       {children}
@@ -43,7 +50,11 @@ export function RedButton({ children, className, ...props }: CustomButtonProps):
   )
 }
 
-export function SecondaryButton({ children, className, ...props }: CustomButtonProps): React.JSX.Element {
+export function SecondaryButton({
+  children,
+  className,
+  ...props
+}: CustomButtonProps): React.JSX.Element {
   return (
     <button className={getClassName(className)} {...props}>
       {children}
@@ -51,7 +62,12 @@ export function SecondaryButton({ children, className, ...props }: CustomButtonP
   )
 }
 
-export function LinkButton({ children, className, targetAndRel, ...props }: CustomLinkProps): React.JSX.Element {
+export function LinkButton({
+  children,
+  className,
+  targetAndRel,
+  ...props
+}: CustomLinkProps): React.JSX.Element {
   return (
     <Link
       className={getClassName(className)}

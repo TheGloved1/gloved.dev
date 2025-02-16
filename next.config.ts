@@ -12,7 +12,6 @@ const nextConfig: NextConfig = {
     ppr: true,
     webpackBuildWorker: true,
     taint: true,
-    inlineCss: true,
     appDocumentPreloading: true,
     reactOwnerStack: true,
     optimizeCss: true,

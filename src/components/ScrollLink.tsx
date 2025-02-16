@@ -7,7 +7,12 @@ type ScrollLinkProps = {
   onClick?: () => void
 } & React.ComponentPropsWithoutRef<'button'>
 
-export default function ScrollLink({ children, href, onClick, ...props }: ScrollLinkProps): React.JSX.Element {
+export default function ScrollLink({
+  children,
+  href,
+  onClick,
+  ...props
+}: ScrollLinkProps): React.JSX.Element {
   function handleScroll(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
     e.preventDefault()
     const element = document.getElementById(href.replace('#', ''))

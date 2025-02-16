@@ -34,7 +34,10 @@ function extractIndexFromFilename(filename: string): number {
   return match ? parseInt(match[1], 10) : 0 // Default to 0 if no match
 }
 
-async function galleryUploadApi(file: File, onUploadProgress: (progressEvent: AxiosProgressEvent) => void) {
+async function galleryUploadApi(
+  file: File,
+  onUploadProgress: (progressEvent: AxiosProgressEvent) => void,
+) {
   const formData = new FormData()
   formData.append('file', file)
   formData.append('gallery', 'true')
@@ -53,7 +56,9 @@ async function galleryDeleteApi(file: string) {
 
 export default function GalleryPage(): React.JSX.Element {
   const [uploadProgress, setUploadProgress] = useState(0)
-  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 768)
+  const [windowWidth, setWindowWidth] = useState(
+    typeof window !== 'undefined' ? window.innerWidth : 768,
+  )
   const inputButton = useRef<HTMLInputElement>(null)
   const queryClient = useQueryClient()
 
@@ -142,45 +147,46 @@ export default function GalleryPage(): React.JSX.Element {
         </div>
         {galleryQuery.isFetching ?
           <Loading />
-          : galleryQuery.data.length === 0 ?
-            <div className='flex w-screen flex-wrap justify-center'>
-              <p>No files found.</p>
-            </div>
-            : <div className='flex w-screen flex-wrap justify-center'>
-              {galleryQuery.data.map((file) => (
-                <div
-                  key={file.name}
-                  className='group relative flex h-24 w-24 flex-col items-center justify-center border-2 border-dashed border-slate-500 sm:h-32 sm:w-32 md:h-48 md:w-48'
+        : galleryQuery.data.length === 0 ?
+          <div className='flex w-screen flex-wrap justify-center'>
+            <p>No files found.</p>
+          </div>
+        : <div className='flex w-screen flex-wrap justify-center'>
+            {galleryQuery.data.map((file) => (
+              <div
+                key={file.name}
+                className='group relative flex h-24 w-24 flex-col items-center justify-center border-2 border-dashed border-slate-500 sm:h-32 sm:w-32 md:h-48 md:w-48'
+              >
+                <Link
+                  href={apiRoute(`/files/download/${file.name}?gallery=true`)}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className='relative flex h-24 w-24 flex-col items-center justify-center border-2 border-dashed border-slate-500 sm:h-32 sm:w-32 md:h-48 md:w-48'
                 >
-                  <Link
-                    href={apiRoute(`/files/download/${file.name}?gallery=true`)}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    className='relative flex h-24 w-24 flex-col items-center justify-center border-2 border-dashed border-slate-500 sm:h-32 sm:w-32 md:h-48 md:w-48'
+                  <Image
+                    src={`${apiRoute(`/files/download/${file.name}?gallery=true`)}`}
+                    alt={file.name}
+                    className='bottom-0 left-0 right-0 top-0 max-h-full max-w-full cursor-pointer rounded-xl object-center p-2'
+                    title={'Download ' + file.name}
+                    width={125}
+                    height={125}
+                    placeholder='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFc90AAAADUlEQVQYV2NkYGAAYRgDf9hKJgAAAABJRU5ErkJggg=='
+                  />
+                </Link>
+                {windowWidth >= 768 && (
+                  <RedButton
+                    className='absolute right-2 top-2 opacity-0 group-hover:opacity-100'
+                    onClick={() => deleteFile(file.name)}
+                    title={`Delete file ${galleryQuery.data.findIndex((f) => f.name === file.name) + 1} of ${
+                      galleryQuery.data.length
+                    }`}
                   >
-                    <Image
-                      src={`${apiRoute(`/files/download/${file.name}?gallery=true`)}`}
-                      alt={file.name}
-                      className='bottom-0 left-0 right-0 top-0 max-h-full max-w-full cursor-pointer rounded-xl object-center p-2'
-                      title={'Download ' + file.name}
-                      width={125}
-                      height={125}
-                      placeholder='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFc90AAAADUlEQVQYV2NkYGAAYRgDf9hKJgAAAABJRU5ErkJggg=='
-                    />
-                  </Link>
-                  {windowWidth >= 768 && (
-                    <RedButton
-                      className='absolute right-2 top-2 opacity-0 group-hover:opacity-100'
-                      onClick={() => deleteFile(file.name)}
-                      title={`Delete file ${galleryQuery.data.findIndex((f) => f.name === file.name) + 1} of ${galleryQuery.data.length
-                        }`}
-                    >
-                      X
-                    </RedButton>
-                  )}
-                </div>
-              ))}
-            </div>
+                    X
+                  </RedButton>
+                )}
+              </div>
+            ))}
+          </div>
         }
       </div>
       <input

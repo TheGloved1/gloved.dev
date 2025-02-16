@@ -14,7 +14,14 @@ type ImageBlurProps = {
   height?: number
 }
 
-export default function ImageBlur({ src, title, alt, className, width, height }: ImageBlurProps): React.JSX.Element {
+export default function ImageBlur({
+  src,
+  title,
+  alt,
+  className,
+  width,
+  height,
+}: ImageBlurProps): React.JSX.Element {
   const imageQuery = useQuery({
     queryKey: ['images', src],
     queryFn: () => fetchImage(src),

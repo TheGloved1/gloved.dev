@@ -8,7 +8,11 @@ type ObserverSectionProps = {
   className?: string
 } & ComponentPropsWithoutRef<'section'>
 
-export default function ObserverSection({ children, className, id }: ObserverSectionProps): React.JSX.Element {
+export default function ObserverSection({
+  children,
+  className,
+  id,
+}: ObserverSectionProps): React.JSX.Element {
   const sectionRef = useRef<HTMLElement>(null)
   const [isInView, setIsInView] = useState(false)
 

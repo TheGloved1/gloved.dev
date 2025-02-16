@@ -11,7 +11,8 @@ import Dropdown from './_components/Dropdown'
 
 export const metadata: Metadata = {
   title: `${NAME} | Home`,
-  description: 'The home page for my About Me based web project built with the Next.js React Web Framework',
+  description:
+    'The home page for my About Me based web project built with the Next.js React Web Framework',
   icons: 'https://avatars.githubusercontent.com/u/96776176?v=4',
 }
 

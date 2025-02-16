@@ -10,7 +10,11 @@ async function fetchAllowedIps() {
   return res.data
 }
 
-export default function AdminComponent({ children }: { children: React.ReactNode }): React.JSX.Element {
+export default function AdminComponent({
+  children,
+}: {
+  children: React.ReactNode
+}): React.JSX.Element {
   const clientIp = useQuery<string>({ queryKey: ['clientIp'], queryFn: fetchIp })
   const allowedIps = useQuery<string[]>({
     queryKey: ['allowedIps'],

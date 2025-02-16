@@ -27,7 +27,10 @@ export default function PageBack({
       }}
       className={
         stayTop ?
-          cn(`${noFixed ? '' : 'fixed'} bottom-auto left-2 top-2 flex flex-row items-center justify-center`, className)
+          cn(
+            `${noFixed ? '' : 'fixed'} bottom-auto left-2 top-2 flex flex-row items-center justify-center`,
+            className,
+          )
         : cn(
             `${noFixed ? '' : 'fixed'} bottom-2 left-2 flex flex-row items-center justify-center pl-0 md:bottom-auto md:top-2`,
             className,

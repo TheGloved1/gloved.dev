@@ -10,7 +10,14 @@ export default function TodoList(props: {
     <ul className='list'>
       {props.todos.length === 0 && 'No Todos'}
       {props.todos.map((todo) => {
-        return <TodoItem {...todo} key={todo.id} toggleTodo={props.toggleTodo} deleteTodo={props.deleteTodo} />
+        return (
+          <TodoItem
+            {...todo}
+            key={todo.id}
+            toggleTodo={props.toggleTodo}
+            deleteTodo={props.deleteTodo}
+          />
+        )
       })}
     </ul>
   )

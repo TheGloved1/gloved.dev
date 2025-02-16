@@ -1,6 +1,12 @@
 'use client'
 import Button, { LinkButton } from '@/components/Buttons'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { apiRoute } from '@/lib/utils'
 import Image from 'next/image'
@@ -79,7 +85,10 @@ export default function FileButton({ file }: FileButtonProps): React.JSX.Element
                 Size: <span className='badge badge-sm text-nowrap'>{file.size}</span>
               </span>
               <span className='mr-2 text-left'>
-                Uploaded: <span className='badge badge-sm text-nowrap'>{new Date(file.createdAt).toLocaleString()}</span>
+                Uploaded:{' '}
+                <span className='badge badge-sm text-nowrap'>
+                  {new Date(file.createdAt).toLocaleString()}
+                </span>
               </span>
             </DialogDescription>
           </DialogHeader>
@@ -94,7 +103,10 @@ export default function FileButton({ file }: FileButtonProps): React.JSX.Element
               />
             )}
             {isVideo && (
-              <VideoPreview className='max-w-md max-h-[250px] md:h-[350px] lg:h-[650px] rounded-xl' src={previewUrl} />
+              <VideoPreview
+                className='max-w-md max-h-[250px] md:h-[350px] lg:h-[650px] rounded-xl'
+                src={previewUrl}
+              />
             )}
             {!isImage && !isVideo && null}
           </div>

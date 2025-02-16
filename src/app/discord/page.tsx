@@ -2,7 +2,10 @@ import { Discord, NAME } from '@/lib/constants'
 import { Metadata } from 'next'
 import { Link } from 'next-view-transitions'
 
-export const metadata: Metadata = { title: NAME + ' | ' + Discord.title, description: Discord.description }
+export const metadata: Metadata = {
+  title: NAME + ' | ' + Discord.title,
+  description: Discord.description,
+}
 
 export default function Page(): React.JSX.Element {
   return (

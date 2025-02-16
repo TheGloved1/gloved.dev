@@ -1,5 +1,6 @@
+'use client'
 import { ClipboardCopy } from 'lucide-react'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 interface CopyButtonProps {
   text: string
@@ -7,14 +8,28 @@ interface CopyButtonProps {
   title?: string
 }
 
-const CopyButton: React.FC<CopyButtonProps> = ({ text, className, title = 'Copy message' }) => {
-  const [copied, setCopied] = useState(false)
+export default function CopyButton({
+  text = 'Copied!',
+  className,
+  title = 'Copy message',
+}: CopyButtonProps): React.JSX.Element {
+  const [copied, setCopied] = useState<boolean>(false)
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(text)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 1000)
+  const handleCopy = async () => {
+    try {
+      navigator.clipboard.writeText(text)
+      setCopied(true)
+    } catch (err) {
+      console.warn('Copy to clipboard failed', err)
+    }
   }
+
+  useEffect(() => {
+    if (copied) {
+      const timer = setTimeout(() => setCopied(false), 1000)
+      return () => clearTimeout(timer)
+    }
+  }, [copied])
 
   return (
     <div>
@@ -29,5 +44,3 @@ const CopyButton: React.FC<CopyButtonProps> = ({ text, className, title = 'Copy 
     </div>
   )
 }
-
-export default CopyButton
