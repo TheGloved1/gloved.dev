@@ -1,11 +1,9 @@
 'use client'
-
 import { motion as m } from 'framer-motion'
 
 export default function Template({ children }: { children: React.ReactNode }) {
   return (
     <m.div
-      translate='yes'
       initial={{ y: 0, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ ease: 'easeInOut', duration: 0.75 }}
