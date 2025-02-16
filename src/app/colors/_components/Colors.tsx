@@ -4,8 +4,10 @@ import type React from 'react'
 
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import { Toaster } from '@/components/ui/toaster'
 import { toast } from '@/hooks/use-toast'
+import { Menu, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 
 const initialColorClasses = [
@@ -66,6 +68,13 @@ interface ColorButton {
   progress: number
 }
 
+interface Skill {
+  name: string
+  level: number
+  cost: number
+  effect: (level: number) => number
+}
+
 export default function ColorEvolutionGame(): React.JSX.Element {
   const [colorButtons, setColorButtons] = useState<ColorButton[]>([
     { color: getRandomColor(initialColorClasses), level: 1, progress: 0 },
@@ -74,13 +83,20 @@ export default function ColorEvolutionGame(): React.JSX.Element {
     { color: getRandomColor(initialColorClasses), level: 1, progress: 0 },
   ])
   const [score, setScore] = useState(0)
-  const [multiplier, setMultiplier] = useState(1)
   const [prestigeLevel, setPrestigeLevel] = useState(0)
   const [prestigePoints, setPrestigePoints] = useState(0)
   const [clickCooldown, setClickCooldown] = useState(false)
   const [availableColors, setAvailableColors] = useState(initialColorClasses)
   const lastClickTime = useRef(Date.now())
   const clickCount = useRef(0)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+
+  const [skills, setSkills] = useState<Skill[]>([
+    { name: 'Click Power', level: 1, cost: 10, effect: (level) => level * 0.1 },
+    { name: 'Auto Progress', level: 0, cost: 50, effect: (level) => level * 0.05 },
+    { name: 'Combo Boost', level: 0, cost: 100, effect: (level) => level * 0.2 },
+    { name: 'Color Mastery', level: 0, cost: 200, effect: (level) => level * 0.1 },
+  ])
 
   const checkAntiCheat = () => {
     const now = Date.now()
@@ -109,14 +125,19 @@ export default function ColorEvolutionGame(): React.JSX.Element {
 
     setColorButtons((prevButtons) => {
       const newButtons = [...prevButtons]
-      newButtons[index].progress += 10 * multiplier * (1 + prestigeLevel * 0.1)
+      const clickPowerSkill = skills.find((skill) => skill.name === 'Click Power')
+      const clickPowerBonus = clickPowerSkill ? clickPowerSkill.effect(clickPowerSkill.level) : 0
+      newButtons[index].progress += 10 * (1 + clickPowerBonus) * (1 + prestigeLevel * 0.1)
       if (newButtons[index].progress >= 100) {
         newButtons[index].progress = 0
         newButtons[index].level += 1
         newButtons[index].color = getRandomColor(availableColors)
 
-        // Score is only gained when leveling up
-        const pointsEarned = newButtons[index].level * 10 * (1 + prestigeLevel * 0.2)
+        const colorMasterySkill = skills.find((skill) => skill.name === 'Color Mastery')
+        const colorMasteryBonus =
+          colorMasterySkill ? colorMasterySkill.effect(colorMasterySkill.level) : 0
+        const pointsEarned =
+          newButtons[index].level * 10 * (1 + colorMasteryBonus) * (1 + prestigeLevel * 0.2)
         setScore((prevScore) => prevScore + pointsEarned)
         setPrestigePoints((prevPoints) => prevPoints + pointsEarned * 0.01)
 
@@ -126,7 +147,6 @@ export default function ColorEvolutionGame(): React.JSX.Element {
           description: `Color leveled up to ${newButtons[index].level}! Earned ${Math.floor(pointsEarned)} points.`,
         })
 
-        // Unlock new colors based on level
         if (
           newButtons[index].level % 5 === 0 &&
           availableColors.length < initialColorClasses.length + advancedColorClasses.length
@@ -135,7 +155,6 @@ export default function ColorEvolutionGame(): React.JSX.Element {
           if (newColorIndex < advancedColorClasses.length) {
             setAvailableColors((prev) => [...prev, advancedColorClasses[newColorIndex]])
 
-            // Bonus score for unlocking a new color
             const unlockBonus = 1000 * (1 + prestigeLevel * 0.5)
             setScore((prevScore) => prevScore + unlockBonus)
             setPrestigePoints((prevPoints) => prevPoints + unlockBonus * 0.01)
@@ -173,10 +192,11 @@ export default function ColorEvolutionGame(): React.JSX.Element {
         progress: 0,
       }
 
-      // Combining colors now only boosts progress of other buttons
+      const comboBoostSkill = skills.find((skill) => skill.name === 'Combo Boost')
+      const comboBoostBonus = comboBoostSkill ? comboBoostSkill.effect(comboBoostSkill.level) : 0
       newButtons.forEach((button, idx) => {
         if (idx !== index1 && idx !== index2) {
-          button.progress += 20 * (1 + prestigeLevel * 0.1)
+          button.progress += 20 * (1 + comboBoostBonus) * (1 + prestigeLevel * 0.1)
         }
       })
       toast({
@@ -189,10 +209,31 @@ export default function ColorEvolutionGame(): React.JSX.Element {
     })
   }
 
-  const upgradeMultiplier = () => {
+  const upgradeSkill = (skillIndex: number) => {
     if (!checkAntiCheat()) return
 
-    setMultiplier((prev) => Math.min(prev + 1, 5 + prestigeLevel))
+    setSkills((prevSkills) => {
+      const newSkills = [...prevSkills]
+      const skill = newSkills[skillIndex]
+      if (prestigePoints >= skill.cost) {
+        setPrestigePoints((prev) => prev - skill.cost)
+        skill.level += 1
+        skill.cost = Math.floor(skill.cost * 1.5)
+        toast({
+          duration: 3000,
+          title: 'Skill Upgraded!',
+          description: `${skill.name} is now level ${skill.level}!`,
+        })
+      } else {
+        toast({
+          duration: 3000,
+          title: 'Not enough Prestige Points',
+          description: `You need ${skill.cost} Prestige Points to upgrade this skill.`,
+          variant: 'destructive',
+        })
+      }
+      return newSkills
+    })
   }
 
   const prestige = () => {
@@ -210,7 +251,6 @@ export default function ColorEvolutionGame(): React.JSX.Element {
 
     setPrestigeLevel((prev) => prev + 1)
     setScore(0)
-    setMultiplier(1)
     setColorButtons([
       { color: getRandomColor(availableColors), level: 1, progress: 0 },
       { color: getRandomColor(availableColors), level: 1, progress: 0 },
@@ -227,59 +267,101 @@ export default function ColorEvolutionGame(): React.JSX.Element {
   useEffect(() => {
     const interval = setInterval(() => {
       setColorButtons((prevButtons) => {
+        const autoProgressSkill = skills.find((skill) => skill.name === 'Auto Progress')
+        const autoProgressBonus =
+          autoProgressSkill ? autoProgressSkill.effect(autoProgressSkill.level) : 0
         return prevButtons.map((button) => ({
           ...button,
-          progress: Math.min(button.progress + (1 + prestigeLevel * 0.1), 100),
+          progress: Math.min(
+            button.progress + (1 + autoProgressBonus) * (1 + prestigeLevel * 0.1),
+            100,
+          ),
         }))
       })
     }, 1000)
 
     return () => clearInterval(interval)
-  }, [prestigeLevel])
+  }, [skills, prestigeLevel])
 
   return (
-    <div className='flex h-dvh select-none w-dvw flex-col items-center justify-center gap-4 bg-gray-100 dark:bg-gray-800'>
-      <h1 className='text-4xl font-bold mb-4'>{'Stupid Color Game (WIP)'}</h1>
-      <div className='text-2xl mb-4'>Score: {Math.floor(score)}</div>
-      <div className='text-xl mb-4'>Prestige Level: {prestigeLevel}</div>
-      <div className='text-xl mb-4'>Prestige Points: {Math.floor(prestigePoints)}</div>
-      <div className='text-lg mb-4'>Available Colors: {availableColors.length}</div>
-      <div className='grid grid-cols-2 gap-4'>
-        {colorButtons.map((button, index) => (
-          <div key={index} className='flex flex-col items-center'>
-            <Button
-              onClick={() => handleColorClick(index)}
-              className='w-24 h-24 rounded-full'
-              style={{ backgroundColor: button.color }}
-              disabled={clickCooldown}
-            >
-              Level {button.level}
-            </Button>
-            <Progress value={button.progress} className='w-24 mt-2' />
-          </div>
-        ))}
-      </div>
-      <div className='mt-4'>
-        <Button onClick={() => combineColors(0, 1)} className='mr-2' disabled={clickCooldown}>
-          Combine 1 & 2
-        </Button>
-        <Button onClick={() => combineColors(2, 3)} disabled={clickCooldown}>
-          Combine 3 & 4
-        </Button>
-      </div>
-      <div className='mt-4'>
+    <div className='flex h-dvh select-none w-dvw bg-gray-100 dark:bg-gray-800'>
+      {/* Sidebar */}
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-gray-900 p-4 overflow-y-auto border-r border-gray-200 dark:border-gray-700 transition-transform duration-300 ease-in-out transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0`}
+      >
         <Button
-          onClick={() => upgradeMultiplier()}
-          disabled={multiplier >= 5 + prestigeLevel || clickCooldown}
+          className='md:hidden absolute top-4 right-4'
+          variant='ghost'
+          size='icon'
+          onClick={() => setIsSidebarOpen(false)}
         >
-          Upgrade Multiplier (Current: {multiplier}x)
+          <X className='h-4 w-4' />
         </Button>
-      </div>
-      <div className='mt-4'>
-        <Button onClick={prestige} variant='outline' disabled={clickCooldown}>
-          Prestige (Requires {10000 * (prestigeLevel + 1)} points)
+        <h2 className='text-2xl font-bold mb-4'>Skills</h2>
+        <ScrollArea className='h-[calc(100vh-5rem)]'>
+          {skills.map((skill, index) => (
+            <div
+              key={skill.name}
+              className='mb-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg shadow'
+            >
+              <h3 className='text-lg font-semibold'>{skill.name}</h3>
+              <p>Level: {skill.level}</p>
+              <p>Effect: {(skill.effect(skill.level) * 100).toFixed(1)}%</p>
+              <p>Cost: {skill.cost} PP</p>
+              <Button
+                onClick={() => upgradeSkill(index)}
+                className='mt-2'
+                disabled={prestigePoints < skill.cost}
+              >
+                Upgrade
+              </Button>
+            </div>
+          ))}
+        </ScrollArea>
+      </aside>
+
+      {/* Main content */}
+      <main className='flex-1 p-8 overflow-y-auto'>
+        <Button className='md:hidden mb-4' variant='outline' onClick={() => setIsSidebarOpen(true)}>
+          <Menu className='h-4 w-4 mr-2' />
+          Open Skills
         </Button>
-      </div>
+        <div className='flex flex-col items-center justify-center gap-4'>
+          <h1 className='text-4xl font-bold mb-4'>Stupid Color Game (WIP)</h1>
+          <div className='text-2xl mb-4'>Score: {Math.floor(score)}</div>
+          <div className='text-xl mb-4'>Prestige Level: {prestigeLevel}</div>
+          <div className='text-xl mb-4'>Prestige Points: {Math.floor(prestigePoints)}</div>
+          <div className='text-lg mb-4'>Available Colors: {availableColors.length}</div>
+          <div className='grid grid-cols-2 gap-4'>
+            {colorButtons.map((button, index) => (
+              <div key={index} className='flex flex-col items-center'>
+                <Button
+                  onClick={() => handleColorClick(index)}
+                  className='w-24 h-24 rounded-full'
+                  style={{ backgroundColor: button.color }}
+                  disabled={clickCooldown}
+                >
+                  Level {button.level}
+                </Button>
+                <Progress value={button.progress} className='w-24 mt-2' />
+              </div>
+            ))}
+          </div>
+          <div className='mt-4'>
+            <Button onClick={() => combineColors(0, 1)} className='mr-2' disabled={clickCooldown}>
+              Combine 1 & 2
+            </Button>
+            <Button onClick={() => combineColors(2, 3)} disabled={clickCooldown}>
+              Combine 3 & 4
+            </Button>
+          </div>
+          <div className='mt-4'>
+            <Button onClick={prestige} variant='outline' disabled={clickCooldown}>
+              Prestige (Requires {10000 * (prestigeLevel + 1)} points)
+            </Button>
+          </div>
+        </div>
+      </main>
       <Toaster />
     </div>
   )
