@@ -9,6 +9,7 @@ import { Toaster } from '@/components/ui/toaster'
 import { toast } from '@/hooks/use-toast'
 import { Menu, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
+import PageBack from '@/components/PageBack'
 
 const initialColorClasses = [
   '#FF6900',
@@ -297,7 +298,7 @@ export default function ColorEvolutionGame(): React.JSX.Element {
         >
           <X className='h-4 w-4' />
         </Button>
-        <h2 className='text-2xl font-bold mb-4'>Skills</h2>
+        <h2 className='text-2xl font-bold mb-4 text-right'>Skills</h2>
         <ScrollArea className='h-[calc(100vh-5rem)]'>
           {skills.map((skill, index) => (
             <div
@@ -320,13 +321,17 @@ export default function ColorEvolutionGame(): React.JSX.Element {
         </ScrollArea>
       </aside>
 
+      {/* PageBack component positioned to the right of the sidebar */}
+      <PageBack className='md:ml-64 z-50' /> {/* Adjust margin as needed to align properly */}
+
+
       {/* Main content */}
       <main className='flex-1 p-8 overflow-y-auto'>
         <Button className='md:hidden mb-4' variant='outline' onClick={() => setIsSidebarOpen(true)}>
           <Menu className='h-4 w-4 mr-2' />
           Open Skills
         </Button>
-        <div className='flex flex-col items-center justify-center gap-4'>
+        <div className='flex flex-col items-center justify-center pt-36 gap-4'>
           <h1 className='text-4xl font-bold mb-4'>Stupid Color Game (WIP)</h1>
           <div className='text-2xl mb-4'>Score: {Math.floor(score)}</div>
           <div className='text-xl mb-4'>Prestige Level: {prestigeLevel}</div>
