@@ -1,4 +1,3 @@
-import PageBack from '@/components/PageBack'
 import Colors from './_components/Colors'
 
 export default function Page(): React.JSX.Element {

@@ -11,10 +11,11 @@ import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 export function usePersistentState<T>(
   key: string,
   initialValue: T,
+  enabled: boolean = true,
 ): [T, Dispatch<SetStateAction<T>>] {
   const inBrowser = () => typeof window !== 'undefined'
   const [state, setState] = useState<T>(() => {
-    if (inBrowser()) {
+    if (inBrowser() && enabled) {
       try {
         const storedState = localStorage.getItem(key)
         return storedState ? JSON.parse(storedState) : initialValue
