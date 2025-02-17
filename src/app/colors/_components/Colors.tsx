@@ -309,7 +309,7 @@ export default function Colors(): React.JSX.Element {
           ...button,
           progress: Math.min(
             button.progress +
-              (1 + autoProgressBonus) * (1 + prestigeLevel * 0.1) * (1 + button.combinationBonus),
+            (1 + autoProgressBonus) * (1 + prestigeLevel * 0.1) * (1 + button.combinationBonus),
             100,
           ),
         }))
@@ -331,7 +331,7 @@ export default function Colors(): React.JSX.Element {
               level: button.level + 1,
               color: colorProgression[Math.min(button.level, colorProgression.length - 1)],
             }
-          : button,
+            : button,
         ),
       )
     }
@@ -341,9 +341,8 @@ export default function Colors(): React.JSX.Element {
     <ToastProvider>
       <div className='flex h-dvh select-none w-dvw'>
         <aside
-          className={`fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-gray-900 p-4 overflow-y-auto border-r border-gray-200 dark:border-gray-700 transition-transform duration-300 ease-in-out transform ${
-            isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-          } md:relative md:translate-x-0`}
+          className={`fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-gray-900 p-4 overflow-y-auto border-r border-gray-200 dark:border-gray-700 transition-transform duration-300 ease-in-out transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+            } md:relative md:translate-x-0`}
         >
           <Button
             className='md:hidden absolute top-4 right-4'
@@ -388,7 +387,7 @@ export default function Colors(): React.JSX.Element {
             Open Skills
           </Button>
           <div className='flex flex-col items-center justify-center pt-36 gap-4'>
-            <h1 className='text-4xl font-bold mb-4'>Color Evolution Game</h1>
+            <h1 className='text-4xl font-bold mb-4'>Stupid Color Game</h1>
             <div className='text-2xl mb-4'>Score: {Math.floor(score)}</div>
             <div className='text-xl mb-4'>Prestige Level: {prestigeLevel}</div>
             <div className='text-xl mb-4'>Prestige Points (PP): {Math.floor(prestigePoints)}</div>
