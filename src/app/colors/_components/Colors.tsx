@@ -1,11 +1,10 @@
+'use client'
 
-"use client"
+import type React from 'react'
 
-import type React from "react"
-
-import { Button } from "@/components/ui/button"
-import { Progress } from "@/components/ui/progress"
-import { ScrollArea } from "@/components/ui/scroll-area"
+import { Button } from '@/components/ui/button'
+import { Progress } from '@/components/ui/progress'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import {
   Sidebar,
   SidebarContent,
@@ -15,12 +14,12 @@ import {
   SidebarHeader,
   SidebarProvider,
   SidebarTrigger,
-} from "@/components/ui/sidebar"
-import { usePersistentState } from "@/hooks/use-persistent-state"
-import { useToast } from "@/hooks/use-toast"
-import { Info, Menu, X } from "lucide-react"
-import { useEffect, useRef, useState, useCallback } from "react"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+} from '@/components/ui/sidebar'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { usePersistentState } from '@/hooks/use-persistent-state'
+import { useToast } from '@/hooks/use-toast'
+import { Info } from 'lucide-react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 interface ColorButton {
   id: number
@@ -33,13 +32,13 @@ interface ColorButton {
 }
 
 enum ColorTrait {
-  None = "None",
-  FastGrowing = "Fast Growing",
-  HighYield = "High Yield",
-  Multiplier = "Multiplier",
-  AutoClicker = "Auto Clicker",
-  ComboMaster = "Combo Master",
-  LuckyClicker = "Lucky Clicker",
+  None = 'None',
+  FastGrowing = 'Fast Growing',
+  HighYield = 'High Yield',
+  Multiplier = 'Multiplier',
+  AutoClicker = 'Auto Clicker',
+  ComboMaster = 'Combo Master',
+  LuckyClicker = 'Lucky Clicker',
 }
 
 interface Skill {
@@ -60,20 +59,103 @@ enum Skills {
 }
 
 const defaultSkills: Skill[] = [
-  { id: Skills.ClickPower, name: "Click Power", description: "Boosts the power of clicks", level: 1, cost: 10, maxLevel: 50 },
-  { id: Skills.TraitBoost, name: "Trait Boost", description: "Boosts the chance of getting a trait", level: 0, cost: 25, maxLevel: 30 },
-  { id: Skills.AutoProgress, name: "Auto Progress", description: "Automatically progresses colors", level: 0, cost: 50, maxLevel: 25 },
-  { id: Skills.ComboBoost, name: "Combo Boost", description: "Boosts the combo multiplier", level: 0, cost: 100, maxLevel: 20 },
-  { id: Skills.ColorMastery, name: "Color Mastery", description: "Boosts unlocking colors", level: 0, cost: 200, maxLevel: 15 },
+  {
+    id: Skills.ClickPower,
+    name: 'Click Power',
+    description: 'Boosts the power of clicks',
+    level: 1,
+    cost: 10,
+    maxLevel: 50,
+  },
+  {
+    id: Skills.TraitBoost,
+    name: 'Trait Boost',
+    description: 'Boosts the chance of getting a trait',
+    level: 0,
+    cost: 25,
+    maxLevel: 30,
+  },
+  {
+    id: Skills.AutoProgress,
+    name: 'Auto Progress',
+    description: 'Automatically progresses colors',
+    level: 0,
+    cost: 50,
+    maxLevel: 25,
+  },
+  {
+    id: Skills.ComboBoost,
+    name: 'Combo Boost',
+    description: 'Boosts the combo multiplier',
+    level: 0,
+    cost: 100,
+    maxLevel: 20,
+  },
+  {
+    id: Skills.ColorMastery,
+    name: 'Color Mastery',
+    description: 'Boosts unlocking colors',
+    level: 0,
+    cost: 200,
+    maxLevel: 15,
+  },
 ]
 
 const defaultColorButtons: ColorButton[] = [
-  { id: 0, color: "#FF0000", level: 1, progress: 0, clicks: 0, trait: ColorTrait.None, unlocked: true },
-  { id: 1, color: "#00FF00", level: 1, progress: 0, clicks: 0, trait: ColorTrait.None, unlocked: true },
-  { id: 2, color: "#0000FF", level: 1, progress: 0, clicks: 0, trait: ColorTrait.None, unlocked: false },
-  { id: 3, color: "#FFFF00", level: 1, progress: 0, clicks: 0, trait: ColorTrait.None, unlocked: false },
-  { id: 4, color: "#FF00FF", level: 1, progress: 0, clicks: 0, trait: ColorTrait.None, unlocked: false },
-  { id: 5, color: "#00FFFF", level: 1, progress: 0, clicks: 0, trait: ColorTrait.None, unlocked: false },
+  {
+    id: 0,
+    color: '#FF0000',
+    level: 1,
+    progress: 0,
+    clicks: 0,
+    trait: ColorTrait.None,
+    unlocked: true,
+  },
+  {
+    id: 1,
+    color: '#00FF00',
+    level: 1,
+    progress: 0,
+    clicks: 0,
+    trait: ColorTrait.None,
+    unlocked: true,
+  },
+  {
+    id: 2,
+    color: '#0000FF',
+    level: 1,
+    progress: 0,
+    clicks: 0,
+    trait: ColorTrait.None,
+    unlocked: false,
+  },
+  {
+    id: 3,
+    color: '#FFFF00',
+    level: 1,
+    progress: 0,
+    clicks: 0,
+    trait: ColorTrait.None,
+    unlocked: false,
+  },
+  {
+    id: 4,
+    color: '#FF00FF',
+    level: 1,
+    progress: 0,
+    clicks: 0,
+    trait: ColorTrait.None,
+    unlocked: false,
+  },
+  {
+    id: 5,
+    color: '#00FFFF',
+    level: 1,
+    progress: 0,
+    clicks: 0,
+    trait: ColorTrait.None,
+    unlocked: false,
+  },
 ]
 
 const effect = (skill: Skill): number => {
@@ -93,16 +175,20 @@ const effect = (skill: Skill): number => {
 
 export default function Colors(): React.JSX.Element {
   const { toast } = useToast()
-  const [colorButtons, setColorButtons] = usePersistentState<ColorButton[]>("colorButtons", defaultColorButtons, true)
+  const [colorButtons, setColorButtons] = usePersistentState<ColorButton[]>(
+    'colorButtons',
+    defaultColorButtons,
+    true,
+  )
   const [score, setScore] = useState(0)
-  const [prestigeLevel, setPrestigeLevel] = usePersistentState<number>("prestigeLevel", 0, true)
-  const [prestigePoints, setPrestigePoints] = usePersistentState<number>("prestigePoints", 0, true)
+  const [prestigeLevel, setPrestigeLevel] = usePersistentState<number>('prestigeLevel', 0, true)
+  const [prestigePoints, setPrestigePoints] = usePersistentState<number>('prestigePoints', 0, true)
   const [clickCooldown, setClickCooldown] = useState(false)
   const lastClickTime = useRef(Date.now())
   const clickCount = useRef(0)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [combinationStreak, setCombinationStreak] = useState(0)
-  const [skills, setSkills] = usePersistentState<Skill[]>("skills", defaultSkills, true)
+  const [skills, setSkills] = usePersistentState<Skill[]>('skills', defaultSkills, true)
 
   const checkAntiCheat = useCallback(() => {
     const now = Date.now()
@@ -112,9 +198,9 @@ export default function Colors(): React.JSX.Element {
         setClickCooldown(true)
         toast({
           duration: 5000,
-          title: "Slow down!",
+          title: 'Slow down!',
           description: "You're clicking too fast. Please wait a moment.",
-          variant: "destructive",
+          variant: 'destructive',
         })
         setTimeout(() => setClickCooldown(false), 2000)
         return false
@@ -145,8 +231,7 @@ export default function Colors(): React.JSX.Element {
         button.clicks += 1
 
         const prestigeBoost = prestigeLevel * 0.1
-        const clickMultiplier = Math.log10(button.clicks / 10 * 2) * (1 + prestigeBoost)
-        console.log('Click multiplier:', clickMultiplier)
+        const clickMultiplier = Math.log10((button.clicks / 10) * 2) * (1 + prestigeBoost)
 
         for (let i = 0; i < button.progress; i += 100) {
           const extraProgress = button.progress - i
@@ -154,8 +239,10 @@ export default function Colors(): React.JSX.Element {
           button.level += 1
 
           const colorMasteryBonus = effect(skills[Skills.ColorMastery])
-          let pointsEarned = (button.level * 10) * ((clickMultiplier * (1 + colorMasteryBonus)) * (1 + prestigeLevel * 0.2))
-          let prestigePointsEarned = ((button.level * 10) * ((1 + colorMasteryBonus) * (1 + prestigeLevel * 0.1))) * 0.005
+          let pointsEarned =
+            button.level * 10 * (clickMultiplier * (1 + colorMasteryBonus) * (1 + prestigeBoost))
+          let prestigePointsEarned =
+            button.level * 10 * ((1 + colorMasteryBonus) * (1 + prestigeBoost)) * 0.005
 
           if (button.trait === ColorTrait.HighYield) {
             pointsEarned *= 2
@@ -167,7 +254,7 @@ export default function Colors(): React.JSX.Element {
 
           toast({
             duration: 3000,
-            title: "Level Up!",
+            title: 'Level Up!',
             description: `Color leveled up to ${button.level}! Earned ${Math.floor(pointsEarned)} points.`,
           })
         }
@@ -178,7 +265,7 @@ export default function Colors(): React.JSX.Element {
           setPrestigePoints((prevPoints) => prevPoints + bonusPoints * 0.02)
           toast({
             duration: 3000,
-            title: "Lucky Click!",
+            title: 'Lucky Click!',
             description: `You got lucky! Earned ${bonusPoints} bonus points.`,
           })
         }
@@ -200,9 +287,9 @@ export default function Colors(): React.JSX.Element {
       if (button1.clicks < 10 || button2.clicks < 10) {
         toast({
           duration: 3000,
-          title: "Not enough clicks",
-          description: "Each color needs at least 10 clicks before combining.",
-          variant: "destructive",
+          title: 'Not enough clicks',
+          description: 'Each color needs at least 10 clicks before combining.',
+          variant: 'destructive',
         })
         return prevButtons
       }
@@ -247,27 +334,27 @@ export default function Colors(): React.JSX.Element {
         setPrestigePoints((prev) => prev + comboMasterBonus * 0.02)
         toast({
           duration: 3000,
-          title: "Combo Master Bonus!",
+          title: 'Combo Master Bonus!',
           description: `Earned an extra ${Math.floor(comboMasterBonus)} points from Combo Master!`,
         })
       }
 
       toast({
         duration: 3000,
-        title: "Combination Boost!",
+        title: 'Combination Boost!',
         description: `Colors combined! Earned ${Math.floor(combinationBonus)} points, ${Math.floor(combinationBonus * 0.02)} PP, and ${streakBonus} streak bonus!`,
       })
 
       if (newTrait1 !== ColorTrait.None && newTrait2 !== ColorTrait.None) {
         toast({
           duration: 5000,
-          title: "New Traits Unlocked!",
+          title: 'New Traits Unlocked!',
           description: `The combined colors gained the ${newTrait1} and ${newTrait2} traits!`,
         })
       } else if (newTrait1 !== ColorTrait.None || newTrait2 !== ColorTrait.None) {
         toast({
           duration: 5000,
-          title: "New Trait Unlocked!",
+          title: 'New Trait Unlocked!',
           description: `The combined color gained the ${newTrait1 !== ColorTrait.None ? newTrait1 : newTrait2} trait!`,
         })
       }
@@ -291,9 +378,9 @@ export default function Colors(): React.JSX.Element {
       if (skill.level >= skill.maxLevel) {
         toast({
           duration: 3000,
-          title: "Skill Maxed Out",
+          title: 'Skill Maxed Out',
           description: `${skill.name} is already at its maximum level.`,
-          variant: "destructive",
+          variant: 'destructive',
         })
         return prevSkills
       }
@@ -307,15 +394,15 @@ export default function Colors(): React.JSX.Element {
 
         toast({
           duration: 3000,
-          title: "Skill Upgraded!",
+          title: 'Skill Upgraded!',
           description: `${skill.name} is now level ${skill.level}!`,
         })
       } else {
         toast({
           duration: 3000,
-          title: "Not enough Prestige Points",
+          title: 'Not enough Prestige Points',
           description: `You need ${skill.cost} Prestige Points to upgrade this skill.`,
-          variant: "destructive",
+          variant: 'destructive',
         })
       }
       return newSkills
@@ -330,9 +417,9 @@ export default function Colors(): React.JSX.Element {
     if (score < requiredScore) {
       toast({
         duration: 5000,
-        title: "Not enough score",
+        title: 'Not enough score',
         description: `You need ${requiredScore} points to prestige.`,
-        variant: "destructive",
+        variant: 'destructive',
       })
       return
     }
@@ -354,7 +441,7 @@ export default function Colors(): React.JSX.Element {
         lockedButtons[0].unlocked = true
         toast({
           duration: 5000,
-          title: "New Color Button Unlocked!",
+          title: 'New Color Button Unlocked!',
           description: `You've unlocked a new color button!`,
         })
       }
@@ -364,7 +451,7 @@ export default function Colors(): React.JSX.Element {
     setCombinationStreak(0)
     toast({
       duration: 5000,
-      title: "Prestige!",
+      title: 'Prestige!',
       description: `You've reached prestige level ${prestigeLevel + 1}!`,
     })
   }
@@ -379,7 +466,10 @@ export default function Colors(): React.JSX.Element {
           }
           return {
             ...button,
-            progress: Math.min(button.progress + (1 + autoProgressBonus) * (1 + prestigeLevel * 0.1), 100),
+            progress: Math.min(
+              button.progress + (1 + autoProgressBonus) * (1 + prestigeLevel * 0.1),
+              100,
+            ),
           }
         })
       })
@@ -399,7 +489,7 @@ export default function Colors(): React.JSX.Element {
               progress: button.progress - 100,
               level: button.level + 1,
             }
-            : button,
+          : button,
         ),
       )
     }
@@ -416,38 +506,44 @@ export default function Colors(): React.JSX.Element {
 
   return (
     <SidebarProvider open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
-      <div className="flex h-dvh select-none w-dvw">
+      <div className='flex h-dvh select-none w-dvw'>
         <Sidebar>
-          <SidebarContent className="p-2">
-            <SidebarHeader className="text-2xl font-bold mb-4 text-center">Skills</SidebarHeader>
+          <SidebarContent className='p-2'>
+            <SidebarHeader className='text-2xl font-bold mb-4 text-center'>Skills</SidebarHeader>
             <ScrollArea>
               {skills.map((skill) => (
-                <SidebarGroup key={skill.id} className="my-2 bg-gray-50 dark:bg-gray-800 rounded-lg shadow">
+                <SidebarGroup
+                  key={skill.id}
+                  className='my-2 bg-gray-50 dark:bg-gray-800 rounded-lg shadow'
+                >
                   <SidebarGroupLabel>
                     {skill.name}
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <Button variant="link" className="p-0 text-sm font-normal text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
-                          <Info className="h-4 w-4 ml-1" />
+                        <Button
+                          variant='link'
+                          className='p-0 text-sm font-normal text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+                        >
+                          <Info className='h-4 w-4 ml-1' />
                         </Button>
                       </TooltipTrigger>
-                      <TooltipContent>
-                        {skill.description}
-                      </TooltipContent>
+                      <TooltipContent>{skill.description}</TooltipContent>
                     </Tooltip>
                   </SidebarGroupLabel>
 
                   <SidebarGroupContent>
                     Level: {skill.level}/{skill.maxLevel}
                   </SidebarGroupContent>
-                  <SidebarGroupContent>Effect: {(effect(skill) * 100).toFixed(1)}%</SidebarGroupContent>
+                  <SidebarGroupContent>
+                    Effect: {(effect(skill) * 100).toFixed(1)}%
+                  </SidebarGroupContent>
                   <SidebarGroupContent>Cost: {skill.cost} PP</SidebarGroupContent>
                   <Button
                     onClick={() => upgradeSkill(skill.id)}
-                    className="mt-2"
+                    className='mt-2'
                     disabled={prestigePoints < skill.cost || skill.level >= skill.maxLevel}
                   >
-                    {skill.level >= skill.maxLevel ? "Maxed" : "Upgrade"}
+                    {skill.level >= skill.maxLevel ? 'Maxed' : 'Upgrade'}
                   </Button>
                 </SidebarGroup>
               ))}
@@ -455,49 +551,53 @@ export default function Colors(): React.JSX.Element {
           </SidebarContent>
         </Sidebar>
         <div className='p-4'>
-          <SidebarTrigger
-            className={`fixed left-2 top-2 z-50`}
-          />
+          <SidebarTrigger className={`fixed left-2 top-2 z-50`} />
         </div>
 
-        <main className="flex-1 p-8 overflow-y-auto">
-          <div className="flex flex-col items-center justify-center pt-36 gap-4 text-xs sm:text-sm md:text-base">
-            <h1 className="lg:text-4xl font-bold mb-4">Stupid Color Game</h1>
-            <div className="lg:text-2xl mb-2">Score: {Math.floor(score)}</div>
-            <div className="lg:text-xl mb-2">Prestige Level: {prestigeLevel}</div>
-            <div className="lg:text-xl mb-2">Prestige Points (PP): {Math.floor(prestigePoints)}</div>
-            <div className="lg:text-lg mb-2">Combination Streak: {combinationStreak}</div>
-            <div className="grid grid-cols-2 gap-4">
+        <main className='flex-1 p-8 overflow-y-auto'>
+          <div className='flex flex-col items-center justify-center pt-36 gap-4 text-xs sm:text-sm md:text-base'>
+            <h1 className='lg:text-4xl font-bold mb-4'>Stupid Color Game</h1>
+            <div className='lg:text-2xl mb-2'>Score: {Math.floor(score)}</div>
+            <div className='lg:text-xl mb-2'>Prestige Level: {prestigeLevel}</div>
+            <div className='lg:text-xl mb-2'>
+              Prestige Points (PP): {Math.floor(prestigePoints)}
+            </div>
+            <div className='lg:text-lg mb-2'>Combination Streak: {combinationStreak}</div>
+            <div className='grid grid-cols-2 gap-4'>
               {colorButtons.map(
                 (button, index) =>
                   button.unlocked && (
-                    <div key={index} className="flex flex-col items-center">
+                    <div key={index} className='flex flex-col items-center'>
                       <Button
                         onClick={() => handleColorClick(index)}
-                        className="btn btn-circle text-xs rounded-full lg:w-24 lg:h-24"
+                        className='btn btn-circle text-xs rounded-full lg:w-24 lg:h-24'
                         style={{ backgroundColor: button.color }}
                         disabled={clickCooldown}
                       >
-                        <div className="scale-50 sm:scale-75 lg:scale-100">Level {button.level}</div>
+                        <div className='scale-50 sm:scale-75 lg:scale-100'>
+                          Level {button.level}
+                        </div>
                       </Button>
-                      <Progress value={button.progress} className="lg:w-24 mt-2" />
-                      <div className="lg:text-sm mt-1">Clicks: {button.clicks}</div>
-                      <div className="lg:text-sm mt-1">Trait: {button.trait}</div>
+                      <Progress value={button.progress} className='lg:w-24 mt-2' />
+                      <div className='lg:text-sm mt-1'>Clicks: {button.clicks}</div>
+                      <div className='lg:text-sm mt-1'>Trait: {button.trait}</div>
                     </div>
                   ),
               )}
             </div>
-            <div className="mt-4">
+            <div className='mt-4'>
               <Button
                 onClick={() => combineColors(0, 1)}
-                className="mr-0 text-xs sm:mr-1 md:mr-2"
-                disabled={clickCooldown || colorButtons[0].clicks < 10 || colorButtons[1].clicks < 10}
+                className='mr-0 text-xs sm:mr-1 md:mr-2'
+                disabled={
+                  clickCooldown || colorButtons[0].clicks < 10 || colorButtons[1].clicks < 10
+                }
               >
                 Combine 1 & 2
               </Button>
               <Button
                 onClick={() => combineColors(2, 3)}
-                className="mr-0 text-xs sm:mr-1 md:mr-2"
+                className='mr-0 text-xs sm:mr-1 md:mr-2'
                 disabled={
                   clickCooldown ||
                   !colorButtons[2]?.unlocked ||
@@ -511,22 +611,26 @@ export default function Colors(): React.JSX.Element {
               {colorButtons[4]?.unlocked && colorButtons[5]?.unlocked && (
                 <Button
                   onClick={() => combineColors(4, 5)}
-                  className="mr-0 text-xs sm:mr-1 md:mr-2"
-                  disabled={clickCooldown || (colorButtons[4]?.clicks ?? 0) < 10 || (colorButtons[5]?.clicks ?? 0) < 10}
+                  className='mr-0 text-xs sm:mr-1 md:mr-2'
+                  disabled={
+                    clickCooldown ||
+                    (colorButtons[4]?.clicks ?? 0) < 10 ||
+                    (colorButtons[5]?.clicks ?? 0) < 10
+                  }
                 >
                   Combine 5 & 6
                 </Button>
               )}
             </div>
-            <div className="mt-4">
-              <Button onClick={prestige} variant="outline" disabled={clickCooldown}>
+            <div className='mt-4'>
+              <Button onClick={prestige} variant='outline' disabled={clickCooldown}>
                 Prestige (Requires {10000 * (prestigeLevel + 1) ** 2} points)
               </Button>
             </div>
           </div>
         </main>
       </div>
-      <Button className="fixed top-0 right-0" onClick={resetProgress}>
+      <Button className='fixed top-0 right-0' onClick={resetProgress}>
         Reset Progress
       </Button>
     </SidebarProvider>

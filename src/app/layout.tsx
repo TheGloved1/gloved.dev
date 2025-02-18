@@ -7,7 +7,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next'
 import { Metadata } from 'next'
 import { ViewTransitions } from 'next-view-transitions'
 import { JetBrains_Mono } from 'next/font/google'
-import React from 'react'
+import React, { Suspense } from 'react'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -33,7 +33,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <Providers>
             <Analytics />
             <SpeedInsights />
-            <RainingLetters />
+            <Suspense fallback={null}>
+              <RainingLetters />
+            </Suspense>
             <Toaster />
             <main className='flex relative z-10 min-h-screen flex-col items-center from-sky-950 to-[#1e210c] text-white'>
               {children}
