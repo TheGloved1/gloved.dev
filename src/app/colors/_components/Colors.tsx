@@ -66,16 +66,16 @@ export default function Colors(): React.JSX.Element {
       { id: 2, color: colorProgression[0], level: 1, progress: 0, combinationBonus: 0 },
       { id: 3, color: colorProgression[0], level: 1, progress: 0, combinationBonus: 0 },
     ],
-    false,
+    true,
   )
   const [score, setScore] = useState(0)
-  const [prestigeLevel, setPrestigeLevel] = usePersistentState<number>('prestigeLevel', 0, false)
-  const [prestigePoints, setPrestigePoints] = usePersistentState<number>('prestigePoints', 0, false)
+  const [prestigeLevel, setPrestigeLevel] = usePersistentState<number>('prestigeLevel', 0, true)
+  const [prestigePoints, setPrestigePoints] = usePersistentState<number>('prestigePoints', 0, true)
   const [clickCooldown, setClickCooldown] = useState(false)
   const [availableColors, setAvailableColors] = usePersistentState<string[]>(
     'availableColors',
     [colorProgression[0]],
-    false,
+    true,
   )
   const lastClickTime = useRef(Date.now())
   const clickCount = useRef(0)
@@ -91,7 +91,7 @@ export default function Colors(): React.JSX.Element {
       { id: 3, name: 'Color Mastery', level: 0, cost: 200 },
       { id: 4, name: 'Combination Expertise', level: 0, cost: 300 },
     ],
-    false,
+    true,
   )
 
   const effect = useCallback((skillId: number, level: number) => {
@@ -171,8 +171,8 @@ export default function Colors(): React.JSX.Element {
           setAvailableColors((prev) => [...prev, newColor])
 
           const unlockBonus = 1000 * (1 + prestigeLevel * 0.5)
-          setScore((prevScore) => prevScore + unlockBonus)
-          setPrestigePoints((prevPoints) => prevPoints + unlockBonus * 0.01)
+          setScore((prev) => prev + unlockBonus)
+          setPrestigePoints((prev) => prev + unlockBonus * 0.01)
 
           toast({
             duration: 5000,
@@ -225,14 +225,13 @@ export default function Colors(): React.JSX.Element {
         }
       })
 
-      const combinationBonus =
-        combinedLevel * 100 * (1 + prestigeLevel * 0.2) * (1 + combinationExpertiseBonus)
-      setScore((prevScore) => prevScore + combinationBonus)
-      setPrestigePoints((prevPoints) => prevPoints + combinationBonus * 0.02)
+      const combinationBonus = combinedLevel * 100 * (1 + prestigeLevel * 0.2) * (1 + combinationExpertiseBonus)
+      setScore((prev) => prev + combinationBonus)
+      setPrestigePoints((prev) => prev + combinationBonus * 0.02)
 
       setCombinationStreak((prev) => prev + 1)
       const streakBonus = Math.floor(combinationBonus * (combinationStreak * 0.1))
-      setScore((prevScore) => prevScore + streakBonus)
+      setScore((prev) => prev + streakBonus)
 
       toast({
         duration: 3000,
@@ -274,11 +273,13 @@ export default function Colors(): React.JSX.Element {
   const prestige = () => {
     if (!checkAntiCheat()) return
 
-    if (score < 10000 * (prestigeLevel + 1)) {
+    const requiredScore = 10000 * (prestigeLevel + 1) ** 2
+
+    if (score < requiredScore) {
       toast({
         duration: 5000,
         title: 'Not enough score',
-        description: `You need ${10000 * (prestigeLevel + 1)} points to prestige.`,
+        description: `You need ${requiredScore} points to prestige.`,
         variant: 'destructive',
       })
       return
@@ -386,13 +387,13 @@ export default function Colors(): React.JSX.Element {
             <Menu className='h-4 w-4 mr-2' />
             Open Skills
           </Button>
-          <div className='flex flex-col items-center justify-center pt-36 gap-4'>
+          <div className='flex flex-col items-center justify-center pt-36 gap-4 scale-50 sm:scale-75 md:scale-100'>
             <h1 className='text-4xl font-bold mb-4'>Stupid Color Game</h1>
-            <div className='text-2xl mb-4'>Score: {Math.floor(score)}</div>
-            <div className='text-xl mb-4'>Prestige Level: {prestigeLevel}</div>
-            <div className='text-xl mb-4'>Prestige Points (PP): {Math.floor(prestigePoints)}</div>
-            <div className='text-lg mb-4'>Available Colors: {availableColors.length}</div>
-            <div className='text-lg mb-4'>Combination Streak: {combinationStreak}</div>
+            <div className='text-2xl mb-2'>Score: {Math.floor(score)}</div>
+            <div className='text-xl mb-2'>Prestige Level: {prestigeLevel}</div>
+            <div className='text-xl mb-2'>Prestige Points (PP): {Math.floor(prestigePoints)}</div>
+            <div className='text-lg mb-2'>Available Colors: {availableColors.length}</div>
+            <div className='text-lg mb-2'>Combination Streak: {combinationStreak}</div>
             <div className='grid grid-cols-2 gap-4'>
               {colorButtons.map((button, index) => (
                 <div key={index} className='flex flex-col items-center'>
@@ -419,7 +420,7 @@ export default function Colors(): React.JSX.Element {
             </div>
             <div className='mt-4'>
               <Button onClick={prestige} variant='outline' disabled={clickCooldown}>
-                Prestige (Requires {10000 * (prestigeLevel + 1)} points)
+                Prestige (Requires {10000 * (prestigeLevel + 1) ** 2} points)
               </Button>
             </div>
           </div>
