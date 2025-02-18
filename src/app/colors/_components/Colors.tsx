@@ -338,6 +338,24 @@ export default function Colors(): React.JSX.Element {
     }
   }, [colorButtons, setColorButtons])
 
+  const resetProgress = () => {
+    setColorButtons((prev) => prev.map((button) => ({
+      ...button,
+      level: 1,
+      color: colorProgression[0],
+      progress: 0,
+      combinationBonus: 0,
+    })))
+    setCombinationStreak(0)
+    setPrestigeLevel(0)
+    setScore(0)
+    setSkills((prev) => prev.map((skill) => ({
+      ...skill,
+      level: 1,
+      points: 0,
+    })))
+  }
+
   return (
     <ToastProvider>
       <div className='flex h-dvh select-none w-dvw'>
@@ -387,34 +405,36 @@ export default function Colors(): React.JSX.Element {
             <Menu className='h-4 w-4 mr-2' />
             Open Skills
           </Button>
-          <div className='flex flex-col items-center justify-center pt-36 gap-4 scale-50 sm:scale-75 md:scale-100'>
-            <h1 className='text-4xl font-bold mb-4'>Stupid Color Game</h1>
-            <div className='text-2xl mb-2'>Score: {Math.floor(score)}</div>
-            <div className='text-xl mb-2'>Prestige Level: {prestigeLevel}</div>
-            <div className='text-xl mb-2'>Prestige Points (PP): {Math.floor(prestigePoints)}</div>
-            <div className='text-lg mb-2'>Available Colors: {availableColors.length}</div>
-            <div className='text-lg mb-2'>Combination Streak: {combinationStreak}</div>
+          <div className='flex flex-col items-center justify-center pt-36 gap-4 text-xs sm:text-sm md:text-base'>
+            <h1 className='lg:text-4xl font-bold mb-4'>Stupid Color Game</h1>
+            <div className='lg:text-2xl mb-2'>Score: {Math.floor(score)}</div>
+            <div className='lg:text-xl mb-2'>Prestige Level: {prestigeLevel}</div>
+            <div className='lg:text-xl mb-2'>Prestige Points (PP): {Math.floor(prestigePoints)}</div>
+            <div className='lg:text-lg mb-2'>Available Colors: {availableColors.length}</div>
+            <div className='lg:text-lg mb-2'>Combination Streak: {combinationStreak}</div>
             <div className='grid grid-cols-2 gap-4'>
               {colorButtons.map((button, index) => (
                 <div key={index} className='flex flex-col items-center'>
                   <Button
                     onClick={() => handleColorClick(index)}
-                    className='w-24 h-24 rounded-full'
+                    className='btn btn-circle text-xs rounded-full lg:w-24 lg:h-24'
                     style={{ backgroundColor: button.color }}
                     disabled={clickCooldown}
                   >
-                    Level {button.level}
+                    <div className='scale-50 sm:scale-75 lg:scale-100'>
+                      Level {button.level}
+                    </div>
                   </Button>
-                  <Progress value={button.progress} className='w-24 mt-2' />
-                  <div className='text-sm mt-1'>Combo: {button.combinationBonus.toFixed(2)}x</div>
+                  <Progress value={button.progress} className='lg:w-24 mt-2' />
+                  <div className='lg:text-sm mt-1'>Combo: {button.combinationBonus.toFixed(2)}x</div>
                 </div>
               ))}
             </div>
             <div className='mt-4'>
-              <Button onClick={() => combineColors(0, 1)} className='mr-2' disabled={clickCooldown}>
+              <Button onClick={() => combineColors(0, 1)} className='mr-0 text-xs sm:mr-1 md:mr-2' disabled={clickCooldown}>
                 Combine 1 & 2
               </Button>
-              <Button onClick={() => combineColors(2, 3)} disabled={clickCooldown}>
+              <Button onClick={() => combineColors(2, 3)} className='mr-0 text-xs sm:mr-1 md:mr-2' disabled={clickCooldown}>
                 Combine 3 & 4
               </Button>
             </div>
@@ -427,6 +447,9 @@ export default function Colors(): React.JSX.Element {
         </main>
         <Toaster />
       </div>
+      <Button className='fixed top-0 right-0' onClick={resetProgress}>
+        Reset Progress
+      </Button>
     </ToastProvider>
   )
 }
