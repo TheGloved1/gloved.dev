@@ -108,7 +108,7 @@ const defaultColorButtons: ColorButton[] = [
     level: 1,
     progress: 0,
     clicks: 0,
-    trait: ColorTrait.None,
+    trait: ColorTrait.AutoClicker,
     unlocked: true,
   },
   {
@@ -117,7 +117,7 @@ const defaultColorButtons: ColorButton[] = [
     level: 1,
     progress: 0,
     clicks: 0,
-    trait: ColorTrait.None,
+    trait: ColorTrait.ComboMaster,
     unlocked: true,
   },
   {
@@ -126,7 +126,7 @@ const defaultColorButtons: ColorButton[] = [
     level: 1,
     progress: 0,
     clicks: 0,
-    trait: ColorTrait.None,
+    trait: ColorTrait.FastGrowing,
     unlocked: false,
   },
   {
@@ -135,7 +135,7 @@ const defaultColorButtons: ColorButton[] = [
     level: 1,
     progress: 0,
     clicks: 0,
-    trait: ColorTrait.None,
+    trait: ColorTrait.HighYield,
     unlocked: false,
   },
   {
@@ -144,7 +144,7 @@ const defaultColorButtons: ColorButton[] = [
     level: 1,
     progress: 0,
     clicks: 0,
-    trait: ColorTrait.None,
+    trait: ColorTrait.LuckyClicker,
     unlocked: false,
   },
   {
@@ -153,7 +153,7 @@ const defaultColorButtons: ColorButton[] = [
     level: 1,
     progress: 0,
     clicks: 0,
-    trait: ColorTrait.None,
+    trait: ColorTrait.Multiplier,
     unlocked: false,
   },
 ]
@@ -489,7 +489,7 @@ export default function Colors(): React.JSX.Element {
               progress: button.progress - 100,
               level: button.level + 1,
             }
-            : button,
+          : button,
         ),
       )
     }
