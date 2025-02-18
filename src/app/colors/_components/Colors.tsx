@@ -489,7 +489,7 @@ export default function Colors(): React.JSX.Element {
               progress: button.progress - 100,
               level: button.level + 1,
             }
-          : button,
+            : button,
         ),
       )
     }
@@ -567,14 +567,14 @@ export default function Colors(): React.JSX.Element {
               {colorButtons.map(
                 (button, index) =>
                   button.unlocked && (
-                    <div key={index} className='flex flex-col items-center'>
+                    <div key={index} className='flex flex-col self-center items-center'>
                       <Button
                         onClick={() => handleColorClick(index)}
                         className='btn btn-circle text-xs rounded-full lg:w-24 lg:h-24'
                         style={{ backgroundColor: button.color }}
                         disabled={clickCooldown}
                       >
-                        <div className='scale-50 sm:scale-75 lg:scale-100'>
+                        <div className='scale-25 xs:scale-50 sm:scale-75 md:scale-100'>
                           Level {button.level}
                         </div>
                       </Button>
@@ -595,19 +595,19 @@ export default function Colors(): React.JSX.Element {
               >
                 Combine 1 & 2
               </Button>
-              <Button
-                onClick={() => combineColors(2, 3)}
-                className='mr-0 text-xs sm:mr-1 md:mr-2'
-                disabled={
-                  clickCooldown ||
-                  !colorButtons[2]?.unlocked ||
-                  !colorButtons[3]?.unlocked ||
-                  (colorButtons[2]?.clicks ?? 0) < 10 ||
-                  (colorButtons[3]?.clicks ?? 0) < 10
-                }
-              >
-                Combine 3 & 4
-              </Button>
+              {colorButtons[2]?.unlocked && colorButtons[3]?.unlocked && (
+                <Button
+                  onClick={() => combineColors(2, 3)}
+                  className='mr-0 text-xs sm:mr-1 md:mr-2'
+                  disabled={
+                    clickCooldown ||
+                    (colorButtons[2]?.clicks ?? 0) < 10 ||
+                    (colorButtons[3]?.clicks ?? 0) < 10
+                  }
+                >
+                  Combine 3 & 4
+                </Button>
+              )}
               {colorButtons[4]?.unlocked && colorButtons[5]?.unlocked && (
                 <Button
                   onClick={() => combineColors(4, 5)}
