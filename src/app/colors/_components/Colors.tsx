@@ -144,13 +144,16 @@ export default function Colors(): React.JSX.Element {
         button.progress += progressIncrease
         button.clicks += 1
 
+        const prestigeBoost = prestigeLevel * 0.1
+        const clickMultiplier = Math.log10(button.clicks / 10 * 2) * (1 + prestigeBoost)
+
         if (button.progress >= 100) {
           const extraProgress = button.progress - 100
           button.progress = extraProgress
           button.level += 1
 
           const colorMasteryBonus = effect(skills[Skills.ColorMastery])
-          let pointsEarned = button.level * 10 * (1 + colorMasteryBonus) * (1 + prestigeLevel * 0.2)
+          let pointsEarned = (button.level * 10) * ((clickMultiplier * (1 + colorMasteryBonus)) * (1 + prestigeLevel * 0.2))
 
           if (button.trait === ColorTrait.HighYield) {
             pointsEarned *= 2
@@ -177,13 +180,11 @@ export default function Colors(): React.JSX.Element {
           })
         }
 
-        console.log(newButtons)
-
         return newButtons
       })
     },
     [checkAntiCheat, setColorButtons, skills, prestigeLevel, setPrestigePoints, toast],
-  ) // Updated dependencies
+  )
 
   const combineColors = (index1: number, index2: number) => {
     if (index1 === index2 || !checkAntiCheat()) return
@@ -528,4 +529,3 @@ export default function Colors(): React.JSX.Element {
     </SidebarProvider>
   )
 }
-
