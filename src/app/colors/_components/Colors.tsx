@@ -146,21 +146,24 @@ export default function Colors(): React.JSX.Element {
 
         const prestigeBoost = prestigeLevel * 0.1
         const clickMultiplier = Math.log10(button.clicks / 10 * 2) * (1 + prestigeBoost)
+        console.log('Click multiplier:', clickMultiplier)
 
-        if (button.progress >= 100) {
-          const extraProgress = button.progress - 100
+        for (let i = 0; i < button.progress; i += 100) {
+          const extraProgress = button.progress - i
           button.progress = extraProgress
           button.level += 1
 
           const colorMasteryBonus = effect(skills[Skills.ColorMastery])
           let pointsEarned = (button.level * 10) * ((clickMultiplier * (1 + colorMasteryBonus)) * (1 + prestigeLevel * 0.2))
+          let prestigePointsEarned = ((button.level * 10) * ((1 + colorMasteryBonus) * (1 + prestigeLevel * 0.1))) * 0.005
 
           if (button.trait === ColorTrait.HighYield) {
             pointsEarned *= 2
+            prestigePointsEarned *= 2
           }
 
           setScore((prevScore) => prevScore + pointsEarned)
-          setPrestigePoints((prevPoints) => prevPoints + pointsEarned * 0.01)
+          setPrestigePoints((prevPoints) => prevPoints + prestigePointsEarned)
 
           toast({
             duration: 3000,
