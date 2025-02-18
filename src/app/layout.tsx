@@ -1,5 +1,6 @@
 import Providers from '@/components/Providers'
 import RainingLetters from '@/components/RainingLetters'
+import { Toaster } from '@/components/ui/toaster'
 import * as constants from '@/lib/constants'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
@@ -33,6 +34,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             <Analytics />
             <SpeedInsights />
             <RainingLetters />
+            <Toaster />
             <main className='flex relative z-10 min-h-screen flex-col items-center from-sky-950 to-[#1e210c] text-white'>
               {children}
             </main>

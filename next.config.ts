@@ -13,7 +13,6 @@ const nextConfig: NextConfig = {
     webpackBuildWorker: true,
     taint: true,
     appDocumentPreloading: true,
-    reactOwnerStack: true,
     optimizeCss: true,
     newDevOverlay: true,
     parallelServerCompiles: true,
