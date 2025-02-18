@@ -12,6 +12,7 @@ import { usePersistentState } from '@/hooks/use-persistent-state'
 import { toast } from '@/hooks/use-toast'
 import { Menu, X } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { Sidebar, SidebarContent, SidebarHeader, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 
 const colorProgression = [
   '#FF0000', // Red
@@ -358,98 +359,97 @@ export default function Colors(): React.JSX.Element {
 
   return (
     <ToastProvider>
-      <div className='flex h-dvh select-none w-dvw'>
-        <aside
-          className={`fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-gray-900 p-4 overflow-y-auto border-r border-gray-200 dark:border-gray-700 transition-transform duration-300 ease-in-out transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-            } md:relative md:translate-x-0`}
-        >
-          <Button
-            className='md:hidden absolute top-4 right-4'
-            variant='ghost'
-            size='icon'
-            onClick={() => setIsSidebarOpen(false)}
-          >
-            <X className='h-4 w-4' />
-          </Button>
-          <h2 className='text-2xl font-bold mb-4 text-right'>Skills</h2>
-          <ScrollArea className='h-[calc(100vh-5rem)]'>
-            {skills.map((skill, index) => (
-              <div
-                key={skill.name}
-                className='mb-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg shadow'
+      <SidebarProvider open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
+        <div className='flex h-dvh select-none w-dvw'>
+          <Sidebar>
+            <SidebarContent>
+              <SidebarTrigger
+                className='md:hidden absolute top-4 right-4'
+                variant='ghost'
+                size='icon'
+                onClick={() => setIsSidebarOpen(false)}
               >
-                <h3 className='text-lg font-semibold'>{skill.name}</h3>
-                <p>Level: {skill.level}</p>
-                <p>Effect: {(effect(index, skill.level) * 100).toFixed(1)}%</p>
-                <p>Cost: {skill.cost} PP</p>
-                <Button
-                  onClick={() => upgradeSkill(index)}
-                  className='mt-2'
-                  disabled={prestigePoints < skill.cost}
-                >
-                  Upgrade
+                <X className='h-4 w-4' />
+              </SidebarTrigger>
+              <SidebarHeader className='text-2xl font-bold mb-4 text-right'>Skills</SidebarHeader>
+              <ScrollArea className='h-[calc(100vh-5rem)]'>
+                {skills.map((skill, index) => (
+                  <div
+                    key={skill.name}
+                    className='mb-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg shadow'
+                  >
+                    <h3 className='text-lg font-semibold'>{skill.name}</h3>
+                    <p>Level: {skill.level}</p>
+                    <p>Effect: {(effect(index, skill.level) * 100).toFixed(1)}%</p>
+                    <p>Cost: {skill.cost} PP</p>
+                    <Button
+                      onClick={() => upgradeSkill(index)}
+                      className='mt-2'
+                      disabled={prestigePoints < skill.cost}
+                    >
+                      Upgrade
+                    </Button>
+                  </div>
+                ))}
+              </ScrollArea>
+            </SidebarContent>
+          </Sidebar>
+
+
+          <main className='flex-1 p-8 overflow-y-auto'>
+            <SidebarTrigger
+              variant='outline'
+            >
+              <Menu className='h-4 w-4 mr-2' />
+              Open Skills
+            </SidebarTrigger>
+            <PageBack noFixed className='' />
+            <div className='flex flex-col items-center justify-center pt-36 gap-4 text-xs sm:text-sm md:text-base'>
+              <h1 className='lg:text-4xl font-bold mb-4'>Stupid Color Game</h1>
+              <div className='lg:text-2xl mb-2'>Score: {Math.floor(score)}</div>
+              <div className='lg:text-xl mb-2'>Prestige Level: {prestigeLevel}</div>
+              <div className='lg:text-xl mb-2'>Prestige Points (PP): {Math.floor(prestigePoints)}</div>
+              <div className='lg:text-lg mb-2'>Available Colors: {availableColors.length}</div>
+              <div className='lg:text-lg mb-2'>Combination Streak: {combinationStreak}</div>
+              <div className='grid grid-cols-2 gap-4'>
+                {colorButtons.map((button, index) => (
+                  <div key={index} className='flex flex-col items-center'>
+                    <Button
+                      onClick={() => handleColorClick(index)}
+                      className='btn btn-circle text-xs rounded-full lg:w-24 lg:h-24'
+                      style={{ backgroundColor: button.color }}
+                      disabled={clickCooldown}
+                    >
+                      <div className='scale-50 sm:scale-75 lg:scale-100'>
+                        Level {button.level}
+                      </div>
+                    </Button>
+                    <Progress value={button.progress} className='lg:w-24 mt-2' />
+                    <div className='lg:text-sm mt-1'>Combo: {button.combinationBonus.toFixed(2)}x</div>
+                  </div>
+                ))}
+              </div>
+              <div className='mt-4'>
+                <Button onClick={() => combineColors(0, 1)} className='mr-0 text-xs sm:mr-1 md:mr-2' disabled={clickCooldown}>
+                  Combine 1 & 2
+                </Button>
+                <Button onClick={() => combineColors(2, 3)} className='mr-0 text-xs sm:mr-1 md:mr-2' disabled={clickCooldown}>
+                  Combine 3 & 4
                 </Button>
               </div>
-            ))}
-          </ScrollArea>
-        </aside>
-
-        <PageBack className='md:ml-64 z-50' />
-
-        <main className='flex-1 p-8 overflow-y-auto'>
-          <Button
-            className='md:hidden mb-4'
-            variant='outline'
-            onClick={() => setIsSidebarOpen(true)}
-          >
-            <Menu className='h-4 w-4 mr-2' />
-            Open Skills
-          </Button>
-          <div className='flex flex-col items-center justify-center pt-36 gap-4 text-xs sm:text-sm md:text-base'>
-            <h1 className='lg:text-4xl font-bold mb-4'>Stupid Color Game</h1>
-            <div className='lg:text-2xl mb-2'>Score: {Math.floor(score)}</div>
-            <div className='lg:text-xl mb-2'>Prestige Level: {prestigeLevel}</div>
-            <div className='lg:text-xl mb-2'>Prestige Points (PP): {Math.floor(prestigePoints)}</div>
-            <div className='lg:text-lg mb-2'>Available Colors: {availableColors.length}</div>
-            <div className='lg:text-lg mb-2'>Combination Streak: {combinationStreak}</div>
-            <div className='grid grid-cols-2 gap-4'>
-              {colorButtons.map((button, index) => (
-                <div key={index} className='flex flex-col items-center'>
-                  <Button
-                    onClick={() => handleColorClick(index)}
-                    className='btn btn-circle text-xs rounded-full lg:w-24 lg:h-24'
-                    style={{ backgroundColor: button.color }}
-                    disabled={clickCooldown}
-                  >
-                    <div className='scale-50 sm:scale-75 lg:scale-100'>
-                      Level {button.level}
-                    </div>
-                  </Button>
-                  <Progress value={button.progress} className='lg:w-24 mt-2' />
-                  <div className='lg:text-sm mt-1'>Combo: {button.combinationBonus.toFixed(2)}x</div>
-                </div>
-              ))}
+              <div className='mt-4'>
+                <Button onClick={prestige} variant='outline' disabled={clickCooldown}>
+                  Prestige (Requires {10000 * (prestigeLevel + 1) ** 2} points)
+                </Button>
+              </div>
             </div>
-            <div className='mt-4'>
-              <Button onClick={() => combineColors(0, 1)} className='mr-0 text-xs sm:mr-1 md:mr-2' disabled={clickCooldown}>
-                Combine 1 & 2
-              </Button>
-              <Button onClick={() => combineColors(2, 3)} className='mr-0 text-xs sm:mr-1 md:mr-2' disabled={clickCooldown}>
-                Combine 3 & 4
-              </Button>
-            </div>
-            <div className='mt-4'>
-              <Button onClick={prestige} variant='outline' disabled={clickCooldown}>
-                Prestige (Requires {10000 * (prestigeLevel + 1) ** 2} points)
-              </Button>
-            </div>
-          </div>
-        </main>
-        <Toaster />
-      </div>
-      <Button className='fixed top-0 right-0' onClick={resetProgress}>
-        Reset Progress
-      </Button>
+          </main>
+          <Toaster />
+        </div>
+        <Button className='fixed top-0 right-0' onClick={resetProgress}>
+          Reset Progress
+        </Button>
+      </SidebarProvider>
     </ToastProvider>
   )
 }
