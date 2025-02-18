@@ -18,8 +18,9 @@ import {
 } from "@/components/ui/sidebar"
 import { usePersistentState } from "@/hooks/use-persistent-state"
 import { useToast } from "@/hooks/use-toast"
-import { Menu, X } from "lucide-react"
+import { Info, Menu, X } from "lucide-react"
 import { useEffect, useRef, useState, useCallback } from "react"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 interface ColorButton {
   id: number
@@ -44,6 +45,7 @@ enum ColorTrait {
 interface Skill {
   id: Skills
   name: string
+  description: string
   level: number
   cost: number
   maxLevel: number
@@ -51,18 +53,18 @@ interface Skill {
 
 enum Skills {
   ClickPower = 0,
-  AutoProgress = 1,
-  ComboBoost = 2,
-  ColorMastery = 3,
-  CombinationExpertise = 4,
+  TraitBoost = 1,
+  AutoProgress = 2,
+  ComboBoost = 3,
+  ColorMastery = 4,
 }
 
 const defaultSkills: Skill[] = [
-  { id: Skills.ClickPower, name: "Click Power", level: 1, cost: 10, maxLevel: 50 },
-  { id: Skills.AutoProgress, name: "Auto Progress", level: 0, cost: 50, maxLevel: 25 },
-  { id: Skills.ComboBoost, name: "Combo Boost", level: 0, cost: 100, maxLevel: 20 },
-  { id: Skills.ColorMastery, name: "Color Mastery", level: 0, cost: 200, maxLevel: 15 },
-  { id: Skills.CombinationExpertise, name: "Combination Expertise", level: 0, cost: 300, maxLevel: 10 },
+  { id: Skills.ClickPower, name: "Click Power", description: "Boosts the power of clicks", level: 1, cost: 10, maxLevel: 50 },
+  { id: Skills.TraitBoost, name: "Trait Boost", description: "Boosts the chance of getting a trait", level: 0, cost: 25, maxLevel: 30 },
+  { id: Skills.AutoProgress, name: "Auto Progress", description: "Automatically progresses colors", level: 0, cost: 50, maxLevel: 25 },
+  { id: Skills.ComboBoost, name: "Combo Boost", description: "Boosts the combo multiplier", level: 0, cost: 100, maxLevel: 20 },
+  { id: Skills.ColorMastery, name: "Color Mastery", description: "Boosts unlocking colors", level: 0, cost: 200, maxLevel: 15 },
 ]
 
 const defaultColorButtons: ColorButton[] = [
@@ -78,14 +80,14 @@ const effect = (skill: Skill): number => {
   switch (skill.id) {
     case Skills.ClickPower:
       return skill.level * 0.2
+    case Skills.TraitBoost:
+      return skill.level * 0.05
     case Skills.AutoProgress:
       return skill.level * 0.1
     case Skills.ComboBoost:
       return skill.level * 0.3
     case Skills.ColorMastery:
       return skill.level * 0.15
-    case Skills.CombinationExpertise:
-      return skill.level * 0.25
   }
 }
 
@@ -132,9 +134,8 @@ export default function Colors(): React.JSX.Element {
         const newButtons = [...prevButtons]
         const button = newButtons[index]
         const clickPowerBonus = effect(skills[Skills.ClickPower])
-        const combinationExpertiseBonus = effect(skills[Skills.CombinationExpertise])
 
-        let progressIncrease = 10 * (1 + clickPowerBonus) * (1 + prestigeLevel * 0.1) * (1 + combinationExpertiseBonus)
+        let progressIncrease = 10 * ((1 + clickPowerBonus) * (1 + prestigeLevel * 0.1))
 
         if (button.trait === ColorTrait.FastGrowing) {
           progressIncrease *= 1.5
@@ -204,16 +205,20 @@ export default function Colors(): React.JSX.Element {
 
       const combinedLevel = Math.floor((button1.level + button2.level) / 2) + 1
       const comboBoostBonus = effect(skills[Skills.ComboBoost])
-      const combinationExpertiseBonus = effect(skills[Skills.CombinationExpertise])
+      const pointsEarned = combinedLevel * 50 * (1 + comboBoostBonus)
+      setScore((prevScore) => prevScore + pointsEarned)
+      setPrestigePoints((prevPoints) => prevPoints + pointsEarned * 0.01)
+      const traitBoostBonus = effect(skills[Skills.TraitBoost])
 
-      const newTrait = Math.random() < 0.3 + combinationExpertiseBonus ? getRandomTrait() : ColorTrait.None
+      const newTrait1 = Math.random() < 0.3 + traitBoostBonus ? getRandomTrait() : ColorTrait.None
+      const newTrait2 = Math.random() < 0.3 + traitBoostBonus ? getRandomTrait() : ColorTrait.None
 
       newButtons[index1] = {
         ...button1,
         level: combinedLevel,
         progress: 0,
         clicks: 0,
-        trait: newTrait,
+        trait: newTrait1,
       }
 
       newButtons[index2] = {
@@ -221,10 +226,10 @@ export default function Colors(): React.JSX.Element {
         level: 1,
         progress: 0,
         clicks: 0,
-        trait: ColorTrait.None,
+        trait: newTrait2,
       }
 
-      const combinationBonus = combinedLevel * 100 * (1 + prestigeLevel * 0.2) * (1 + combinationExpertiseBonus)
+      const combinationBonus = combinedLevel * 100 * (1 + prestigeLevel * 0.2)
       setScore((prev) => prev + combinationBonus)
       setPrestigePoints((prev) => prev + combinationBonus * 0.02)
 
@@ -249,11 +254,17 @@ export default function Colors(): React.JSX.Element {
         description: `Colors combined! Earned ${Math.floor(combinationBonus)} points, ${Math.floor(combinationBonus * 0.02)} PP, and ${streakBonus} streak bonus!`,
       })
 
-      if (newTrait !== ColorTrait.None) {
+      if (newTrait1 !== ColorTrait.None && newTrait2 !== ColorTrait.None) {
+        toast({
+          duration: 5000,
+          title: "New Traits Unlocked!",
+          description: `The combined colors gained the ${newTrait1} and ${newTrait2} traits!`,
+        })
+      } else if (newTrait1 !== ColorTrait.None || newTrait2 !== ColorTrait.None) {
         toast({
           duration: 5000,
           title: "New Trait Unlocked!",
-          description: `The combined color gained the ${newTrait} trait!`,
+          description: `The combined color gained the ${newTrait1 !== ColorTrait.None ? newTrait1 : newTrait2} trait!`,
         })
       }
 
@@ -371,7 +382,24 @@ export default function Colors(): React.JSX.Element {
     }, 1000)
 
     return () => clearInterval(interval)
-  }, [skills, prestigeLevel, setColorButtons, handleColorClick]) // Removed handleColorClick from dependencies
+  }, [skills, prestigeLevel, setColorButtons, handleColorClick])
+
+  useEffect(() => {
+    const isComplete = colorButtons.find((button) => button.progress >= 100)
+    if (isComplete) {
+      setColorButtons((prev) =>
+        prev.map((button) =>
+          button.progress >= 100 ?
+            {
+              ...button,
+              progress: button.progress - 100,
+              level: button.level + 1,
+            }
+            : button,
+        ),
+      )
+    }
+  }, [colorButtons, setColorButtons])
 
   const resetProgress = () => {
     setColorButtons(defaultColorButtons)
@@ -386,20 +414,25 @@ export default function Colors(): React.JSX.Element {
     <SidebarProvider open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
       <div className="flex h-dvh select-none w-dvw">
         <Sidebar>
-          <SidebarContent>
-            <SidebarTrigger
-              className="md:hidden absolute top-4 right-4"
-              variant="ghost"
-              size="icon"
-              onClick={() => setIsSidebarOpen(false)}
-            >
-              <X className="h-4 w-4" />
-            </SidebarTrigger>
-            <SidebarHeader className="text-2xl font-bold mb-4 text-right">Skills</SidebarHeader>
-            <ScrollArea className="h-[calc(100vh-5rem)]">
+          <SidebarContent className="p-2">
+            <SidebarHeader className="text-2xl font-bold mb-4 text-center">Skills</SidebarHeader>
+            <ScrollArea>
               {skills.map((skill) => (
-                <SidebarGroup key={skill.name} className="mb-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg shadow">
-                  <SidebarGroupLabel>{skill.name}</SidebarGroupLabel>
+                <SidebarGroup key={skill.id} className="my-2 bg-gray-50 dark:bg-gray-800 rounded-lg shadow">
+                  <SidebarGroupLabel>
+                    {skill.name}
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button variant="link" className="p-0 text-sm font-normal text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
+                          <Info className="h-4 w-4 ml-1" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        {skill.description}
+                      </TooltipContent>
+                    </Tooltip>
+                  </SidebarGroupLabel>
+
                   <SidebarGroupContent>
                     Level: {skill.level}/{skill.maxLevel}
                   </SidebarGroupContent>
@@ -417,14 +450,15 @@ export default function Colors(): React.JSX.Element {
             </ScrollArea>
           </SidebarContent>
         </Sidebar>
+        <div className='p-4'>
+          <SidebarTrigger
+            className={`fixed left-2 top-2 z-50`}
+          />
+        </div>
 
         <main className="flex-1 p-8 overflow-y-auto">
-          <SidebarTrigger variant="outline">
-            <Menu className="h-4 w-4 mr-2" />
-            Open Skills
-          </SidebarTrigger>
           <div className="flex flex-col items-center justify-center pt-36 gap-4 text-xs sm:text-sm md:text-base">
-            <h1 className="lg:text-4xl font-bold mb-4">Color Evolution Game</h1>
+            <h1 className="lg:text-4xl font-bold mb-4">Stupid Color Game</h1>
             <div className="lg:text-2xl mb-2">Score: {Math.floor(score)}</div>
             <div className="lg:text-xl mb-2">Prestige Level: {prestigeLevel}</div>
             <div className="lg:text-xl mb-2">Prestige Points (PP): {Math.floor(prestigePoints)}</div>
