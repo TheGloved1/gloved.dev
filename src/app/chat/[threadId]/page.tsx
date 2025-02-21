@@ -1,0 +1,201 @@
+'use client'
+import CopyButton from '@/components/CopyButton'
+import Markdown from '@/components/Markdown'
+import { Button } from '@/components/ui/button'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { Textarea } from '@/components/ui/textarea'
+import { createMessage, db } from '@/db'
+import { useIsMobile } from '@/hooks/use-mobile'
+import { usePersistentState } from '@/hooks/use-persistent-state'
+import { Role } from '@/lib/types'
+import { useLiveQuery } from 'dexie-react-hooks'
+import { Bot, ChevronDown, Loader2, MessageSquare, Send, User2 } from 'lucide-react'
+import { redirect, useParams } from 'next/navigation'
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
+
+export default function Page(): React.JSX.Element {
+  const { threadId } = useParams()
+  if (!threadId) redirect('/chat')
+  const [input, setInput] = usePersistentState<string>('chatInput', '')
+  const [loading, setLoading] = useState<boolean>(false)
+  const [autoScroll, setAutoScroll] = useState(true)
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
+  const isMobile = useIsMobile()
+  const [rows, setRows] = useState<number>(1)
+
+  useLiveQuery(() => {
+    db.getActiveThreads().then((threads) => {
+      if (threads.find((t) => t.id === threadId)) return threads
+      redirect('/chat')
+    })
+  }, [threadId])
+
+  const scrollToBottom = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollIntoView({ behavior: 'smooth' })
+    }
+  }
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const messages =
+    useLiveQuery(() => {
+      return db.getThreadMessages(threadId.toString())
+    }, [threadId]) ?? []
+
+  useLayoutEffect(() => {
+    // Scroll to the bottom of the chat log when the messages change
+    scrollToBottom()
+  }, [autoScroll, messages])
+
+  const handleScroll = useCallback(() => {
+    if (scrollContainerRef.current) {
+      const { scrollTop, clientHeight, scrollHeight } = scrollContainerRef.current
+      const isNearBottom = scrollHeight - (scrollTop + clientHeight) < 50
+      if (isNearBottom) {
+        setAutoScroll(true)
+      } else {
+        setAutoScroll(false)
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoScroll])
+
+  const handleGoToBottom = () => {
+    setAutoScroll(true)
+    scrollToBottom()
+  }
+
+  useEffect(() => {
+    if (autoScroll) {
+      scrollToBottom()
+    }
+  }, [autoScroll, messages])
+
+  const showGoToBottomButton = !autoScroll
+
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement> | React.KeyboardEvent<HTMLTextAreaElement>,
+  ) => {
+    e.preventDefault()
+    await handleSendMessage()
+  }
+
+  const handleSendMessage = async () => {
+    if (!threadId) return
+
+    await createMessage(threadId.toString(), input, setInput, scrollToBottom)
+    setLoading(false)
+    setInput('') // Clear the input
+    setRows(1)
+  }
+
+  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setInput(e.target.value)
+
+    const lineHeight = 24
+    const minRows = 1
+    const maxRows = 5
+    const newRows = Math.min(
+      Math.max(minRows, Math.floor(e.target.scrollHeight / lineHeight)),
+      maxRows,
+    )
+    setRows(newRows)
+  }
+
+  return (
+    <>
+      <ScrollArea type='always' className='max-h-dvh' scrollHideDelay={100} onScroll={handleScroll}>
+        <div className='space-y-4 pr-4 pt-4 pb-28 text-xs sm:text-sm md:text-base'>
+          {messages.map((m, index) => (
+            <div
+              key={index}
+              className={`flex ${m.role === Role.USER ? 'justify-end' : 'justify-start sm:justify-center'}`}
+            >
+              <div
+                className={`group max-w-[75%] rounded-lg p-4 ${
+                  m.role === Role.USER ? 'bg-primary text-black' : 'bg-gray-800/0 text-white'
+                }`}
+              >
+                <div className='mb-2 flex items-center gap-2'>
+                  {m.role === Role.USER ?
+                    <User2 className='h-4 w-4' />
+                  : <Bot className='h-4 w-4' />}
+                  <span className='text-sm font-medium'>{m.role === Role.USER ? 'You' : 'AI'}</span>
+                  <CopyButton
+                    className='block size-4 text-sm text-gray-600 hover:block group-hover:block md:hidden'
+                    text={m.content}
+                    title='Copy raw message'
+                  />
+                </div>
+                {loading && (
+                  <div className='flex items-center gap-2 text-white'>
+                    <Loader2 className='h-4 w-4 animate-spin' />
+                    <span className='text-sm'>Thinking...</span>
+                  </div>
+                )}
+                <article
+                  className={`prose max-w-none ${m.role === Role.USER ? 'prose-invert' : 'prose-invert prose-p:text-gray-100'}`}
+                >
+                  <Markdown>{m.content}</Markdown>
+                </article>
+              </div>
+              <div ref={scrollContainerRef} />
+            </div>
+          ))}
+        </div>
+      </ScrollArea>
+      <div className='fixed bottom-0 z-10 mx-auto flex w-full max-w-3xl flex-col text-center'>
+        {showGoToBottomButton && (
+          <Button
+            onClick={handleGoToBottom}
+            size='sm'
+            className='absolute bottom-4 left-1/2 -translate-x-1/2 bg-neutral-800/80 hover:bg-neutral-700/80 text-neutral-50 text-sm px-3 py-1.5 rounded-full shadow-lg backdrop-blur-sm transition-colors'
+          >
+            <ChevronDown className='h-4 w-4 mr-1' />
+            Scroll to bottom
+          </Button>
+        )}
+        <div className='fixed bottom-0 left-0 right-0 z-50 border-t border-gray-700 bg-gray-800 p-4'>
+          <form onSubmit={handleSubmit} className='container mx-auto max-w-4xl'>
+            <div className='flex items-center gap-2'>
+              <div className='relative flex-1'>
+                <MessageSquare className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-400' />
+                <Textarea
+                  className='rounded-xl bg-gray-900 pl-10 text-gray-100'
+                  value={input}
+                  disabled={loading}
+                  placeholder={`Enter message here... ${isMobile ? '' : '(Shift + Enter for new line)'}`}
+                  rows={rows}
+                  onChange={handleTextareaChange}
+                  onKeyDown={(e) => {
+                    // If Shift + Enter is pressed, add a new line
+                    if (e.key === 'Enter' && e.shiftKey) {
+                      e.preventDefault()
+                      setInput((prev) => prev + '\n')
+                    } else if (e.key === 'Enter') {
+                      if (!input.trim()) {
+                        e.preventDefault()
+                        return
+                      }
+                      handleSubmit(e)
+                    }
+                  }}
+                />
+              </div>
+              <button
+                type='submit'
+                disabled={loading || !input}
+                className='btn bg-primary hover:bg-primary/90'
+              >
+                {loading ?
+                  <Loader2 className='h-4 w-4 animate-spin' />
+                : <Send className='h-4 w-4' />}
+                <span className='sr-only'>Send</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </>
+  )
+}

@@ -238,8 +238,7 @@ export default function Colors(): React.JSX.Element {
           button.level += 1
 
           const colorMasteryBonus = effect(skills[Skills.ColorMastery])
-          let pointsEarned =
-            button.level * 10 * (1 + colorMasteryBonus) * (1 + prestigeBoost)
+          let pointsEarned = button.level * 10 * (1 + colorMasteryBonus) * (1 + prestigeBoost)
           let prestigePointsEarned =
             button.level * 10 * ((1 + colorMasteryBonus) * (1 + prestigeBoost)) * 0.005
 
@@ -462,7 +461,7 @@ export default function Colors(): React.JSX.Element {
           if (button.trait === ColorTrait.AutoClicker) {
             handleColorClick(button.id)
           }
-          const progressRate = 10 / (button.level ** 1.2)
+          const progressRate = 10 / button.level ** 1.2
           return {
             ...button,
             progress: Math.min(button.progress + progressRate, 100),
@@ -485,7 +484,7 @@ export default function Colors(): React.JSX.Element {
               progress: button.progress - 100,
               level: button.level + 1,
             }
-            : button,
+          : button,
         ),
       )
     }

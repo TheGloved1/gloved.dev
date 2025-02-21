@@ -1,11 +1,9 @@
 'use server'
 import { env } from '@/env'
 import { apiRoute } from '@/lib/utils'
-import { GoogleGenerativeAI } from '@google/generative-ai'
+import { createGoogleGenerativeAI } from '@ai-sdk/google'
+import { Message, streamText } from 'ai'
 import sharp from 'sharp'
-import { Message, Role } from './types'
-
-const genAI = new GoogleGenerativeAI(env.GEMINI)
 
 export async function fetchImage(src: string) {
   const buffer = await fetch(src).then(async (res) => Buffer.from(await res.arrayBuffer()))
@@ -14,67 +12,13 @@ export async function fetchImage(src: string) {
   return resizedBuffer
 }
 
-async function fetchSystemPrompt() {
+export async function fetchSystemPrompt() {
   const response = await fetch(apiRoute('/system-prompt'))
   const data: string = await response.text()
   if (!data) {
     return ''
   }
   return data
-}
-
-export async function sendMessage(
-  input: string,
-  messages: Message[],
-): Promise<{ msg: Message | null; error?: string }> {
-  console.log('Running sendMessage action!')
-  const systemPrompt = await fetchSystemPrompt()
-  if (!input.trim()) return { msg: null, error: 'Input cannot be empty' }
-
-  const userMessage: Message = { role: Role.USER, text: input }
-  const updatedMessages = [...messages, userMessage]
-
-  try {
-    const message = {
-      contents: [
-        ...updatedMessages.map((message) => ({
-          role: message.role,
-          parts: [{ text: message.text }],
-        })),
-        {
-          role: Role.USER,
-          parts: [{ text: input }],
-        },
-      ],
-    }
-
-    const generationConfig = {
-      temperature: 1,
-      topK: 64,
-      topP: 0.95,
-      maxOutputTokens: 8192,
-      responseMimeType: 'text/plain',
-    }
-
-    const model = genAI.getGenerativeModel({
-      model: 'gemini-1.5-flash',
-      generationConfig: generationConfig,
-      systemInstruction: systemPrompt,
-    })
-
-    const result = await model.generateContent(message)
-
-    const botMessageText = result.response.text().trim()
-    if (botMessageText) {
-      const botMessage: Message = { role: Role.MODEL, text: botMessageText }
-      return { msg: botMessage }
-    } else {
-      throw new Error('Invalid response structure')
-    }
-  } catch (error) {
-    console.error('Error sending message:', error)
-    return { msg: null, error: `Error: ${error}` }
-  }
 }
 
 export async function checkDevMode(): Promise<boolean> {
@@ -84,4 +28,43 @@ export async function checkDevMode(): Promise<boolean> {
     return true
   }
   return false
+}
+
+const genAI = createGoogleGenerativeAI({ apiKey: env.GEMINI })
+
+const model = genAI.languageModel('gemini-1.5-flash', {
+  safetySettings: [
+    {
+      category: 'HARM_CATEGORY_CIVIC_INTEGRITY',
+      threshold: 'BLOCK_NONE',
+    },
+    {
+      category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
+      threshold: 'BLOCK_NONE',
+    },
+    {
+      category: 'HARM_CATEGORY_HARASSMENT',
+      threshold: 'BLOCK_NONE',
+    },
+    {
+      category: 'HARM_CATEGORY_HATE_SPEECH',
+      threshold: 'BLOCK_NONE',
+    },
+    {
+      category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
+      threshold: 'BLOCK_NONE',
+    },
+  ],
+})
+
+export async function fetchAiStream(messages: Omit<Message, 'id'>[], threadId: string) {
+  const system = await fetchSystemPrompt()
+
+  console.log('Thread ID???!', threadId)
+
+  return streamText({
+    system,
+    model: model,
+    messages,
+  })
 }

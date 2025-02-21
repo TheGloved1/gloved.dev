@@ -21,7 +21,7 @@ interface RainingLettersProps {
 }
 
 function RainingLetters({
-  characterCount = 200,
+  characterCount = 100,
   characterSet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?',
   backgroundColor = 'bg-transparent',
   characterColor = 'text-slate-600',
