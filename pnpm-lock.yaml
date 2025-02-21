@@ -14,9 +14,6 @@ importers:
       '@ai-sdk/react':
         specifier: ^1.1.17
         version: 1.1.17(react@19.0.0)(zod@3.24.2)
-      '@google/generative-ai':
-        specifier: ^0.21.0
-        version: 0.21.0
       '@radix-ui/react-alert-dialog':
         specifier: ^1.1.6
         version: 1.1.6(@types/react-dom@19.0.4(@types/react@19.0.10))(@types/react@19.0.10)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -126,8 +123,8 @@ importers:
         specifier: ^2.2.2
         version: 2.2.2
       tailwind-merge:
-        specifier: ^2.6.0
-        version: 2.6.0
+        specifier: ^3.0.1
+        version: 3.0.1
       tailwindcss-animate:
         specifier: ^1.0.7
         version: 1.0.7(tailwindcss@3.4.17)
@@ -161,7 +158,7 @@ importers:
         version: 9.20.1(jiti@1.21.7)
       eslint-config-next:
         specifier: canary
-        version: 15.2.0-canary.64(eslint@9.20.1(jiti@1.21.7))(typescript@5.7.3)
+        version: 15.2.0-canary.67(eslint@9.20.1(jiti@1.21.7))(typescript@5.7.3)
       fluid-tailwind:
         specifier: ^1.0.4
         version: 1.0.4(tailwindcss@3.4.17)
@@ -301,10 +298,6 @@ packages:
 
   '@floating-ui/utils@0.2.9':
     resolution: {integrity: sha512-MDWhGtE+eHw5JW7lq4qhc5yRLS11ERl1c7Z6Xd0a58DozHES6EnNNwUWbMiG4J9Cgj053Bhk8zvlhFYKVhULwg==}
-
-  '@google/generative-ai@0.21.0':
-    resolution: {integrity: sha512-7XhUbtnlkSEZK15kN3t+tzIMxsbKm/dSkKBFalj+20NvPKe1kBY7mR2P7vuijEn+f06z5+A8bVGKO0v39cr6Wg==}
-    engines: {node: '>=18.0.0'}
 
   '@humanfs/core@0.19.1':
     resolution: {integrity: sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA==}
@@ -456,8 +449,8 @@ packages:
   '@next/env@15.2.0-canary.64':
     resolution: {integrity: sha512-ZZYxKm0ECOr7n818vBxELVYwreFKvzS1XPFuzTO5NHokJWuqCFN6cc6dW4S0bohHSjLXckDad/nft3G/k3/1VA==}
 
-  '@next/eslint-plugin-next@15.2.0-canary.64':
-    resolution: {integrity: sha512-4dj8OUjfiFxDsipXZnI4W9BuFmPSLOCTNrozT4EdzmmfbN/lU7/SWcVg+471VfeT2W//w5U3DwzY+bfdeh+s6A==}
+  '@next/eslint-plugin-next@15.2.0-canary.67':
+    resolution: {integrity: sha512-7l2AohfWyS2g6BIcxQ8Bo+4SYJqmLtOelJ7FgtLF3RRO8dsfXO5fD1YHmnF7pKL1inHIEx8jwLb3qbFAOST+tg==}
 
   '@next/swc-darwin-arm64@15.2.0-canary.64':
     resolution: {integrity: sha512-i6OX3WK++7aqUp2d2t5RbMM27FyynHluchihjL0VFpBZ1HSjWIZ2pu6Fo/pMA65rU9OtuZqAjU1jXN/XIHnZUw==}
@@ -1531,8 +1524,8 @@ packages:
     resolution: {integrity: sha512-TtpcNJ3XAzx3Gq8sWRzJaVajRs0uVxA2YAkdb1jm2YkPz4G6egUFAyA3n5vtEIZefPk5Wa4UXbKuS5fKkJWdgA==}
     engines: {node: '>=10'}
 
-  eslint-config-next@15.2.0-canary.64:
-    resolution: {integrity: sha512-mjehJ2SvQ6R3Uc2P9FKA3s+CtnZ1lZ0op3YIoe/piMTnto5xwl289RPZonWTJSQ0o+wSfTE3fOzRM7hk/sFepg==}
+  eslint-config-next@15.2.0-canary.67:
+    resolution: {integrity: sha512-p+v9yzg0Tc6HnjRvMIbNq3s6jtO2zgaEwgb4y7YeJjsxdZS94hS1PAd2wMN1JTZklkG2JOWCceYccmQyggWNHw==}
     peerDependencies:
       eslint: ^7.23.0 || ^8.0.0 || ^9.0.0
       typescript: '>=3.3.1'
@@ -2869,8 +2862,8 @@ packages:
     peerDependencies:
       react: ^16.11.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
-  tailwind-merge@2.6.0:
-    resolution: {integrity: sha512-P+Vu1qXfzediirmHOC3xKGAYeZtPcV9g76X+xg2FD4tYgR71ewMA35Y3sCz3zhiN/dwefRpJX0yBcgwi1fXNQA==}
+  tailwind-merge@3.0.1:
+    resolution: {integrity: sha512-AvzE8FmSoXC7nC+oU5GlQJbip2UO7tmOhOfQyOmPhrStOGXHU08j8mZEHZ4BmCqY5dWTCo4ClWkNyRNx1wpT0g==}
 
   tailwindcss-animate@1.0.7:
     resolution: {integrity: sha512-bl6mpH3T7I3UFxuvDEXLxy/VuFxBk5bbzplh7tXI68mwMokNYd1t9qPBHlnyTwfa4JGC4zP516I1hYYtQ/vspA==}
@@ -3192,8 +3185,6 @@ snapshots:
 
   '@floating-ui/utils@0.2.9': {}
 
-  '@google/generative-ai@0.21.0': {}
-
   '@humanfs/core@0.19.1': {}
 
   '@humanfs/node@0.16.6':
@@ -3310,7 +3301,7 @@ snapshots:
 
   '@next/env@15.2.0-canary.64': {}
 
-  '@next/eslint-plugin-next@15.2.0-canary.64':
+  '@next/eslint-plugin-next@15.2.0-canary.67':
     dependencies:
       fast-glob: 3.3.1
 
@@ -4377,9 +4368,9 @@ snapshots:
 
   escape-string-regexp@4.0.0: {}
 
-  eslint-config-next@15.2.0-canary.64(eslint@9.20.1(jiti@1.21.7))(typescript@5.7.3):
+  eslint-config-next@15.2.0-canary.67(eslint@9.20.1(jiti@1.21.7))(typescript@5.7.3):
     dependencies:
-      '@next/eslint-plugin-next': 15.2.0-canary.64
+      '@next/eslint-plugin-next': 15.2.0-canary.67
       '@rushstack/eslint-patch': 1.10.5
       '@typescript-eslint/eslint-plugin': 8.24.1(@typescript-eslint/parser@8.24.1(eslint@9.20.1(jiti@1.21.7))(typescript@5.7.3))(eslint@9.20.1(jiti@1.21.7))(typescript@5.7.3)
       '@typescript-eslint/parser': 8.24.1(eslint@9.20.1(jiti@1.21.7))(typescript@5.7.3)
@@ -5971,7 +5962,7 @@ snapshots:
       react: 19.0.0
       use-sync-external-store: 1.4.0(react@19.0.0)
 
-  tailwind-merge@2.6.0: {}
+  tailwind-merge@3.0.1: {}
 
   tailwindcss-animate@1.0.7(tailwindcss@3.4.17):
     dependencies:
