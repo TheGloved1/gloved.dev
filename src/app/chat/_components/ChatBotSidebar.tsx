@@ -60,7 +60,7 @@ export default function ChatBotSidebar({ children }: { children: React.ReactNode
                     <Link
                       key={thread.id}
                       href={`/chat/${thread.id}`}
-                      className={`my-0 flex items-center rounded-sm px-2 focus-within:outline-none focus-within:ring-[1px] focus-within:ring-[hsl(var(--ring))] hover:bg-[#2D2D2D]/50 ${isThreadCurrent(thread.id) ?? 'bg-[#2D2D2D]/50'}`}
+                      className={`my-0 flex items-center rounded-sm px-2 focus-within:outline-none focus-within:ring-[1px] focus-within:ring-[hsl(var(--ring))] hover:bg-[#2D2D2D]/100 ${isThreadCurrent(thread.id) ? 'bg-[#2D2D2D]/50' : ''}`}
                     >
                       <div className='flex flex-1 flex-row gap-2 rounded-sm text-xs py-1 card items-center text-info-content group-data-[state=hover]:bg-[#2D2D2D]/50'>
                         <div
