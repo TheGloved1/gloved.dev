@@ -99,7 +99,7 @@ export default function Page(): React.JSX.Element {
                   }`}
               >
                 <div
-                  className={`mb-2 flex items-center gap-2 ${m.role === Role.USER ? '' : 'hidden md:flex'}`}
+                  className={`mb-2 flex items-center gap-2 ${m.role === Role.USER ? '' : ''}`}
                 >
                   {m.role === Role.USER ?
                     <User2 className='h-4 w-4' />

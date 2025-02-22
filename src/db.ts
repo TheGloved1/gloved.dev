@@ -172,7 +172,7 @@ export async function createMessage(
     // Call the helper function to process the stream
     await processStream(reader, assistantMessageId, scrollToBottom)
   } catch (e) {
-    throw e
+    console.log('Uncaught error', e)
   }
 
   generateTitle(threadId)
