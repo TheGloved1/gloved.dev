@@ -11,14 +11,14 @@ import { Role } from '@/lib/types'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { Bot, ChevronDown, Loader2, MessageSquare, Send, User2 } from 'lucide-react'
 import { redirect, useParams } from 'next/navigation'
-import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
 
 export default function Page(): React.JSX.Element {
   const { threadId } = useParams()
   if (!threadId) redirect('/chat')
   const [input, setInput] = usePersistentState<string>('chatInput', '')
   const [loading, setLoading] = useState<boolean>(false)
-  const [autoScroll, setAutoScroll] = useState(true)
+  const messagesEndRef = useRef<HTMLDivElement>(null)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const isMobile = useIsMobile()
   const [rows, setRows] = useState<number>(1)
@@ -31,8 +31,8 @@ export default function Page(): React.JSX.Element {
   }, [threadId])
 
   const scrollToBottom = () => {
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollIntoView({ behavior: 'smooth' })
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' })
     }
   }
 
@@ -45,33 +45,7 @@ export default function Page(): React.JSX.Element {
   useLayoutEffect(() => {
     // Scroll to the bottom of the chat log when the messages change
     scrollToBottom()
-  }, [autoScroll, messages])
-
-  const handleScroll = useCallback(() => {
-    if (scrollContainerRef.current) {
-      const { scrollTop, clientHeight, scrollHeight } = scrollContainerRef.current
-      const isNearBottom = scrollHeight - (scrollTop + clientHeight) < 50
-      if (isNearBottom) {
-        setAutoScroll(true)
-      } else {
-        setAutoScroll(false)
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [autoScroll])
-
-  const handleGoToBottom = () => {
-    setAutoScroll(true)
-    scrollToBottom()
-  }
-
-  useEffect(() => {
-    if (autoScroll) {
-      scrollToBottom()
-    }
-  }, [autoScroll, messages])
-
-  const showGoToBottomButton = !autoScroll
+  }, [messages])
 
   const handleSubmit = async (
     e: React.FormEvent<HTMLFormElement> | React.KeyboardEvent<HTMLTextAreaElement>,
@@ -104,22 +78,21 @@ export default function Page(): React.JSX.Element {
 
   return (
     <>
-      <ScrollArea type='always' className='max-h-dvh' scrollHideDelay={100} onScroll={handleScroll}>
-        <div className='space-y-4 pr-4 pt-4 pb-28 text-xs sm:text-sm md:text-base'>
+      <ScrollArea type='scroll' className='max-h-dvh mx-auto flex-1 p-4' scrollHideDelay={100} ref={scrollContainerRef}>
+        <div className='space-y-4 pr-4 pt-4 pb-32 text-xs sm:text-sm flex-1 md:text-base' ref={scrollContainerRef}>
           {messages.map((m, index) => (
             <div
               key={index}
               className={`flex ${m.role === Role.USER ? 'justify-end' : 'justify-start sm:justify-center'}`}
             >
               <div
-                className={`group max-w-[75%] rounded-lg p-4 ${
-                  m.role === Role.USER ? 'bg-primary text-black' : 'bg-gray-800/0 text-white'
-                }`}
+                className={`group max-w-[75%] rounded-lg p-4 ${m.role === Role.USER ? 'bg-primary text-black min-w-28' : 'bg-gray-800/0 text-white min-w-48'
+                  }`}
               >
-                <div className='mb-2 flex items-center gap-2'>
+                <div className={`mb-2 flex items-center gap-2 ${m.role === Role.USER ? '' : 'hidden md:flex'}`}>
                   {m.role === Role.USER ?
                     <User2 className='h-4 w-4' />
-                  : <Bot className='h-4 w-4' />}
+                    : <Bot className='h-4 w-4' />}
                   <span className='text-sm font-medium'>{m.role === Role.USER ? 'You' : 'AI'}</span>
                   <CopyButton
                     className='block size-4 text-sm text-gray-600 hover:block group-hover:block md:hidden'
@@ -139,23 +112,13 @@ export default function Page(): React.JSX.Element {
                   <Markdown>{m.content}</Markdown>
                 </article>
               </div>
-              <div ref={scrollContainerRef} />
+              <div ref={messagesEndRef} />
             </div>
           ))}
         </div>
       </ScrollArea>
-      <div className='fixed bottom-0 z-10 mx-auto flex w-full max-w-3xl flex-col text-center'>
-        {showGoToBottomButton && (
-          <Button
-            onClick={handleGoToBottom}
-            size='sm'
-            className='absolute bottom-4 left-1/2 -translate-x-1/2 bg-neutral-800/80 hover:bg-neutral-700/80 text-neutral-50 text-sm px-3 py-1.5 rounded-full shadow-lg backdrop-blur-sm transition-colors'
-          >
-            <ChevronDown className='h-4 w-4 mr-1' />
-            Scroll to bottom
-          </Button>
-        )}
-        <div className='fixed bottom-0 left-0 right-0 z-50 border-t border-gray-700 bg-gray-800 p-4'>
+      <div className='absolute bottom-0 z-10 mx-auto flex w-full max-w-3xl flex-col text-center'>
+        <div className='fixed bottom-0 left-0 right-0 z-40 border-t border-gray-700 bg-gray-800 p-4'>
           <form onSubmit={handleSubmit} className='container mx-auto max-w-4xl'>
             <div className='flex items-center gap-2'>
               <div className='relative flex-1'>
@@ -189,7 +152,7 @@ export default function Page(): React.JSX.Element {
               >
                 {loading ?
                   <Loader2 className='h-4 w-4 animate-spin' />
-                : <Send className='h-4 w-4' />}
+                  : <Send className='h-4 w-4' />}
                 <span className='sr-only'>Send</span>
               </button>
             </div>

@@ -58,16 +58,18 @@ export default function ChatBotSidebar({ children }: { children: React.ReactNode
                       href={`/chat/${thread.id}`}
                       className={`my-1 flex items-center rounded-sm px-2 focus-within:outline-none focus-within:ring-[1px] focus-within:ring-[hsl(var(--ring))] hover:bg-[#2D2D2D]/50 ${isThreadCurrent(thread.id) ? 'bg-[#2D2D2D]/50' : ''}`}
                     >
-                      <div className='flex flex-1 flex-row gap-2 rounded-sm text-xs py-1 card items-center group'>
-                        <MessageSquare className='h-7 w-7' />
-                        {thread.title}
+                      <div className='flex flex-1 flex-row gap-2 rounded-sm text-xs py-1 card items-center text-info-content group-data-[state=hover]:bg-[#2D2D2D]/50'>
+                        <div className={`flex flex-1 flex-row gap-2 py-3 ${isThreadCurrent(thread.id) ? 'font-bold cursor-default' : ''}`}>
+                          <MessageSquare className='h-4 w-4' />
+                          {thread.title}
+                        </div>
                         <Button
                           variant='ghost'
-                          className='ml-auto place-items-end md:hidden md:group-hover:block hover:text-red-800'
+                          className='w-12 h-10  ml-auto md:hidden md:group-hover:block hover:text-red-800'
                           title='Delete Chat'
                           onClick={() => handleDelete(thread.id)}
                         >
-                          <X height={24} width={24} />
+                          <X height={11} width={12} />
                         </Button>
                       </div>
                     </Link>
