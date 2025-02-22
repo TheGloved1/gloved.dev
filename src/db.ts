@@ -18,6 +18,7 @@ export interface Message {
   role: 'user' | 'assistant'
   created_at: Date
   finished: boolean
+  removed: 'true' | 'false'
 }
 
 class Database extends Dexie {
@@ -28,7 +29,7 @@ class Database extends Dexie {
     super('Database')
     this.version(1).stores({
       threads: 'id, title, created_at, updated_at, last_message_at, removed',
-      messages: 'id, threadId, content, role, [threadId+created_at], finished',
+      messages: 'id, threadId, content, role, [threadId+created_at], finished, removed',
     })
 
     this.threads.hook('creating', (primKey, obj) => {
@@ -43,14 +44,14 @@ class Database extends Dexie {
     })
   }
 
-  async getActiveThreads() {
-    return await this.threads.where('removed').equals('false').toArray()
+  async getThreads() {
+    return await this.threads.where('removed').equals('false').sortBy('last_message_at')
   }
 
-  async addMessage(message: Omit<Message, 'id' | 'created_at'>) {
+  async addMessage(message: Omit<Message, 'id' | 'created_at' | 'removed'>) {
     const id = crypto.randomUUID()
     await this.transaction('rw', [this.messages, this.threads], async () => {
-      await this.messages.add({ ...message, id, created_at: new Date() })
+      await this.messages.add({ ...message, id, created_at: new Date(), removed: 'false' })
       await this.threads.update(message.threadId, {
         last_message_at: new Date(),
         updated_at: new Date(),
@@ -59,9 +60,11 @@ class Database extends Dexie {
     return id
   }
 
-  async createThread(
-    thread: Omit<Thread, 'id' | 'created_at' | 'updated_at' | 'last_message_at' | 'removed'>,
-  ) {
+  async removeMessage(id: string) {
+    await this.messages.update(id, { removed: 'true' })
+  }
+
+  async createThread(thread: Omit<Thread, 'id' | 'created_at' | 'updated_at' | 'last_message_at' | 'removed'>) {
     const id = crypto.randomUUID()
     await this.threads.add({
       ...thread,
@@ -75,11 +78,11 @@ class Database extends Dexie {
   }
 
   async getThreadMessages(threadId: string) {
-    return await this.messages.where('threadId').equals(threadId).sortBy('created_at')
+    const messages = await this.messages.where('threadId').equals(threadId).sortBy('created_at')
+    return messages.filter((m) => m.removed === 'false')
   }
 
   async deleteThread(threadId: string) {
-    await this.messages.where('threadId').equals(threadId).delete()
     await this.threads.update(threadId, { removed: 'true' })
   }
 }
@@ -89,7 +92,7 @@ export const db = new Database()
 export async function processStream(
   response: ReadableStream<Uint8Array>,
   assistantMessageId?: string,
-  scrollToBottom?: () => void,
+  scrollToBottom?: () => void
 ): Promise<string> {
   if (!scrollToBottom) scrollToBottom = () => {}
   const reader = response.getReader()
@@ -139,7 +142,7 @@ export async function createMessage(
   threadId: string,
   userContent: string,
   setInput: (input: string) => void,
-  scrollToBottom?: () => void,
+  scrollToBottom?: () => void
 ) {
   setInput('')
   await db.addMessage({ threadId, content: userContent, role: Role.USER, finished: true })
@@ -218,3 +221,4 @@ export async function generateTitle(threadId: string) {
     throw e
   }
 }
+

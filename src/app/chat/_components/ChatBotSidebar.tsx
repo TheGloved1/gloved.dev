@@ -14,15 +14,16 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { MessageSquare, Plus, X } from 'lucide-react'
 import { Link } from 'next-view-transitions'
 import { redirect, useParams } from 'next/navigation'
-import React from 'react'
+import React, { useState } from 'react'
 
 export default function ChatBotSidebar({ children }: { children: React.ReactNode }) {
   const { threadId } = useParams()
   const isMobile = useIsMobile()
-  const [open, setOpen] = React.useState(true)
+  const [open, setOpen] = useState(true)
   const threads = useLiveQuery(
-    () => db.threads.where('removed').equals('false').sortBy('last_message_at'),
+    () => db.getThreads(),
     [db.threads],
+    []
   )
 
   const handleDelete = async (id: string) => {

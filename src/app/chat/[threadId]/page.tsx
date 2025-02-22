@@ -3,18 +3,18 @@ import CopyButton from '@/components/CopyButton'
 import Markdown from '@/components/Markdown'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Textarea } from '@/components/ui/textarea'
-import { createMessage, db } from '@/db'
+import { createMessage, db, Message } from '@/db'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { usePersistentState } from '@/hooks/use-persistent-state'
 import { Role } from '@/lib/types'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { Bot, Loader2, MessageSquare, Send, User2 } from 'lucide-react'
+import { Bot, Loader2, MessageSquare, Send, SquarePen, Trash2, User2 } from 'lucide-react'
 import { redirect, useParams } from 'next/navigation'
 import React, { useLayoutEffect, useRef, useState } from 'react'
 
 export default function Page(): React.JSX.Element {
   const { threadId } = useParams()
-  if (!threadId) redirect('/chat')
+  if (!threadId || typeof threadId !== 'string') redirect('/chat')
   const [input, setInput] = usePersistentState<string>('chatInput', '')
   const [loading, setLoading] = useState<boolean>(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -23,7 +23,7 @@ export default function Page(): React.JSX.Element {
   const [rows, setRows] = useState<number>(1)
 
   useLiveQuery(() => {
-    db.getActiveThreads().then((threads) => {
+    db.getThreads().then((threads) => {
       if (threads.find((t) => t.id === threadId)) return threads
       redirect('/chat')
     })
@@ -56,7 +56,7 @@ export default function Page(): React.JSX.Element {
   const handleSendMessage = async () => {
     if (!threadId) return
 
-    await createMessage(threadId.toString(), input, setInput, scrollToBottom)
+    await createMessage(threadId, input, setInput, scrollToBottom)
     setLoading(false)
     setInput('') // Clear the input
     setRows(1)
@@ -73,6 +73,20 @@ export default function Page(): React.JSX.Element {
       maxRows,
     )
     setRows(newRows)
+  }
+
+  const handleEditMessage = async (m: Message) => {
+    const messageContent = m.content // Get the content of the message to be deleted
+    const allMessages = await db.getThreadMessages(threadId) // Get all messages in the thread
+    const index = allMessages.findIndex(msg => msg.id === m.id) // Find the index of the deleted message
+
+    // Delete all subsequent messages
+    await db.removeMessage(m.id)
+    for (let i = index + 1; i < allMessages.length; i++) {
+      await db.removeMessage(allMessages[i].id)
+    }
+
+    setInput(messageContent) // Set the input field to the content of the deleted message
   }
 
   return (
@@ -93,19 +107,28 @@ export default function Page(): React.JSX.Element {
               className={`flex ${m.role === Role.USER ? 'justify-end' : 'justify-start sm:justify-center'}`}
             >
               <div
-                className={`group max-w-[75%] rounded-lg p-4 ${
-                  m.role === Role.USER ?
-                    'bg-primary text-black min-w-28'
-                  : 'bg-gray-800/0 text-white min-w-48'
-                }`}
+                className={`group max-w-[75%] rounded-lg p-4 ${m.role === Role.USER ?
+                  'bg-primary text-black min-w-40'
+                  : 'bg-gray-800/0 text-white'
+                  }`}
               >
-                <div className={`mb-2 flex items-center gap-2 ${m.role === Role.USER ? '' : ''}`}>
+                <div className={`mb-2 flex items-center gap-2`}>
                   {m.role === Role.USER ?
-                    <User2 className='h-4 w-4' />
-                  : <Bot className='h-4 w-4' />}
+                    <User2 size={16} />
+                    : <Bot size={16} />}
                   <span className='text-sm font-medium'>{m.role === Role.USER ? 'You' : 'AI'}</span>
+                  {m.role === Role.USER ? (
+                    <button
+                      onClick={() => handleEditMessage(m)}
+                      title='Edit message'
+                    >
+                      <SquarePen
+                        className='block p-0.5 rounded hover:bg-gray-400/80 size-5 text-sm text-gray-800 hover:block group-hover:block md:hidden'
+                      />
+                    </button>
+                  ) : null}
                   <CopyButton
-                    className='block size-4 text-sm text-gray-600 hover:block group-hover:block md:hidden'
+                    className='block p-1 rounded hover:bg-gray-400/80 size-5 text-sm text-gray-800 hover:block group-hover:block md:hidden'
                     text={m.content}
                     title='Copy raw message'
                   />
@@ -122,7 +145,7 @@ export default function Page(): React.JSX.Element {
                   <Markdown>{m.content}</Markdown>
                 </article>
               </div>
-              <div ref={messagesEndRef} />
+              <div ref={messagesEndRef} className='w-0 h-0 overflow-hidden' />
             </div>
           ))}
         </div>
@@ -139,12 +162,13 @@ export default function Page(): React.JSX.Element {
                   disabled={loading}
                   placeholder={`Enter message here... ${isMobile ? '' : '(Shift + Enter for new line)'}`}
                   rows={rows}
+                  aria-rowcount={rows}
                   onChange={handleTextareaChange}
                   onKeyDown={(e) => {
                     // If Shift + Enter is pressed, add a new line
                     if (e.key === 'Enter' && e.shiftKey) {
                       e.preventDefault()
-                      setInput((prev) => prev + '\n')
+                      setInput((prev) => (prev + '\n'))
                     } else if (e.key === 'Enter') {
                       if (!input.trim()) {
                         e.preventDefault()
@@ -162,7 +186,7 @@ export default function Page(): React.JSX.Element {
               >
                 {loading ?
                   <Loader2 className='h-4 w-4 animate-spin' />
-                : <Send className='h-4 w-4' />}
+                  : <Send className='h-4 w-4' />}
                 <span className='sr-only'>Send</span>
               </button>
             </div>
