@@ -1,5 +1,4 @@
 'use client'
-import PageBack from '@/components/PageBack'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import {
@@ -61,7 +60,7 @@ export default function ChatBotSidebar({ children }: { children: React.ReactNode
                     <Link
                       key={thread.id}
                       href={`/chat/${thread.id}`}
-                      className={`my-1 flex items-center rounded-sm px-2 focus-within:outline-none focus-within:ring-[1px] focus-within:ring-[hsl(var(--ring))] hover:bg-[#2D2D2D]/50 ${isThreadCurrent(thread.id) ? 'bg-[#2D2D2D]/50' : ''}`}
+                      className={`my-0 flex items-center rounded-sm px-2 focus-within:outline-none focus-within:ring-[1px] focus-within:ring-[hsl(var(--ring))] hover:bg-[#2D2D2D]/50 ${isThreadCurrent(thread.id) ?? 'bg-[#2D2D2D]/50'}`}
                     >
                       <div className='flex flex-1 flex-row gap-2 rounded-sm text-xs py-1 card items-center text-info-content group-data-[state=hover]:bg-[#2D2D2D]/50'>
                         <div
@@ -72,7 +71,7 @@ export default function ChatBotSidebar({ children }: { children: React.ReactNode
                         </div>
                         <Button
                           variant='ghost'
-                          className='w-12 h-10  ml-auto md:hidden md:group-hover:block hover:text-red-800'
+                          className='w-12 h-11 ml-auto md:opacity-0 transition-opacity duration-500 md:group-hover:opacity-100 hover:text-red-800'
                           title='Delete Chat'
                           onClick={() => handleDelete(thread.id)}
                         >
@@ -88,7 +87,10 @@ export default function ChatBotSidebar({ children }: { children: React.ReactNode
         </Sidebar>
         <div className='p-4'>
           <SidebarTrigger
-            className={`fixed left-2 top-2 z-50 ${isMobile ? '' : open ? 'text-gray-800 hover:bg-gray-800 hover:text-gray-200' : 'text-gray-200 hover:bg-gray-200 hover:text-gray-800'}`}
+            className={`fixed left-2 top-2 z-50 ${isMobile ? ''
+              : open ? 'text-gray-800 hover:bg-gray-800 hover:text-gray-200'
+                : 'text-gray-200 hover:bg-gray-200 hover:text-gray-800'
+              }`}
           />
         </div>
         {children}
