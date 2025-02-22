@@ -1,5 +1,6 @@
 import Dexie, { type EntityTable } from 'dexie'
 import { Role } from './lib/types'
+import { wait } from './lib/utils'
 
 export interface Thread {
   id: string
@@ -58,9 +59,7 @@ class Database extends Dexie {
     return id
   }
 
-  async createThread(
-    thread: Omit<Thread, 'id' | 'created_at' | 'updated_at' | 'last_message_at' | 'removed'>,
-  ) {
+  async createThread(thread: Omit<Thread, 'id' | 'created_at' | 'updated_at' | 'last_message_at' | 'removed'>) {
     const id = crypto.randomUUID()
     await this.threads.add({
       ...thread,
@@ -88,7 +87,7 @@ export const db = new Database()
 export async function processStream(
   response: ReadableStream<Uint8Array>,
   assistantMessageId?: string,
-  scrollToBottom?: () => void,
+  scrollToBottom?: () => void
 ): Promise<string> {
   if (!scrollToBottom) scrollToBottom = () => {}
   const reader = response.getReader()
@@ -138,10 +137,11 @@ export async function createMessage(
   threadId: string,
   userContent: string,
   setInput: (input: string) => void,
-  scrollToBottom?: () => void,
+  scrollToBottom?: () => void
 ) {
   setInput('')
   await db.addMessage({ threadId, content: userContent, role: Role.USER, finished: true })
+  await wait(100)
   generateTitle(threadId)
   const allMessages = await db.getThreadMessages(threadId)
   const contextMessages = allMessages.map((m) => ({
@@ -175,6 +175,8 @@ export async function createMessage(
     throw e
   }
 
+  generateTitle(threadId)
+
   return assistantMessageId
 }
 
@@ -184,10 +186,16 @@ export async function generateTitle(threadId: string) {
     role: m.role,
     content: m.content,
   }))
-  contextMessages.push({
-    role: Role.USER,
-    content: 'Generate a short, concise title for this thread so far.',
-  })
+  const messages = [
+    {
+      role: Role.USER,
+      content:
+        'Messages: [' +
+        contextMessages.map((m) => m.content).join('\n ') +
+        ']\n Generate a short, concise title for this thread so far.',
+    },
+  ]
+  console.log(messages)
   try {
     const response = await fetch('/api/chat', {
       method: 'POST',
@@ -195,9 +203,8 @@ export async function generateTitle(threadId: string) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        system:
-          'You are a simple AI that generates short, concise titles of the contents of chat threads in just a few words. Respond in just text and no markdown.',
-        messages: contextMessages,
+        system: 'You are a short title generator, do not generate any text except for the title.',
+        messages: messages,
       }),
     })
     if (!response.body) return
@@ -209,3 +216,4 @@ export async function generateTitle(threadId: string) {
     throw e
   }
 }
+

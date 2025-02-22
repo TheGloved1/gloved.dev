@@ -21,7 +21,6 @@ export default function ChatBot(): React.JSX.Element {
       title: 'Chat-' + Date.now().toString(),
     })
     try {
-      generateTitle(threadId.toString())
       createMessage(threadId.toString(), input, setInput)
     } catch (e) {
       toast({
