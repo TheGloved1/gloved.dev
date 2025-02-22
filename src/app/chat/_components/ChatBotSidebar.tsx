@@ -10,14 +10,16 @@ import {
   SidebarTrigger,
 } from '@/components/ui/sidebar'
 import { db } from '@/db'
+import { useIsMobile } from '@/hooks/use-mobile'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { MessageSquare, Plus, X } from 'lucide-react'
-import Link from 'next/link'
+import { Link } from 'next-view-transitions'
 import { redirect, useParams } from 'next/navigation'
 import React from 'react'
 
 export default function ChatBotSidebar({ children }: { children: React.ReactNode }) {
   const { threadId } = useParams()
+  const isMobile = useIsMobile()
   const [open, setOpen] = React.useState(true)
   const threads = useLiveQuery(
     () => db.threads.where('removed').equals('false').sortBy('last_message_at'),
@@ -38,15 +40,18 @@ export default function ChatBotSidebar({ children }: { children: React.ReactNode
       <div className='mx-auto flex h-dvh w-dvw'>
         <Sidebar>
           <SidebarContent className='bg-gradient-to-bl from-gray-200 to-gray-600'>
-            <PageBack stayTop noFixed btnClassName='btn mt-2 w-fit bg-gray-700 hover:bg-gray-600' />
+            {/* <PageBack stayTop noFixed btnClassName='btn mt-2 w-fit bg-gray-700 hover:bg-gray-600' /> */}
+            <div className='mt-2 w-fit'></div>
             {threadId !== undefined && (
-              <SidebarGroup>
+              <>
                 <div className='divider divider-neutral text-gray-700'>New Chat</div>
-                <Link href='/chat' type='button' title='New chat' className='btn card rounded-xl'>
-                  <Plus className='h-4 w-4' />
-                  <span className='sr-only'>New chat</span>
-                </Link>
-              </SidebarGroup>
+                <SidebarGroup>
+                  <Link href='/chat' type='button' title='New chat' className='btn card rounded-xl'>
+                    <Plus className='h-4 w-4' />
+                    <span className='sr-only'>New chat</span>
+                  </Link>
+                </SidebarGroup>
+              </>
             )}
             <ScrollArea>
               <div className='divider divider-neutral text-gray-700'>Chats</div>
@@ -77,13 +82,13 @@ export default function ChatBotSidebar({ children }: { children: React.ReactNode
                     </Link>
                   </div>
                 ))
-              : <p className='text-center p-2 text-gray-500'>No chats created</p>}
+                : <p className='text-center p-2 text-gray-500'>No chats created</p>}
             </ScrollArea>
           </SidebarContent>
         </Sidebar>
         <div className='p-4'>
           <SidebarTrigger
-            className={`fixed left-2 top-2 z-50 ${open ? 'text-gray-500 hover:bg-gray-500 hover:text-gray-800' : 'text-gray-200 hover:bg-gray-200 hover:text-gray-800'}`}
+            className={`fixed left-2 top-2 z-50 ${isMobile ? '' : open ? 'text-gray-800 hover:bg-gray-800 hover:text-gray-200' : 'text-gray-200 hover:bg-gray-200 hover:text-gray-800'}`}
           />
         </div>
         {children}

@@ -2,7 +2,7 @@
 
 import { Slot } from '@radix-ui/react-slot'
 import { VariantProps, cva } from 'class-variance-authority'
-import { PanelLeftClose, PanelLeftOpen } from 'lucide-react'
+import { ChevronRight, PanelLeftClose, PanelLeftOpen } from 'lucide-react'
 import * as React from 'react'
 
 import { Button } from '@/components/ui/button'
@@ -219,7 +219,7 @@ const Sidebar = React.forwardRef<
             'group-data-[side=right]:rotate-180',
             variant === 'floating' || variant === 'inset' ?
               'group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)_+_theme(spacing.4))]'
-            : 'group-data-[collapsible=icon]:w-[--sidebar-width-icon]',
+              : 'group-data-[collapsible=icon]:w-[--sidebar-width-icon]',
           )}
         />
         <div
@@ -227,11 +227,11 @@ const Sidebar = React.forwardRef<
             'fixed inset-y-0 z-10 hidden h-svh w-[--sidebar-width] transition-[left,right,width] duration-200 ease-linear md:flex',
             side === 'left' ?
               'left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]'
-            : 'right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]',
+              : 'right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]',
             // Adjust the padding for floating and inset variants.
             variant === 'floating' || variant === 'inset' ?
               'p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)_+_theme(spacing.4)_+2px)]'
-            : 'group-data-[collapsible=icon]:w-[--sidebar-width-icon] group-data-[side=left]:border-r group-data-[side=right]:border-l',
+              : 'group-data-[collapsible=icon]:w-[--sidebar-width-icon] group-data-[side=left]:border-r group-data-[side=right]:border-l',
             className,
           )}
           {...props}
@@ -254,6 +254,7 @@ const SidebarTrigger = React.forwardRef<
   React.ComponentProps<typeof Button>
 >(({ className, onClick, ...props }, ref) => {
   const { open, toggleSidebar } = useSidebar()
+  const isMobile = useIsMobile()
 
   return (
     <Button
@@ -267,9 +268,13 @@ const SidebarTrigger = React.forwardRef<
       }}
       {...props}
     >
-      {open ?
-        <PanelLeftClose strokeWidth={'3px'} size={'40px'} />
-      : <PanelLeftOpen strokeWidth={'3px'} size={'40px'} />}
+      {isMobile ? (
+        <ChevronRight width={24} height={24} />
+      ) : open ? (
+        <PanelLeftClose width={24} height={24} />
+      ) : (
+        <PanelLeftOpen width={24} height={24} />
+      )}
     </Button>
   )
 })
@@ -595,7 +600,7 @@ const SidebarMenuAction = React.forwardRef<
         'peer-data-[size=lg]/menu-button:top-2.5',
         'group-data-[collapsible=icon]:hidden',
         showOnHover &&
-          'group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 data-[state=open]:opacity-100 peer-data-[active=true]/menu-button:text-sidebar-accent-foreground md:opacity-0',
+        'group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 data-[state=open]:opacity-100 peer-data-[active=true]/menu-button:text-sidebar-accent-foreground md:opacity-0',
         className,
       )}
       {...props}
