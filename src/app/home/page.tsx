@@ -68,7 +68,7 @@ export default function Page(): React.JSX.Element {
             <p className='p-3 text-xl'></p>
             <p>{'I started programming in my 2nd year of high school.'}</p>
           </ObserverSection> */}
-          <div className='divider w-[75vw] max-w-[1000px]' />
+          {/* <div className='divider w-[75vw] max-w-[1000px]' /> */}
           <ObserverSection id={sections[1]}>
             <p>
               <strong>
