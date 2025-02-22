@@ -11,6 +11,13 @@ const components: Components = {
     HTMLAttributes<HTMLElement> &
     ExtraProps): React.JSX.Element => {
     const language = className?.split('-').pop() || 'plaintext'
+    if (language === 'plaintext') {
+      return (
+        <strong className='font-bold border-border border rounded bg-gray-600/50 px-1' {...props}>
+          {children}
+        </strong>
+      )
+    }
     return (
       <CodeBlock language={language} {...props}>
         {children}
