@@ -1,9 +1,9 @@
-import { NAME } from '@/lib/constants'
+import * as constants from '@/lib/constants'
 import Colors from './_components/Colors'
 
 export const metadata = {
-  title: `${NAME} | Colors`,
-  description: 'A stupid color game...',
+  title: `${constants.NAME} | ${constants.Colors.title}`,
+  description: constants.Colors.description,
 }
 
 export default function Page(): React.JSX.Element {

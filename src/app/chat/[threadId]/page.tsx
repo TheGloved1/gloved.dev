@@ -93,18 +93,17 @@ export default function Page(): React.JSX.Element {
               className={`flex ${m.role === Role.USER ? 'justify-end' : 'justify-start sm:justify-center'}`}
             >
               <div
-                className={`group max-w-[75%] rounded-lg p-4 ${
-                  m.role === Role.USER ?
-                    'bg-primary text-black min-w-28'
+                className={`group max-w-[75%] rounded-lg p-4 ${m.role === Role.USER ?
+                  'bg-primary text-black min-w-28'
                   : 'bg-gray-800/0 text-white min-w-48'
-                }`}
+                  }`}
               >
                 <div
                   className={`mb-2 flex items-center gap-2 ${m.role === Role.USER ? '' : 'hidden md:flex'}`}
                 >
                   {m.role === Role.USER ?
                     <User2 className='h-4 w-4' />
-                  : <Bot className='h-4 w-4' />}
+                    : <Bot className='h-4 w-4' />}
                   <span className='text-sm font-medium'>{m.role === Role.USER ? 'You' : 'AI'}</span>
                   <CopyButton
                     className='block size-4 text-sm text-gray-600 hover:block group-hover:block md:hidden'
@@ -162,9 +161,11 @@ export default function Page(): React.JSX.Element {
                 disabled={loading || !input}
                 className='btn bg-primary hover:bg-primary/90'
               >
-                {loading ?
+                {loading ? (
                   <Loader2 className='h-4 w-4 animate-spin' />
-                : <Send className='h-4 w-4' />}
+                ) : (
+                  <Send className='h-4 w-4' />
+                )}
                 <span className='sr-only'>Send</span>
               </button>
             </div>

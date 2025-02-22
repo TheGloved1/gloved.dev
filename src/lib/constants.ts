@@ -1,11 +1,10 @@
 export const NAME: string = 'gloved.dev'
 export const API: string = 'https://api.gloved.dev'
-export const { Home, FileUploader, Todos, Hangman, Calc, Github, Black, Discord, Chat } = {
+export const { Home, FileUploader, Todos, Hangman, Calc, Github, Black, Discord, Chat, Colors } = {
   Home: {
     title: 'Home',
     link: '/home',
-    description:
-      'The home page for my About Me based web project built with Next.js React Web Framework.',
+    description: 'The home page for my About Me based web project built with Next.js React Web Framework.',
   },
   FileUploader: {
     title: 'File Uploader',
@@ -15,8 +14,7 @@ export const { Home, FileUploader, Todos, Hangman, Calc, Github, Black, Discord,
   Todos: {
     title: 'Todo App',
     link: '/todos',
-    description:
-      'A simple todo list web app. Uses local storage to save and get todos list even after reloading.',
+    description: 'A simple todo list web app. Uses local storage to save and get todos list even after reloading.',
   },
   Hangman: {
     title: 'Janky Hangman',
@@ -31,8 +29,7 @@ export const { Home, FileUploader, Todos, Hangman, Calc, Github, Black, Discord,
   Github: {
     title: 'Github',
     link: 'https://github.com/TheGloved1/',
-    description:
-      'View the source code. Visit my Github profile to take a look at my other projects.',
+    description: 'View the source code. Visit my Github profile to take a look at my other projects.',
   },
   Black: {
     title: 'Black Screen',
@@ -49,4 +46,10 @@ export const { Home, FileUploader, Todos, Hangman, Calc, Github, Black, Discord,
     link: '/chat',
     description: 'A simple chatbot web app, WARNING: HE IS EVIL',
   },
+  Colors: {
+    title: 'Stupid Game',
+    link: '/colors',
+    description: 'Play the stupid game...',
+  },
 }
+
