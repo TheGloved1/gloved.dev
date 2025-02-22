@@ -1,7 +1,6 @@
 'use client'
 import CopyButton from '@/components/CopyButton'
 import Markdown from '@/components/Markdown'
-import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Textarea } from '@/components/ui/textarea'
 import { createMessage, db } from '@/db'
@@ -9,9 +8,9 @@ import { useIsMobile } from '@/hooks/use-mobile'
 import { usePersistentState } from '@/hooks/use-persistent-state'
 import { Role } from '@/lib/types'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { Bot, ChevronDown, Loader2, MessageSquare, Send, User2 } from 'lucide-react'
+import { Bot, Loader2, MessageSquare, Send, User2 } from 'lucide-react'
 import { redirect, useParams } from 'next/navigation'
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import React, { useLayoutEffect, useRef, useState } from 'react'
 
 export default function Page(): React.JSX.Element {
   const { threadId } = useParams()
@@ -78,21 +77,34 @@ export default function Page(): React.JSX.Element {
 
   return (
     <>
-      <ScrollArea type='scroll' className='max-h-dvh mx-auto flex-1 p-4' scrollHideDelay={100} ref={scrollContainerRef}>
-        <div className='space-y-4 pr-4 pt-4 pb-32 text-xs sm:text-sm flex-1 md:text-base' ref={scrollContainerRef}>
+      <ScrollArea
+        type='scroll'
+        className='max-h-dvh mx-auto flex-1 p-4'
+        scrollHideDelay={100}
+        ref={scrollContainerRef}
+      >
+        <div
+          className='space-y-4 pr-4 pt-4 pb-32 text-xs sm:text-sm flex-1 md:text-base'
+          ref={scrollContainerRef}
+        >
           {messages.map((m, index) => (
             <div
               key={index}
               className={`flex ${m.role === Role.USER ? 'justify-end' : 'justify-start sm:justify-center'}`}
             >
               <div
-                className={`group max-w-[75%] rounded-lg p-4 ${m.role === Role.USER ? 'bg-primary text-black min-w-28' : 'bg-gray-800/0 text-white min-w-48'
-                  }`}
+                className={`group max-w-[75%] rounded-lg p-4 ${
+                  m.role === Role.USER ?
+                    'bg-primary text-black min-w-28'
+                  : 'bg-gray-800/0 text-white min-w-48'
+                }`}
               >
-                <div className={`mb-2 flex items-center gap-2 ${m.role === Role.USER ? '' : 'hidden md:flex'}`}>
+                <div
+                  className={`mb-2 flex items-center gap-2 ${m.role === Role.USER ? '' : 'hidden md:flex'}`}
+                >
                   {m.role === Role.USER ?
                     <User2 className='h-4 w-4' />
-                    : <Bot className='h-4 w-4' />}
+                  : <Bot className='h-4 w-4' />}
                   <span className='text-sm font-medium'>{m.role === Role.USER ? 'You' : 'AI'}</span>
                   <CopyButton
                     className='block size-4 text-sm text-gray-600 hover:block group-hover:block md:hidden'
@@ -152,7 +164,7 @@ export default function Page(): React.JSX.Element {
               >
                 {loading ?
                   <Loader2 className='h-4 w-4 animate-spin' />
-                  : <Send className='h-4 w-4' />}
+                : <Send className='h-4 w-4' />}
                 <span className='sr-only'>Send</span>
               </button>
             </div>

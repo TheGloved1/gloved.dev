@@ -59,7 +59,9 @@ export default function ChatBotSidebar({ children }: { children: React.ReactNode
                       className={`my-1 flex items-center rounded-sm px-2 focus-within:outline-none focus-within:ring-[1px] focus-within:ring-[hsl(var(--ring))] hover:bg-[#2D2D2D]/50 ${isThreadCurrent(thread.id) ? 'bg-[#2D2D2D]/50' : ''}`}
                     >
                       <div className='flex flex-1 flex-row gap-2 rounded-sm text-xs py-1 card items-center text-info-content group-data-[state=hover]:bg-[#2D2D2D]/50'>
-                        <div className={`flex flex-1 flex-row gap-2 py-3 ${isThreadCurrent(thread.id) ? 'font-bold cursor-default' : ''}`}>
+                        <div
+                          className={`flex flex-1 flex-row gap-2 py-3 ${isThreadCurrent(thread.id) ? 'font-bold cursor-default' : ''}`}
+                        >
                           <MessageSquare className='h-4 w-4' />
                           {thread.title}
                         </div>
@@ -75,7 +77,7 @@ export default function ChatBotSidebar({ children }: { children: React.ReactNode
                     </Link>
                   </div>
                 ))
-                : <p className='text-center p-2 text-gray-500'>No chats created</p>}
+              : <p className='text-center p-2 text-gray-500'>No chats created</p>}
             </ScrollArea>
           </SidebarContent>
         </Sidebar>
