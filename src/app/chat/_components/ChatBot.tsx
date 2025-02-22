@@ -1,6 +1,6 @@
 'use client'
 import { Textarea } from '@/components/ui/textarea'
-import { createMessage, db, generateTitle } from '@/db'
+import { createMessage, db } from '@/db'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { usePersistentState } from '@/hooks/use-persistent-state'
 import { toast } from '@/hooks/use-toast'

@@ -59,7 +59,9 @@ class Database extends Dexie {
     return id
   }
 
-  async createThread(thread: Omit<Thread, 'id' | 'created_at' | 'updated_at' | 'last_message_at' | 'removed'>) {
+  async createThread(
+    thread: Omit<Thread, 'id' | 'created_at' | 'updated_at' | 'last_message_at' | 'removed'>,
+  ) {
     const id = crypto.randomUUID()
     await this.threads.add({
       ...thread,
@@ -87,7 +89,7 @@ export const db = new Database()
 export async function processStream(
   response: ReadableStream<Uint8Array>,
   assistantMessageId?: string,
-  scrollToBottom?: () => void
+  scrollToBottom?: () => void,
 ): Promise<string> {
   if (!scrollToBottom) scrollToBottom = () => {}
   const reader = response.getReader()
@@ -137,7 +139,7 @@ export async function createMessage(
   threadId: string,
   userContent: string,
   setInput: (input: string) => void,
-  scrollToBottom?: () => void
+  scrollToBottom?: () => void,
 ) {
   setInput('')
   await db.addMessage({ threadId, content: userContent, role: Role.USER, finished: true })
@@ -216,4 +218,3 @@ export async function generateTitle(threadId: string) {
     throw e
   }
 }
-
