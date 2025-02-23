@@ -1,5 +1,4 @@
 import { Role } from '@/lib/types'
-import { wait } from '@/lib/utils'
 import Dexie, { type EntityTable } from 'dexie'
 
 export interface Thread {
@@ -149,7 +148,6 @@ export async function createMessage(
 ) {
   setInput('')
   await db.addMessage({ threadId, content: userContent, role: Role.USER, finished: true })
-  await wait(100)
   generateTitle(threadId)
   const allMessages = await db.getThreadMessages(threadId)
   const contextMessages = allMessages.map((m) => ({
@@ -162,6 +160,7 @@ export async function createMessage(
     content: '',
     finished: false,
   })
+  callback?.()
 
   try {
     const response = await fetch('/api/chat', {
