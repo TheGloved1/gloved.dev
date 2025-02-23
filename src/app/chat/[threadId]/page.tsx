@@ -36,10 +36,7 @@ export default function Page(): React.JSX.Element {
   }
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const messages =
-    useLiveQuery(() => {
-      return db.getThreadMessages(threadId.toString())
-    }, [threadId]) ?? []
+  const messages = useLiveQuery(() => db.getThreadMessages(threadId.toString()), [threadId]) ?? []
 
   useLayoutEffect(() => {
     // Scroll to the bottom of the chat log when the messages change
