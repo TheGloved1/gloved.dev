@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
-const RelativeTimestamp = React.memo(({ date }: { date: Date }) => {
+const Timestamp = React.memo(({ date }: { date: Date }) => {
   const [timestamp, setTimestamp] = useState(createTimestamp(date))
   const [interval, setIntervalState] = useState(calculateInterval(date))
 
@@ -24,6 +24,7 @@ const RelativeTimestamp = React.memo(({ date }: { date: Date }) => {
 
   return <span>{timestamp}</span>
 })
+Timestamp.displayName = 'Timestamp'
 
 const calculateInterval = (date: Date) => {
   const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000)
@@ -63,4 +64,4 @@ const createTimestamp = (date: Date) => {
   return `Sent ${seconds} second${seconds === 1 ? '' : 's'} ago`
 }
 
-export default RelativeTimestamp
+export default Timestamp
