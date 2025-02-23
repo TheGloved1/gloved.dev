@@ -10,17 +10,18 @@ import { Role } from '@/lib/types'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { Bot, Loader2, MessageSquare, Send, SquarePen, User2 } from 'lucide-react'
 import { redirect, useParams } from 'next/navigation'
-import React, { useLayoutEffect, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 
 export default function Page(): React.JSX.Element {
   const { threadId } = useParams()
   if (!threadId || typeof threadId !== 'string') redirect('/chat')
+
+  const isMobile = useIsMobile()
   const [input, setInput] = usePersistentState<string>('chatInput', '')
   const [loading, setLoading] = useState<boolean>(false)
+  const [rows, setRows] = useState<number>(1)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
-  const isMobile = useIsMobile()
-  const [rows, setRows] = useState<number>(1)
 
   useLiveQuery(() => {
     db.getThreads().then((threads) => {
@@ -38,22 +39,14 @@ export default function Page(): React.JSX.Element {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const messages = useLiveQuery(() => db.getThreadMessages(threadId.toString()), [threadId]) ?? []
 
-  useLayoutEffect(() => {
-    // Scroll to the bottom of the chat log when the messages change
-    scrollToBottom()
-  }, [messages])
-
   const handleSubmit = async (
     e: React.FormEvent<HTMLFormElement> | React.KeyboardEvent<HTMLTextAreaElement>,
   ) => {
     e.preventDefault()
-    await handleSendMessage()
-  }
-
-  const handleSendMessage = async () => {
     if (!threadId) return
 
     await createMessage(threadId, input, setInput, scrollToBottom)
+    scrollToBottom()
     setLoading(false)
     setInput('') // Clear the input
     setRows(1)
@@ -87,15 +80,15 @@ export default function Page(): React.JSX.Element {
   }
 
   return (
-    <>
+    <div className='relative flex flex-col flex-grow overflow-y-hidden h-dvh'>
       <ScrollArea
         type='scroll'
-        className='max-h-dvh mx-auto flex-1 p-4'
+        className='mx-auto flex-1 max-w-3xl overflow-hidden'
         scrollHideDelay={100}
         ref={scrollContainerRef}
       >
         <div
-          className='space-y-4 pr-4 pt-4 pb-32 text-xs sm:text-sm flex-1 md:text-base'
+          className='space-y-4 px-1 pt-4 pb-32 max-w-3xl text-xs sm:text-sm flex-1 md:text-base'
           ref={scrollContainerRef}
         >
           {messages.map((m, index) => (
@@ -104,10 +97,10 @@ export default function Page(): React.JSX.Element {
               className={`flex ${m.role === Role.USER ? 'justify-end' : 'justify-start sm:justify-center'}`}
             >
               <div
-                className={`group max-w-[75%] rounded-lg p-4 ${
+                className={`group rounded-lg p-2 ${
                   m.role === Role.USER ?
-                    'bg-primary text-black min-w-40'
-                  : 'bg-gray-800/0 text-white'
+                    'bg-primary text-black min-w-40 max-w-[75%] pr-2'
+                  : 'bg-gray-800/0 text-white max-w-[100%] px-2'
                 }`}
               >
                 <div className={`mb-2 flex items-center gap-2`}>
@@ -143,8 +136,8 @@ export default function Page(): React.JSX.Element {
           ))}
         </div>
       </ScrollArea>
-      <div className='absolute bottom-0 z-10 mx-auto flex w-full max-w-3xl flex-col text-center'>
-        <div className='fixed bottom-0 left-0 right-0 z-40 border-t border-gray-700 bg-gray-800 p-4'>
+      <div className='md:relative fixed bottom-0 mx-auto flex w-full max-w-3xl flex-col text-center max-h-60 md:max-h-80'>
+        <div className='md:relative fixed md:rounded-t-xl bottom-0 left-0 right-0 z-40 border-t max-w-3xl border-gray-700 bg-gray-800 p-4'>
           <form onSubmit={handleSubmit} className='container mx-auto max-w-4xl'>
             <div className='flex items-center gap-2'>
               <div className='relative flex-1'>
@@ -186,6 +179,6 @@ export default function Page(): React.JSX.Element {
           </form>
         </div>
       </div>
-    </>
+    </div>
   )
 }

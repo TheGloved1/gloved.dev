@@ -23,6 +23,10 @@ export default function CopyButton({
       })
     } catch (err) {
       console.warn('Copy to clipboard failed', err)
+      toast({
+        duration: 1000,
+        description: '❌ Failed to copy to clipboard!',
+      })
     }
   }
 

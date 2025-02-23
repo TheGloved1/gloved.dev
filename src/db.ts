@@ -94,9 +94,9 @@ export const db = new Database()
 export async function processStream(
   response: ReadableStream<Uint8Array>,
   assistantMessageId?: string,
-  scrollToBottom?: () => void,
+  callback?: () => void,
 ): Promise<string> {
-  if (!scrollToBottom) scrollToBottom = () => {}
+  if (!callback) callback = () => {}
   const reader = response.getReader()
   const decoder = new TextDecoder()
   let done = false
@@ -117,7 +117,7 @@ export async function processStream(
 
       // Handle the different types of messages in the stream
       if (line.startsWith('0:')) {
-        scrollToBottom()
+        callback()
         // This is a message chunk
         const json = JSON.parse(line.slice(2)) // Remove the prefix
         messageContent += json // Append the new content
@@ -132,6 +132,7 @@ export async function processStream(
           await db.messages.update(assistantMessageId, {
             finished: true, // Mark as finished
           })
+        callback()
         break // Exit the loop since we are done processing
       }
     }
@@ -144,7 +145,7 @@ export async function createMessage(
   threadId: string,
   userContent: string,
   setInput: (input: string) => void,
-  scrollToBottom?: () => void,
+  callback?: () => void,
 ) {
   setInput('')
   await db.addMessage({ threadId, content: userContent, role: Role.USER, finished: true })
@@ -177,7 +178,7 @@ export async function createMessage(
     if (!reader) return
 
     // Call the helper function to process the stream
-    await processStream(reader, assistantMessageId, scrollToBottom)
+    await processStream(reader, assistantMessageId, callback)
   } catch (e) {
     console.log('Uncaught error', e)
   }
