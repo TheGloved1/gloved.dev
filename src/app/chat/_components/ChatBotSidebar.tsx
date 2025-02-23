@@ -81,15 +81,13 @@ export default function ChatBotSidebar({ children }: { children: React.ReactNode
           </ScrollArea>
         </SidebarContent>
       </Sidebar>
-      <div className='p-4'>
-        <SidebarTrigger
-          className={`fixed left-2 top-2 z-50 ${
-            isMobile ? ''
-            : open ? 'text-gray-800 hover:bg-gray-800 hover:text-gray-200'
-            : 'text-gray-200 hover:bg-gray-200 hover:text-gray-800'
-          }`}
-        />
-      </div>
+      <SidebarTrigger
+        className={`fixed left-2 top-2 z-50 ${
+          isMobile ? ''
+          : open ? 'text-gray-800 hover:bg-gray-800 hover:text-gray-200'
+          : 'text-gray-200 hover:bg-gray-200 hover:text-gray-800'
+        }`}
+      />
       {children}
     </SidebarProvider>
   )
