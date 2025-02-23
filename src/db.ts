@@ -129,6 +129,7 @@ export async function processStream(
         done = true
         if (messageId)
           await db.messages.update(messageId, {
+            created_at: new Date(),
             finished: true, // Mark as finished
           })
         callback()

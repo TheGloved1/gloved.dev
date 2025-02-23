@@ -8,6 +8,7 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { Copy, Loader2, Send, SquarePen } from 'lucide-react'
 import { redirect, useParams } from 'next/navigation'
 import React, { useEffect, useRef, useState } from 'react'
+import Timestamp from '../_components/Timestamp'
 
 export default function Page(): React.JSX.Element {
   const { threadId } = useParams()
@@ -197,6 +198,9 @@ export default function Page(): React.JSX.Element {
                         <Copy className='-mb-0.5 -ml-0.5 !size-5' />
                         Copy Response
                       </button>
+                      <div className='opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 group-focus:opacity-100'>
+                        <Timestamp date={m.created_at} />
+                      </div>
                     </div>
                   }
                 </div>
