@@ -8,7 +8,7 @@ import { useIsMobile } from '@/hooks/use-mobile'
 import { usePersistentState } from '@/hooks/use-persistent-state'
 import { Role } from '@/lib/types'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { Bot, Loader2, MessageSquare, Send, SquarePen, Trash2, User2 } from 'lucide-react'
+import { Bot, Loader2, MessageSquare, Send, SquarePen, User2 } from 'lucide-react'
 import { redirect, useParams } from 'next/navigation'
 import React, { useLayoutEffect, useRef, useState } from 'react'
 
@@ -78,7 +78,7 @@ export default function Page(): React.JSX.Element {
   const handleEditMessage = async (m: Message) => {
     const messageContent = m.content // Get the content of the message to be deleted
     const allMessages = await db.getThreadMessages(threadId) // Get all messages in the thread
-    const index = allMessages.findIndex(msg => msg.id === m.id) // Find the index of the deleted message
+    const index = allMessages.findIndex((msg) => msg.id === m.id) // Find the index of the deleted message
 
     // Delete all subsequent messages
     await db.removeMessage(m.id)
@@ -107,26 +107,22 @@ export default function Page(): React.JSX.Element {
               className={`flex ${m.role === Role.USER ? 'justify-end' : 'justify-start sm:justify-center'}`}
             >
               <div
-                className={`group max-w-[75%] rounded-lg p-4 ${m.role === Role.USER ?
-                  'bg-primary text-black min-w-40'
+                className={`group max-w-[75%] rounded-lg p-4 ${
+                  m.role === Role.USER ?
+                    'bg-primary text-black min-w-40'
                   : 'bg-gray-800/0 text-white'
-                  }`}
+                }`}
               >
                 <div className={`mb-2 flex items-center gap-2`}>
                   {m.role === Role.USER ?
                     <User2 size={16} />
-                    : <Bot size={16} />}
+                  : <Bot size={16} />}
                   <span className='text-sm font-medium'>{m.role === Role.USER ? 'You' : 'AI'}</span>
-                  {m.role === Role.USER ? (
-                    <button
-                      onClick={() => handleEditMessage(m)}
-                      title='Edit message'
-                    >
-                      <SquarePen
-                        className='block p-0.5 rounded hover:bg-gray-400/80 size-5 text-sm text-gray-800 hover:block group-hover:block md:hidden'
-                      />
+                  {m.role === Role.USER ?
+                    <button onClick={() => handleEditMessage(m)} title='Edit message'>
+                      <SquarePen className='block p-0.5 rounded hover:bg-gray-400/80 size-5 text-sm text-gray-800 hover:block group-hover:block md:hidden' />
                     </button>
-                  ) : null}
+                  : null}
                   <CopyButton
                     className='block p-1 rounded hover:bg-gray-400/80 size-5 text-sm text-gray-800 hover:block group-hover:block md:hidden'
                     text={m.content}
@@ -168,7 +164,7 @@ export default function Page(): React.JSX.Element {
                     // If Shift + Enter is pressed, add a new line
                     if (e.key === 'Enter' && e.shiftKey) {
                       e.preventDefault()
-                      setInput((prev) => (prev + '\n'))
+                      setInput((prev) => prev + '\n')
                     } else if (e.key === 'Enter') {
                       if (!input.trim()) {
                         e.preventDefault()
@@ -186,7 +182,7 @@ export default function Page(): React.JSX.Element {
               >
                 {loading ?
                   <Loader2 className='h-4 w-4 animate-spin' />
-                  : <Send className='h-4 w-4' />}
+                : <Send className='h-4 w-4' />}
                 <span className='sr-only'>Send</span>
               </button>
             </div>

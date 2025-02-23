@@ -20,11 +20,7 @@ export default function ChatBotSidebar({ children }: { children: React.ReactNode
   const { threadId } = useParams()
   const isMobile = useIsMobile()
   const [open, setOpen] = useState(true)
-  const threads = useLiveQuery(
-    () => db.getThreads(),
-    [db.threads],
-    []
-  )
+  const threads = useLiveQuery(() => db.getThreads(), [db.threads], [])
 
   const handleDelete = async (id: string) => {
     await db.deleteThread(id)
@@ -82,16 +78,17 @@ export default function ChatBotSidebar({ children }: { children: React.ReactNode
                     </Link>
                   </div>
                 ))
-                : <p className='text-center p-2 text-gray-500'>No chats created</p>}
+              : <p className='text-center p-2 text-gray-500'>No chats created</p>}
             </ScrollArea>
           </SidebarContent>
         </Sidebar>
         <div className='p-4'>
           <SidebarTrigger
-            className={`fixed left-2 top-2 z-50 ${isMobile ? ''
+            className={`fixed left-2 top-2 z-50 ${
+              isMobile ? ''
               : open ? 'text-gray-800 hover:bg-gray-800 hover:text-gray-200'
-                : 'text-gray-200 hover:bg-gray-200 hover:text-gray-800'
-              }`}
+              : 'text-gray-200 hover:bg-gray-200 hover:text-gray-800'
+            }`}
           />
         </div>
         {children}

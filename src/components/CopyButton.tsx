@@ -1,7 +1,7 @@
 'use client'
 import { toast } from '@/hooks/use-toast'
-import { ClipboardCopy, Copy } from 'lucide-react'
-import React, { useEffect, useState } from 'react'
+import { Copy } from 'lucide-react'
+import React from 'react'
 
 interface CopyButtonProps {
   text: string
@@ -14,7 +14,6 @@ export default function CopyButton({
   className,
   title = 'Copy message',
 }: CopyButtonProps): React.JSX.Element {
-
   const handleCopy = async () => {
     try {
       navigator.clipboard.writeText(text)
