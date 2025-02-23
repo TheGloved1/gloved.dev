@@ -28,6 +28,7 @@
   "dependencies": {
     "@ai-sdk/google": "^1.1.16",
     "@ai-sdk/react": "^1.1.17",
+    "@eslint/js": "^9.21.0",
     "@radix-ui/react-alert-dialog": "^1.1.6",
     "@radix-ui/react-dialog": "^1.1.6",
     "@radix-ui/react-progress": "^1.1.2",
@@ -69,7 +70,9 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3",
+    "@eslint/eslintrc": "^3.2.0",
+    "@types/eslint": "^9.6.1",
+    "@types/eslint__eslintrc": "^2.1.2",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
@@ -87,4 +90,3 @@
     "typescript": "^5"
   }
 }
-
