@@ -21,7 +21,7 @@ export default function ChatBot(): React.JSX.Element {
     e.preventDefault()
     setLoading(true)
     const threadId = await db.createThread({
-      title: 'Chat-' + Date.now().toString(),
+      title: Date.now().toString(),
     })
     try {
       createMessage(threadId.toString(), input, setInput)
