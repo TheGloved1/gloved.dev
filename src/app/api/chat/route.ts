@@ -47,7 +47,10 @@ export async function POST(req: Request) {
         messages,
         temperature,
         maxTokens,
-        experimental_transform: smoothStream(),
+        experimental_transform: smoothStream({
+          chunking: 'word',
+          delayInMs: 100,
+        }),
       })
       result.mergeIntoDataStream(dataStream)
     },
