@@ -4,26 +4,24 @@ import Markdown from '@/components/Markdown'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Textarea } from '@/components/ui/textarea'
 import { createMessage, db, Message } from '@/db'
-import { useIsMobile } from '@/hooks/use-mobile'
 import { usePersistentState } from '@/hooks/use-persistent-state'
 import { Role } from '@/lib/types'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { Bot, Loader2, MessageSquare, Send, SquarePen, User2 } from 'lucide-react'
 import { redirect, useParams } from 'next/navigation'
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 export default function Page(): React.JSX.Element {
   const { threadId } = useParams()
   if (!threadId || typeof threadId !== 'string') redirect('/chat')
 
-  const isMobile = useIsMobile()
   const [input, setInput] = usePersistentState<string>('chatInput', '')
   const [loading, setLoading] = useState<boolean>(false)
   const [rows, setRows] = useState<number>(1)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
 
-  useLiveQuery(() => {
+  useEffect(() => {
     db.getThreads().then((threads) => {
       if (threads.find((t) => t.id === threadId)) return threads
       redirect('/chat')
@@ -32,12 +30,16 @@ export default function Page(): React.JSX.Element {
 
   const scrollToBottom = () => {
     if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' })
+      messagesEndRef.current.scrollIntoView()
     }
   }
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const messages = useLiveQuery(() => db.getThreadMessages(threadId.toString()), [threadId]) ?? []
+  const messages =
+    useLiveQuery(() => {
+      scrollToBottom()
+      return db.getThreadMessages(threadId.toString())
+    }, [threadId, db.messages]) ?? []
 
   const handleSubmit = async (
     e: React.FormEvent<HTMLFormElement> | React.KeyboardEvent<HTMLTextAreaElement>,
@@ -46,11 +48,14 @@ export default function Page(): React.JSX.Element {
     if (!threadId) return
 
     await createMessage(threadId, input, setInput, scrollToBottom)
-    scrollToBottom()
     setLoading(false)
-    setInput('') // Clear the input
+    setInput('')
     setRows(1)
   }
+
+  useEffect(() => {
+    scrollToBottom()
+  }, [messages])
 
   const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(e.target.value)

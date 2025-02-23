@@ -2,7 +2,6 @@
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Textarea } from '@/components/ui/textarea'
 import { createMessage, db } from '@/db'
-import { useIsMobile } from '@/hooks/use-mobile'
 import { usePersistentState } from '@/hooks/use-persistent-state'
 import { toast } from '@/hooks/use-toast'
 import { Loader2, MessageSquare, Send } from 'lucide-react'
@@ -13,7 +12,6 @@ export default function ChatBot(): React.JSX.Element {
   const [input, setInput] = usePersistentState<string>('chatInput', '')
   const [loading, setLoading] = useState<boolean>(false)
   const [rows, setRows] = useState<number>(1)
-  const isMobile = useIsMobile()
 
   const handleSubmit = async (
     e: React.FormEvent<HTMLFormElement> | React.KeyboardEvent<HTMLTextAreaElement>,

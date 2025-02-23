@@ -92,7 +92,7 @@ export const db = new Database()
 
 export async function processStream(
   response: ReadableStream<Uint8Array>,
-  assistantMessageId?: string,
+  messageId?: string,
   callback?: () => void,
 ): Promise<string> {
   if (!callback) callback = () => {}
@@ -120,15 +120,15 @@ export async function processStream(
         // This is a message chunk
         const json = JSON.parse(line.slice(2)) // Remove the prefix
         messageContent += json // Append the new content
-        if (assistantMessageId)
-          await db.messages.update(assistantMessageId, {
+        if (messageId)
+          await db.messages.update(messageId, {
             content: messageContent, // Update with the accumulated content
           })
       } else if (line.startsWith('e:')) {
         // This indicates the end of the message
         done = true
-        if (assistantMessageId)
-          await db.messages.update(assistantMessageId, {
+        if (messageId)
+          await db.messages.update(messageId, {
             finished: true, // Mark as finished
           })
         callback()
@@ -217,6 +217,7 @@ export async function generateTitle(threadId: string) {
     if (!response.body) return
     const title = await processStream(response.body)
     await db.threads.update(threadId, {
+      updated_at: new Date(),
       title,
     })
   } catch (e) {

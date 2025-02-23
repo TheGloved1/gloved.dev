@@ -6,6 +6,9 @@ import { createDataStreamResponse, smoothStream, streamText } from 'ai'
 
 const genAI = createGoogleGenerativeAI({ apiKey: env.GEMINI })
 
+const temperature = 0.95
+const maxTokens = 8192
+
 const model = genAI.languageModel('gemini-1.5-flash', {
   safetySettings: [
     {
@@ -42,9 +45,9 @@ export async function POST(req: Request) {
         system,
         model,
         messages,
-        experimental_transform: smoothStream({
-          delayInMs: 25,
-        }),
+        temperature,
+        maxTokens,
+        experimental_transform: smoothStream(),
       })
       result.mergeIntoDataStream(dataStream)
     },
