@@ -7,7 +7,6 @@ import CopyButton from './CopyButton'
 type CodeBlockProps = {
   children?: React.ReactNode
   language?: string
-  node?: any
   props?: React.ComponentProps<typeof SyntaxHighlighter>
 } & ClassAttributes<HTMLElement> &
   HTMLAttributes<HTMLElement> &
