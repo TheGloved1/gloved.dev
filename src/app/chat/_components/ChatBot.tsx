@@ -68,7 +68,7 @@ export default function ChatBot(): React.JSX.Element {
                   className='rounded-xl bg-gray-900 pl-10 text-gray-100'
                   value={input}
                   disabled={loading}
-                  placeholder={`Enter message here... ${isMobile ? '' : '(Shift + Enter for new line)'}`}
+                  placeholder={`Type message here...`}
                   rows={rows}
                   aria-rowcount={rows}
                   onChange={handleTextareaChange}
