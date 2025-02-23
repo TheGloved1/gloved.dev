@@ -80,10 +80,10 @@ export default function Page(): React.JSX.Element {
   }
 
   return (
-    <div className='relative flex flex-col flex-grow overflow-y-hidden'>
+    <div className='relative flex flex-col flex-grow max-w-3xl max-h-dvh overflow-y-hidden'>
       <ScrollArea
         type='scroll'
-        className='mx-auto flex-1 max-w-3xl overflow-hidden'
+        className='mx-auto flex-1 max-w-3xl max-h-dvh overflow-hidden'
         scrollHideDelay={100}
         ref={scrollContainerRef}
       >
