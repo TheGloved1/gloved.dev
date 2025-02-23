@@ -10,7 +10,7 @@ type CodeBlockProps = {
 }
 const CodeBlock = ({ children = '', language = 'plaintext', props }: CodeBlockProps) => {
   return (
-    <div className='relative max-w-[92%]'>
+    <div className='relative max-w-full'>
       <div className='absolute inset-x-0 top-0 flex items-center justify-between border-foreground border h-10 px-4 py-2 text-xs bg-gray-900 rounded-t-lg text-muted-foreground'>
         <span className='font-mono'>{language}</span>
         <CopyButton text={String(children)} />
