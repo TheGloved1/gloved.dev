@@ -184,7 +184,16 @@ export default function Page(): React.JSX.Element {
                       </button>
                     </div>
                   : <div className='absolute left-0 mt-2 flex items-center gap-2'>
-                      <button className='inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80 h-8 rounded-md px-3 text-xs opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 group-focus:opacity-100'>
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText(m.content)
+                          toast({
+                            duration: 1000,
+                            description: '✅ Successfully copied to clipboard!',
+                          })
+                        }}
+                        className='inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80 h-8 rounded-md px-3 text-xs opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 group-focus:opacity-100'
+                      >
                         <Copy className='-mb-0.5 -ml-0.5 !size-5' />
                         Copy Response
                       </button>
