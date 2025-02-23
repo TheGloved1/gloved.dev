@@ -126,8 +126,8 @@ importers:
         specifier: ^2.2.2
         version: 2.2.2
       tailwind-merge:
-        specifier: ^2.6.0
-        version: 2.6.0
+        specifier: ^3.0.2
+        version: 3.0.2
       tailwindcss-animate:
         specifier: ^1.0.7
         version: 1.0.7(tailwindcss@3.4.17)
@@ -167,7 +167,7 @@ importers:
         version: 9.20.1(jiti@1.21.7)
       eslint-config-next:
         specifier: canary
-        version: 15.2.0-canary.64(eslint@9.20.1(jiti@1.21.7))(typescript@5.7.3)
+        version: 15.2.0-canary.70(eslint@9.20.1(jiti@1.21.7))(typescript@5.7.3)
       fluid-tailwind:
         specifier: ^1.0.4
         version: 1.0.4(tailwindcss@3.4.17)
@@ -465,8 +465,8 @@ packages:
   '@next/env@15.2.0-canary.64':
     resolution: {integrity: sha512-ZZYxKm0ECOr7n818vBxELVYwreFKvzS1XPFuzTO5NHokJWuqCFN6cc6dW4S0bohHSjLXckDad/nft3G/k3/1VA==}
 
-  '@next/eslint-plugin-next@15.2.0-canary.64':
-    resolution: {integrity: sha512-4dj8OUjfiFxDsipXZnI4W9BuFmPSLOCTNrozT4EdzmmfbN/lU7/SWcVg+471VfeT2W//w5U3DwzY+bfdeh+s6A==}
+  '@next/eslint-plugin-next@15.2.0-canary.70':
+    resolution: {integrity: sha512-MLlJM0/B4aReQtGM10o6+CEIHGd7ANt8CGNzXJ9YL8hwg71W4O8AjxjDrmECcNx4AphBX3tzs5iTHYvgTQ6KRg==}
 
   '@next/swc-darwin-arm64@15.2.0-canary.64':
     resolution: {integrity: sha512-i6OX3WK++7aqUp2d2t5RbMM27FyynHluchihjL0VFpBZ1HSjWIZ2pu6Fo/pMA65rU9OtuZqAjU1jXN/XIHnZUw==}
@@ -1549,8 +1549,8 @@ packages:
     resolution: {integrity: sha512-TtpcNJ3XAzx3Gq8sWRzJaVajRs0uVxA2YAkdb1jm2YkPz4G6egUFAyA3n5vtEIZefPk5Wa4UXbKuS5fKkJWdgA==}
     engines: {node: '>=10'}
 
-  eslint-config-next@15.2.0-canary.64:
-    resolution: {integrity: sha512-mjehJ2SvQ6R3Uc2P9FKA3s+CtnZ1lZ0op3YIoe/piMTnto5xwl289RPZonWTJSQ0o+wSfTE3fOzRM7hk/sFepg==}
+  eslint-config-next@15.2.0-canary.70:
+    resolution: {integrity: sha512-9alNBbIt7OK4U96r3Q0u9dQfEPiWSlOwd/8aokEE5IzM/vPlgQPtjuoW5/+kR6MzAAQSJ0mOmg5sPPVqoNnyfQ==}
     peerDependencies:
       eslint: ^7.23.0 || ^8.0.0 || ^9.0.0
       typescript: '>=3.3.1'
@@ -2892,8 +2892,8 @@ packages:
     peerDependencies:
       react: ^16.11.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
-  tailwind-merge@2.6.0:
-    resolution: {integrity: sha512-P+Vu1qXfzediirmHOC3xKGAYeZtPcV9g76X+xg2FD4tYgR71ewMA35Y3sCz3zhiN/dwefRpJX0yBcgwi1fXNQA==}
+  tailwind-merge@3.0.2:
+    resolution: {integrity: sha512-l7z+OYZ7mu3DTqrL88RiKrKIqO3NcpEO8V/Od04bNpvk0kiIFndGEoqfuzvj4yuhRkHKjRkII2z+KS2HfPcSxw==}
 
   tailwind-scrollbar@4.0.0:
     resolution: {integrity: sha512-elqx9m09VHY8gkrMiyimFO09JlS3AyLFXT0eaLaWPi7ImwHlbZj1ce/AxSis2LtR+ewBGEyUV7URNEMcjP1Z2w==}
@@ -3339,7 +3339,7 @@ snapshots:
 
   '@next/env@15.2.0-canary.64': {}
 
-  '@next/eslint-plugin-next@15.2.0-canary.64':
+  '@next/eslint-plugin-next@15.2.0-canary.70':
     dependencies:
       fast-glob: 3.3.1
 
@@ -4417,9 +4417,9 @@ snapshots:
 
   escape-string-regexp@4.0.0: {}
 
-  eslint-config-next@15.2.0-canary.64(eslint@9.20.1(jiti@1.21.7))(typescript@5.7.3):
+  eslint-config-next@15.2.0-canary.70(eslint@9.20.1(jiti@1.21.7))(typescript@5.7.3):
     dependencies:
-      '@next/eslint-plugin-next': 15.2.0-canary.64
+      '@next/eslint-plugin-next': 15.2.0-canary.70
       '@rushstack/eslint-patch': 1.10.5
       '@typescript-eslint/eslint-plugin': 8.24.1(@typescript-eslint/parser@8.24.1(eslint@9.20.1(jiti@1.21.7))(typescript@5.7.3))(eslint@9.20.1(jiti@1.21.7))(typescript@5.7.3)
       '@typescript-eslint/parser': 8.24.1(eslint@9.20.1(jiti@1.21.7))(typescript@5.7.3)
@@ -6017,7 +6017,7 @@ snapshots:
       react: 19.0.0
       use-sync-external-store: 1.4.0(react@19.0.0)
 
-  tailwind-merge@2.6.0: {}
+  tailwind-merge@3.0.2: {}
 
   tailwind-scrollbar@4.0.0(react@19.0.0)(tailwindcss@3.4.17):
     dependencies:
