@@ -137,7 +137,7 @@ export default function Page(): React.JSX.Element {
         </div>
       </ScrollArea>
       <div className='md:relative fixed bottom-0 mx-auto flex w-full max-w-3xl flex-col text-center max-h-60 md:max-h-80'>
-        <div className='md:relative fixed md:rounded-t-xl bottom-0 left-0 right-0 z-40 border-t max-w-3xl border-gray-700 bg-gray-800 p-4 min-w-2xl'>
+        <div className='md:relative fixed md:rounded-t-xl bottom-0 left-0 right-0 z-40 border-t max-w-3xl border-gray-700 bg-gray-800 p-4 lg:min-w-[48rem]'>
           <form onSubmit={handleSubmit} className='container mx-auto max-w-4xl'>
             <div className='flex items-center gap-2'>
               <div className='relative flex-1'>
