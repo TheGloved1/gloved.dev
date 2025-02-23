@@ -30,7 +30,9 @@ export default function Page(): React.JSX.Element {
 
   const scrollToBottom = () => {
     if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView()
+      messagesEndRef.current.scrollIntoView({
+        behavior: 'smooth',
+      })
     }
   }
 
@@ -136,9 +138,9 @@ export default function Page(): React.JSX.Element {
                   <Markdown>{m.content}</Markdown>
                 </article>
               </div>
-              <div ref={messagesEndRef} className='w-0 h-0 overflow-hidden' />
             </div>
           ))}
+          <div ref={messagesEndRef} className='w-0 h-0 overflow-hidden' />
         </div>
       </ScrollArea>
       <div className='md:relative fixed bottom-0 mx-auto flex w-full max-w-3xl flex-col text-center max-h-60 md:max-h-80'>
