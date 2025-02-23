@@ -8,6 +8,8 @@ const genAI = createGoogleGenerativeAI({ apiKey: env.GEMINI })
 
 const temperature = 0.95
 const maxTokens = 8192
+const frequencyPenalty = 0.5
+const presencePenalty = 0.15
 
 const model = genAI.languageModel('gemini-1.5-flash', {
   safetySettings: [
@@ -47,6 +49,8 @@ export async function POST(req: Request) {
         messages,
         temperature,
         maxTokens,
+        frequencyPenalty,
+        presencePenalty,
         experimental_transform: smoothStream({
           chunking: 'word',
           delayInMs: 100,
