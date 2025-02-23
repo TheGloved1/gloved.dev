@@ -67,7 +67,7 @@ export default function ChatBotSidebar({ children }: { children: React.ReactNode
                       </div>
                       <Button
                         variant='ghost'
-                        className='w-12 h-11 ml-auto md:opacity-0 transition-opacity duration-500 md:group-hover:opacity-100 hover:text-red-800'
+                        className='w-12 h-11 ml-auto md:opacity-0 transition-opacity duration-500 text-gray-500 md:group-hover:opacity-100 hover:text-red-800'
                         title='Delete Chat'
                         onClick={() => handleDelete(thread.id)}
                       >
