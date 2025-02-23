@@ -58,9 +58,9 @@ export default function ChatBot(): React.JSX.Element {
         className='mx-auto w-full min-w-96 flex-1 max-w-3xl overflow-hidden'
         scrollHideDelay={100}
       ></ScrollArea>
-      <div className='md:relative min-w-[100%] fixed bottom-0 mx-auto flex w-full max-w-3xl flex-col text-center max-h-60 md:max-h-80'>
-        <div className='md:relative fixed md:rounded-t-xl min-w-96 bottom-0 left-0 right-0 z-40 border-t max-w-3xl border-gray-700 bg-gray-800 p-4'>
-          <form onSubmit={handleSubmit} className='container mx-auto min-w-96 max-w-4xl'>
+      <div className='md:relative fixed bottom-0 mx-auto flex w-full max-w-3xl flex-col text-center max-h-60 md:max-h-80'>
+        <div className='md:relative fixed md:rounded-t-xl bottom-0 left-0 right-0 z-40 border-t max-w-3xl border-gray-700 bg-gray-800 p-4 lg:min-w-[45rem]'>
+          <form onSubmit={handleSubmit} className='container mx-auto max-w-4xl'>
             <div className='flex items-center gap-2'>
               <div className='relative flex-1'>
                 <MessageSquare className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-400' />
