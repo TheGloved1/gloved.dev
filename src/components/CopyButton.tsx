@@ -7,12 +7,14 @@ interface CopyButtonProps {
   text: string
   className?: string
   title?: string
+  btnClassName?: string
 }
 
 export default function CopyButton({
   text = 'Copied!',
   className,
   title = 'Copy message',
+  btnClassName,
 }: CopyButtonProps): React.JSX.Element {
   const handleCopy = async () => {
     try {
@@ -31,7 +33,7 @@ export default function CopyButton({
   }
 
   return (
-    <button onClick={handleCopy} title={title}>
+    <button onClick={handleCopy} title={title} className={btnClassName}>
       <Copy size={24} className={className} />
     </button>
   )

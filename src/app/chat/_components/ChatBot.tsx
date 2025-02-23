@@ -1,10 +1,8 @@
 'use client'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Textarea } from '@/components/ui/textarea'
 import { createMessage, db } from '@/db'
 import { usePersistentState } from '@/hooks/use-persistent-state'
 import { toast } from '@/hooks/use-toast'
-import { Loader2, MessageSquare, Send } from 'lucide-react'
+import { Loader2, Send } from 'lucide-react'
 import { redirect } from 'next/navigation'
 import React, { useState } from 'react'
 
@@ -50,26 +48,25 @@ export default function ChatBot(): React.JSX.Element {
   }
 
   return (
-    <div className='relative flex flex-col flex-grow overflow-y-hidden h-dvh'>
-      <ScrollArea
-        type='scroll'
-        className='mx-auto w-full min-w-96 flex-1 max-w-3xl overflow-hidden'
-        scrollHideDelay={100}
-      ></ScrollArea>
-      <div className='md:relative fixed bottom-0 mx-auto flex w-full max-w-3xl flex-col text-center max-h-60 md:max-h-80'>
-        <div className='md:relative fixed md:rounded-t-xl bottom-0 left-0 right-0 z-40 border-t max-w-3xl border-gray-700 bg-gray-800 p-4 lg:min-w-[48rem]'>
-          <form onSubmit={handleSubmit} className='container mx-auto max-w-4xl'>
-            <div className='flex items-center gap-2'>
-              <div className='relative flex-1'>
-                <MessageSquare className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-400' />
-                <Textarea
-                  className='rounded-xl bg-gray-900 pl-10 text-gray-100'
+    <main className='relative flex w-full flex-1 flex-col'>
+      <div className='absolute bottom-0 w-full pr-2'>
+        <div className='relative z-10 mx-auto flex w-full max-w-3xl flex-col text-center'>
+          <div className='px-4'>
+            <form
+              onSubmit={handleSubmit}
+              className='relative flex w-full flex-col items-stretch gap-2 rounded-t-xl bg-[#2D2D2D] px-3 py-3 shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)] sm:max-w-3xl'
+            >
+              <div className='flex flex-grow flex-col'>
+                <textarea
+                  className='w-full resize-none bg-transparent text-base leading-6 text-neutral-100 outline-none disabled:opacity-0'
+                  style={{ height: `${(rows + 1) * 24}px` }}
                   value={input}
                   disabled={loading}
                   placeholder={`Type message here...`}
                   rows={rows}
-                  aria-rowcount={rows}
-                  onChange={handleTextareaChange}
+                  onChange={(e) => {
+                    setInput(e.target.value)
+                  }}
                   onKeyDown={(e) => {
                     // If Shift + Enter is pressed, add a new line
                     if (e.key === 'Enter' && e.shiftKey) {
@@ -85,20 +82,27 @@ export default function ChatBot(): React.JSX.Element {
                   }}
                 />
               </div>
-              <button
-                type='submit'
-                disabled={loading || !input}
-                className='btn bg-primary hover:bg-primary/90'
-              >
-                {loading ?
-                  <Loader2 className='h-4 w-4 animate-spin' />
-                : <Send className='h-4 w-4' />}
-                <span className='sr-only'>Send</span>
-              </button>
-            </div>
-          </form>
+              <div className='flex flex-col gap-2 md:flex-row md:items-center'>
+                <button
+                  type='submit'
+                  disabled={loading || !input}
+                  className='inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 shadow h-9 w-9 absolute bottom-3 right-3 rounded-full bg-pink-600/70 p-2 text-neutral-100 hover:bg-pink-500/70'
+                >
+                  {loading ?
+                    <Loader2 className='h-4 w-4 animate-spin' />
+                  : <Send className='-mb-0.5 -ml-0.5 !size-5' />}
+                  <span className='sr-only'>Send</span>
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
-    </div>
+      <div className='relative flex-1 overflow-hidden'>
+        <div className='scrollbar scrollbar-w-2 scrollbar-thumb-gray-700 scrollbar-track-transparent hover:scrollbar-thumb-gray-600 h-[100dvh] overflow-y-auto pb-36'>
+          <div className='mx-auto flex w-full max-w-2xl flex-col space-y-12 p-3 translate-x-1 pb-8 text-sm'></div>
+        </div>
+      </div>
+    </main>
   )
 }

@@ -6,6 +6,7 @@ const components: Components = {
   code: ({
     children,
     className,
+    node,
     ...props
   }: ClassAttributes<HTMLElement> &
     HTMLAttributes<HTMLElement> &
@@ -19,7 +20,7 @@ const components: Components = {
       )
     }
     return (
-      <CodeBlock language={language} {...props}>
+      <CodeBlock node={node} language={language} {...props}>
         {children}
       </CodeBlock>
     )

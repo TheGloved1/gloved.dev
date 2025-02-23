@@ -34,9 +34,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             <SpeedInsights />
             <Suspense fallback={null}>{/* <RainingLetters /> */}</Suspense>
             <Toaster />
-            <main className='flex relative z-10 min-h-screen flex-col items-center from-sky-950 to-[#1e210c] text-white'>
-              {children}
-            </main>
+            {children}
           </Providers>
         </body>
       </html>
