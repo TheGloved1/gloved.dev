@@ -17,7 +17,6 @@ export default function Page(): React.JSX.Element {
   const [rows, setRows] = useState<number>(1)
   const [isAtBottom, setIsAtBottom] = useState<boolean>(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
-  const scrollContainerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     db.getThreads().then((threads) => {
@@ -39,6 +38,10 @@ export default function Page(): React.JSX.Element {
       scrollToBottom()
       return db.getThreadMessages(threadId)
     }, [threadId, db.messages]) ?? []
+
+  useEffect(() => {
+    scrollToBottom()
+  }, [])
 
   const handleSubmit = async (
     e: React.FormEvent<HTMLFormElement> | React.KeyboardEvent<HTMLTextAreaElement>,
@@ -162,16 +165,10 @@ export default function Page(): React.JSX.Element {
         </div>
       </div>
       <div className='relative flex-1 overflow-hidden'>
-        <div
-          className='scrollbar scrollbar-w-2 scrollbar-thumb-gray-700 scrollbar-track-transparent hover:scrollbar-thumb-gray-600 h-[100dvh] overflow-y-auto pb-36'
-          ref={scrollContainerRef}
-        >
-          <div
-            className='mx-auto flex w-full max-w-3xl flex-col space-y-12 p-4 translate-x-1 pb-8 text-sm'
-            ref={scrollContainerRef}
-          >
+        <div className='scrollbar scrollbar-w-2 scrollbar-thumb-gray-700 scrollbar-track-transparent hover:scrollbar-thumb-gray-600 h-[100dvh] overflow-y-auto pb-36'>
+          <div className='mx-auto flex w-full max-w-3xl flex-col space-y-12 p-4 translate-x-1 pb-8 text-sm'>
             {messages.map((m, index) => (
-              <ChatMessage msg={m} index={index} handleEditMessageAction={handleEditMessage} />
+              <ChatMessage msg={m} key={index} handleEditMessageAction={handleEditMessage} />
             ))}
           </div>
           <div ref={messagesEndRef} className='w-0 h-0' />

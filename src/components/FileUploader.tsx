@@ -4,7 +4,7 @@ import FileButton from '@/components/FileButton'
 import Loading from '@/components/loading'
 import { env } from '@/env'
 import { usePersistentState } from '@/hooks/use-persistent-state'
-import { apiRoute, safeAwait } from '@/lib/utils'
+import { apiRoute, tryCatch } from '@/lib/utils'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import axios, { type AxiosProgressEvent } from 'axios'
 import React, { useEffect, useRef, useState } from 'react'
@@ -19,7 +19,7 @@ export type FileInfo = {
 }
 
 const fetchFiles = async (): Promise<FileInfo[]> => {
-  const [response, error] = await safeAwait(axios.get<FileInfo[]>(apiRoute('/files/')))
+  const { data: response, error } = await tryCatch(axios.get<FileInfo[]>(apiRoute('/files/')))
   if (error) throw error
   return response.data
 }
@@ -143,7 +143,7 @@ export default function FileUploader(): React.JSX.Element {
     }
 
     if (permanent) {
-      const [_, error]: [void | null, Error | null] = await safeAwait(
+      const { error } = await tryCatch(
         permanentDeleteMutation.mutateAsync({ file: fileToDelete, isTemp: fileToDelete.isTemp }),
       )
       if (error) {
@@ -151,7 +151,7 @@ export default function FileUploader(): React.JSX.Element {
         return
       }
     } else {
-      const [_, error]: [void | null, Error | null] = await safeAwait(
+      const { error } = await tryCatch(
         deleteMutation.mutateAsync({ file: fileToDelete, isTemp: fileToDelete.isTemp }),
       )
       if (error) {

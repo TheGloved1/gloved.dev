@@ -9,11 +9,11 @@ import Timestamp from './Timestamp'
 
 export default function ChatMessage({
   msg,
-  index,
+  key,
   handleEditMessageAction,
 }: {
   msg: Message
-  index: number
+  key: number
   handleEditMessageAction: (m: Message) => void
 }) {
   const [isHovered, setIsHovered] = useState<boolean>(false)
@@ -23,7 +23,7 @@ export default function ChatMessage({
     <div
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      key={index}
+      key={key}
       className={`flex ${m.role === Role.USER ? 'justify-end' : 'justify-start'}`}
     >
       <div
