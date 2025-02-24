@@ -1,5 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
+/**
+ * A component that displays a relative timestamp of a given date and updates it at
+ * the correct interval to always show the correct relative timestamp.
+ *
+ * @prop {Date} date - The date to display a relative timestamp for
+ * @returns {ReactElement} A React element that displays the relative timestamp
+ */
 const Timestamp = React.memo(({ date }: { date: Date }) => {
   const [timestamp, setTimestamp] = useState(createTimestamp(date))
   const [interval, setIntervalState] = useState(calculateInterval(date))

@@ -5,7 +5,7 @@ import { usePersistentState } from '@/hooks/use-persistent-state'
 import { toast } from '@/hooks/use-toast'
 import { Role } from '@/lib/types'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { Copy, Loader2, Send, SquarePen } from 'lucide-react'
+import { ChevronDown, Copy, Loader2, Send, SquarePen } from 'lucide-react'
 import { redirect, useParams } from 'next/navigation'
 import React, { useEffect, useRef, useState } from 'react'
 import Timestamp from '../_components/Timestamp'
@@ -17,6 +17,7 @@ export default function Page(): React.JSX.Element {
   const [input, setInput] = usePersistentState<string>('chatInput', '')
   const [loading, setLoading] = useState<boolean>(false)
   const [rows, setRows] = useState<number>(1)
+  const [isAtBottom, setIsAtBottom] = useState<boolean>(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
 
@@ -55,10 +56,6 @@ export default function Page(): React.JSX.Element {
   }
 
   useEffect(() => {
-    scrollToBottom()
-  }, [messages])
-
-  useEffect(() => {
     // Count how many rows the textarea is by getting all '\n' in the input
     const minRows = 2
     const maxRows = 6
@@ -80,10 +77,41 @@ export default function Page(): React.JSX.Element {
     setInput(messageContent) // Set the input field to the content of the deleted message
   }
 
+  const observer = new IntersectionObserver(
+    (entries) => {
+      setIsAtBottom(entries[0].isIntersecting)
+    },
+    { root: null, rootMargin: '0px', threshold: 1 },
+  )
+
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      observer.observe(messagesEndRef.current)
+    }
+    return () => {
+      if (messagesEndRef.current) {
+        observer.unobserve(messagesEndRef.current)
+      }
+    }
+  }, [messagesEndRef])
+
   return (
     <main className='relative flex w-full flex-1 flex-col'>
       <div className='absolute bottom-0 w-full pr-2'>
         <div className='relative z-10 mx-auto flex w-full max-w-3xl flex-col text-center'>
+          {!isAtBottom && (
+            <div className='flex justify-center pb-4'>
+              <button
+                type='button'
+                className='justify-center whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80 h-8 px-3 text-xs flex items-center gap-2 rounded-full opacity-90 hover:opacity-100'
+                onClick={() => {
+                  messagesEndRef.current?.scrollIntoView()
+                }}
+              >
+                Scroll to bottom <ChevronDown />
+              </button>
+            </div>
+          )}
           <div className='px-4'>
             <form
               onSubmit={handleSubmit}
