@@ -77,14 +77,13 @@ export default function Page(): React.JSX.Element {
     setInput(messageContent) // Set the input field to the content of the deleted message
   }
 
-  const observer = new IntersectionObserver(
-    (entries) => {
-      setIsAtBottom(entries[0].isIntersecting)
-    },
-    { root: null, rootMargin: '0px', threshold: 1 },
-  )
-
   useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        setIsAtBottom(entries[0].isIntersecting)
+      },
+      { root: null, rootMargin: '0px', threshold: 1 },
+    )
     if (messagesEndRef.current) {
       observer.observe(messagesEndRef.current)
     }
