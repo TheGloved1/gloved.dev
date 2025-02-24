@@ -17,9 +17,9 @@ import {
 } from '@/components/ui/sidebar'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { usePersistentState } from '@/hooks/use-persistent-state'
-import { useToast } from '@/hooks/use-toast'
 import { Info } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { toast } from 'sonner'
 
 interface ColorButton {
   id: number
@@ -174,7 +174,6 @@ const effect = (skill: Skill): number => {
 }
 
 export default function Colors(): React.JSX.Element {
-  const { toast } = useToast()
   const [colorButtons, setColorButtons] = usePersistentState<ColorButton[]>(
     'colorButtons',
     defaultColorButtons,
@@ -196,11 +195,8 @@ export default function Colors(): React.JSX.Element {
       clickCount.current++
       if (clickCount.current > 10) {
         setClickCooldown(true)
-        toast({
-          duration: 5000,
-          title: 'Slow down!',
+        toast.error('Slow down!', {
           description: "You're clicking too fast. Please wait a moment.",
-          variant: 'destructive',
         })
         setTimeout(() => setClickCooldown(false), 2000)
         return false
@@ -210,7 +206,7 @@ export default function Colors(): React.JSX.Element {
     }
     lastClickTime.current = now
     return !clickCooldown
-  }, [clickCooldown, toast])
+  }, [clickCooldown])
 
   const handleColorClick = useCallback(
     (index: number) => {
@@ -250,9 +246,7 @@ export default function Colors(): React.JSX.Element {
           setScore((prevScore) => prevScore + pointsEarned)
           setPrestigePoints((prevPoints) => prevPoints + prestigePointsEarned)
 
-          toast({
-            duration: 3000,
-            title: 'Level Up!',
+          toast.success('Level Up!', {
             description: `Color leveled up to ${button.level}! Earned ${Math.floor(pointsEarned)} points.`,
           })
         }
@@ -261,9 +255,7 @@ export default function Colors(): React.JSX.Element {
           const bonusPoints = button.level * 50
           setScore((prevScore) => prevScore + bonusPoints)
           setPrestigePoints((prevPoints) => prevPoints + bonusPoints * 0.02)
-          toast({
-            duration: 3000,
-            title: 'Lucky Click!',
+          toast.success('Lucky Click!', {
             description: `You got lucky! Earned ${bonusPoints} bonus points.`,
           })
         }
@@ -271,7 +263,7 @@ export default function Colors(): React.JSX.Element {
         return newButtons
       })
     },
-    [checkAntiCheat, setColorButtons, skills, prestigeLevel, setPrestigePoints, toast],
+    [checkAntiCheat, setColorButtons, skills, prestigeLevel, setPrestigePoints],
   )
 
   const combineColors = (index1: number, index2: number) => {
@@ -283,11 +275,8 @@ export default function Colors(): React.JSX.Element {
       const button2 = newButtons[index2]
 
       if (button1.clicks < 10 || button2.clicks < 10) {
-        toast({
-          duration: 3000,
-          title: 'Not enough clicks',
+        toast.error('Not enough clicks', {
           description: 'Each color needs at least 10 clicks before combining.',
-          variant: 'destructive',
         })
         return prevButtons
       }
@@ -330,29 +319,21 @@ export default function Colors(): React.JSX.Element {
         const comboMasterBonus = combinationBonus * 0.5
         setScore((prev) => prev + comboMasterBonus)
         setPrestigePoints((prev) => prev + comboMasterBonus * 0.02)
-        toast({
-          duration: 3000,
-          title: 'Combo Master Bonus!',
+        toast.success('Combo Master Bonus!', {
           description: `Earned an extra ${Math.floor(comboMasterBonus)} points from Combo Master!`,
         })
       }
 
-      toast({
-        duration: 3000,
-        title: 'Combination Boost!',
+      toast.success('Combination Boost!', {
         description: `Colors combined! Earned ${Math.floor(combinationBonus)} points, ${Math.floor(combinationBonus * 0.02)} PP, and ${streakBonus} streak bonus!`,
       })
 
       if (newTrait1 !== ColorTrait.None && newTrait2 !== ColorTrait.None) {
-        toast({
-          duration: 5000,
-          title: 'New Traits Unlocked!',
+        toast.success('New Traits Unlocked!', {
           description: `The combined colors gained the ${newTrait1} and ${newTrait2} traits!`,
         })
       } else if (newTrait1 !== ColorTrait.None || newTrait2 !== ColorTrait.None) {
-        toast({
-          duration: 5000,
-          title: 'New Trait Unlocked!',
+        toast.success('New Trait Unlocked!', {
           description: `The combined color gained the ${newTrait1 !== ColorTrait.None ? newTrait1 : newTrait2} trait!`,
         })
       }
@@ -374,11 +355,8 @@ export default function Colors(): React.JSX.Element {
       const skill = newSkills[skillId]
 
       if (skill.level >= skill.maxLevel) {
-        toast({
-          duration: 3000,
-          title: 'Skill Maxed Out',
+        toast.error('Skill Maxed Out', {
           description: `${skill.name} is already at its maximum level.`,
-          variant: 'destructive',
         })
         return prevSkills
       }
@@ -390,17 +368,12 @@ export default function Colors(): React.JSX.Element {
         skill.level += 1
         skill.cost = Math.floor(skill.cost * 1.5)
 
-        toast({
-          duration: 3000,
-          title: 'Skill Upgraded!',
+        toast.success('Skill Upgraded!', {
           description: `${skill.name} is now level ${skill.level}!`,
         })
       } else {
-        toast({
-          duration: 3000,
-          title: 'Not enough Prestige Points',
+        toast.error('Not enough Prestige Points', {
           description: `You need ${skill.cost} Prestige Points to upgrade this skill.`,
-          variant: 'destructive',
         })
       }
       return newSkills
@@ -413,11 +386,8 @@ export default function Colors(): React.JSX.Element {
     const requiredScore = 10000 * (prestigeLevel + 1) ** 2
 
     if (score < requiredScore) {
-      toast({
-        duration: 5000,
-        title: 'Not enough score',
+      toast.error('Not enough score', {
         description: `You need ${requiredScore} points to prestige.`,
-        variant: 'destructive',
       })
       return
     }
@@ -437,19 +407,13 @@ export default function Colors(): React.JSX.Element {
       const lockedButtons = newButtons.filter((button) => !button.unlocked)
       if (lockedButtons.length > 0) {
         lockedButtons[0].unlocked = true
-        toast({
-          duration: 5000,
-          title: 'New Color Button Unlocked!',
-          description: `You've unlocked a new color button!`,
-        })
+        toast.success('New Color Button Unlocked!')
       }
 
       return newButtons
     })
     setCombinationStreak(0)
-    toast({
-      duration: 5000,
-      title: 'Prestige!',
+    toast.success(`Prestige!`, {
       description: `You've reached prestige level ${prestigeLevel + 1}!`,
     })
   }

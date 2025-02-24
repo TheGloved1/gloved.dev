@@ -1,10 +1,10 @@
 'use client'
 import { createMessage, db } from '@/db'
 import { usePersistentState } from '@/hooks/use-persistent-state'
-import { toast } from '@/hooks/use-toast'
 import { Loader2, Send } from 'lucide-react'
 import { redirect } from 'next/navigation'
 import React, { useState } from 'react'
+import { toast } from 'sonner'
 
 export default function ChatBot(): React.JSX.Element {
   const [input, setInput] = usePersistentState<string>('chatInput', '')
@@ -22,11 +22,7 @@ export default function ChatBot(): React.JSX.Element {
     try {
       createMessage(threadId.toString(), input, setInput)
     } catch (e) {
-      toast({
-        title: 'Error',
-        description: 'Failed to generate message',
-        variant: 'destructive',
-      })
+      toast.error('Failed to generate message')
       setLoading(false)
       return
     }

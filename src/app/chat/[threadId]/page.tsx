@@ -2,12 +2,12 @@
 import Markdown from '@/components/Markdown'
 import { createMessage, db, generateTitle, Message } from '@/db'
 import { usePersistentState } from '@/hooks/use-persistent-state'
-import { toast } from '@/hooks/use-toast'
 import { Role } from '@/lib/types'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { ChevronDown, Copy, Loader2, Send, SquarePen } from 'lucide-react'
 import { redirect, useParams } from 'next/navigation'
 import React, { useEffect, useRef, useState } from 'react'
+import { toast } from 'sonner'
 import Timestamp from '../_components/Timestamp'
 
 export default function Page(): React.JSX.Element {
@@ -36,11 +36,10 @@ export default function Page(): React.JSX.Element {
     }
   }
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const messages =
     useLiveQuery(() => {
       scrollToBottom()
-      return db.getThreadMessages(threadId.toString())
+      return db.getThreadMessages(threadId)
     }, [threadId, db.messages]) ?? []
 
   const handleSubmit = async (
@@ -81,18 +80,19 @@ export default function Page(): React.JSX.Element {
   }
 
   useEffect(() => {
+    const msgEndRef = messagesEndRef?.current
     const observer = new IntersectionObserver(
       (entries) => {
         setIsAtBottom(entries[0].isIntersecting)
       },
       { root: null, rootMargin: '0px', threshold: 1 },
     )
-    if (messagesEndRef.current) {
-      observer.observe(messagesEndRef.current)
+    if (msgEndRef) {
+      observer.observe(msgEndRef)
     }
     return () => {
-      if (messagesEndRef.current) {
-        observer.unobserve(messagesEndRef.current)
+      if (msgEndRef) {
+        observer.unobserve(msgEndRef)
       }
     }
   }, [messagesEndRef])
@@ -195,10 +195,7 @@ export default function Page(): React.JSX.Element {
                         className='inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:text-accent-foreground text-xs h-8 w-8 rounded-lg bg-neutral-800/0 p-0 hover:bg-neutral-700'
                         onClick={() => {
                           navigator.clipboard.writeText(m.content)
-                          toast({
-                            duration: 1000,
-                            description: '✅ Successfully copied to clipboard!',
-                          })
+                          toast('✅ Successfully copied to clipboard!')
                         }}
                       >
                         <Copy className='-mb-0.5 -ml-0.5 !size-5' />
@@ -218,10 +215,7 @@ export default function Page(): React.JSX.Element {
                       <button
                         onClick={() => {
                           navigator.clipboard.writeText(m.content)
-                          toast({
-                            duration: 1000,
-                            description: '✅ Successfully copied to clipboard!',
-                          })
+                          toast.success('Copied response to clipboard!')
                         }}
                         className='inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80 h-8 rounded-md px-3 text-xs opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 group-focus:opacity-100'
                       >

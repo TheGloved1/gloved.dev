@@ -1,5 +1,5 @@
 import Providers from '@/components/Providers'
-import { Toaster } from '@/components/ui/toaster'
+import { Toaster } from '@/components/ui/sonner'
 import * as constants from '@/lib/constants'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
@@ -29,11 +29,11 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <body
           className={`dark snap-x snap-mandatory antialiased bg-background ${jetbrains.className}`}
         >
+          <Toaster toastOptions={{ style: { background: 'gray' } }} />
           <Providers>
             <Analytics />
             <SpeedInsights />
             <Suspense fallback={null}>{/* <RainingLetters /> */}</Suspense>
-            <Toaster />
             {children}
           </Providers>
         </body>
