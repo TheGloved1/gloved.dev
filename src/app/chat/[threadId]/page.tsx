@@ -1,6 +1,6 @@
 'use client'
 import Markdown from '@/components/Markdown'
-import { createMessage, db, Message } from '@/db'
+import { createMessage, db, generateTitle, Message } from '@/db'
 import { usePersistentState } from '@/hooks/use-persistent-state'
 import { toast } from '@/hooks/use-toast'
 import { Role } from '@/lib/types'
@@ -73,6 +73,9 @@ export default function Page(): React.JSX.Element {
     for (let i = index + 1; i < allMessages.length; i++) {
       await db.removeMessage(allMessages[i].id)
     }
+
+    // Regenerate the title
+    generateTitle(threadId)
 
     setInput(messageContent) // Set the input field to the content of the deleted message
   }
@@ -164,7 +167,7 @@ export default function Page(): React.JSX.Element {
           ref={scrollContainerRef}
         >
           <div
-            className='mx-auto flex w-full max-w-2xl flex-col space-y-12 p-4 translate-x-1 pb-8 text-sm'
+            className='mx-auto flex w-full max-w-3xl flex-col space-y-12 p-4 translate-x-1 pb-8 text-sm'
             ref={scrollContainerRef}
           >
             {messages.map((m, index) => (
