@@ -30,19 +30,6 @@ export default function ChatBot(): React.JSX.Element {
     redirect('/chat/' + threadId.toString())
   }
 
-  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setInput(e.target.value)
-
-    const lineHeight = 24
-    const minRows = 1
-    const maxRows = 5
-    const newRows = Math.min(
-      Math.max(minRows, Math.floor(e.target.scrollHeight / lineHeight)),
-      maxRows,
-    )
-    setRows(newRows)
-  }
-
   return (
     <main className='relative flex w-full flex-1 flex-col'>
       <div className='absolute bottom-0 w-full pr-2'>

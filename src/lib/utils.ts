@@ -23,29 +23,13 @@ export function wait(ms: number): Promise<void> {
 }
 
 /**
- * Safely await a promise or value, catching any errors that may occur.
- * @param input - A promise or value to await.
- * @returns A tuple containing the result of the input, or null if there was an error, and the error itself, or null if there was no error.
- */
-export async function safeAwait<T, E = Error>(
-  input: Promise<T> | T,
-): Promise<[T, null] | [null, E]> {
-  try {
-    const result = await Promise.resolve(input)
-    return [result, null]
-  } catch (error) {
-    return [null, error as E]
-  }
-}
-
-/**
  * Makes a request to the API with the given route and options.
  * @param route - The route to make the request to.
  * @param options - The optional options to use when making the request.
  * @returns The response of the request, or null if an error occurred.
  */
 export async function apiFetch(route: string, options?: RequestInit) {
-  const res = await safeAwait(fetch(apiRoute(route), options))
+  const res = await tryCatch(fetch(apiRoute(route), options))
   return res
 }
 
@@ -62,4 +46,32 @@ export async function fetchIp() {
   const response = await axios.get<{ ip: string }>('https://api64.ipify.org?format=json')
   console.log('Client IP:', response.data.ip)
   return response.data.ip
+}
+// Types for the result object with discriminated union
+type Success<T> = {
+  data: T
+  error: null
+}
+
+type Failure<E> = {
+  data: null
+  error: E
+}
+
+type Result<T, E = Error> = Success<T> | Failure<E>
+
+/**
+ * Makes a promise, and returns a result object with a discriminated union.
+ * If the promise resolves, the result object will contain the resolved value in the `data` property, and `null` in the `error` property.
+ * If the promise rejects, the result object will contain `null` in the `data` property, and the error in the `error` property.
+ * @param promise - The promise to make.
+ * @returns A result object with a discriminated union.
+ */
+export async function tryCatch<T, E = Error>(promise: Promise<T>): Promise<Result<T, E>> {
+  try {
+    const data = await promise
+    return { data, error: null }
+  } catch (error) {
+    return { data: null, error: error as E }
+  }
 }

@@ -1,5 +1,6 @@
 import { Role } from '@/lib/types'
 import Dexie, { type EntityTable } from 'dexie'
+import { tryCatch } from './lib/utils'
 
 export interface Thread {
   id: string
@@ -164,17 +165,19 @@ export async function createMessage(
   callback?.()
 
   try {
-    const response = await fetch('/api/chat', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        messages: contextMessages,
+    const { data, error } = await tryCatch(
+      fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          messages: contextMessages,
+        }),
       }),
-    })
-
-    const reader = response.body
+    )
+    if (error) return
+    const reader = data.body
     if (!reader) return
 
     // Call the helper function to process the stream
