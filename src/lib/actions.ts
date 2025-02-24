@@ -1,8 +1,7 @@
 'use server'
 import { env } from '@/env'
-import { apiRoute } from '@/lib/utils'
+import { apiRoute, tryCatch } from '@/lib/utils'
 import { createGoogleGenerativeAI } from '@ai-sdk/google'
-import { Message, streamText } from 'ai'
 import sharp from 'sharp'
 
 export async function fetchImage(src: string) {
@@ -13,12 +12,11 @@ export async function fetchImage(src: string) {
 }
 
 export async function fetchSystemPrompt() {
-  const response = await fetch(apiRoute('/system-prompt'))
-  const data: string = await response.text()
-  if (!data) {
+  const { data, error } = await tryCatch(fetch(apiRoute('/system-prompt')))
+  if (error) {
     return ''
   }
-  return data
+  return await data.text()
 }
 
 export async function checkDevMode(): Promise<boolean> {
@@ -56,15 +54,3 @@ const model = genAI.languageModel('gemini-1.5-flash', {
     },
   ],
 })
-
-export async function fetchAiStream(messages: Omit<Message, 'id'>[], threadId: string) {
-  const system = await fetchSystemPrompt()
-
-  console.log('Thread ID???!', threadId)
-
-  return streamText({
-    system,
-    model: model,
-    messages,
-  })
-}

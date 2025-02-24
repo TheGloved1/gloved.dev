@@ -101,6 +101,7 @@ export async function processStream(
   const decoder = new TextDecoder()
   let done = false
   let messageContent = ''
+  let buffer = ''
 
   while (true) {
     if (done) break
@@ -109,6 +110,7 @@ export async function processStream(
 
     // Decode the value and process the chunk
     const chunk = decoder.decode(value, { stream: true })
+    buffer += chunk // Accumulate the buffer
 
     // Split the chunk into lines based on the expected format
     const lines = chunk.split('\n')
@@ -177,7 +179,7 @@ export async function createMessage(
       }),
     )
     if (error) return
-    const reader = data.body
+    const reader = data.body as ReadableStream<Uint8Array>
     if (!reader) return
 
     // Call the helper function to process the stream
@@ -206,20 +208,22 @@ export async function generateTitle(threadId: string) {
         ']\n Generate a short, concise title for this thread so far.',
     },
   ]
-  console.log(messages)
   try {
-    const response = await fetch('/api/chat', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        system: 'You are a short title generator, do not generate any text except for the title.',
-        messages: messages,
+    const { data, error } = await tryCatch(
+      fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          system: 'You are a short title generator, do not generate any text except for the title.',
+          messages: messages,
+        }),
       }),
-    })
-    if (!response.body) return
-    const title = await processStream(response.body)
+    )
+    if (error) return
+    if (!data.body) return
+    const title = await processStream(data.body)
     await db.threads.update(threadId, {
       updated_at: new Date(),
       title,
