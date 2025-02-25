@@ -1,4 +1,5 @@
 import { Role } from '@/lib/types'
+import { ImagePart, TextPart } from 'ai'
 import Dexie, { type EntityTable } from 'dexie'
 import { tryCatch } from './lib/utils'
 
@@ -14,11 +15,23 @@ export interface Thread {
 export interface Message {
   id: string
   threadId: string
-  content: string
+  content: string | (TextPart | ImagePart)[]
+  content_preview?: string
   role: 'user' | 'assistant'
   created_at: Date
   finished: boolean
   removed: 'true' | 'false'
+}
+
+export function formatContent(content: Message['content']): { content: string; image?: string } {
+  if (typeof content === 'string') {
+    return { content }
+  }
+  const textParts = content.filter((part) => 'text' in part) as TextPart[]
+  const imageParts = content.filter((part) => 'image' in part) as ImagePart[]
+  const text = textParts.map((part) => part.text).join('')
+  const image = imageParts.length ? imageParts[0].image.toString() : undefined
+  return { content: text, image }
 }
 
 class Database extends Dexie {
@@ -123,10 +136,11 @@ export async function processStream(
         // This is a message chunk
         const json = JSON.parse(line.slice(2)) // Remove the prefix
         messageContent += json // Append the new content
-        if (messageId)
+        if (messageId) {
           await db.messages.update(messageId, {
             content: messageContent, // Update with the accumulated content
           })
+        }
       } else if (line.startsWith('e:')) {
         // This indicates the end of the message
         done = true
@@ -148,10 +162,29 @@ export async function createMessage(
   threadId: string,
   userContent: string,
   setInput: (input: string) => void,
+  image?: string | null,
   callback?: () => void,
 ) {
   setInput('')
-  await db.addMessage({ threadId, content: userContent, role: Role.USER, finished: true })
+  let messageContent: string | (TextPart | ImagePart)[]
+  if (image) {
+    messageContent = [
+      {
+        type: 'text',
+        text: userContent,
+      },
+      { type: 'image', image },
+    ]
+  } else {
+    messageContent = userContent
+  }
+  await db.addMessage({
+    threadId,
+    content: messageContent,
+    role: Role.USER,
+    finished: true,
+  })
+
   generateTitle(threadId)
   const allMessages = await db.getThreadMessages(threadId)
   const contextMessages = allMessages.map((m) => ({

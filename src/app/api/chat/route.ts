@@ -2,7 +2,7 @@ import { Message } from '@/db'
 import { env } from '@/env'
 import { fetchSystemPrompt } from '@/lib/actions'
 import { createGoogleGenerativeAI } from '@ai-sdk/google'
-import { createDataStreamResponse, smoothStream, streamText } from 'ai'
+import { CoreMessage, createDataStreamResponse, smoothStream, streamText } from 'ai'
 
 const genAI = createGoogleGenerativeAI({ apiKey: env.GEMINI })
 
@@ -41,12 +41,17 @@ export async function POST(req: Request) {
   const { messages } = parsed
   const system = parsed.system ?? (await fetchSystemPrompt())
 
+  const coreMessages = messages.map((msg) => ({
+    role: msg.role, // Ensure this is set correctly
+    content: msg.content,
+  })) as CoreMessage[]
+
   return createDataStreamResponse({
     execute: (dataStream) => {
       const result = streamText({
         system,
         model,
-        messages,
+        messages: coreMessages,
         temperature,
         maxTokens,
         frequencyPenalty,
