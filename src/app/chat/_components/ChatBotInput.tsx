@@ -3,7 +3,7 @@ import { createMessage, db } from '@/db'
 import type React from 'react'
 
 import Constants from '@/lib/constants'
-import { Loader2, Paperclip, Send, X } from 'lucide-react'
+import { ChevronDown, Loader2, Paperclip, Send, X } from 'lucide-react'
 import Image from 'next/image'
 import { redirect, useParams } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
@@ -16,6 +16,7 @@ export default function ChatBotInput({
   setImagePreviewAction: setImagePreview,
   createThread,
   scrollCallback,
+  isAtBottom,
 }: {
   input: string
   setInputAction: React.Dispatch<React.SetStateAction<string>>
@@ -23,6 +24,7 @@ export default function ChatBotInput({
   setImagePreviewAction: React.Dispatch<React.SetStateAction<string | undefined | null>>
   createThread?: boolean
   scrollCallback?: () => void
+  isAtBottom?: boolean
 }) {
   const { threadId } = useParams()
   const [loading, setLoading] = useState<boolean>(false)
@@ -134,6 +136,17 @@ export default function ChatBotInput({
   return (
     <div className='absolute bottom-0 w-full pr-2'>
       <div className='relative z-10 mx-auto flex w-full max-w-3xl flex-col text-center'>
+        {!isAtBottom && (
+          <div className='flex justify-center pb-4'>
+            <button
+              type='button'
+              className='justify-center whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80 h-8 px-3 text-xs flex items-center gap-2 rounded-full opacity-90 hover:opacity-100'
+              onClick={scrollCallback}
+            >
+              Scroll to bottom <ChevronDown />
+            </button>
+          </div>
+        )}
         <div className='px-4'>
           <form
             onSubmit={handleSubmit}
