@@ -40,7 +40,7 @@ class Database extends Dexie {
 
   constructor() {
     super('Database')
-    this.version(1).stores({
+    this.version(2).stores({
       threads: 'id, title, created_at, updated_at, last_message_at, removed',
       messages: 'id, threadId, content, role, [threadId+created_at], finished, removed',
     })
