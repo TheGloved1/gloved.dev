@@ -10,24 +10,21 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { db } from '@/db'
+import { tryCatch } from '@/lib/utils'
 import { X } from 'lucide-react'
 import { redirect } from 'next/navigation'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
-const MyComponent = ({ id, isCurrentThread }: { id: string; isCurrentThread: boolean }) => {
+const DeleteAlert = ({ id, isCurrentThread }: { id: string; isCurrentThread: boolean }) => {
   const [isOpen, setIsOpen] = useState(false)
 
   const handleDelete = async () => {
-    try {
-      await db.deleteThread(id) // Delete the thread
-      toast.success('Thread deleted')
-      setIsOpen(false)
-      if (isCurrentThread) redirect('/chat')
-    } catch (error) {
-      console.error('Error deleting thread:', error)
-      toast.error('Error deleting thread')
-    }
+    const { error } = await tryCatch(db.deleteThread(id)) // Delete the thread
+    if (error) return toast.error('Error deleting thread'), redirect('/chat')
+    toast.success('Thread deleted')
+    setIsOpen(false)
+    if (isCurrentThread) redirect('/chat')
   }
 
   return (
@@ -45,8 +42,7 @@ const MyComponent = ({ id, isCurrentThread }: { id: string; isCurrentThread: boo
         <DialogHeader>
           <DialogTitle>Are you absolutely sure?</DialogTitle>
           <DialogDescription>
-            This action cannot be undone. This will permanently delete this thread and remove its
-            data.
+            This action cannot be undone. This will permanently delete this thread.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
@@ -60,4 +56,4 @@ const MyComponent = ({ id, isCurrentThread }: { id: string; isCurrentThread: boo
   )
 }
 
-export default MyComponent
+export default DeleteAlert

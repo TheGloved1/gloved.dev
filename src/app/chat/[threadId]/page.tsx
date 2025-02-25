@@ -34,11 +34,14 @@ export default function Page(): React.JSX.Element {
     }
   }
 
-  const messages =
-    useLiveQuery(() => {
+  const messages = useLiveQuery(
+    () => {
       scrollToBottom()
       return db.getThreadMessages(threadId)
-    }, [threadId, db.messages]) ?? []
+    },
+    [threadId, db.messages],
+    [],
+  )
 
   useEffect(() => {
     scrollToBottom()

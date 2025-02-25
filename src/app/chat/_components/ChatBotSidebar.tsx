@@ -59,21 +59,21 @@ export default function ChatBotSidebar({ children }: { children: React.ReactNode
             {threads?.length ?
               threads.reverse().map((thread) => (
                 <div key={thread.id} className='p-2'>
-                  <Link
-                    key={thread.id}
-                    href={`/chat/${thread.id}`}
+                  <div
                     className={`my-0 flex items-center rounded-sm px-2 focus-within:outline-none hover:bg-gray-500/10 focus-within:ring-[1px] focus-within:ring-[hsl(var(--ring))] hover:bg-[--background]/10 ${isCurrentThread(thread.id) ? 'bg-gray-500/20' : ''}`}
                   >
-                    <div className='flex flex-1 flex-row gap-2 rounded-sm text-xs card items-center text-info-content group-data-[state=hover]:bg-[#2D2D2D]/50'>
-                      <div
-                        className={`flex flex-1 flex-row gap-2 py-2 text-xs text-gray-200 ${isCurrentThread(thread.id) ? 'font-bold cursor-default' : ''}`}
-                      >
-                        <MessageSquare className='h-5 w-5' />
-                        {thread.title}
+                    <Link key={thread.id} href={`/chat/${thread.id}`} title={thread.title}>
+                      <div className='flex flex-1 flex-row gap-2 rounded-sm text-xs card items-center text-info-content group-data-[state=hover]:bg-[#2D2D2D]/50'>
+                        <div
+                          className={`flex flex-1 flex-row gap-2 py-2 text-xs text-gray-200 ${isCurrentThread(thread.id) ? 'font-bold cursor-default' : ''}`}
+                        >
+                          <MessageSquare className='h-5 w-5' />
+                          {thread.title}
+                        </div>
                       </div>
-                      <DeleteAlert id={thread.id} isCurrentThread={isCurrentThread(thread.id)} />
-                    </div>
-                  </Link>
+                    </Link>
+                    <DeleteAlert id={thread.id} isCurrentThread={isCurrentThread(thread.id)} />
+                  </div>
                 </div>
               ))
             : <p className='text-center p-2 text-gray-200'>No chats created</p>}
