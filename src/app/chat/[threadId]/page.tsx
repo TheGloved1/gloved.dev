@@ -5,7 +5,7 @@ import { tryCatch } from '@/lib/utils'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { ChevronDown, Loader2, Send } from 'lucide-react'
 import { redirect, useParams } from 'next/navigation'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import ChatMessage from '../_components/ChatMessage'
 
 export default function Page(): React.JSX.Element {
@@ -25,14 +25,13 @@ export default function Page(): React.JSX.Element {
     })
   }, [threadId])
 
-  const scrollToBottom = () => {
-    const element = messagesEndRef.current
-    if (element) {
-      element.scrollIntoView({
-        behavior: 'smooth',
-      })
-    }
-  }
+  const scrollToBottom = useCallback((noSmooth?: boolean) => {
+    messagesEndRef.current?.scrollIntoView({ behavior: noSmooth ? 'auto' : 'smooth' })
+  }, [])
+
+  useEffect(() => {
+    scrollToBottom()
+  }, [scrollToBottom])
 
   const messages = useLiveQuery(
     () => {
@@ -42,10 +41,6 @@ export default function Page(): React.JSX.Element {
     [threadId, db.messages],
     [],
   )
-
-  useEffect(() => {
-    scrollToBottom()
-  }, [])
 
   const handleSubmit = async (
     e: React.FormEvent<HTMLFormElement> | React.KeyboardEvent<HTMLTextAreaElement>,
@@ -87,6 +82,7 @@ export default function Page(): React.JSX.Element {
   }
 
   useEffect(() => {
+    scrollToBottom()
     const msgEndRef = messagesEndRef?.current
     const observer = new IntersectionObserver(
       (entries) => {
@@ -102,7 +98,16 @@ export default function Page(): React.JSX.Element {
         observer.unobserve(msgEndRef)
       }
     }
-  }, [messagesEndRef])
+  }, [messagesEndRef, scrollToBottom])
+
+  useEffect(() => {
+    if (isAtBottom && messages) scrollToBottom()
+  }, [messages, isAtBottom, scrollToBottom])
+
+  // Initial scroll to bottom (after component mounts and data is available)
+  useEffect(() => {
+    if (messages) scrollToBottom()
+  }, [messages, scrollToBottom])
 
   return (
     <main className='relative flex w-full flex-1 flex-col'>
@@ -113,9 +118,7 @@ export default function Page(): React.JSX.Element {
               <button
                 type='button'
                 className='justify-center whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80 h-8 px-3 text-xs flex items-center gap-2 rounded-full opacity-90 hover:opacity-100'
-                onClick={() => {
-                  messagesEndRef.current?.scrollIntoView()
-                }}
+                onClick={() => scrollToBottom(true)}
               >
                 Scroll to bottom <ChevronDown />
               </button>
