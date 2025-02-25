@@ -4,7 +4,6 @@ import ChatBotInput from './_components/ChatBotInput'
 
 export default function ChatBot(): React.JSX.Element {
   const [input, setInput] = useState<string>('')
-  const [loading, setLoading] = useState<boolean>(false)
   const [rows, setRows] = useState<number>(2)
   const [imagePreview, setImagePreview] = useState<string | null | undefined>(null)
 
