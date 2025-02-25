@@ -9,7 +9,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { db } from '@/db'
+import { db, Thread } from '@/db'
+import { usePersistentState } from '@/hooks/use-persistent-state'
 import { tryCatch } from '@/lib/utils'
 import { X } from 'lucide-react'
 import { redirect } from 'next/navigation'
@@ -18,10 +19,12 @@ import { toast } from 'sonner'
 
 const DeleteAlert = ({ id, isCurrentThread }: { id: string; isCurrentThread: boolean }) => {
   const [isOpen, setIsOpen] = useState(false)
+  const [lastThreadList, setLastThreadList] = usePersistentState<Thread[]>('lastThreadList', [])
 
   const handleDelete = async () => {
     const { error } = await tryCatch(db.deleteThread(id)) // Delete the thread
     if (error) return toast.error('Error deleting thread'), redirect('/chat')
+    setLastThreadList(lastThreadList.filter((t) => t.id !== id))
     toast.success('Thread deleted')
     setIsOpen(false)
     if (isCurrentThread) redirect('/chat')

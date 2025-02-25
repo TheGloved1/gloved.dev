@@ -7,8 +7,9 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar'
-import { db } from '@/db'
+import { db, Thread } from '@/db'
 import { useIsMobile } from '@/hooks/use-mobile'
+import { usePersistentState } from '@/hooks/use-persistent-state'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { MessageSquare, Plus, SquarePen } from 'lucide-react'
 import { Link } from 'next-view-transitions'
@@ -20,7 +21,16 @@ export default function ChatBotSidebar({ children }: { children: React.ReactNode
   const { threadId } = useParams()
   const isMobile = useIsMobile()
   const [open, setOpen] = useState(true)
-  const threads = useLiveQuery(() => db.getThreads(), [db.threads], [])
+  const [lastThreadList, setLastThreadList] = usePersistentState<Thread[]>('lastThreadList', [])
+  const threads = useLiveQuery(
+    async () => {
+      const threads = await db.getThreads()
+      setLastThreadList(threads)
+      return threads
+    },
+    [db.threads],
+    lastThreadList,
+  )
 
   const isCurrentThread = (id: string) => threadId === id
 
