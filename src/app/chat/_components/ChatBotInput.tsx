@@ -82,7 +82,7 @@ export default function ChatBotInput({
     const file = e.target.files?.[0]
     if (file) {
       if (file.size > Constants.MAX_FILE_SIZE) {
-        toast.error('File size exceeds the 2MB limit. Please choose a smaller file.')
+        toast.error(`File size exceeds the ${Constants.FILE_SIZE_LIMIT_MB}MB limit.`)
         return
       }
       const reader = new FileReader()
