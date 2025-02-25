@@ -22,14 +22,20 @@ export interface Message {
   removed: 'true' | 'false'
 }
 
-export function formatContent(content: Message['content']): { content: string; image?: string } {
+export function formatContent(content: string | (TextPart | ImagePart)[]): {
+  content: string
+  image?: string
+} {
   if (typeof content === 'string') {
+    console.log('[FormatContent] Content is a string:', content)
     return { content }
   }
+  console.log('[FormatContent] Content is an array:', content)
   const textParts = content.filter((part) => 'text' in part) as TextPart[]
   const imageParts = content.filter((part) => 'image' in part) as ImagePart[]
   const text = textParts.map((part) => part.text).join('')
   const image = imageParts.length ? imageParts[0].image.toString() : undefined
+  console.log('[FormatContent] Returning Content:', { content: text, image })
   return { content: text, image }
 }
 

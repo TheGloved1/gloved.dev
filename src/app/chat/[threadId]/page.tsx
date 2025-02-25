@@ -1,6 +1,5 @@
 'use client'
 import { db, formatContent, generateTitle, Message } from '@/db'
-import { usePersistentState } from '@/hooks/use-persistent-state'
 import { tryCatch } from '@/lib/utils'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { redirect, useParams } from 'next/navigation'
@@ -11,9 +10,8 @@ import ChatMessage from '../_components/ChatMessage'
 export default function Page(): React.JSX.Element {
   const { threadId } = useParams()
   if (!threadId || typeof threadId !== 'string') redirect('/chat')
-
-  const [input, setInput] = usePersistentState<string>('chatInput', '')
-  const [imagePreview, setImagePreview] = usePersistentState<string | null>('imagePreview', null)
+  const [input, setInput] = useState<string>('')
+  const [imagePreview, setImagePreview] = useState<string | undefined | null>()
   const [isAtBottom, setIsAtBottom] = useState<boolean>(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
@@ -42,7 +40,6 @@ export default function Page(): React.JSX.Element {
   )
 
   const handleEditMessage = async (m: Message) => {
-    // If message is CoreUserMessage, make
     const { content, image } = formatContent(m.content)
     const { data, error } = await tryCatch(db.getThreadMessages(threadId)) // Get all messages in the thread
     if (error) return
@@ -59,7 +56,7 @@ export default function Page(): React.JSX.Element {
     generateTitle(threadId)
 
     setInput(content) // Set the input field to the content of the deleted message
-    if (image) setImagePreview(image)
+    setImagePreview(image)
   }
 
   useEffect(() => {
@@ -92,7 +89,13 @@ export default function Page(): React.JSX.Element {
 
   return (
     <main className='relative flex w-full flex-1 flex-col'>
-      <ChatBotInput scrollCallback={scrollToBottom} />
+      <ChatBotInput
+        input={input}
+        setInputAction={setInput}
+        imagePreview={imagePreview}
+        setImagePreviewAction={setImagePreview}
+        scrollCallback={scrollToBottom}
+      />
       <div className='relative flex-1 overflow-hidden'>
         <div className='scrollbar scrollbar-w-2 scrollbar-thumb-gray-700 scrollbar-track-transparent hover:scrollbar-thumb-gray-600 h-[100dvh] overflow-y-auto pb-36'>
           <div className='mx-auto flex w-full max-w-3xl flex-col space-y-12 p-4 translate-x-1 pb-8 text-sm'>

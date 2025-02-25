@@ -2,7 +2,6 @@
 import { createMessage, db } from '@/db'
 import type React from 'react'
 
-import { usePersistentState } from '@/hooks/use-persistent-state'
 import Constants from '@/lib/constants'
 import { Loader2, Paperclip, Send, X } from 'lucide-react'
 import Image from 'next/image'
@@ -11,17 +10,23 @@ import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 export default function ChatBotInput({
+  input,
+  setInputAction: setInput,
+  imagePreview,
+  setImagePreviewAction: setImagePreview,
   createThread,
   scrollCallback,
 }: {
+  input: string
+  setInputAction: React.Dispatch<React.SetStateAction<string>>
+  imagePreview?: string | null
+  setImagePreviewAction: React.Dispatch<React.SetStateAction<string | undefined | null>>
   createThread?: boolean
   scrollCallback?: () => void
 }) {
   const { threadId } = useParams()
-  const [input, setInput] = usePersistentState<string>('chatInput', '')
   const [loading, setLoading] = useState<boolean>(false)
   const [rows, setRows] = useState<number>(1)
-  const [imagePreview, setImagePreview] = usePersistentState<string | null>('imagePreview', null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   async function convertFileToBase64(file: File): Promise<string> {
@@ -33,6 +38,20 @@ export default function ChatBotInput({
       reader.onerror = reject
       reader.readAsDataURL(file)
     })
+  }
+
+  const dataURLtoFile = (dataurl: string, filename: string) => {
+    const arr = dataurl.split(',')
+    const mime = arr[0].match(/:(.*?);/)![1]
+    const bstr = atob(arr[1])
+    let n = bstr.length // Changed to let
+    const u8arr = new Uint8Array(n)
+
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n)
+    }
+
+    return new File([u8arr], filename, { type: mime })
   }
 
   const handleSubmit = async (
@@ -99,6 +118,18 @@ export default function ChatBotInput({
       fileInputRef.current.value = ''
     }
   }
+
+  useEffect(() => {
+    const addBase64ImageToInput = (base64Image: string) => {
+      const file = dataURLtoFile(base64Image, 'image.png')
+      const fileList = new DataTransfer()
+      fileList.items.add(file)
+      fileInputRef.current!.files = fileList.files
+    }
+    if (!imagePreview) return
+    setImagePreview(imagePreview)
+    addBase64ImageToInput(imagePreview)
+  }, [imagePreview, setImagePreview])
 
   return (
     <div className='absolute bottom-0 w-full pr-2'>
