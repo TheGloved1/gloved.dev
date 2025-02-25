@@ -47,7 +47,8 @@ export const { Home, FileUploader, Todos, Hangman, Calc, Github, Black, Discord,
   Chat: {
     title: 'Chat',
     link: '/chat',
-    description: 'A simple chatbot web app, WARNING: HE IS EVIL',
+    description:
+      'A VERY fast, local-first, chatbot web app using a local IndexedDB database, WARNING: HE IS EVIL',
   },
   Colors: {
     title: 'Stupid Game',

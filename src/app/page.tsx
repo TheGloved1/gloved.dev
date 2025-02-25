@@ -59,6 +59,21 @@ export default function Page(): React.JSX.Element {
           </Link>
           <Link
             className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
+            href={constants.Chat.link}
+            prefetch
+          >
+            <h3 className='text-2xl font-bold'>
+              {constants.Chat.title}{' '}
+              <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
+                {'->'}
+              </span>
+            </h3>
+            <div className='text-lg'>{constants.Chat.description}</div>
+          </Link>
+        </div>
+        <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8'>
+          <Link
+            className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
             href={constants.FileUploader.link}
             prefetch
           >
@@ -69,6 +84,19 @@ export default function Page(): React.JSX.Element {
               </span>
             </h3>
             <div className='text-lg'>{constants.FileUploader.description}</div>
+          </Link>
+          <Link
+            className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
+            href={constants.Colors.link}
+            prefetch
+          >
+            <h3 className='text-2xl font-bold'>
+              {constants.Colors.title}{' '}
+              <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
+                {'->'}
+              </span>
+            </h3>
+            <div className='text-lg'>{constants.Colors.description}</div>
           </Link>
         </div>
         <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8'>
@@ -112,34 +140,6 @@ export default function Page(): React.JSX.Element {
               </span>
             </h3>
             <div className='text-lg'>{constants.Calc.description}</div>
-          </Link>
-          <Link
-            className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
-            href={constants.Chat.link}
-            prefetch
-          >
-            <h3 className='text-2xl font-bold'>
-              {constants.Chat.title}{' '}
-              <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
-                {'->'}
-              </span>
-            </h3>
-            <div className='text-lg'>{constants.Chat.description}</div>
-          </Link>
-        </div>
-        <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8'>
-          <Link
-            className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
-            href={constants.Colors.link}
-            prefetch
-          >
-            <h3 className='text-2xl font-bold'>
-              {constants.Colors.title}{' '}
-              <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
-                {'->'}
-              </span>
-            </h3>
-            <div className='text-lg'>{constants.Colors.description}</div>
           </Link>
           <Link
             className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
