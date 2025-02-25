@@ -76,7 +76,7 @@ export default function ChatBotSidebar({ children }: { children: React.ReactNode
                   </div>
                 </div>
               ))
-            : <p className='text-center p-2 text-gray-200'>No chats created</p>}
+            : null}
           </ScrollArea>
         </SidebarContent>
       </Sidebar>
