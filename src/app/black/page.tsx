@@ -1,11 +1,11 @@
 import PageBack from '@/components/PageBack'
-import { Black, NAME } from '@/lib/constants'
+import Constants from '@/lib/constants'
 import { Metadata } from 'next'
 import React from 'react'
 
 export const metadata: Metadata = {
-  title: NAME + ' | ' + Black.title,
-  description: Black.description,
+  title: Constants.NAME + ' | ' + Constants.Black.title,
+  description: Constants.Black.description,
 }
 
 export default function Page(): React.JSX.Element {

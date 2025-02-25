@@ -1,9 +1,9 @@
-import { NAME } from '@/lib/constants'
+import Constants from '@/lib/constants'
 import { Metadata } from 'next'
 import GalleryPage from './_components/GalleryPage'
 
 export const metadata: Metadata = {
-  title: `${NAME} | Gallery`,
+  title: `${Constants.NAME} | Gallery`,
   description: 'The gallery page to tribute the lost life of my best friend.',
 }
 

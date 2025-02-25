@@ -1,6 +1,6 @@
 'use client'
 import PageBack from '@/components/PageBack'
-import { NAME } from '@/lib/constants'
+import Constants from '@/lib/constants'
 import { Metadata } from 'next'
 import React, { useCallback, useEffect, useState } from 'react'
 import { HangmanDrawing } from './HangmanDrawing'
@@ -13,7 +13,7 @@ function getWord() {
 }
 
 export const meta: Metadata = {
-  title: NAME + ' | Hangman Game',
+  title: Constants.NAME + ' | Hangman Game',
   description: 'A simple hangman game web app. Guess the word. (Might be broken)',
 }
 

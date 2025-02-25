@@ -1,7 +1,7 @@
-import { API } from '@/lib/constants'
 import axios from 'axios'
 import { type ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
+import Constants from './constants'
 
 /**
  * A wrapper around `tailwind-merge` and `clsx` to concisely merge classnames.
@@ -39,7 +39,7 @@ export async function apiFetch(route: string, options?: RequestInit) {
  * @returns The complete API route.
  */
 export function apiRoute(route: string) {
-  return `${API}${route}`
+  return `${Constants.API}${route}`
 }
 
 export async function fetchIp() {

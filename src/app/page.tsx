@@ -2,14 +2,14 @@ import AdminComponent from '@/components/AdminComponent'
 import Counter from '@/components/Counter'
 import { PageVisits } from '@/components/PageVisits'
 import TopScrollVisibility from '@/components/TopScrollVisibility'
-import * as constants from '@/lib/constants'
+import Constants from '@/lib/constants'
 import { Metadata } from 'next'
 import { Link } from 'next-view-transitions'
 import Image from 'next/image'
 import React from 'react'
 
 export const metadata: Metadata = {
-  title: constants.NAME,
+  title: Constants.NAME,
   description:
     'Made by Kaden Hood. A personal website for my projects and interests. Built using Next.js React Web Framework.',
 }
@@ -46,113 +46,113 @@ export default function Page(): React.JSX.Element {
         <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8'>
           <Link
             className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
-            href={constants.Home.link}
+            href={Constants.Home.link}
             prefetch
           >
             <h3 className='text-2xl font-bold'>
-              {constants.Home.title}{' '}
+              {Constants.Home.title}{' '}
               <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
                 {'->'}
               </span>
             </h3>
-            <div className='text-lg'>{constants.Home.description}</div>
+            <div className='text-lg'>{Constants.Home.description}</div>
           </Link>
           <Link
             className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
-            href={constants.Chat.link}
+            href={Constants.Chat.link}
             prefetch
           >
             <h3 className='text-2xl font-bold'>
-              {constants.Chat.title}{' '}
+              {Constants.Chat.title}{' '}
               <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
                 {'->'}
               </span>
             </h3>
-            <div className='text-lg'>{constants.Chat.description}</div>
-          </Link>
-        </div>
-        <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8'>
-          <Link
-            className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
-            href={constants.FileUploader.link}
-            prefetch
-          >
-            <h3 className='text-2xl font-bold'>
-              {constants.FileUploader.title}{' '}
-              <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
-                {'->'}
-              </span>
-            </h3>
-            <div className='text-lg'>{constants.FileUploader.description}</div>
-          </Link>
-          <Link
-            className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
-            href={constants.Colors.link}
-            prefetch
-          >
-            <h3 className='text-2xl font-bold'>
-              {constants.Colors.title}{' '}
-              <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
-                {'->'}
-              </span>
-            </h3>
-            <div className='text-lg'>{constants.Colors.description}</div>
+            <div className='text-lg'>{Constants.Chat.description}</div>
           </Link>
         </div>
         <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8'>
           <Link
             className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
-            href={constants.Todos.link}
+            href={Constants.FileUploader.link}
             prefetch
           >
             <h3 className='text-2xl font-bold'>
-              {constants.Todos.title}{' '}
+              {Constants.FileUploader.title}{' '}
               <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
                 {'->'}
               </span>
             </h3>
-            <div className='text-lg'>{constants.Todos.description}</div>
+            <div className='text-lg'>{Constants.FileUploader.description}</div>
           </Link>
           <Link
             className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
-            href={constants.Hangman.link}
+            href={Constants.Colors.link}
             prefetch
           >
             <h3 className='text-2xl font-bold'>
-              {constants.Hangman.title}{' '}
+              {Constants.Colors.title}{' '}
               <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
                 {'->'}
               </span>
             </h3>
-            <div className='text-lg'>{constants.Hangman.description}</div>
+            <div className='text-lg'>{Constants.Colors.description}</div>
           </Link>
         </div>
         <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8'>
           <Link
             className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
-            href={constants.Calc.link}
+            href={Constants.Todos.link}
             prefetch
           >
             <h3 className='text-2xl font-bold'>
-              {constants.Calc.title}{' '}
+              {Constants.Todos.title}{' '}
               <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
                 {'->'}
               </span>
             </h3>
-            <div className='text-lg'>{constants.Calc.description}</div>
+            <div className='text-lg'>{Constants.Todos.description}</div>
           </Link>
           <Link
             className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
-            href={constants.Github.link}
+            href={Constants.Hangman.link}
             prefetch
           >
             <h3 className='text-2xl font-bold'>
-              {constants.Github.title}{' '}
+              {Constants.Hangman.title}{' '}
               <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
                 {'->'}
               </span>
             </h3>
-            <div className='text-lg'>{constants.Github.description}</div>
+            <div className='text-lg'>{Constants.Hangman.description}</div>
+          </Link>
+        </div>
+        <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8'>
+          <Link
+            className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
+            href={Constants.Calc.link}
+            prefetch
+          >
+            <h3 className='text-2xl font-bold'>
+              {Constants.Calc.title}{' '}
+              <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
+                {'->'}
+              </span>
+            </h3>
+            <div className='text-lg'>{Constants.Calc.description}</div>
+          </Link>
+          <Link
+            className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
+            href={Constants.Github.link}
+            prefetch
+          >
+            <h3 className='text-2xl font-bold'>
+              {Constants.Github.title}{' '}
+              <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
+                {'->'}
+              </span>
+            </h3>
+            <div className='text-lg'>{Constants.Github.description}</div>
           </Link>
         </div>
         <AdminComponent>
@@ -163,29 +163,29 @@ export default function Page(): React.JSX.Element {
           <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8'>
             <Link
               className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
-              href={constants.Black.link}
+              href={Constants.Black.link}
               prefetch
             >
               <h3 className='text-2xl font-bold'>
-                {constants.Black.title}{' '}
+                {Constants.Black.title}{' '}
                 <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
                   {'->'}
                 </span>
               </h3>
-              <div className='text-lg'>{constants.Black.description}</div>
+              <div className='text-lg'>{Constants.Black.description}</div>
             </Link>
             <Link
               className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
-              href={constants.Discord.link}
+              href={Constants.Discord.link}
               prefetch
             >
               <h3 className='text-2xl font-bold'>
-                {constants.Discord.title}{' '}
+                {Constants.Discord.title}{' '}
                 <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
                   {'->'}
                 </span>
               </h3>
-              <div className='text-lg'>{constants.Discord.description}</div>
+              <div className='text-lg'>{Constants.Discord.description}</div>
             </Link>
           </div>
           <Counter />

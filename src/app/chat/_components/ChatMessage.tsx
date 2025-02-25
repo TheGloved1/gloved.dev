@@ -1,7 +1,6 @@
 'use client'
 import Markdown from '@/components/Markdown'
 import { Message } from '@/db'
-import { Role } from '@/lib/types'
 import { ImagePart, TextPart } from 'ai'
 import { Copy, SquarePen } from 'lucide-react'
 import Image from 'next/image'
@@ -33,11 +32,11 @@ export default function ChatMessage({
       onMouseLeave={() => setIsHovered(false)}
       key={message.id}
       id={message.id}
-      className={`flex ${message.role === Role.USER ? 'justify-end' : 'justify-start'}`}
+      className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
     >
       <div
         className={
-          message.role === Role.USER ?
+          message.role === 'user' ?
             `group relative inline-block max-w-[80%] break-words rounded-2xl bg-[#2D2D2D] p-4 text-left`
           : `group relative w-full max-w-full break-words`
         }
@@ -64,7 +63,7 @@ export default function ChatMessage({
           {getTextParts(message.content)}
         </Markdown>
 
-        {message.role === Role.USER ?
+        {message.role === 'user' ?
           <div className='absolute right-0 mt-5 flex items-center gap-2 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 group-focus:opacity-100'>
             <button
               className='inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:text-accent-foreground text-xs h-8 w-8 rounded-lg bg-neutral-800/0 p-0 hover:bg-neutral-700'

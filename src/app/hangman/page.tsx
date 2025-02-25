@@ -1,10 +1,10 @@
-import { Hangman, NAME } from '@/lib/constants'
+import Constants from '@/lib/constants'
 import { Metadata } from 'next'
 import HangmanPage from './_components/HangmanPage'
 
 export const metadata: Metadata = {
-  title: NAME + ' | ' + Hangman.title,
-  description: Hangman.description,
+  title: Constants.NAME + ' | ' + Constants.Hangman.title,
+  description: Constants.Hangman.description,
 }
 
 export default function Page(): React.JSX.Element {

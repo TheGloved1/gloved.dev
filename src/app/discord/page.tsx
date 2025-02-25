@@ -1,10 +1,10 @@
-import { Discord, NAME } from '@/lib/constants'
+import Constants from '@/lib/constants'
 import { Metadata } from 'next'
 import { Link } from 'next-view-transitions'
 
 export const metadata: Metadata = {
-  title: NAME + ' | ' + Discord.title,
-  description: Discord.description,
+  title: Constants.NAME + ' | ' + Constants.Discord.title,
+  description: Constants.Discord.description,
 }
 
 export default function Page(): React.JSX.Element {

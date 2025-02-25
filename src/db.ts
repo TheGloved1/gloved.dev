@@ -1,4 +1,3 @@
-import { Role } from '@/lib/types'
 import { ImagePart, TextPart } from 'ai'
 import Dexie, { type EntityTable } from 'dexie'
 import { tryCatch } from './lib/utils'
@@ -181,7 +180,7 @@ export async function createMessage(
   await db.addMessage({
     threadId,
     content: messageContent,
-    role: Role.USER,
+    role: 'user',
     finished: true,
   })
 
@@ -193,7 +192,7 @@ export async function createMessage(
   }))
   const assistantMessageId = await db.addMessage({
     threadId,
-    role: Role.MODEL,
+    role: 'assistant',
     content: '',
     finished: false,
   })
@@ -234,7 +233,7 @@ export async function generateTitle(threadId: string) {
   }))
   const messages = [
     {
-      role: Role.USER,
+      role: 'user',
       content:
         'Messages: [' +
         contextMessages.map((m) => m.content).join('\n ') +

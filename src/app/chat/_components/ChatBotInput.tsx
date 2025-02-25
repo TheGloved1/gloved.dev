@@ -3,6 +3,7 @@ import { createMessage, db } from '@/db'
 import type React from 'react'
 
 import { usePersistentState } from '@/hooks/use-persistent-state'
+import Constants from '@/lib/constants'
 import { Loader2, Paperclip, Send, X } from 'lucide-react'
 import Image from 'next/image'
 import { redirect, useParams } from 'next/navigation'
@@ -80,6 +81,10 @@ export default function ChatBotInput({
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
+      if (file.size > Constants.MAX_FILE_SIZE) {
+        toast.error('File size exceeds the 2MB limit. Please choose a smaller file.')
+        return
+      }
       const reader = new FileReader()
       reader.onloadend = () => {
         setImagePreview(reader.result as string)

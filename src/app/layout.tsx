@@ -1,6 +1,6 @@
 import Providers from '@/components/Providers'
 import { Toaster } from '@/components/ui/sonner'
-import * as constants from '@/lib/constants'
+import Constants from '@/lib/constants'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { Metadata } from 'next'
@@ -10,7 +10,7 @@ import React, { Suspense } from 'react'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: constants.NAME,
+  title: Constants.NAME,
   description:
     'Made by Kaden Hood. A personal website for my projects and interests. Built using Next.js React Web Framework.',
   icons: 'https://avatars.githubusercontent.com/u/96776176?v=4',

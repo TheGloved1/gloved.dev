@@ -2,7 +2,7 @@ import FileUploader from '@/components/FileUploader'
 import GitUser from '@/components/GitUser'
 import ObserverSection from '@/components/ObserverSection'
 import ScrollLink from '@/components/ScrollLink'
-import { NAME } from '@/lib/constants'
+import Constants from '@/lib/constants'
 import { ChevronLeft } from 'lucide-react'
 import { Metadata } from 'next'
 import { Link } from 'next-view-transitions'
@@ -10,9 +10,8 @@ import React from 'react'
 import Dropdown from './_components/Dropdown'
 
 export const metadata: Metadata = {
-  title: `${NAME} | Home`,
-  description:
-    'The home page for my About Me based web project built with the Next.js React Web Framework',
+  title: `${Constants.NAME} | ${Constants.Home.title}`,
+  description: Constants.Home.description,
   icons: 'https://avatars.githubusercontent.com/u/96776176?v=4',
 }
 

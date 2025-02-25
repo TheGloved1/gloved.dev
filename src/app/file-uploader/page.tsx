@@ -1,12 +1,12 @@
 import FileUploader from '@/components/FileUploader'
 import PageBack from '@/components/PageBack'
-import { NAME } from '@/lib/constants'
+import Constants from '@/lib/constants'
 import { Metadata } from 'next'
 import React from 'react'
 
 export const metadata: Metadata = {
-  title: `${NAME} | File Uploader`,
-  description: 'Just the simple file uploader from the home page.',
+  title: `${Constants.NAME} | ${Constants.FileUploader.title}`,
+  description: Constants.FileUploader.description,
 }
 
 export default function Page(): React.JSX.Element {
