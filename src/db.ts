@@ -22,30 +22,13 @@ export interface Message {
   removed: 'true' | 'false';
 }
 
-export function formatContent(content: string | (TextPart | ImagePart)[]): {
-  content: string;
-  image?: string;
-} {
-  if (typeof content === 'string') {
-    console.log('[FormatContent] Content is a string:', content);
-    return { content };
-  }
-  console.log('[FormatContent] Content is an array:', content);
-  const textParts = content.filter((part) => 'text' in part) as TextPart[];
-  const imageParts = content.filter((part) => 'image' in part) as ImagePart[];
-  const text = textParts.map((part) => part.text).join('');
-  const image = imageParts.length ? imageParts[0].image.toString() : undefined;
-  console.log('[FormatContent] Returning Content:', { content: text, image });
-  return { content: text, image };
-}
-
 class Database extends Dexie {
   threads!: EntityTable<Thread, 'id'>;
   messages!: EntityTable<Message, 'id'>;
 
   constructor() {
-    super('Database');
-    this.version(2).stores({
+    super('chatdb');
+    this.version(3).stores({
       threads: 'id, title, created_at, updated_at, last_message_at, removed',
       messages: 'id, threadId, content, role, [threadId+created_at], finished, removed',
     });
@@ -59,6 +42,7 @@ class Database extends Dexie {
 
     this.messages.hook('creating', (primKey, obj) => {
       obj.created_at = new Date();
+      obj.removed = 'false';
     });
   }
 
@@ -106,6 +90,23 @@ class Database extends Dexie {
 }
 
 export const db = new Database();
+
+export function formatContent(content: string | (TextPart | ImagePart)[]): {
+  content: string;
+  image?: string;
+} {
+  if (typeof content === 'string') {
+    console.log('[FormatContent] Content is a string:', content);
+    return { content };
+  }
+  console.log('[FormatContent] Content is an array:', content);
+  const textParts = content.filter((part) => 'text' in part) as TextPart[];
+  const imageParts = content.filter((part) => 'image' in part) as ImagePart[];
+  const text = textParts.map((part) => part.text).join('');
+  const image = imageParts.length ? imageParts[0].image.toString() : undefined;
+  console.log('[FormatContent] Returning Content:', { content: text, image });
+  return { content: text, image };
+}
 
 export async function processStream(
   response: ReadableStream<Uint8Array>,
