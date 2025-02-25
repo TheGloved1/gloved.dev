@@ -51,7 +51,9 @@ export async function POST(req: Request) {
         maxTokens,
         frequencyPenalty,
         presencePenalty,
-        experimental_transform: smoothStream(),
+        experimental_transform: smoothStream({
+          delayInMs: 25,
+        }),
       })
       result.mergeIntoDataStream(dataStream)
     },

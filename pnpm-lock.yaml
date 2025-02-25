@@ -138,6 +138,9 @@ importers:
       '@eslint/eslintrc':
         specifier: ^3.2.0
         version: 3.2.0
+      '@next/eslint-plugin-next':
+        specifier: ^15.1.7
+        version: 15.1.7
       '@types/eslint':
         specifier: ^9.6.1
         version: 9.6.1
@@ -168,6 +171,9 @@ importers:
       eslint-config-next:
         specifier: canary
         version: 15.2.0-canary.64(eslint@9.20.1(jiti@1.21.7))(typescript@5.7.3)
+      eslint-plugin-react-hooks:
+        specifier: ^5.1.0
+        version: 5.1.0(eslint@9.20.1(jiti@1.21.7))
       fluid-tailwind:
         specifier: ^1.0.4
         version: 1.0.4(tailwindcss@3.4.17)
@@ -464,6 +470,9 @@ packages:
 
   '@next/env@15.2.0-canary.64':
     resolution: {integrity: sha512-ZZYxKm0ECOr7n818vBxELVYwreFKvzS1XPFuzTO5NHokJWuqCFN6cc6dW4S0bohHSjLXckDad/nft3G/k3/1VA==}
+
+  '@next/eslint-plugin-next@15.1.7':
+    resolution: {integrity: sha512-kRP7RjSxfTO13NE317ek3mSGzoZlI33nc/i5hs1KaWpK+egs85xg0DJ4p32QEiHnR0mVjuUfhRIun7awqfL7pQ==}
 
   '@next/eslint-plugin-next@15.2.0-canary.64':
     resolution: {integrity: sha512-4dj8OUjfiFxDsipXZnI4W9BuFmPSLOCTNrozT4EdzmmfbN/lU7/SWcVg+471VfeT2W//w5U3DwzY+bfdeh+s6A==}
@@ -3338,6 +3347,10 @@ snapshots:
       '@jridgewell/sourcemap-codec': 1.5.0
 
   '@next/env@15.2.0-canary.64': {}
+
+  '@next/eslint-plugin-next@15.1.7':
+    dependencies:
+      fast-glob: 3.3.1
 
   '@next/eslint-plugin-next@15.2.0-canary.64':
     dependencies:
