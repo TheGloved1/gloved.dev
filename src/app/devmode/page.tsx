@@ -1,4 +1,4 @@
-import DevModeOnly from '@/components/DevModeOnly'
+import DevModeOnly from '@/components/DevModeOnly';
 
 export default function Page(): React.JSX.Element {
   return (
@@ -7,5 +7,5 @@ export default function Page(): React.JSX.Element {
         <>{'YOUR IN DEV MODE!'}</>
       </DevModeOnly>
     </div>
-  )
+  );
 }

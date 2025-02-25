@@ -1,21 +1,21 @@
-'use client'
-import React, { useEffect, useState } from 'react'
+'use client';
+import React, { useEffect, useState } from 'react';
 
 export function WIPHeader(): React.JSX.Element | null {
-  const [isVisible, setIsVisible] = useState(true)
-  const [isFading, setIsFading] = useState(false)
+  const [isVisible, setIsVisible] = useState(true);
+  const [isFading, setIsFading] = useState(false);
 
   useEffect(() => {
     const timerFadeOut = setTimeout(() => {
-      setIsFading(true)
+      setIsFading(true);
       const timerDisappear = setTimeout(() => {
-        setIsVisible(false)
-      }, 2000)
-      return () => clearTimeout(timerDisappear)
-    }, 5000)
+        setIsVisible(false);
+      }, 2000);
+      return () => clearTimeout(timerDisappear);
+    }, 5000);
 
-    return () => clearTimeout(timerFadeOut)
-  }, [])
+    return () => clearTimeout(timerFadeOut);
+  }, []);
 
   return isVisible ?
       <div
@@ -30,5 +30,5 @@ export function WIPHeader(): React.JSX.Element | null {
         <div className='pr-2'>{'home '}</div>
         <div className='rounded-xl bg-gray-700 p-2 text-slate-900'>{'Work in progress...'}</div>
       </div>
-    : null
+    : null;
 }

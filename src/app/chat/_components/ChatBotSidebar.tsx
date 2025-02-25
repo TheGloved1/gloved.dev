@@ -1,38 +1,32 @@
-'use client'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarProvider,
-  SidebarTrigger,
-} from '@/components/ui/sidebar'
-import { db, Thread } from '@/db'
-import { useIsMobile } from '@/hooks/use-mobile'
-import { usePersistentState } from '@/hooks/use-persistent-state'
-import { useLiveQuery } from 'dexie-react-hooks'
-import { MessageSquare, Plus, SquarePen } from 'lucide-react'
-import { Link } from 'next-view-transitions'
-import { useParams } from 'next/navigation'
-import React, { useState } from 'react'
-import DeleteAlert from './DeleteAlert'
+'use client';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Sidebar, SidebarContent, SidebarGroup, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import { db, Thread } from '@/db';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { usePersistentState } from '@/hooks/use-persistent-state';
+import { useLiveQuery } from 'dexie-react-hooks';
+import { MessageSquare, Plus, SquarePen } from 'lucide-react';
+import { Link } from 'next-view-transitions';
+import { useParams } from 'next/navigation';
+import React, { useState } from 'react';
+import DeleteAlert from './DeleteAlert';
 
 export default function ChatBotSidebar({ children }: { children: React.ReactNode }) {
-  const { threadId } = useParams()
-  const isMobile = useIsMobile()
-  const [open, setOpen] = useState(true)
-  const [lastThreadList, setLastThreadList] = usePersistentState<Thread[]>('lastThreadList', [])
+  const { threadId } = useParams();
+  const isMobile = useIsMobile();
+  const [open, setOpen] = useState(true);
+  const [lastThreadList, setLastThreadList] = usePersistentState<Thread[]>('lastThreadList', []);
   const threads = useLiveQuery(
     async () => {
-      const threads = await db.getThreads()
-      setLastThreadList(threads)
-      return threads
+      const threads = await db.getThreads();
+      setLastThreadList(threads);
+      return threads;
     },
     [db.threads],
     lastThreadList,
-  )
+  );
 
-  const isCurrentThread = (id: string) => threadId === id
+  const isCurrentThread = (id: string) => threadId === id;
 
   return (
     <SidebarProvider open={open} onOpenChange={setOpen}>
@@ -55,12 +49,7 @@ export default function ChatBotSidebar({ children }: { children: React.ReactNode
             <div className='divider divider-neutral text-gray-200'>
               Chats{' '}
               {!isMobile && (
-                <Link
-                  href='/chat'
-                  type='button'
-                  title='New chat'
-                  className='p-2 m-0 hover:bg-gray-500/50 rounded-lg'
-                >
+                <Link href='/chat' type='button' title='New chat' className='p-2 m-0 hover:bg-gray-500/50 rounded-lg'>
                   <SquarePen className='h-4 w-4' />
                   <span className='sr-only'>New chat</span>
                 </Link>
@@ -97,5 +86,5 @@ export default function ChatBotSidebar({ children }: { children: React.ReactNode
       />
       {children}
     </SidebarProvider>
-  )
+  );
 }

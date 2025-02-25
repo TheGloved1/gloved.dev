@@ -1,17 +1,15 @@
-import { useState } from 'react'
+import { useState } from 'react';
 
-export default function NewTodoForm(props: {
-  onSubmit: (title: string) => void
-}): React.JSX.Element {
-  const [newItem, setNewItem] = useState('')
+export default function NewTodoForm(props: { onSubmit: (title: string) => void }): React.JSX.Element {
+  const [newItem, setNewItem] = useState('');
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>): void {
-    e.preventDefault()
-    if (newItem === '') return
+    e.preventDefault();
+    if (newItem === '') return;
 
-    props.onSubmit(newItem)
+    props.onSubmit(newItem);
 
-    setNewItem('')
+    setNewItem('');
   }
 
   return (
@@ -28,5 +26,5 @@ export default function NewTodoForm(props: {
       </div>
       <button className='btn'>Add</button>
     </form>
-  )
+  );
 }

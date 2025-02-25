@@ -1,6 +1,6 @@
-import { ClassAttributes, HTMLAttributes } from 'react'
-import Markdown, { Components, ExtraProps, Options } from 'react-markdown'
-import CodeBlock from './CodeBlock'
+import { ClassAttributes, HTMLAttributes } from 'react';
+import Markdown, { Components, ExtraProps, Options } from 'react-markdown';
+import CodeBlock from './CodeBlock';
 
 const components: Components = {
   code: ({
@@ -8,24 +8,22 @@ const components: Components = {
     className,
     node,
     ...props
-  }: ClassAttributes<HTMLElement> &
-    HTMLAttributes<HTMLElement> &
-    ExtraProps): React.JSX.Element => {
-    const language = className?.split('-').pop() || 'plaintext'
+  }: ClassAttributes<HTMLElement> & HTMLAttributes<HTMLElement> & ExtraProps): React.JSX.Element => {
+    const language = className?.split('-').pop() || 'plaintext';
     if (language === 'plaintext') {
       return (
         <strong className='font-bold border-border border rounded bg-gray-600/50 px-1' {...props}>
           {children}
         </strong>
-      )
+      );
     }
     return (
       <CodeBlock node={node} language={language} {...props}>
         {children}
       </CodeBlock>
-    )
+    );
   },
-}
+};
 
 /**
  * A React component that renders Markdown content using custom components for specific elements.
@@ -40,5 +38,5 @@ export default function CustomMarkdown({ children, ...props }: Options): React.J
     <Markdown components={components} {...props}>
       {children}
     </Markdown>
-  )
+  );
 }

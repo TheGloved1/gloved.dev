@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useEffect, useState } from 'react'
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 
 /**
  * Custom hook to manage a state variable that is synchronized with localStorage.
@@ -13,25 +13,25 @@ export function usePersistentState<T>(
   initialValue: T,
   enabled: boolean = true,
 ): [T, Dispatch<SetStateAction<T>>] {
-  const inBrowser = () => typeof window !== 'undefined'
+  const inBrowser = () => typeof window !== 'undefined';
   const [state, setState] = useState<T>(() => {
     if (inBrowser() && enabled) {
       try {
-        const storedState = localStorage.getItem(key)
-        return storedState ? JSON.parse(storedState) : initialValue
+        const storedState = localStorage.getItem(key);
+        return storedState ? JSON.parse(storedState) : initialValue;
       } catch (error) {
-        console.error(`Error parsing localStorage data for key '${key}': `, error)
-        return initialValue
+        console.error(`Error parsing localStorage data for key '${key}': `, error);
+        return initialValue;
       }
     }
-    return initialValue
-  })
+    return initialValue;
+  });
 
   useEffect(() => {
     if (inBrowser()) {
-      localStorage.setItem(key, JSON.stringify(state))
+      localStorage.setItem(key, JSON.stringify(state));
     }
-  }, [key, state])
+  }, [key, state]);
 
-  return [state, setState]
+  return [state, setState];
 }

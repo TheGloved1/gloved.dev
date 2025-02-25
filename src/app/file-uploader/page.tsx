@@ -1,13 +1,13 @@
-import FileUploader from '@/components/FileUploader'
-import PageBack from '@/components/PageBack'
-import Constants from '@/lib/constants'
-import { Metadata } from 'next'
-import React from 'react'
+import FileUploader from '@/components/FileUploader';
+import PageBack from '@/components/PageBack';
+import Constants from '@/lib/constants';
+import { Metadata } from 'next';
+import React from 'react';
 
 export const metadata: Metadata = {
   title: `${Constants.NAME} | ${Constants.FileUploader.title}`,
   description: Constants.FileUploader.description,
-}
+};
 
 export default function Page(): React.JSX.Element {
   return (
@@ -17,5 +17,5 @@ export default function Page(): React.JSX.Element {
         <FileUploader />
       </div>
     </>
-  )
+  );
 }

@@ -1,11 +1,11 @@
-import Constants from '@/lib/constants'
-import { Metadata } from 'next'
-import { Link } from 'next-view-transitions'
+import Constants from '@/lib/constants';
+import { Metadata } from 'next';
+import { Link } from 'next-view-transitions';
 
 export const metadata: Metadata = {
   title: Constants.NAME + ' | ' + Constants.Discord.title,
   description: Constants.Discord.description,
-}
+};
 
 export default function Page(): React.JSX.Element {
   return (
@@ -20,5 +20,5 @@ export default function Page(): React.JSX.Element {
         {'Join Server'}
       </Link>
     </div>
-  )
+  );
 }

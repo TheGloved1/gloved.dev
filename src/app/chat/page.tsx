@@ -1,19 +1,19 @@
-'use client'
-import React, { useEffect, useState } from 'react'
-import ChatBotInput from './_components/ChatBotInput'
+'use client';
+import React, { useEffect, useState } from 'react';
+import ChatBotInput from './_components/ChatBotInput';
 
 export default function ChatBot(): React.JSX.Element {
-  const [input, setInput] = useState<string>('')
-  const [rows, setRows] = useState<number>(2)
-  const [imagePreview, setImagePreview] = useState<string | null | undefined>(null)
+  const [input, setInput] = useState<string>('');
+  const [rows, setRows] = useState<number>(2);
+  const [imagePreview, setImagePreview] = useState<string | null | undefined>(null);
 
   useEffect(() => {
     // Count how many rows the textarea is by getting all '\n' in the input
-    const minRows = 2
-    const maxRows = 6
-    const newRows = input.split('\n').length
-    setRows(Math.min(Math.max(minRows, newRows), maxRows))
-  }, [input, rows, setRows])
+    const minRows = 2;
+    const maxRows = 6;
+    const newRows = input.split('\n').length;
+    setRows(Math.min(Math.max(minRows, newRows), maxRows));
+  }, [input, rows, setRows]);
 
   return (
     <main className='relative flex w-full flex-1 flex-col'>
@@ -30,5 +30,5 @@ export default function ChatBot(): React.JSX.Element {
         </div>
       </div>
     </main>
-  )
+  );
 }

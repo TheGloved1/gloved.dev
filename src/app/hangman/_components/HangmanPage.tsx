@@ -1,72 +1,72 @@
-'use client'
-import PageBack from '@/components/PageBack'
-import Constants from '@/lib/constants'
-import { Metadata } from 'next'
-import React, { useCallback, useEffect, useState } from 'react'
-import { HangmanDrawing } from './HangmanDrawing'
-import { HangmanWord } from './HangmanWord'
-import { Keyboard } from './Keyboard'
-import words from './wordList.json'
+'use client';
+import PageBack from '@/components/PageBack';
+import Constants from '@/lib/constants';
+import { Metadata } from 'next';
+import React, { useCallback, useEffect, useState } from 'react';
+import { HangmanDrawing } from './HangmanDrawing';
+import { HangmanWord } from './HangmanWord';
+import { Keyboard } from './Keyboard';
+import words from './wordList.json';
 
 function getWord() {
-  return words[Math.floor(Math.random() * words.length)]!
+  return words[Math.floor(Math.random() * words.length)]!;
 }
 
 export const meta: Metadata = {
   title: Constants.NAME + ' | Hangman Game',
   description: 'A simple hangman game web app. Guess the word. (Might be broken)',
-}
+};
 
 export default function Page(): React.JSX.Element {
-  const [wordToGuess, setWordToGuess] = useState(getWord)
-  const [guessedLetters, setGuessedLetters] = useState<string[]>([])
+  const [wordToGuess, setWordToGuess] = useState(getWord);
+  const [guessedLetters, setGuessedLetters] = useState<string[]>([]);
 
-  const incorrectLetters = guessedLetters.filter((letter) => !wordToGuess.includes(letter))
+  const incorrectLetters = guessedLetters.filter((letter) => !wordToGuess.includes(letter));
 
-  const isLoser = incorrectLetters.length >= 6
-  const isWinner = wordToGuess.split('').every((letter) => guessedLetters.includes(letter))
+  const isLoser = incorrectLetters.length >= 6;
+  const isWinner = wordToGuess.split('').every((letter) => guessedLetters.includes(letter));
 
   const addGuessedLetter = useCallback(
     (letter: string) => {
-      if (guessedLetters.includes(letter) || isLoser || isWinner) return
+      if (guessedLetters.includes(letter) || isLoser || isWinner) return;
 
-      setGuessedLetters((currentLetters) => [...currentLetters, letter])
+      setGuessedLetters((currentLetters) => [...currentLetters, letter]);
     },
     [guessedLetters, isWinner, isLoser],
-  )
+  );
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      const key = e.key
-      if (!key.match(/^[a-z]$/)) return
+      const key = e.key;
+      if (!key.match(/^[a-z]$/)) return;
 
-      e.preventDefault()
-      addGuessedLetter(key)
-    }
+      e.preventDefault();
+      addGuessedLetter(key);
+    };
 
-    document.addEventListener('keypress', handler)
+    document.addEventListener('keypress', handler);
 
     return () => {
-      document.removeEventListener('keypress', handler)
-    }
-  }, [addGuessedLetter])
+      document.removeEventListener('keypress', handler);
+    };
+  }, [addGuessedLetter]);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      const key = e.key
-      if (key !== 'Enter') return
+      const key = e.key;
+      if (key !== 'Enter') return;
 
-      e.preventDefault()
-      setGuessedLetters([])
-      setWordToGuess(getWord())
-    }
+      e.preventDefault();
+      setGuessedLetters([]);
+      setWordToGuess(getWord());
+    };
 
-    document.addEventListener('keypress', handler)
+    document.addEventListener('keypress', handler);
 
     return () => {
-      document.removeEventListener('keypress', handler)
-    }
-  }, [])
+      document.removeEventListener('keypress', handler);
+    };
+  }, []);
 
   return (
     <>
@@ -88,5 +88,5 @@ export default function Page(): React.JSX.Element {
         </div>
       </div>
     </>
-  )
+  );
 }

@@ -1,32 +1,32 @@
-'use client'
-import React, { useEffect, useRef, useState } from 'react'
+'use client';
+import React, { useEffect, useRef, useState } from 'react';
 
 export default function Counter(): React.JSX.Element {
-  const [count, setCount] = useState(0)
-  const [isAnimating, setIsAnimating] = useState(false)
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const [count, setCount] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleButtonClick = (newCount: number) => {
     if (timeoutRef.current) {
-      setIsAnimating(false)
-      clearTimeout(timeoutRef.current)
+      setIsAnimating(false);
+      clearTimeout(timeoutRef.current);
     }
-    setCount(newCount)
-    setIsAnimating(true)
+    setCount(newCount);
+    setIsAnimating(true);
     timeoutRef.current = setTimeout(() => {
-      timeoutRef.current = null
-      setIsAnimating(false)
-    }, 100)
-  }
+      timeoutRef.current = null;
+      setIsAnimating(false);
+    }, 100);
+  };
 
   useEffect(() => {
     return () => {
       if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
-        setIsAnimating(false)
+        clearTimeout(timeoutRef.current);
+        setIsAnimating(false);
       }
-    }
-  }, [])
+    };
+  }, []);
 
   return (
     <div className='grid items-center justify-center text-center'>
@@ -55,5 +55,5 @@ export default function Counter(): React.JSX.Element {
         </button>
       </div>
     </div>
-  )
+  );
 }

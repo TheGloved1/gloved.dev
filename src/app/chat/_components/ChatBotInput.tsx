@@ -1,13 +1,13 @@
-'use client'
-import { createMessage, db } from '@/db'
-import React, { memo, useMemo } from 'react'
+'use client';
+import { createMessage, db } from '@/db';
+import React, { memo, useMemo } from 'react';
 
-import Constants from '@/lib/constants'
-import { ChevronDown, Loader2, Paperclip, Send, X } from 'lucide-react'
-import Image from 'next/image'
-import { redirect, useParams } from 'next/navigation'
-import { useEffect, useRef, useState } from 'react'
-import { toast } from 'sonner'
+import Constants from '@/lib/constants';
+import { ChevronDown, Loader2, Paperclip, Send, X } from 'lucide-react';
+import Image from 'next/image';
+import { redirect, useParams } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
 
 const ChatBotInputMemoized = memo(
   ({
@@ -19,127 +19,125 @@ const ChatBotInputMemoized = memo(
     scrollCallback,
     isAtBottom,
   }: {
-    input: string
-    setInputAction: React.Dispatch<React.SetStateAction<string>>
-    imagePreview?: string | null
-    setImagePreviewAction: React.Dispatch<React.SetStateAction<string | undefined | null>>
-    createThread?: boolean
-    scrollCallback?: () => void
-    isAtBottom?: boolean
+    input: string;
+    setInputAction: React.Dispatch<React.SetStateAction<string>>;
+    imagePreview?: string | null;
+    setImagePreviewAction: React.Dispatch<React.SetStateAction<string | undefined | null>>;
+    createThread?: boolean;
+    scrollCallback?: () => void;
+    isAtBottom?: boolean;
   }) => {
-    const { threadId } = useParams()
-    const [loading, setLoading] = useState<boolean>(false)
-    const [rows, setRows] = useState<number>(1)
-    const fileInputRef = useRef<HTMLInputElement>(null)
+    const { threadId } = useParams();
+    const [loading, setLoading] = useState<boolean>(false);
+    const [rows, setRows] = useState<number>(1);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const convertFileToBase64 = useMemo(
       () =>
         async (file: File): Promise<string> => {
           return new Promise((resolve, reject) => {
-            const reader = new FileReader()
+            const reader = new FileReader();
             reader.onloadend = () => {
-              resolve(reader.result as string)
-            }
-            reader.onerror = reject
-            reader.readAsDataURL(file)
-          })
+              resolve(reader.result as string);
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+          });
         },
       [],
-    )
+    );
 
     const dataURLtoFile = useMemo(
       () => (dataurl: string, filename: string) => {
-        const arr = dataurl.split(',')
-        const mime = arr[0].match(/:(.*?);/)![1]
-        const bstr = atob(arr[1])
-        let n = bstr.length // Changed to let
-        const u8arr = new Uint8Array(n)
+        const arr = dataurl.split(',');
+        const mime = arr[0].match(/:(.*?);/)![1];
+        const bstr = atob(arr[1]);
+        let n = bstr.length; // Changed to let
+        const u8arr = new Uint8Array(n);
 
         while (n--) {
-          u8arr[n] = bstr.charCodeAt(n)
+          u8arr[n] = bstr.charCodeAt(n);
         }
 
-        return new File([u8arr], filename, { type: mime })
+        return new File([u8arr], filename, { type: mime });
       },
       [],
-    )
+    );
 
-    const handleSubmit = async (
-      e: React.FormEvent<HTMLFormElement> | React.KeyboardEvent<HTMLTextAreaElement>,
-    ) => {
-      e.preventDefault()
-      let imageBase64: string | null = null
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement> | React.KeyboardEvent<HTMLTextAreaElement>) => {
+      e.preventDefault();
+      let imageBase64: string | null = null;
       if (fileInputRef.current?.files?.[0]) {
-        imageBase64 = await convertFileToBase64(fileInputRef.current.files[0])
+        imageBase64 = await convertFileToBase64(fileInputRef.current.files[0]);
       }
-      setLoading(true)
-      setImagePreview(null)
+      setLoading(true);
+      setImagePreview(null);
       if (createThread) {
         const threadId = await db.createThread({
           title: Date.now().toString(),
-        })
+        });
         try {
-          createMessage(threadId.toString(), input, setInput, imageBase64)
+          createMessage(threadId.toString(), input, setInput, imageBase64);
         } catch (e) {
-          toast.error('Failed to generate message')
-          setLoading(false)
-          return
+          toast.error('Failed to generate message');
+          setLoading(false);
+          return;
         }
-        setLoading(false)
-        redirect('/chat/' + threadId.toString())
+        setLoading(false);
+        redirect('/chat/' + threadId.toString());
       } else {
-        if (!threadId || typeof threadId !== 'string') return
+        if (!threadId || typeof threadId !== 'string') return;
 
-        await createMessage(threadId, input, setInput, imageBase64, scrollCallback)
-        setLoading(false)
-        setInput('')
+        await createMessage(threadId, input, setInput, imageBase64, scrollCallback);
+        setLoading(false);
+        setInput('');
         if (fileInputRef.current) {
-          fileInputRef.current.value = ''
+          fileInputRef.current.value = '';
         }
-        setRows(2)
+        setRows(2);
       }
-    }
+    };
 
     useEffect(() => {
-      const minRows = 2
-      const maxRows = 6
-      const newRows = input.split('\n').length
-      setRows(Math.min(Math.max(minRows, newRows), maxRows))
-    }, [input])
+      const minRows = 2;
+      const maxRows = 6;
+      const newRows = input.split('\n').length;
+      setRows(Math.min(Math.max(minRows, newRows), maxRows));
+    }, [input]);
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0]
+      const file = e.target.files?.[0];
       if (file) {
         if (file.size > Constants.MAX_FILE_SIZE) {
-          toast.error(`File size exceeds the ${Constants.FILE_SIZE_LIMIT_MB}MB limit.`)
-          return
+          toast.error(`File size exceeds the ${Constants.FILE_SIZE_LIMIT_MB}MB limit.`);
+          return;
         }
-        const reader = new FileReader()
+        const reader = new FileReader();
         reader.onloadend = () => {
-          setImagePreview(reader.result as string)
-        }
-        reader.readAsDataURL(file)
+          setImagePreview(reader.result as string);
+        };
+        reader.readAsDataURL(file);
       }
-    }
+    };
 
     const removeImage = () => {
-      setImagePreview(null)
+      setImagePreview(null);
       if (fileInputRef.current) {
-        fileInputRef.current.value = ''
+        fileInputRef.current.value = '';
       }
-    }
+    };
 
     useEffect(() => {
       const addBase64ImageToInput = (base64Image: string) => {
-        const file = dataURLtoFile(base64Image, 'image.png')
-        const fileList = new DataTransfer()
-        fileList.items.add(file)
-        fileInputRef.current!.files = fileList.files
-      }
-      if (!imagePreview) return
-      setImagePreview(imagePreview)
-      addBase64ImageToInput(imagePreview)
-    }, [dataURLtoFile, imagePreview, setImagePreview])
+        const file = dataURLtoFile(base64Image, 'image.png');
+        const fileList = new DataTransfer();
+        fileList.items.add(file);
+        fileInputRef.current!.files = fileList.files;
+      };
+      if (!imagePreview) return;
+      setImagePreview(imagePreview);
+      addBase64ImageToInput(imagePreview);
+    }, [dataURLtoFile, imagePreview, setImagePreview]);
 
     return (
       <div className='absolute bottom-0 w-full pr-2'>
@@ -163,13 +161,7 @@ const ChatBotInputMemoized = memo(
               <div className='flex flex-grow flex-col'>
                 {imagePreview && (
                   <div className='relative mb-2 h-20 w-20'>
-                    <Image
-                      src={imagePreview}
-                      alt='Image preview'
-                      layout='fill'
-                      objectFit='cover'
-                      className='rounded-md'
-                    />
+                    <Image src={imagePreview} alt='Image preview' layout='fill' objectFit='cover' className='rounded-md' />
                     <button
                       onClick={removeImage}
                       type='button'
@@ -187,18 +179,18 @@ const ChatBotInputMemoized = memo(
                   placeholder={`Type message here...`}
                   rows={rows}
                   onChange={(e) => {
-                    setInput(e.target.value)
+                    setInput(e.target.value);
                   }}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && e.shiftKey) {
-                      e.preventDefault()
-                      setInput((prev) => prev + '\n')
+                      e.preventDefault();
+                      setInput((prev) => prev + '\n');
                     } else if (e.key === 'Enter') {
                       if (!input.trim() && !imagePreview) {
-                        e.preventDefault()
-                        return
+                        e.preventDefault();
+                        return;
                       }
-                      handleSubmit(e)
+                      handleSubmit(e);
                     }
                   }}
                 />
@@ -235,9 +227,9 @@ const ChatBotInputMemoized = memo(
           </div>
         </div>
       </div>
-    )
+    );
   },
-)
-ChatBotInputMemoized.displayName = 'ChatBotInput'
+);
+ChatBotInputMemoized.displayName = 'ChatBotInput';
 
-export default ChatBotInputMemoized
+export default ChatBotInputMemoized;

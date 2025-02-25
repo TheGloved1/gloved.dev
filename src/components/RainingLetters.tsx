@@ -1,23 +1,23 @@
-'use client'
-import { checkDevMode } from '@/lib/actions'
-import { useQuery } from '@tanstack/react-query'
-import dynamic from 'next/dynamic'
-import React, { useEffect, useState } from 'react'
+'use client';
+import { checkDevMode } from '@/lib/actions';
+import { useQuery } from '@tanstack/react-query';
+import dynamic from 'next/dynamic';
+import React, { useEffect, useState } from 'react';
 
 interface Character {
-  char: string
-  x: number
-  y: number
-  speed: number
+  char: string;
+  x: number;
+  y: number;
+  speed: number;
 }
 
 interface RainingLettersProps {
-  children?: React.ReactNode
-  characterCount?: number
-  characterSet?: string
-  backgroundColor?: string
-  characterColor?: string
-  activeCharacterColor?: string
+  children?: React.ReactNode;
+  characterCount?: number;
+  characterSet?: string;
+  backgroundColor?: string;
+  characterColor?: string;
+  activeCharacterColor?: string;
 }
 
 function RainingLetters({
@@ -27,18 +27,18 @@ function RainingLetters({
   characterColor = 'text-slate-600',
   activeCharacterColor = 'text-[#00ff00]',
 }: RainingLettersProps): React.JSX.Element {
-  const [characters, setCharacters] = useState<Character[]>([])
-  const [charCount, setCharCount] = useState<number>(characterCount)
-  const [activeIndices, setActiveIndices] = useState<Set<number>>(new Set())
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState<boolean>(false)
-  const isDev = useQuery({ queryKey: ['devMode'], queryFn: checkDevMode, initialData: false })
+  const [characters, setCharacters] = useState<Character[]>([]);
+  const [charCount, setCharCount] = useState<number>(characterCount);
+  const [activeIndices, setActiveIndices] = useState<Set<number>>(new Set());
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState<boolean>(false);
+  const isDev = useQuery({ queryKey: ['devMode'], queryFn: checkDevMode, initialData: false });
 
   useEffect(() => {
     setCharacters((prevChars) => {
       prevChars.sort(() => {
-        return Math.random() >= 0.5 ? 1 : -1
-      })
-      const newCharacters = [...prevChars] // Copy the existing characters
+        return Math.random() >= 0.5 ? 1 : -1;
+      });
+      const newCharacters = [...prevChars]; // Copy the existing characters
 
       // Adjust the number of characters based on charCount
       if (newCharacters.length < charCount) {
@@ -49,49 +49,49 @@ function RainingLetters({
             x: Math.random() * 100,
             y: Math.random() * 100,
             speed: 0.2 + Math.random() * 0.8, // Random speed between 0.1 and 0.4
-          })
+          });
         }
       } else if (newCharacters.length > charCount) {
         // If we need fewer characters, remove them
-        newCharacters.splice(charCount) // Keep only the first charCount characters
+        newCharacters.splice(charCount); // Keep only the first charCount characters
       }
 
-      return newCharacters // Return the updated characters
-    })
-  }, [charCount, characterSet])
+      return newCharacters; // Return the updated characters
+    });
+  }, [charCount, characterSet]);
 
   useEffect(() => {
     const updateActiveIndices = () => {
-      const newActiveIndices = new Set<number>()
-      const numActive = Math.floor(Math.random() * (charCount / 100)) + charCount / 100
+      const newActiveIndices = new Set<number>();
+      const numActive = Math.floor(Math.random() * (charCount / 100)) + charCount / 100;
       for (let i = 0; i < numActive; i++) {
-        newActiveIndices.add(Math.floor(Math.random() * charCount))
+        newActiveIndices.add(Math.floor(Math.random() * charCount));
       }
-      setActiveIndices(newActiveIndices)
-    }
+      setActiveIndices(newActiveIndices);
+    };
 
-    const flickerInterval = setInterval(updateActiveIndices, 50)
-    return () => clearInterval(flickerInterval)
-  }, [charCount])
+    const flickerInterval = setInterval(updateActiveIndices, 50);
+    return () => clearInterval(flickerInterval);
+  }, [charCount]);
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-    setPrefersReducedMotion(mediaQuery.matches)
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    setPrefersReducedMotion(mediaQuery.matches);
     const onPrefersReducedMotionChange = (e: MediaQueryListEvent) => {
-      setPrefersReducedMotion(e.matches)
-    }
-    mediaQuery.addEventListener('change', onPrefersReducedMotionChange)
-    return () => mediaQuery.removeEventListener('change', onPrefersReducedMotionChange)
-  }, [])
+      setPrefersReducedMotion(e.matches);
+    };
+    mediaQuery.addEventListener('change', onPrefersReducedMotionChange);
+    return () => mediaQuery.removeEventListener('change', onPrefersReducedMotionChange);
+  }, []);
 
   useEffect(() => {
-    if (prefersReducedMotion) return
-    let animationFrameId: number
-    let lastUpdate = Date.now()
-    const throttleDelay = 35 // Update every 35 milliseconds
+    if (prefersReducedMotion) return;
+    let animationFrameId: number;
+    let lastUpdate = Date.now();
+    const throttleDelay = 35; // Update every 35 milliseconds
 
     const updatePositions = () => {
-      const now = Date.now()
+      const now = Date.now();
       if (now - lastUpdate >= throttleDelay) {
         setCharacters((prevChars) => {
           const updatedChars = prevChars.map((char) => ({
@@ -102,17 +102,17 @@ function RainingLetters({
               x: Math.random() * 100,
               char: characterSet[Math.floor(Math.random() * characterSet.length)],
             }),
-          }))
-          return updatedChars // Return the updated characters in one go
-        })
-        lastUpdate = now // Update the last update time
+          }));
+          return updatedChars; // Return the updated characters in one go
+        });
+        lastUpdate = now; // Update the last update time
       }
-      animationFrameId = requestAnimationFrame(updatePositions)
-    }
+      animationFrameId = requestAnimationFrame(updatePositions);
+    };
 
-    animationFrameId = requestAnimationFrame(updatePositions)
-    return () => cancelAnimationFrame(animationFrameId)
-  }, [characterSet, prefersReducedMotion])
+    animationFrameId = requestAnimationFrame(updatePositions);
+    return () => cancelAnimationFrame(animationFrameId);
+  }, [characterSet, prefersReducedMotion]);
 
   return (
     <>
@@ -147,9 +147,7 @@ function RainingLetters({
                 top: `${char.y}vh`,
                 transform: `translate(-50%, -50%) ${activeIndices.has(index) ? 'scale(1.25)' : 'scale(1)'}`,
                 textShadow:
-                  activeIndices.has(index) ?
-                    '0 0 8px rgba(255,255,255,0.8), 0 0 12px rgba(255,255,255,0.4)'
-                  : 'none',
+                  activeIndices.has(index) ? '0 0 8px rgba(255,255,255,0.8), 0 0 12px rgba(255,255,255,0.4)' : 'none',
                 transition: 'color 0.1s, transform 0.1s, text-shadow 0.1s',
                 willChange: 'transform, top',
                 fontSize: '1.8rem',
@@ -161,7 +159,7 @@ function RainingLetters({
         </div>
       </div>
     </>
-  )
+  );
 }
 
-export default dynamic(() => Promise.resolve(RainingLetters), { ssr: false })
+export default dynamic(() => Promise.resolve(RainingLetters), { ssr: false });

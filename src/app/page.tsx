@@ -1,18 +1,18 @@
-import AdminComponent from '@/components/AdminComponent'
-import Counter from '@/components/Counter'
-import { PageVisits } from '@/components/PageVisits'
-import TopScrollVisibility from '@/components/TopScrollVisibility'
-import Constants from '@/lib/constants'
-import { Metadata } from 'next'
-import { Link } from 'next-view-transitions'
-import Image from 'next/image'
-import React from 'react'
+import AdminComponent from '@/components/AdminComponent';
+import Counter from '@/components/Counter';
+import { PageVisits } from '@/components/PageVisits';
+import TopScrollVisibility from '@/components/TopScrollVisibility';
+import Constants from '@/lib/constants';
+import { Metadata } from 'next';
+import { Link } from 'next-view-transitions';
+import Image from 'next/image';
+import React from 'react';
 
 export const metadata: Metadata = {
   title: Constants.NAME,
   description:
     'Made by Kaden Hood. A personal website for my projects and interests. Built using Next.js React Web Framework.',
-}
+};
 
 export default function Page(): React.JSX.Element {
   return (
@@ -202,5 +202,5 @@ export default function Page(): React.JSX.Element {
       </div>
       <PageVisits />
     </>
-  )
+  );
 }

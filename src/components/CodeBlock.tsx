@@ -1,16 +1,16 @@
-import React, { ClassAttributes, HTMLAttributes } from 'react'
-import { ExtraProps } from 'react-markdown'
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
-import { vscDarkPlus as styles } from 'react-syntax-highlighter/dist/esm/styles/prism'
-import CopyButton from './CopyButton'
+import React, { ClassAttributes, HTMLAttributes } from 'react';
+import { ExtraProps } from 'react-markdown';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus as styles } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import CopyButton from './CopyButton';
 
 type CodeBlockProps = {
-  children?: React.ReactNode
-  language?: string
-  props?: React.ComponentProps<typeof SyntaxHighlighter>
+  children?: React.ReactNode;
+  language?: string;
+  props?: React.ComponentProps<typeof SyntaxHighlighter>;
 } & ClassAttributes<HTMLElement> &
   HTMLAttributes<HTMLElement> &
-  ExtraProps
+  ExtraProps;
 
 const CodeBlock = ({ children = '', language = 'plaintext', props }: CodeBlockProps) => {
   return (
@@ -27,8 +27,7 @@ const CodeBlock = ({ children = '', language = 'plaintext', props }: CodeBlockPr
               color: 'rgb(212, 212, 212)',
               fontSize: '13px',
               textShadow: 'none',
-              fontFamily:
-                'Menlo, Monaco, Consolas, "Andale Mono", "Ubuntu Mono", "Courier New", monospace',
+              fontFamily: 'Menlo, Monaco, Consolas, "Andale Mono", "Ubuntu Mono", "Courier New", monospace',
               direction: 'ltr',
               textAlign: 'left',
               wordSpacing: 'normal',
@@ -42,8 +41,7 @@ const CodeBlock = ({ children = '', language = 'plaintext', props }: CodeBlockPr
             color: 'rgb(212, 212, 212)',
             fontSize: '13px',
             textShadow: 'none',
-            fontFamily:
-              'Menlo, Monaco, Consolas, "Andale Mono", "Ubuntu Mono", "Courier New", monospace',
+            fontFamily: 'Menlo, Monaco, Consolas, "Andale Mono", "Ubuntu Mono", "Courier New", monospace',
             direction: 'ltr',
             textAlign: 'left',
             whiteSpace: 'pre',
@@ -67,7 +65,7 @@ const CodeBlock = ({ children = '', language = 'plaintext', props }: CodeBlockPr
         </SyntaxHighlighter>
       </pre>
     </div>
-  )
-}
+  );
+};
 
-export default CodeBlock
+export default CodeBlock;

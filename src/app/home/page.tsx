@@ -1,21 +1,21 @@
-import FileUploader from '@/components/FileUploader'
-import GitUser from '@/components/GitUser'
-import ObserverSection from '@/components/ObserverSection'
-import ScrollLink from '@/components/ScrollLink'
-import Constants from '@/lib/constants'
-import { ChevronLeft } from 'lucide-react'
-import { Metadata } from 'next'
-import { Link } from 'next-view-transitions'
-import React from 'react'
-import Dropdown from './_components/Dropdown'
+import FileUploader from '@/components/FileUploader';
+import GitUser from '@/components/GitUser';
+import ObserverSection from '@/components/ObserverSection';
+import ScrollLink from '@/components/ScrollLink';
+import Constants from '@/lib/constants';
+import { ChevronLeft } from 'lucide-react';
+import { Metadata } from 'next';
+import { Link } from 'next-view-transitions';
+import React from 'react';
+import Dropdown from './_components/Dropdown';
 
 export const metadata: Metadata = {
   title: `${Constants.NAME} | ${Constants.Home.title}`,
   description: Constants.Home.description,
   icons: 'https://avatars.githubusercontent.com/u/96776176?v=4',
-}
+};
 
-const sections = ['Welcome', 'Robotics', 'Github', 'File Uploader']
+const sections = ['Welcome', 'Robotics', 'Github', 'File Uploader'];
 
 export default function Page(): React.JSX.Element {
   return (
@@ -111,5 +111,5 @@ export default function Page(): React.JSX.Element {
         </div>
       </div>
     </>
-  )
+  );
 }

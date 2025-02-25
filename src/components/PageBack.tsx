@@ -1,7 +1,7 @@
-'use client'
-import { cn } from '@/lib/utils'
-import { ChevronLeft } from 'lucide-react'
-import { Link } from 'next-view-transitions'
+'use client';
+import { cn } from '@/lib/utils';
+import { ChevronLeft } from 'lucide-react';
+import { Link } from 'next-view-transitions';
 
 export default function PageBack({
   stayTop,
@@ -9,28 +9,25 @@ export default function PageBack({
   noFixed,
   btnClassName,
 }: {
-  stayTop?: boolean
-  className?: string
-  noFixed?: boolean
-  btnClassName?: string
+  stayTop?: boolean;
+  className?: string;
+  noFixed?: boolean;
+  btnClassName?: string;
 }): React.JSX.Element {
   return (
     <Link
       href={'/'}
       onClick={(e) => {
-        e.preventDefault()
+        e.preventDefault();
         if (window.history.length > 1) {
-          window.history.back()
+          window.history.back();
         } else {
-          window.location.href = '/'
+          window.location.href = '/';
         }
       }}
       className={
         stayTop ?
-          cn(
-            `${noFixed ? '' : 'fixed'} bottom-auto left-2 top-2 flex flex-row items-center justify-center`,
-            className,
-          )
+          cn(`${noFixed ? '' : 'fixed'} bottom-auto left-2 top-2 flex flex-row items-center justify-center`, className)
         : cn(
             `${noFixed ? '' : 'fixed'} bottom-2 left-2 flex flex-row items-center justify-center pl-0 md:bottom-auto md:top-2`,
             className,
@@ -42,5 +39,5 @@ export default function PageBack({
         <span className='hidden p-1 sm:block'>{'Back'}</span>
       </button>
     </Link>
-  )
+  );
 }

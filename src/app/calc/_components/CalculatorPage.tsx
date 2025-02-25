@@ -1,52 +1,52 @@
-'use client'
-import PageBack from '@/components/PageBack'
-import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { EqualsButton, NumberButton, OperatorButton } from './Button'
+'use client';
+import PageBack from '@/components/PageBack';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { EqualsButton, NumberButton, OperatorButton } from './Button';
 
 export default function CalculatorPage(): React.JSX.Element {
-  const [display, setDisplay] = useState<string>('')
-  const [isError, setIsError] = useState<boolean>(false)
-  const [isCalculating, setIsCalculating] = useState<boolean>(false)
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const [display, setDisplay] = useState<string>('');
+  const [isError, setIsError] = useState<boolean>(false);
+  const [isCalculating, setIsCalculating] = useState<boolean>(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto' // Reset height to auto to calculate the new height
-      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px` // Set height based on scrollHeight
+      textareaRef.current.style.height = 'auto'; // Reset height to auto to calculate the new height
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`; // Set height based on scrollHeight
     }
-  }, [display])
+  }, [display]);
 
   const appendToDisplay = useCallback((value: string) => {
-    setDisplay((prev) => prev + value)
-    setIsError(false) // Reset error state when appending new values
-  }, [])
+    setDisplay((prev) => prev + value);
+    setIsError(false); // Reset error state when appending new values
+  }, []);
 
   const calculate = useCallback(() => {
-    setIsCalculating(true)
+    setIsCalculating(true);
     setTimeout(() => {
       try {
-        let result: number | string = eval(display.replace('√', 'Math.sqrt').replace('^', '**'))
+        let result: number | string = eval(display.replace('√', 'Math.sqrt').replace('^', '**'));
         if (typeof result === 'number' && (Math.abs(result) > 1e6 || Math.abs(result) < 1e-6)) {
-          result = result.toExponential()
+          result = result.toExponential();
         }
-        setDisplay(result.toString())
-        setIsError(false) // Reset error state on successful calculation
+        setDisplay(result.toString());
+        setIsError(false); // Reset error state on successful calculation
       } catch {
-        setDisplay('') // Clear the display on calculation error
-        setIsError(true) // Set error state on calculation error
+        setDisplay(''); // Clear the display on calculation error
+        setIsError(true); // Set error state on calculation error
         setTimeout(() => {
-          setIsError(false) // Reset error state after 3 seconds
-        }, 3000)
+          setIsError(false); // Reset error state after 3 seconds
+        }, 3000);
       } finally {
-        setIsCalculating(false)
+        setIsCalculating(false);
       }
-    }, 1000) // Simulate calculation delay
-  }, [display])
+    }, 1000); // Simulate calculation delay
+  }, [display]);
 
   const clearDisplay = useCallback(() => {
-    setDisplay('')
-    setIsError(false) // Reset error state when clearing the display
-  }, [])
+    setDisplay('');
+    setIsError(false); // Reset error state when clearing the display
+  }, []);
 
   return (
     <>
@@ -136,5 +136,5 @@ export default function CalculatorPage(): React.JSX.Element {
         </div>
       </div>
     </>
-  )
+  );
 }

@@ -1,5 +1,5 @@
-'use client'
-import { motion as m } from 'framer-motion'
+'use client';
+import { motion as m } from 'framer-motion';
 
 export default function Template({ children }: { children: React.ReactNode }) {
   return (
@@ -11,5 +11,5 @@ export default function Template({ children }: { children: React.ReactNode }) {
     >
       {children}
     </m.div>
-  )
+  );
 }

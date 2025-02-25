@@ -1,18 +1,12 @@
-'use client'
-import Button, { LinkButton } from '@/components/Buttons'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
-import { useIsMobile } from '@/hooks/use-mobile'
-import { apiRoute } from '@/lib/utils'
-import Image from 'next/image'
-import { useState } from 'react'
-import { FileInfo } from './FileUploader'
-import VideoPreview from './VideoPreview'
+'use client';
+import Button, { LinkButton } from '@/components/Buttons';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { apiRoute } from '@/lib/utils';
+import Image from 'next/image';
+import { useState } from 'react';
+import { FileInfo } from './FileUploader';
+import VideoPreview from './VideoPreview';
 
 /**
  * Props for the FileButton component
@@ -22,8 +16,8 @@ import VideoPreview from './VideoPreview'
  * @prop {string} [size] - size of the file in human-readable format
  */
 type FileButtonProps = {
-  file: FileInfo
-}
+  file: FileInfo;
+};
 
 /**
  * Component to display a file with a button to copy or download it.
@@ -36,35 +30,35 @@ type FileButtonProps = {
  * @returns {React.JSX.Element}
  */
 export default function FileButton({ file }: FileButtonProps): React.JSX.Element {
-  const [showDialog, setShowDialog] = useState(false)
-  const encodedFileName = encodeURIComponent(file.name)
-  const tempQuery = file.isTemp ? '?temp=true' : ''
-  const fileUrl = apiRoute(`/files/download/${encodedFileName}${tempQuery}`)
-  const previewUrl = apiRoute(`/files/view/${encodedFileName}${tempQuery}`)
-  const isMobile = useIsMobile()
+  const [showDialog, setShowDialog] = useState(false);
+  const encodedFileName = encodeURIComponent(file.name);
+  const tempQuery = file.isTemp ? '?temp=true' : '';
+  const fileUrl = apiRoute(`/files/download/${encodedFileName}${tempQuery}`);
+  const previewUrl = apiRoute(`/files/view/${encodedFileName}${tempQuery}`);
+  const isMobile = useIsMobile();
 
   const copyToClipboard = () => {
-    console.log('Copied file URL:', fileUrl)
-    navigator.clipboard.writeText(fileUrl)
-    setShowDialog(false)
-  }
+    console.log('Copied file URL:', fileUrl);
+    navigator.clipboard.writeText(fileUrl);
+    setShowDialog(false);
+  };
 
-  const isImage = file.name.match(/\.(jpeg|jpg|gif|png|webp)$/i)
-  const isVideo = file.name.match(/\.(mp4|webm|ogg|mov|avi)$/i)
+  const isImage = file.name.match(/\.(jpeg|jpg|gif|png|webp)$/i);
+  const isVideo = file.name.match(/\.(mp4|webm|ogg|mov|avi)$/i);
 
   const getMimeType = (fileName: string): `video/${string}` => {
-    const extension = fileName.split('.').pop()?.toLowerCase()
+    const extension = fileName.split('.').pop()?.toLowerCase();
     switch (extension) {
       case 'mov':
-        return 'video/quicktime'
+        return 'video/quicktime';
       case 'avi':
-        return 'video/x-msvideo'
+        return 'video/x-msvideo';
       case 'webm':
-        return 'video/webm'
+        return 'video/webm';
       default:
-        return 'video/mp4'
+        return 'video/mp4';
     }
-  }
+  };
 
   return (
     <>
@@ -85,10 +79,7 @@ export default function FileButton({ file }: FileButtonProps): React.JSX.Element
                 Size: <span className='badge badge-sm text-nowrap'>{file.size}</span>
               </span>
               <span className='mr-2 text-left'>
-                Uploaded:{' '}
-                <span className='badge badge-sm text-nowrap'>
-                  {new Date(file.createdAt).toLocaleString()}
-                </span>
+                Uploaded: <span className='badge badge-sm text-nowrap'>{new Date(file.createdAt).toLocaleString()}</span>
               </span>
             </DialogDescription>
           </DialogHeader>
@@ -103,10 +94,7 @@ export default function FileButton({ file }: FileButtonProps): React.JSX.Element
               />
             )}
             {isVideo && (
-              <VideoPreview
-                className='max-w-md max-h-[250px] md:h-[350px] lg:h-[650px] rounded-xl'
-                src={previewUrl}
-              />
+              <VideoPreview className='max-w-md max-h-[250px] md:h-[350px] lg:h-[650px] rounded-xl' src={previewUrl} />
             )}
             {!isImage && !isVideo && null}
           </div>
@@ -119,5 +107,5 @@ export default function FileButton({ file }: FileButtonProps): React.JSX.Element
         </DialogContent>
       </Dialog>
     </>
-  )
+  );
 }

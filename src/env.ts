@@ -1,6 +1,6 @@
-import { createEnv } from '@t3-oss/env-nextjs'
-import 'dotenv/config'
-import { z } from 'zod'
+import { createEnv } from '@t3-oss/env-nextjs';
+import 'dotenv/config';
+import { z } from 'zod';
 
 export const env = createEnv({
   /**
@@ -25,4 +25,4 @@ export const env = createEnv({
   },
 
   emptyStringAsUndefined: true,
-})
+});

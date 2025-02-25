@@ -1,10 +1,10 @@
-'use client'
-import React from 'react'
+'use client';
+import React from 'react';
 
 interface ButtonProps {
-  onClick: React.MouseEventHandler<HTMLButtonElement>
-  children: string
-  disabled: boolean
+  onClick: React.MouseEventHandler<HTMLButtonElement>;
+  children: string;
+  disabled: boolean;
 }
 
 export function NumberButton({ onClick, children, disabled }: ButtonProps) {
@@ -16,7 +16,7 @@ export function NumberButton({ onClick, children, disabled }: ButtonProps) {
     >
       {children}
     </button>
-  )
+  );
 }
 
 export function EqualsButton({ onClick, children, disabled }: ButtonProps) {
@@ -28,7 +28,7 @@ export function EqualsButton({ onClick, children, disabled }: ButtonProps) {
     >
       {children}
     </button>
-  )
+  );
 }
 
 export function OperatorButton({ onClick, children, disabled }: ButtonProps) {
@@ -40,5 +40,5 @@ export function OperatorButton({ onClick, children, disabled }: ButtonProps) {
     >
       {children}
     </button>
-  )
+  );
 }

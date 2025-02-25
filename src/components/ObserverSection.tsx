@@ -1,45 +1,41 @@
-'use client'
-import { cn } from '@/lib/utils'
-import React, { ComponentPropsWithoutRef, useEffect, useRef, useState } from 'react'
+'use client';
+import { cn } from '@/lib/utils';
+import React, { ComponentPropsWithoutRef, useEffect, useRef, useState } from 'react';
 
 type ObserverSectionProps = {
-  children: React.ReactNode
-  id?: string
-  className?: string
-} & ComponentPropsWithoutRef<'section'>
+  children: React.ReactNode;
+  id?: string;
+  className?: string;
+} & ComponentPropsWithoutRef<'section'>;
 
-export default function ObserverSection({
-  children,
-  className,
-  id,
-}: ObserverSectionProps): React.JSX.Element {
-  const sectionRef = useRef<HTMLElement>(null)
-  const [isInView, setIsInView] = useState(false)
+export default function ObserverSection({ children, className, id }: ObserverSectionProps): React.JSX.Element {
+  const sectionRef = useRef<HTMLElement>(null);
+  const [isInView, setIsInView] = useState(false);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry) {
-          setIsInView(entry.isIntersecting)
+          setIsInView(entry.isIntersecting);
         } else {
-          setIsInView(false)
+          setIsInView(false);
         }
       },
       { threshold: 0.5 },
-    )
+    );
 
-    const sectionRefCurrent = sectionRef.current
+    const sectionRefCurrent = sectionRef.current;
 
     if (sectionRefCurrent) {
-      observer.observe(sectionRefCurrent)
+      observer.observe(sectionRefCurrent);
     }
 
     return () => {
       if (sectionRefCurrent) {
-        observer.unobserve(sectionRefCurrent)
+        observer.unobserve(sectionRefCurrent);
       }
-    }
-  }, [])
+    };
+  }, []);
 
   return (
     <section
@@ -54,5 +50,5 @@ export default function ObserverSection({
     >
       {children}
     </section>
-  )
+  );
 }

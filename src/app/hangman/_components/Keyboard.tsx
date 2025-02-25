@@ -1,4 +1,4 @@
-import styles from './Keyboard.module.css'
+import styles from './Keyboard.module.css';
 
 const KEYS = [
   'a',
@@ -27,7 +27,7 @@ const KEYS = [
   'x',
   'y',
   'z',
-]
+];
 
 export function Keyboard({
   activeLetters,
@@ -35,16 +35,16 @@ export function Keyboard({
   addGuessedLetter,
   disabled = false,
 }: {
-  disabled?: boolean
-  activeLetters: string[]
-  inactiveLetters: string[]
-  addGuessedLetter: (letter: string) => void
+  disabled?: boolean;
+  activeLetters: string[];
+  inactiveLetters: string[];
+  addGuessedLetter: (letter: string) => void;
 }) {
   return (
     <div className='grid max-w-4xl grid-cols-[repeat(auto-fit,minmax(75px,1fr))] gap-1 text-xs'>
       {KEYS.map((key) => {
-        const isActive = activeLetters.includes(key)
-        const isInactive = inactiveLetters.includes(key)
+        const isActive = activeLetters.includes(key);
+        const isInactive = inactiveLetters.includes(key);
         return (
           <button
             onClick={() => addGuessedLetter(key)}
@@ -54,8 +54,8 @@ export function Keyboard({
           >
             {key}
           </button>
-        )
+        );
       })}
     </div>
-  )
+  );
 }

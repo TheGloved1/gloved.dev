@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -8,15 +8,15 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
-import { Switch } from '@/components/ui/switch'
-import { useState } from 'react'
+} from '@/components/ui/alert-dialog';
+import { Switch } from '@/components/ui/switch';
+import { useState } from 'react';
 
 interface DeleteConfirmDialogProps {
-  fileName: string
-  onConfirm: () => void
-  onPermDelete: () => void
-  onCancel: () => void
+  fileName: string;
+  onConfirm: () => void;
+  onPermDelete: () => void;
+  onCancel: () => void;
 }
 
 export function DeleteConfirmDialog({
@@ -25,15 +25,15 @@ export function DeleteConfirmDialog({
   onPermDelete,
   onCancel,
 }: DeleteConfirmDialogProps): React.JSX.Element {
-  const [isPermDelete, setIsPermDelete] = useState(false)
+  const [isPermDelete, setIsPermDelete] = useState(false);
 
   const handleDelete = () => {
     if (isPermDelete) {
-      onPermDelete()
+      onPermDelete();
     } else {
-      onConfirm()
+      onConfirm();
     }
-  }
+  };
 
   return (
     <AlertDialog open={true}>
@@ -55,5 +55,5 @@ export function DeleteConfirmDialog({
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-  )
+  );
 }

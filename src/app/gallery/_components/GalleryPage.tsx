@@ -1,133 +1,128 @@
-'use client'
-import Button, { RedButton } from '@/components/Buttons'
-import Loading from '@/components/loading'
-import PageBack from '@/components/PageBack'
-import { apiRoute } from '@/lib/utils'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import axios, { AxiosProgressEvent, AxiosResponse } from 'axios'
-import { Link } from 'next-view-transitions'
-import Image from 'next/image'
-import React, { useEffect, useRef, useState } from 'react'
+'use client';
+import Button, { RedButton } from '@/components/Buttons';
+import Loading from '@/components/loading';
+import PageBack from '@/components/PageBack';
+import { apiRoute } from '@/lib/utils';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import axios, { AxiosProgressEvent, AxiosResponse } from 'axios';
+import { Link } from 'next-view-transitions';
+import Image from 'next/image';
+import React, { useEffect, useRef, useState } from 'react';
 
 type GalleryFile = {
-  name: string
-  createdAt: string
-  size: string
-}
+  name: string;
+  createdAt: string;
+  size: string;
+};
 
 async function fetchGallery() {
-  const response: AxiosResponse<GalleryFile[]> = await axios.get(apiRoute('/files/?gallery=true'))
+  const response: AxiosResponse<GalleryFile[]> = await axios.get(apiRoute('/files/?gallery=true'));
 
   // Sort by numeric index in the filename
   const sortedFiles: GalleryFile[] = response.data.sort((a, b) => {
-    const indexA = extractIndexFromFilename(a.name)
-    const indexB = extractIndexFromFilename(b.name)
-    return indexA - indexB // Ascending order
-  })
+    const indexA = extractIndexFromFilename(a.name);
+    const indexB = extractIndexFromFilename(b.name);
+    return indexA - indexB; // Ascending order
+  });
 
-  return sortedFiles
+  return sortedFiles;
 }
 
 // Helper function to extract index from filename
 function extractIndexFromFilename(filename: string): number {
-  const match = filename.match(/gallery_(\d+)/)
-  return match ? parseInt(match[1], 10) : 0 // Default to 0 if no match
+  const match = filename.match(/gallery_(\d+)/);
+  return match ? parseInt(match[1], 10) : 0; // Default to 0 if no match
 }
 
-async function galleryUploadApi(
-  file: File,
-  onUploadProgress: (progressEvent: AxiosProgressEvent) => void,
-) {
-  const formData = new FormData()
-  formData.append('file', file)
-  formData.append('gallery', 'true')
+async function galleryUploadApi(file: File, onUploadProgress: (progressEvent: AxiosProgressEvent) => void) {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('gallery', 'true');
   await axios.post(apiRoute('/files/upload'), formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
     onUploadProgress,
-  })
+  });
 }
 
 async function galleryDeleteApi(file: string) {
-  console.log('Deleting file:', file)
-  await axios.delete(apiRoute(`/files/delete/${file}?gallery=true`))
+  console.log('Deleting file:', file);
+  await axios.delete(apiRoute(`/files/delete/${file}?gallery=true`));
 }
 
 export default function GalleryPage(): React.JSX.Element {
-  const [uploadProgress, setUploadProgress] = useState(0)
-  const [windowWidth, setWindowWidth] = useState(
-    typeof window !== 'undefined' ? window.innerWidth : 768,
-  )
-  const inputButton = useRef<HTMLInputElement>(null)
-  const queryClient = useQueryClient()
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 768);
+  const inputButton = useRef<HTMLInputElement>(null);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const handleResize = () => {
-      setWindowWidth(window.innerWidth)
-    }
+      setWindowWidth(window.innerWidth);
+    };
 
     if (typeof window !== 'undefined') {
-      window.addEventListener('resize', handleResize)
+      window.addEventListener('resize', handleResize);
     }
 
     return () => {
       if (typeof window !== 'undefined') {
-        window.removeEventListener('resize', handleResize)
+        window.removeEventListener('resize', handleResize);
       }
-    }
-  }, [])
+    };
+  }, []);
 
   const uploadMutation = useMutation({
     mutationFn: (file: File) =>
       galleryUploadApi(file, (progressEvent) => {
         if (progressEvent.total) {
-          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
-          setUploadProgress(percentCompleted)
+          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          setUploadProgress(percentCompleted);
         }
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['gallery'] })
-      setUploadProgress(0)
+      queryClient.invalidateQueries({ queryKey: ['gallery'] });
+      setUploadProgress(0);
     },
-  })
+  });
 
   const galleryQuery = useQuery<GalleryFile[], Error>({
     queryKey: ['gallery'],
     queryFn: fetchGallery,
     initialData: [],
-  })
+  });
 
   async function uploadFile(event: React.ChangeEvent<HTMLInputElement>): Promise<void> {
-    queryClient.invalidateQueries({ queryKey: ['gallery'] })
+    queryClient.invalidateQueries({ queryKey: ['gallery'] });
     try {
-      const files = event.target.files
+      const files = event.target.files;
       if (!files || files.length === 0) {
-        console.error('No files found!')
-        return
+        console.error('No files found!');
+        return;
       }
 
       // Iterate over each file and upload it
       for (let i = 0; i < files.length; i++) {
-        const file = files[i]
-        uploadMutation.mutate(file)
+        const file = files[i];
+        uploadMutation.mutate(file);
       }
 
       // Clear the input field after uploading
       if (inputButton.current) {
-        inputButton.current.value = ''
+        inputButton.current.value = '';
       }
     } catch (error) {
-      console.error('An error occurred while uploading file:', error)
+      console.error('An error occurred while uploading file:', error);
     }
   }
 
   async function deleteFile(file: string) {
-    await galleryDeleteApi(file)
-    queryClient.invalidateQueries({ queryKey: ['gallery'] })
+    await galleryDeleteApi(file);
+    queryClient.invalidateQueries({ queryKey: ['gallery'] });
     setTimeout(() => {
-      queryClient.invalidateQueries({ queryKey: ['gallery'] })
-    }, 5000)
+      queryClient.invalidateQueries({ queryKey: ['gallery'] });
+    }, 5000);
   }
 
   return (
@@ -206,5 +201,5 @@ export default function GalleryPage(): React.JSX.Element {
         </div>
       )}
     </>
-  )
+  );
 }
