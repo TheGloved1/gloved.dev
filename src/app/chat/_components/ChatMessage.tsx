@@ -67,7 +67,7 @@ export default memo(function ChatMessage({
               className='inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:text-accent-foreground text-xs h-8 w-8 rounded-lg bg-neutral-800/0 p-0 hover:bg-neutral-700'
               onClick={() => {
                 navigator.clipboard.writeText(getTextParts(message.content));
-                toast('  Successfully copied to clipboard!');
+                toast.success('Copied response to clipboard!');
               }}
             >
               <Copy className='-mb-0.5 -ml-0.5 !size-5' />
