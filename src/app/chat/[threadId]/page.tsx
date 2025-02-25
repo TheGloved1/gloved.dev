@@ -7,9 +7,6 @@ import { memo, useCallback, useEffect, useRef, useState } from 'react'
 import ChatBotInput from '../_components/ChatBotInput'
 import ChatMessage from '../_components/ChatMessage'
 
-const MemoizedChatBotInput = memo(ChatBotInput)
-const MemoizedChatMessage = memo(ChatMessage)
-
 function MemoizedThreadPage(): React.JSX.Element {
   const { threadId } = useParams()
   if (!threadId || typeof threadId !== 'string') redirect('/chat')
@@ -95,7 +92,7 @@ function MemoizedThreadPage(): React.JSX.Element {
 
   return (
     <main className='relative flex w-full flex-1 flex-col'>
-      <MemoizedChatBotInput
+      <ChatBotInput
         input={input}
         setInputAction={setInput}
         imagePreview={imagePreview}
@@ -107,7 +104,7 @@ function MemoizedThreadPage(): React.JSX.Element {
         <div className='scrollbar scrollbar-w-2 scrollbar-thumb-gray-700 scrollbar-track-transparent hover:scrollbar-thumb-gray-600 h-[100dvh] overflow-y-auto pb-36'>
           <div className='mx-auto flex w-full max-w-3xl flex-col space-y-12 p-4 translate-x-1 pb-8 text-sm'>
             {messages.map((message) => (
-              <MemoizedChatMessage
+              <ChatMessage
                 message={message}
                 key={message.id}
                 handleEditMessageAction={handleEditMessage}

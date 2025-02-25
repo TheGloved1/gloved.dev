@@ -4,11 +4,20 @@ import { Message } from '@/db'
 import { ImagePart, TextPart } from 'ai'
 import { Copy, SquarePen } from 'lucide-react'
 import Image from 'next/image'
-import { useState } from 'react'
+import { memo, useState } from 'react'
 import { toast } from 'sonner'
 import Timestamp from './Timestamp'
 
-export default function ChatMessage({
+const getTextParts = (content: string | (TextPart | ImagePart)[]) => {
+  return Array.isArray(content) ?
+      content
+        .filter((part) => 'text' in part)
+        .map((part) => part.text)
+        .join('')
+    : content
+}
+
+export default memo(function ChatMessage({
   message,
   handleEditMessageAction,
 }: {
@@ -16,15 +25,6 @@ export default function ChatMessage({
   handleEditMessageAction: (m: Message) => void
 }) {
   const [isHovered, setIsHovered] = useState<boolean>(false)
-
-  const getTextParts = (content: string | (TextPart | ImagePart)[]) => {
-    return Array.isArray(content) ?
-        content
-          .filter((part) => 'text' in part)
-          .map((part) => part.text)
-          .join('')
-      : content
-  }
 
   return (
     <div
@@ -69,7 +69,7 @@ export default function ChatMessage({
               className='inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:text-accent-foreground text-xs h-8 w-8 rounded-lg bg-neutral-800/0 p-0 hover:bg-neutral-700'
               onClick={() => {
                 navigator.clipboard.writeText(getTextParts(message.content))
-                toast('✅ Successfully copied to clipboard!')
+                toast('  Successfully copied to clipboard!')
               }}
             >
               <Copy className='-mb-0.5 -ml-0.5 !size-5' />
@@ -106,4 +106,4 @@ export default function ChatMessage({
       </div>
     </div>
   )
-}
+})
