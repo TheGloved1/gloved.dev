@@ -38,8 +38,9 @@ export default function FileButton({ file }: FileButtonProps): React.JSX.Element
   const isMobile = useIsMobile();
 
   const copyToClipboard = () => {
-    console.log('Copied file URL:', fileUrl);
-    navigator.clipboard.writeText(fileUrl);
+    const url = previewUrl;
+    console.log('Copied file URL:', url);
+    navigator.clipboard.writeText(url);
     setShowDialog(false);
   };
 
@@ -93,9 +94,7 @@ export default function FileButton({ file }: FileButtonProps): React.JSX.Element
                 className='max-w-full h-auto rounded-xl'
               />
             )}
-            {isVideo && (
-              <VideoPreview className='max-w-md max-h-[250px] md:h-[350px] lg:h-[650px] rounded-xl' src={previewUrl} />
-            )}
+            {isVideo && <VideoPreview className='' src={previewUrl} />}
             {!isImage && !isVideo && null}
           </div>
           <div className='grid grid-cols-2 justify-center self-center items-center'>
