@@ -1,6 +1,5 @@
 'use client';
 import { motion } from 'framer-motion';
-import { X } from 'lucide-react';
 import { Link } from 'next-view-transitions';
 
 export default function NotFound() {
@@ -19,7 +18,8 @@ export default function NotFound() {
           animate={{
             y: [0, -10, 0],
             transition: {
-              duration: 2,
+              duration: 1.5,
+              timeConstant: 200,
               ease: 'easeInOut',
               repeat: Infinity,
               repeatType: 'loop',
@@ -28,20 +28,28 @@ export default function NotFound() {
           transition={{ duration: 0.5 }}
         >
           404
-          <X className='h-12 w-12 text-gray-500' />
         </motion.h1>
         <motion.p className='text-2xl mb-8' initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
-          Page not found
+          Page not found. Why are you here?
         </motion.p>
-        <Link href='/' passHref>
-          <motion.a
+        <Link href='/'>
+          <motion.button
+            drag
             className='px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white font-bold rounded-md'
-            initial={{ scale: 0.5 }}
+            initial={{ scale: 0.75 }}
             whileHover={{ scale: 1 }}
-            transition={{ duration: 0.2 }}
+            transition={{
+              duration: 0.1,
+              ease: 'easeInOut',
+              bounce: 0.5,
+              bounceDamping: 10,
+              min: 0.5,
+              stiffness: 100,
+              damping: 10,
+            }}
           >
             Go home
-          </motion.a>
+          </motion.button>
         </Link>
       </motion.div>
     </div>
