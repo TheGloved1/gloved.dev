@@ -102,7 +102,7 @@ const ChatBotInput = memo(
 
               // Determine the file type
               const mimeType = file.type || 'image/webp'; // Default to 'image/webp' if type is unknown
-              const resizedDataUrl = canvas.toDataURL(mimeType, 15); // Use the original MIME type
+              const resizedDataUrl = canvas.toDataURL(mimeType, 0.5); // Use the original MIME type
 
               const sizeInKB = (size: number) => size / 1024;
               console.log('Original File Size:', sizeInKB(file.size).toFixed(2), 'kB');
