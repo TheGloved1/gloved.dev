@@ -7,6 +7,9 @@
  */
 export default class Constants {
   static readonly NAME: string = 'gloved.dev';
+  static readonly DESC: string =
+    'A personal website for my projects and interests. Built using Next.js React Web Framework.';
+  static readonly ICON: string = '/Leo.png';
   static readonly API: string = 'https://api.gloved.dev';
   static readonly FILE_SIZE_LIMIT_MB: number = 15;
   static readonly MAX_FILE_SIZE: number = this.FILE_SIZE_LIMIT_MB * 1024 * 1024;
@@ -53,7 +56,7 @@ export default class Constants {
   static readonly Chat = {
     title: 'Chat',
     link: '/chat',
-    description: 'A VERY fast, local-first, chatbot web app using a local IndexedDB database, WARNING: HE IS EVIL',
+    description: 'A VERY fast, local-first, AI chat web app using a local IndexedDB database, WARNING: HE IS EVIL',
   };
   static readonly Colors = {
     title: 'Stupid Game',

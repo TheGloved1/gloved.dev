@@ -11,9 +11,24 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: Constants.NAME,
-  description:
-    'Made by Kaden Hood. A personal website for my projects and interests. Built using Next.js React Web Framework.',
-  icons: 'https://avatars.githubusercontent.com/u/96776176?v=4',
+  description: Constants.DESC,
+  icons: Constants.ICON,
+  openGraph: {
+    title: Constants.NAME,
+    description: Constants.DESC,
+    url: `https://${Constants.NAME}`,
+    type: 'website',
+    siteName: Constants.NAME,
+    locale: 'en_US',
+    images: [
+      {
+        url: `https://${Constants.NAME}${Constants.ICON}`,
+        width: 800,
+        height: 600,
+        alt: 'Logo',
+      },
+    ],
+  },
 };
 
 const jetbrains = JetBrains_Mono({

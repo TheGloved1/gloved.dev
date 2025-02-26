@@ -1,18 +1,12 @@
+import Leo from '@/../public/Leo.png';
 import AdminComponent from '@/components/AdminComponent';
 import Counter from '@/components/Counter';
 import { PageVisits } from '@/components/PageVisits';
 import TopScrollVisibility from '@/components/TopScrollVisibility';
 import Constants from '@/lib/constants';
-import { Metadata } from 'next';
 import { Link } from 'next-view-transitions';
 import Image from 'next/image';
 import React from 'react';
-
-export const metadata: Metadata = {
-  title: Constants.NAME,
-  description:
-    'Made by Kaden Hood. A personal website for my projects and interests. Built using Next.js React Web Framework.',
-};
 
 export default function Page(): React.JSX.Element {
   return (
@@ -23,8 +17,9 @@ export default function Page(): React.JSX.Element {
         prefetch
       >
         <Image
-          src='/Leo.png'
+          src={Leo}
           alt=''
+          placeholder='blur'
           width={100}
           height={100}
           className='fixed left-1 top-1 hidden h-12 w-12 rounded-xl border-2 border-white shadow-lg sm:left-4 sm:top-4 sm:block sm:h-16 sm:w-16 sm:transform md:left-4 md:top-4 md:h-24 md:w-24 lg:left-4 lg:top-4 xl:left-4 xl:top-4 2xl:left-4 2xl:top-4'
