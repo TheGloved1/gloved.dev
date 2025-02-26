@@ -17,8 +17,8 @@ export const metadata: Metadata = {
     images: [
       {
         url: `https://${Constants.NAME}${Constants.ICON}`,
-        width: 500,
-        height: 500,
+        width: 400,
+        height: 400,
         alt: 'Logo',
       },
     ],
