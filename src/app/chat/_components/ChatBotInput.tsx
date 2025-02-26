@@ -2,14 +2,16 @@
 import { createMessage, db } from '@/db';
 import React, { memo, useMemo } from 'react';
 
+import { usePersistentState } from '@/hooks/use-persistent-state';
 import Constants from '@/lib/constants';
+import { SHA256 } from 'crypto-js';
 import { ChevronDown, Loader2, Paperclip, Send, X } from 'lucide-react';
-import Image from 'next/image';
+import NextImage from 'next/image';
 import { redirect, useParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
-const ChatBotInputMemoized = memo(
+const ChatBotInput = memo(
   ({
     input,
     setInputAction: setInput,
@@ -30,22 +32,11 @@ const ChatBotInputMemoized = memo(
     const { threadId } = useParams();
     const [loading, setLoading] = useState<boolean>(false);
     const [rows, setRows] = useState<number>(1);
-    const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const convertFileToBase64 = useMemo(
-      () =>
-        async (file: File): Promise<string> => {
-          return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-              resolve(reader.result as string);
-            };
-            reader.onerror = reject;
-            reader.readAsDataURL(file);
-          });
-        },
-      [],
-    );
+    // Used to store the hashes of the compressed images to avoid re-compression
+    const [compressedImageHashes, setCompressedImageHashes] = usePersistentState<string[]>('compressedImageHashes', []);
+
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const dataURLtoFile = useMemo(
       () => (dataurl: string, filename: string) => {
@@ -62,6 +53,76 @@ const ChatBotInputMemoized = memo(
         return new File([u8arr], filename, { type: mime });
       },
       [],
+    );
+
+    const convertFileToBase64 = useMemo(
+      () =>
+        async (file: File): Promise<string> => {
+          return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = async () => {
+              const dataUrl = reader.result as string;
+
+              // Create a hash of the data URL
+              const hash = SHA256(dataUrl).toString();
+
+              // Check if the hash already exists
+              if (compressedImageHashes.includes(hash)) {
+                console.log('Hash already exists:', hash);
+                resolve(dataUrl);
+                return;
+              }
+
+              // Check if the file is a GIF
+              const EXCLUDED_IMAGE_TYPES = new Set(['image/gif', 'image/apng']);
+              if (EXCLUDED_IMAGE_TYPES.has(file.type)) {
+                console.log('Excluding file type:', file.type);
+                resolve(dataUrl); // Return the Base64 directly for animated images
+                return;
+              }
+
+              // Create an image object
+              const image = new Image();
+              image.src = dataUrl;
+
+              // Wait for the image to load
+              await new Promise((resolve) => {
+                image.onload = resolve;
+              });
+
+              // Create a canvas and draw the image onto it
+              const canvas = document.createElement('canvas');
+              const ctx = canvas.getContext('2d');
+              if (!ctx) {
+                return reject(new Error('Failed to get canvas context'));
+              }
+              canvas.width = image.width;
+              canvas.height = image.height;
+              ctx.drawImage(image, 0, 0);
+
+              // Determine the file type
+              const mimeType = file.type || 'image/webp'; // Default to 'image/webp' if type is unknown
+              const resizedDataUrl = canvas.toDataURL(mimeType, 15); // Use the original MIME type
+
+              const sizeInKB = (size: number) => size / 1024;
+              console.log('Original File Size:', sizeInKB(file.size).toFixed(2), 'kB');
+              console.log('Compressed File Size:', sizeInKB(dataURLtoFile(resizedDataUrl, file.name).size).toFixed(2), 'kB');
+
+              const newHash = SHA256(resizedDataUrl).toString();
+
+              // Store the hash of the compressed image
+              console.log('Storing hash:', newHash);
+              setCompressedImageHashes((prev) => [...prev, newHash]);
+
+              console.log('Compressed Image Hashes:', compressedImageHashes);
+
+              resolve(resizedDataUrl);
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+          });
+        },
+      [compressedImageHashes, dataURLtoFile, setCompressedImageHashes],
     );
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement> | React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -161,7 +222,13 @@ const ChatBotInputMemoized = memo(
               <div className='flex flex-grow flex-col'>
                 {imagePreview && (
                   <div className='relative mb-2 h-20 w-20'>
-                    <Image src={imagePreview} alt='Image preview' layout='fill' objectFit='cover' className='rounded-md' />
+                    <NextImage
+                      src={imagePreview}
+                      alt='Image preview'
+                      layout='fill'
+                      objectFit='cover'
+                      className='rounded-md'
+                    />
                     <button
                       onClick={removeImage}
                       type='button'
@@ -230,6 +297,6 @@ const ChatBotInputMemoized = memo(
     );
   },
 );
-ChatBotInputMemoized.displayName = 'ChatBotInput';
+ChatBotInput.displayName = 'ChatBotInput';
 
-export default ChatBotInputMemoized;
+export default ChatBotInput;

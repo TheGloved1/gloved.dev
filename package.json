@@ -48,6 +48,7 @@
     "babel-plugin-react-compiler": "^19.0.0-beta-714736e-20250131",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "crypto-js": "^4.2.0",
     "daisyui": "^4.12.23",
     "dexie": "^4.0.11",
     "dexie-react-hooks": "^1.1.7",
@@ -72,6 +73,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
     "@next/eslint-plugin-next": "^15.1.7",
+    "@types/crypto-js": "^4.2.2",
     "@types/eslint": "^9.6.1",
     "@types/eslint__eslintrc": "^2.1.2",
     "@types/node": "^20",

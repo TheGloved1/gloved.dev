@@ -13,6 +13,7 @@ export function usePersistentState<T>(
   initialValue: T,
   enabled: boolean = true,
 ): [T, Dispatch<SetStateAction<T>>] {
+  if (enabled === undefined) enabled = true;
   const inBrowser = () => typeof window !== 'undefined';
   const [state, setState] = useState<T>(() => {
     if (inBrowser() && enabled) {

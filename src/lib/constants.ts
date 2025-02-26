@@ -9,7 +9,7 @@ export default class Constants {
   static readonly NAME: string = 'gloved.dev';
   static readonly API: string = 'https://api.gloved.dev';
   static readonly FILE_SIZE_LIMIT_MB: number = 15;
-  static readonly MAX_FILE_SIZE: number = Constants.FILE_SIZE_LIMIT_MB * 1024 * 1024;
+  static readonly MAX_FILE_SIZE: number = this.FILE_SIZE_LIMIT_MB * 1024 * 1024;
   static readonly Home = {
     title: 'Home',
     link: '/home',

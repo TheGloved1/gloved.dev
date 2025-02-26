@@ -10,7 +10,7 @@ import ChatMessage from '../_components/ChatMessage';
 
 export const dynamic = 'force-static';
 
-function MemoizedThreadPage(): React.JSX.Element {
+function ThreadPage(): React.JSX.Element {
   const { threadId } = useParams();
   if (!threadId || typeof threadId !== 'string') redirect('/chat');
   const [input, setInput] = useState<string>('');
@@ -117,4 +117,4 @@ function MemoizedThreadPage(): React.JSX.Element {
   );
 }
 
-export default nextDynamic(() => Promise.resolve(memo(MemoizedThreadPage)), { ssr: false });
+export default nextDynamic(() => Promise.resolve(memo(ThreadPage)), { ssr: false });

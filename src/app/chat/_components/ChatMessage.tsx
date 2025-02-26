@@ -17,6 +17,24 @@ const getTextParts = (content: string | (TextPart | ImagePart)[]) => {
     : content;
 };
 
+const renderImages = (content: string | (TextPart | ImagePart)[]): React.JSX.Element[] | null => {
+  if (Array.isArray(content)) {
+    return content
+      .filter((part) => 'image' in part)
+      .map((imagePart) => (
+        <Image
+          key={imagePart.image as string}
+          src={imagePart.image as string}
+          alt={''}
+          width={200}
+          height={200}
+          className='my-4 rounded-lg'
+        />
+      ));
+  }
+  return null;
+};
+
 export default memo(function ChatMessage({
   message,
   handleEditMessageAction,
@@ -25,6 +43,8 @@ export default memo(function ChatMessage({
   handleEditMessageAction: (m: Message) => void;
 }) {
   const [isHovered, setIsHovered] = useState<boolean>(false);
+
+  if (getTextParts(message.content).trim() === '' && renderImages(message.content) === null) return null;
 
   return (
     <div
@@ -41,20 +61,7 @@ export default memo(function ChatMessage({
           : `group relative w-full max-w-full break-words`
         }
       >
-        {Array.isArray(message.content) ?
-          message.content
-            .filter((part) => 'image' in part)
-            .map((imagePart) => (
-              <Image
-                key={imagePart.image as string}
-                src={imagePart.image as string}
-                alt={''}
-                width={100}
-                height={100}
-                className='my-4 rounded-lg'
-              />
-            ))
-        : null}
+        {renderImages(message.content)}
         <Markdown
           className={'prose prose-neutral prose-invert max-w-none prose-pre:m-0 prose-pre:bg-transparent prose-pre:p-0'}
         >
