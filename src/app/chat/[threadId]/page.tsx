@@ -5,7 +5,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import nextDynamic from 'next/dynamic';
 import { redirect, useParams } from 'next/navigation';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
-import ChatBotInput from '../_components/ChatBotInput';
+import ChatBotInput from '../_components/ChatInput';
 import ChatMessage from '../_components/ChatMessage';
 
 export const dynamic = 'force-static';

@@ -1,7 +1,7 @@
 'use client';
 import nextDynamic from 'next/dynamic';
 import React, { memo, useEffect, useState } from 'react';
-import ChatBotInput from './_components/ChatBotInput';
+import ChatBotInput from './_components/ChatInput';
 
 export const dynamic = 'force-static';
 
