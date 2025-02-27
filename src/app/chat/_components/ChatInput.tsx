@@ -122,7 +122,7 @@ const ChatBotInput = memo(
             reader.readAsDataURL(file);
           });
         },
-      [compressedImageHashes, setCompressedImageHashes],
+      [compressedImageHashes],
     );
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement> | React.KeyboardEvent<HTMLTextAreaElement>) => {
