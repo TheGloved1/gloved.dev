@@ -83,8 +83,10 @@ const ChatBotInput = memo(
                 return;
               }
 
+              const inKB = (size: number) => (size / 1024).toFixed(2);
+
               // Log the original file size
-              console.log('Original file size:', file.size / 1024, 'KB');
+              console.log('Original file size:', inKB(file.size), 'KB');
 
               // Use image-compressor.js to compress the image
               new ImageCompressor(file, {
@@ -103,7 +105,7 @@ const ChatBotInput = memo(
                   };
 
                   // Log the new compressed file size
-                  console.log('Compressed file size:', result.size / 1024, 'KB');
+                  console.log('Compressed file size:', inKB(result.size), 'KB');
 
                   // Read the Blob as a Data URL
                   reader.readAsDataURL(result);
@@ -123,12 +125,12 @@ const ChatBotInput = memo(
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement> | React.KeyboardEvent<HTMLTextAreaElement>) => {
       e.preventDefault();
+      setLoading(true);
+      setImagePreview(null);
       let imageBase64: string | null = null;
       if (fileInputRef.current?.files?.[0]) {
         imageBase64 = await convertFileToBase64(fileInputRef.current.files[0]);
       }
-      setLoading(true);
-      setImagePreview(null);
       if (createThread) {
         const threadId = await db.createThread({
           title: Date.now().toString(),
