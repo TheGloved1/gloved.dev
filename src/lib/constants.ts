@@ -11,7 +11,7 @@ export default class Constants {
     'A personal website for my projects and interests. Built using Next.js React Web Framework.';
   static readonly ICON: string = '/Leo.png';
   static readonly API: string = 'https://api.gloved.dev';
-  static readonly FILE_SIZE_LIMIT_MB: number = 15;
+  static readonly FILE_SIZE_LIMIT_MB: number = 2.5;
   static readonly MAX_FILE_SIZE: number = this.FILE_SIZE_LIMIT_MB * 1024 * 1024;
   static readonly Home = {
     title: 'Home',

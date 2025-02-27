@@ -7,7 +7,7 @@ import Constants from '@/lib/constants';
 import { SHA256 } from 'crypto-js';
 import { ChevronDown, Loader2, Paperclip, Send, X } from 'lucide-react';
 import NextImage from 'next/image';
-import { redirect, useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -29,6 +29,7 @@ const ChatBotInput = memo(
     scrollCallback?: () => void;
     isAtBottom?: boolean;
   }) => {
+    const router = useRouter();
     const { threadId } = useParams();
     const [loading, setLoading] = useState<boolean>(false);
     const [rows, setRows] = useState<number>(1);
@@ -101,18 +102,32 @@ const ChatBotInput = memo(
               ctx.drawImage(image, 0, 0);
 
               // Determine the file type
-              const mimeType = file.type || 'image/webp'; // Default to 'image/webp' if type is unknown
-              const resizedDataUrl = canvas.toDataURL(mimeType, 0.5); // Use the original MIME type
-
-              const sizeInKB = (size: number) => size / 1024;
-              console.log('Original File Size:', sizeInKB(file.size).toFixed(2), 'kB');
-              console.log('Compressed File Size:', sizeInKB(dataURLtoFile(resizedDataUrl, file.name).size).toFixed(2), 'kB');
+              const mimeType = (type: string) => {
+                switch (type) {
+                  case 'image/jpeg':
+                    return 'image/jpeg';
+                  case 'image/png':
+                    return 'image/png';
+                  case 'image/webp':
+                    return 'image/webp';
+                  default:
+                    return 'image/webp';
+                }
+              };
+              // Compress the image
+              const MAX_FILE_SIZE = 100 * 1024;
+              const fileSize = file.size;
+              const quality =
+                fileSize > MAX_FILE_SIZE ?
+                  Math.max(0.1, Math.min(0.9, 1 - Math.log(fileSize / MAX_FILE_SIZE) / Math.log(2)))
+                : 1;
+              const resizedDataUrl = canvas.toDataURL(mimeType(file.type), quality);
 
               const newHash = SHA256(resizedDataUrl).toString();
 
               // Store the hash of the compressed image
               console.log('Storing hash:', newHash);
-              setCompressedImageHashes((prev) => [...prev, newHash]);
+              // setCompressedImageHashes((prev) => [...prev, newHash]);
 
               console.log('Compressed Image Hashes:', compressedImageHashes);
 
@@ -122,7 +137,7 @@ const ChatBotInput = memo(
             reader.readAsDataURL(file);
           });
         },
-      [compressedImageHashes, dataURLtoFile, setCompressedImageHashes],
+      [compressedImageHashes],
     );
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement> | React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -137,15 +152,15 @@ const ChatBotInput = memo(
         const threadId = await db.createThread({
           title: Date.now().toString(),
         });
+        router.push('/chat/' + threadId);
         try {
-          createMessage(threadId.toString(), input, setInput, imageBase64);
+          await createMessage(threadId, input, setInput, imageBase64);
         } catch (e) {
           toast.error('Failed to generate message');
           setLoading(false);
           return;
         }
         setLoading(false);
-        redirect('/chat/' + threadId.toString());
       } else {
         if (!threadId || typeof threadId !== 'string') return;
 
@@ -169,6 +184,10 @@ const ChatBotInput = memo(
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
       if (file) {
+        if (!file.type.startsWith('image/')) {
+          toast.error('Only image files are allowed.');
+          return;
+        }
         if (file.size > Constants.MAX_FILE_SIZE) {
           toast.error(`File size exceeds the ${Constants.FILE_SIZE_LIMIT_MB}MB limit.`);
           return;
@@ -267,7 +286,7 @@ const ChatBotInput = memo(
                       type='file'
                       ref={fileInputRef}
                       onChange={handleImageChange}
-                      accept='image/*'
+                      accept='image/jpeg, image/png, image/webp'
                       className='hidden'
                       id='image-upload'
                     />

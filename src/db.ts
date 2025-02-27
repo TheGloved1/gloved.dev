@@ -172,12 +172,12 @@ export async function createMessage(
     messageContent = [
       {
         type: 'text',
-        text: userContent,
+        text: userContent || '',
       },
       { type: 'image', image },
     ];
   } else {
-    messageContent = userContent;
+    messageContent = userContent || '';
   }
   await db.addMessage({
     threadId,
