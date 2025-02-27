@@ -11,33 +11,42 @@ const maxTokens = 8192;
 const frequencyPenalty = 0.75;
 const presencePenalty = 0.15;
 
-const model = genAI.languageModel('gemini-1.5-flash', {
-  safetySettings: [
-    {
-      category: 'HARM_CATEGORY_CIVIC_INTEGRITY',
-      threshold: 'BLOCK_NONE',
-    },
-    {
-      category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
-      threshold: 'BLOCK_NONE',
-    },
-    {
-      category: 'HARM_CATEGORY_HARASSMENT',
-      threshold: 'BLOCK_NONE',
-    },
-    {
-      category: 'HARM_CATEGORY_HATE_SPEECH',
-      threshold: 'BLOCK_NONE',
-    },
-    {
-      category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
-      threshold: 'BLOCK_NONE',
-    },
-  ],
-});
+type SafetySettings = {
+  category:
+    | 'HARM_CATEGORY_CIVIC_INTEGRITY'
+    | 'HARM_CATEGORY_DANGEROUS_CONTENT'
+    | 'HARM_CATEGORY_HARASSMENT'
+    | 'HARM_CATEGORY_HATE_SPEECH'
+    | 'HARM_CATEGORY_SEXUALLY_EXPLICIT'
+    | 'HARM_CATEGORY_UNSPECIFIED';
+  threshold: 'BLOCK_NONE';
+}[];
+
+const safetySettings: SafetySettings = [
+  {
+    category: 'HARM_CATEGORY_CIVIC_INTEGRITY',
+    threshold: 'BLOCK_NONE',
+  },
+  {
+    category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
+    threshold: 'BLOCK_NONE',
+  },
+  {
+    category: 'HARM_CATEGORY_HARASSMENT',
+    threshold: 'BLOCK_NONE',
+  },
+  {
+    category: 'HARM_CATEGORY_HATE_SPEECH',
+    threshold: 'BLOCK_NONE',
+  },
+  {
+    category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
+    threshold: 'BLOCK_NONE',
+  },
+];
 
 export async function POST(req: Request) {
-  const parsed: { system?: string; messages: Omit<Message, 'id'>[] } = await req.json();
+  const parsed: { model?: string; system?: string; messages: Omit<Message, 'id'>[] } = await req.json();
   const { messages } = parsed;
   const system = parsed.system ?? (await fetchSystemPrompt());
 
@@ -45,6 +54,10 @@ export async function POST(req: Request) {
     role: msg.role, // Ensure this is set correctly
     content: msg.content,
   })) as CoreMessage[];
+
+  const model = genAI.languageModel(parsed.model ?? 'gemini-1.5-flash', {
+    safetySettings: safetySettings,
+  });
 
   return createDataStreamResponse({
     execute: (dataStream) => {
@@ -56,9 +69,7 @@ export async function POST(req: Request) {
         maxTokens,
         frequencyPenalty,
         presencePenalty,
-        experimental_transform: smoothStream({
-          delayInMs: 25,
-        }),
+        experimental_transform: smoothStream(),
       });
       result.mergeIntoDataStream(dataStream);
     },

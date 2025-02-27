@@ -165,6 +165,7 @@ export async function createMessage(
   setInput: (input: string) => void,
   image?: string | null,
   callback?: () => void,
+  model?: string,
 ) {
   setInput('');
   let messageContent: string | (TextPart | ImagePart)[];
@@ -209,6 +210,7 @@ export async function createMessage(
         },
         body: JSON.stringify({
           messages: contextMessages,
+          model: model ?? 'gemini-1.5-flash',
         }),
       }),
     );

@@ -11,6 +11,7 @@ import NextImage from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
+import ModelDropdown from './ModelDropdown';
 
 const ChatBotInput = memo(
   ({
@@ -34,6 +35,14 @@ const ChatBotInput = memo(
     const { threadId } = useParams();
     const [loading, setLoading] = useState<boolean>(false);
     const [rows, setRows] = useState<number>(1);
+    const [model, setModel] = usePersistentState<string>('model', 'gemini-1.5-flash');
+
+    const models: { [key: string]: string } = {
+      'Gemini 1.5 Flash': 'gemini-1.5-flash',
+      'Gemini 1.5 Flash (8B)': 'gemini-1.5-flash-8b',
+      'Gemini 2.0 Flash Lite Preview': 'gemini-2.0-flash-lite-preview-02-05',
+      'Gemini 2.0 Flash Experimental': 'gemini-2.0-flash-exp',
+    };
 
     // Used to store the hashes of the compressed images to avoid re-compression
     const [compressedImageHashes, setCompressedImageHashes] = usePersistentState<string[]>('compressedImageHashes', []);
@@ -139,7 +148,7 @@ const ChatBotInput = memo(
         });
         router.push('/chat/' + threadId);
         try {
-          await createMessage(threadId, input, setInput, imageBase64);
+          await createMessage(threadId, input, setInput, imageBase64, scrollCallback, model);
         } catch (e) {
           toast.error('Failed to generate message');
           setLoading(false);
@@ -149,7 +158,7 @@ const ChatBotInput = memo(
       } else {
         if (!threadId || typeof threadId !== 'string') return;
 
-        await createMessage(threadId, input, setInput, imageBase64, scrollCallback);
+        await createMessage(threadId, input, setInput, imageBase64, scrollCallback, model);
         setLoading(false);
         setInput('');
         if (fileInputRef.current) {
@@ -190,6 +199,10 @@ const ChatBotInput = memo(
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
+    };
+
+    const onModelChange = (model: string) => {
+      setModel(model);
     };
 
     useEffect(() => {
@@ -267,6 +280,7 @@ const ChatBotInput = memo(
                 />
                 <div className='flex flex-col gap-2 md:flex-row md:items-center'>
                   <div className='flex items-center gap-1'>
+                    <ModelDropdown models={models} selectedModel={model} onModelChange={onModelChange} />
                     <input
                       type='file'
                       ref={fileInputRef}
@@ -277,9 +291,9 @@ const ChatBotInput = memo(
                     />
                     <label
                       htmlFor='image-upload'
-                      className='inline-flex items-center justify-center whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:bg-neutral-800/40 rounded-md text-xs h-auto gap-2 px-2 py-1.5 text-muted-foreground hover:text-neutral-300 -mb-2 cursor-pointer'
+                      className='inline-flex items-center -translate-y-1.5 justify-center whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:bg-neutral-800/40 rounded-md text-xs h-auto gap-2 px-2 py-1.5 text-muted-foreground hover:text-neutral-300 -mb-2 cursor-pointer'
                     >
-                      <Paperclip className='-mb-0.5 -ml-0.5 !size-5' />
+                      <Paperclip className='!size-5' />
                     </label>
                   </div>
                   <button
