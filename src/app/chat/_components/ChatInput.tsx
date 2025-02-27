@@ -70,7 +70,7 @@ const ChatBotInput = memo(
 
               // Check if the hash already exists
               if (compressedImageHashes.includes(hash)) {
-                console.log('Hash already exists:', hash);
+                console.log('Hash already exists, skipping compression:', hash);
                 resolve(dataUrl);
                 return;
               }
@@ -97,6 +97,8 @@ const ChatBotInput = memo(
                   reader.onloadend = () => {
                     // The result will be a Base64 string
                     const compressedDataUrl = reader.result as string;
+                    const hash = SHA256(compressedDataUrl).toString();
+                    setCompressedImageHashes((prev) => [...prev, hash]);
                     resolve(compressedDataUrl);
                   };
                   reader.onerror = (error) => {
