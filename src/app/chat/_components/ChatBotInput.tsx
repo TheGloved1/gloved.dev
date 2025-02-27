@@ -5,6 +5,7 @@ import React, { memo, useMemo } from 'react';
 import { usePersistentState } from '@/hooks/use-persistent-state';
 import Constants from '@/lib/constants';
 import { SHA256 } from 'crypto-js';
+import ImageCompressor from 'image-compressor.js';
 import { ChevronDown, Loader2, Paperclip, Send, X } from 'lucide-react';
 import NextImage from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
@@ -82,56 +83,36 @@ const ChatBotInput = memo(
                 return;
               }
 
-              // Create an image object
-              const image = new Image();
-              image.src = dataUrl;
+              // Log the original file size
+              console.log('Original file size:', file.size / 1024, 'KB');
 
-              // Wait for the image to load
-              await new Promise((resolve) => {
-                image.onload = resolve;
+              // Use image-compressor.js to compress the image
+              new ImageCompressor(file, {
+                convertSize: 10000,
+                quality: 0.05,
+                success(result) {
+                  const reader = new FileReader();
+                  reader.onloadend = () => {
+                    // The result will be a Base64 string
+                    const compressedDataUrl = reader.result as string;
+                    resolve(compressedDataUrl);
+                  };
+                  reader.onerror = (error) => {
+                    console.error('Error reading blob:', error);
+                    reject(error);
+                  };
+
+                  // Log the new compressed file size
+                  console.log('Compressed file size:', result.size / 1024, 'KB');
+
+                  // Read the Blob as a Data URL
+                  reader.readAsDataURL(result);
+                },
+                error(err) {
+                  console.error(err);
+                  reject(err);
+                },
               });
-
-              // Create a canvas and draw the image onto it
-              const canvas = document.createElement('canvas');
-              const ctx = canvas.getContext('2d');
-              if (!ctx) {
-                return reject(new Error('Failed to get canvas context'));
-              }
-              canvas.width = image.width;
-              canvas.height = image.height;
-              ctx.drawImage(image, 0, 0);
-
-              // Determine the file type
-              const mimeType = (type: string) => {
-                switch (type) {
-                  case 'image/jpeg':
-                    return 'image/jpeg';
-                  case 'image/png':
-                    return 'image/png';
-                  case 'image/webp':
-                    return 'image/webp';
-                  default:
-                    return 'image/webp';
-                }
-              };
-              // Compress the image
-              const MAX_FILE_SIZE = 100 * 1024;
-              const fileSize = file.size;
-              const quality =
-                fileSize > MAX_FILE_SIZE ?
-                  Math.max(0.1, Math.min(0.9, 1 - Math.log(fileSize / MAX_FILE_SIZE) / Math.log(2)))
-                : 1;
-              const resizedDataUrl = canvas.toDataURL(mimeType(file.type), quality);
-
-              const newHash = SHA256(resizedDataUrl).toString();
-
-              // Store the hash of the compressed image
-              console.log('Storing hash:', newHash);
-              // setCompressedImageHashes((prev) => [...prev, newHash]);
-
-              console.log('Compressed Image Hashes:', compressedImageHashes);
-
-              resolve(resizedDataUrl);
             };
             reader.onerror = reject;
             reader.readAsDataURL(file);
