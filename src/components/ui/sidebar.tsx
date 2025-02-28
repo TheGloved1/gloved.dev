@@ -2,19 +2,19 @@
 
 import { Slot } from '@radix-ui/react-slot';
 import { VariantProps, cva } from 'class-variance-authority';
-import { ChevronRight, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
+import { ChevronLeft, ChevronRight, SidebarIcon } from 'lucide-react';
 import * as React from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
-import { Sheet, SheetContent } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 
-const SIDEBAR_COOKIE_NAME = 'sidebar:state';
+const SIDEBAR_COOKIE_NAME = 'sidebar_state';
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
 const SIDEBAR_WIDTH = '16rem';
 const SIDEBAR_WIDTH_MOBILE = '18rem';
@@ -166,6 +166,10 @@ const Sidebar = React.forwardRef<
           }
           side={side}
         >
+          <SheetHeader className='sr-only'>
+            <SheetTitle>Sidebar</SheetTitle>
+            <SheetDescription>Displays the mobile sidebar.</SheetDescription>
+          </SheetHeader>
           <div className='flex h-full w-full flex-col'>{children}</div>
         </SheetContent>
       </Sheet>
@@ -220,15 +224,15 @@ Sidebar.displayName = 'Sidebar';
 
 const SidebarTrigger = React.forwardRef<React.ComponentRef<typeof Button>, React.ComponentProps<typeof Button>>(
   ({ className, onClick, ...props }, ref) => {
-    const { open, toggleSidebar } = useSidebar();
-    const isMobile = useIsMobile();
+    const { open, toggleSidebar, isMobile } = useSidebar();
 
     return (
       <Button
         ref={ref}
         data-sidebar='trigger'
         variant='ghost'
-        className={cn('h-14 w-14 sm:h-12 sm:w-12 md:h-10 md:w-10 lg:h-7 lg:w-7', className)}
+        size='icon'
+        className={cn('m-2 h-7 w-7', className)}
         onClick={(event) => {
           onClick?.(event);
           toggleSidebar();
@@ -236,10 +240,11 @@ const SidebarTrigger = React.forwardRef<React.ComponentRef<typeof Button>, React
         {...props}
       >
         {isMobile ?
-          <ChevronRight width={24} height={24} />
+          <SidebarIcon className='!size-6' />
         : open ?
-          <PanelLeftClose width={24} height={24} />
-        : <PanelLeftOpen width={24} height={24} />}
+          <ChevronLeft className='!size-6' />
+        : <ChevronRight className='!size-6' />}
+        <span className='sr-only'>Toggle Sidebar</span>
       </Button>
     );
   },
@@ -258,7 +263,7 @@ const SidebarRail = React.forwardRef<HTMLButtonElement, React.ComponentProps<'bu
       onClick={toggleSidebar}
       title='Toggle Sidebar'
       className={cn(
-        'absolute inset-y-0 z-20 hidden w-4 -translate-x-1/2 transition-all ease-linear after:absolute after:inset-y-0 after:left-1/2 after:w-[2px] hover:after:bg-sidebar-border group-data-[side=left]:-right-4 group-data-[side=right]:left-0 sm:flex',
+        'absolute inset-y-0 z-20 hidden w-4 -translate-x-1/2 transition-none ease-linear after:absolute after:inset-y-0 after:left-1/2 after:w-[2px] hover:after:bg-sidebar-border group-data-[side=left]:-right-4 group-data-[side=right]:left-0 sm:flex',
         '[[data-side=left]_&]:cursor-w-resize [[data-side=right]_&]:cursor-e-resize',
         '[[data-side=left][data-state=collapsed]_&]:cursor-e-resize [[data-side=right][data-state=collapsed]_&]:cursor-w-resize',
         'group-data-[collapsible=offcanvas]:translate-x-0 group-data-[collapsible=offcanvas]:after:left-full group-data-[collapsible=offcanvas]:hover:bg-sidebar',
@@ -277,7 +282,7 @@ const SidebarInset = React.forwardRef<HTMLDivElement, React.ComponentProps<'main
     <main
       ref={ref}
       className={cn(
-        'relative flex min-h-svh flex-1 flex-col bg-background',
+        'relative flex min-h-svh w-full flex-1 flex-col bg-background',
         'peer-data-[variant=inset]:min-h-[calc(100svh-theme(spacing.4))] md:peer-data-[variant=inset]:m-2 md:peer-data-[state=collapsed]:peer-data-[variant=inset]:ml-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow',
         className,
       )}
@@ -354,7 +359,7 @@ const SidebarGroupLabel = React.forwardRef<HTMLDivElement, React.ComponentProps<
         ref={ref}
         data-sidebar='group-label'
         className={cn(
-          'flex h-8 shrink-0 items-center rounded-md px-2 text-xs font-medium text-sidebar-foreground/70 outline-none ring-sidebar-ring transition-[margin,opa] duration-200 ease-linear focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0',
+          'flex h-8 shrink-0 items-center rounded-md px-2 text-xs font-medium text-sidebar-foreground/70 outline-none ring-sidebar-ring transition-[margin,opacity] duration-200 ease-linear focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0',
           'group-data-[collapsible=icon]:-mt-8 group-data-[collapsible=icon]:opacity-0',
           className,
         )}
