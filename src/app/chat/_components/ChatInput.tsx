@@ -215,13 +215,13 @@ const ChatBotInput = memo(
     }, [dataURLtoFile, imagePreview, setImagePreview]);
 
     return (
-      <div className='fixed z-20 sm:absolute bottom-0 w-full pr-2'>
+      <div className='fixed bottom-0 z-20 w-full pr-2 sm:absolute'>
         <div className='relative z-10 mx-auto flex w-full max-w-3xl flex-col text-center'>
           {!isAtBottom && (
             <div className='flex justify-center pb-4'>
               <button
                 type='button'
-                className='justify-center whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80 h-8 px-3 text-xs flex items-center gap-2 rounded-full opacity-90 hover:opacity-100'
+                className='flex h-8 items-center justify-center gap-2 whitespace-nowrap rounded-full bg-secondary px-3 text-xs font-medium text-secondary-foreground opacity-90 shadow-sm transition-colors hover:bg-secondary/80 hover:opacity-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
                 onClick={scrollCallback}
               >
                 Scroll to bottom <ChevronDown />
@@ -289,7 +289,7 @@ const ChatBotInput = memo(
                         />
                         <label
                           htmlFor='image-upload'
-                          className='inline-flex items-center -translate-y-1.5 justify-center whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:bg-neutral-800/40 rounded-md text-xs h-auto gap-2 px-2 py-1.5 text-muted-foreground hover:text-neutral-300 -mb-2 cursor-pointer'
+                          className='-mb-2 inline-flex h-auto -translate-y-1.5 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md px-2 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-neutral-800/40 hover:text-neutral-300 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
                         >
                           <Paperclip className='!size-5' />
                         </label>
@@ -307,7 +307,7 @@ const ChatBotInput = memo(
                         />
                         <label
                           htmlFor='image-upload'
-                          className='inline-flex items-center -translate-y-1.5 justify-center whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:bg-neutral-800/40 rounded-md text-xs h-auto gap-2 px-2 py-1.5 text-muted-foreground hover:text-neutral-300 -mb-2 cursor-pointer'
+                          className='-mb-2 inline-flex h-auto -translate-y-1.5 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md px-2 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-neutral-800/40 hover:text-neutral-300 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
                         >
                           <Paperclip className='!size-5' />
                         </label>
@@ -317,7 +317,7 @@ const ChatBotInput = memo(
                   <button
                     type='submit'
                     disabled={loading || (!input && !imagePreview)}
-                    className='inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 shadow h-9 w-9 absolute bottom-3 right-3 rounded-full bg-pink-600/70 p-2 text-neutral-100 hover:bg-pink-500/70'
+                    className='absolute bottom-3 right-3 inline-flex h-9 w-9 items-center justify-center gap-2 whitespace-nowrap rounded-full bg-pink-600/70 p-2 text-sm font-medium text-neutral-100 shadow transition-colors hover:bg-pink-500/70 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
                   >
                     {loading ?
                       <Loader2 className='h-4 w-4 animate-spin' />

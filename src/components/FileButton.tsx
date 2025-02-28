@@ -66,16 +66,16 @@ export default function FileButton({ file }: FileButtonProps): React.JSX.Element
       <div className='mx-2 w-64 truncate rounded-xl'>
         <button
           onClick={() => setShowDialog(true)}
-          className='p-3 mx-2 rounded-xl btn hover:animate-pulse hover:bg-gray-700'
+          className='btn mx-2 rounded-xl p-3 hover:animate-pulse hover:bg-gray-700'
         >
           {file.name}
         </button>
       </div>
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
-        <DialogContent className='sm:max-w-[425px] w-fit md:max-w-[650px]'>
+        <DialogContent className='w-fit sm:max-w-[425px] md:max-w-[650px]'>
           <DialogHeader>
             <DialogTitle className='text-base font-semibold'>{file.name}</DialogTitle>
-            <DialogDescription className='text-xs font-light flex flex-wrap'>
+            <DialogDescription className='flex flex-wrap text-xs font-light'>
               <span className='mr-2 text-left'>
                 Size: <span className='badge badge-sm text-nowrap'>{file.size}</span>
               </span>
@@ -84,22 +84,22 @@ export default function FileButton({ file }: FileButtonProps): React.JSX.Element
               </span>
             </DialogDescription>
           </DialogHeader>
-          <div className='mt-4 flex justify-center items-center'>
+          <div className='mt-4 flex items-center justify-center'>
             {isImage && (
               <Image
                 width={isMobile ? 250 : 450}
                 height={isMobile ? 250 : 450}
                 src={previewUrl}
                 alt={file.name}
-                className='max-w-full h-auto rounded-xl'
+                className='h-auto max-w-full rounded-xl'
               />
             )}
             {isVideo && (
-              <VideoPreview className='max-w-md max-h-[250px] md:max-h-[400px] lg:max-h-[500px]' src={previewUrl} />
+              <VideoPreview className='max-h-[250px] max-w-md md:max-h-[400px] lg:max-h-[500px]' src={previewUrl} />
             )}
             {!isImage && !isVideo && null}
           </div>
-          <div className='grid grid-cols-2 justify-center self-center items-center'>
+          <div className='grid grid-cols-2 items-center justify-center self-center'>
             <Button onClick={() => copyToClipboard()}>Copy</Button>
             <LinkButton href={fileUrl} onClick={() => setShowDialog(false)}>
               Download

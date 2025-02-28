@@ -460,13 +460,13 @@ export default function Colors(): React.JSX.Element {
 
   return (
     <SidebarProvider open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
-      <div className='flex h-dvh select-none w-dvw'>
+      <div className='flex h-dvh w-dvw select-none'>
         <Sidebar>
           <SidebarContent className='p-2'>
-            <SidebarHeader className='text-2xl font-bold mb-4 text-center'>Skills</SidebarHeader>
+            <SidebarHeader className='mb-4 text-center text-2xl font-bold'>Skills</SidebarHeader>
             <ScrollArea>
               {skills.map((skill) => (
-                <SidebarGroup key={skill.id} className='my-2 bg-gray-50 dark:bg-gray-800 rounded-lg shadow'>
+                <SidebarGroup key={skill.id} className='my-2 rounded-lg bg-gray-50 shadow dark:bg-gray-800'>
                   <SidebarGroupLabel>
                     {skill.name}
                     <Tooltip>
@@ -475,7 +475,7 @@ export default function Colors(): React.JSX.Element {
                           variant='link'
                           className='p-0 text-sm font-normal text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
                         >
-                          <Info className='h-4 w-4 ml-1' />
+                          <Info className='ml-1 h-4 w-4' />
                         </Button>
                       </TooltipTrigger>
                       <TooltipContent>{skill.description}</TooltipContent>
@@ -503,29 +503,29 @@ export default function Colors(): React.JSX.Element {
           <SidebarTrigger className={`fixed left-2 top-2 z-50`} />
         </div>
 
-        <main className='flex-1 p-8 overflow-y-auto'>
-          <div className='flex flex-col items-center justify-center pt-36 gap-4 text-xs sm:text-sm md:text-base'>
-            <h1 className='lg:text-4xl font-bold mb-4'>Stupid Color Game</h1>
-            <div className='lg:text-2xl mb-2'>Score: {Math.floor(score)}</div>
-            <div className='lg:text-xl mb-2'>Prestige Level: {prestigeLevel}</div>
-            <div className='lg:text-xl mb-2'>Prestige Points (PP): {Math.floor(prestigePoints)}</div>
-            <div className='lg:text-lg mb-2'>Combination Streak: {combinationStreak}</div>
+        <main className='flex-1 overflow-y-auto p-8'>
+          <div className='flex flex-col items-center justify-center gap-4 pt-36 text-xs sm:text-sm md:text-base'>
+            <h1 className='mb-4 font-bold lg:text-4xl'>Stupid Color Game</h1>
+            <div className='mb-2 lg:text-2xl'>Score: {Math.floor(score)}</div>
+            <div className='mb-2 lg:text-xl'>Prestige Level: {prestigeLevel}</div>
+            <div className='mb-2 lg:text-xl'>Prestige Points (PP): {Math.floor(prestigePoints)}</div>
+            <div className='mb-2 lg:text-lg'>Combination Streak: {combinationStreak}</div>
             <div className='grid grid-cols-2 gap-4'>
               {colorButtons.map(
                 (button, index) =>
                   button.unlocked && (
-                    <div key={index} className='flex flex-col self-center items-center'>
+                    <div key={index} className='flex flex-col items-center self-center'>
                       <Button
                         onClick={() => handleColorClick(index)}
-                        className='btn btn-circle text-xs rounded-full lg:w-24 lg:h-24'
+                        className='btn btn-circle rounded-full text-xs lg:h-24 lg:w-24'
                         style={{ backgroundColor: button.color }}
                         disabled={clickCooldown}
                       >
                         <div className='scale-25 xs:scale-50 sm:scale-75 md:scale-100'>Level {button.level}</div>
                       </Button>
-                      <Progress value={button.progress} className='lg:w-24 mt-2' />
-                      <div className='lg:text-sm mt-1'>Clicks: {button.clicks}</div>
-                      <div className='lg:text-sm mt-1'>Trait: {button.trait}</div>
+                      <Progress value={button.progress} className='mt-2 lg:w-24' />
+                      <div className='mt-1 lg:text-sm'>Clicks: {button.clicks}</div>
+                      <div className='mt-1 lg:text-sm'>Trait: {button.trait}</div>
                     </div>
                   ),
               )}
@@ -565,7 +565,7 @@ export default function Colors(): React.JSX.Element {
           </div>
         </main>
       </div>
-      <Button className='fixed top-0 right-0' onClick={resetProgress}>
+      <Button className='fixed right-0 top-0' onClick={resetProgress}>
         Reset Progress
       </Button>
     </SidebarProvider>

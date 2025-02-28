@@ -116,9 +116,9 @@ function RainingLetters({
 
   return (
     <>
-      <div className={`relative w-full h-full ${backgroundColor}`}>
+      <div className={`relative h-full w-full ${backgroundColor}`}>
         {isDev.data && (
-          <div className='p-4 fixed z-50 flex items-center flex-wrap max-w-72 top-1/2 right-0 transform -translate-y-1/2'>
+          <div className='fixed right-0 top-1/2 z-50 flex max-w-72 -translate-y-1/2 transform flex-wrap items-center p-4'>
             <h1 title='Character Count' className='text-sm text-white'>
               Character Count: {charCount}
             </h1>
@@ -133,13 +133,13 @@ function RainingLetters({
           </div>
         )}
         {/* Raining Characters - Fixed Background */}
-        <div className='fixed top-0 inset-0 overflow-hidden pointer-events-none z-0'>
+        <div className='pointer-events-none fixed inset-0 top-0 z-0 overflow-hidden'>
           {characters.map((char, index) => (
             <span
               key={index}
               className={`absolute text-xs transition-colors duration-100 ${
                 activeIndices.has(index) ?
-                  `${activeCharacterColor} text-base scale-125 z-10 font-bold animate-pulse opacity-100`
+                  `${activeCharacterColor} z-10 scale-125 animate-pulse text-base font-bold opacity-100`
                 : `${characterColor} font-light opacity-40`
               }`}
               style={{

@@ -41,7 +41,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <ViewTransitions>
       <html lang='en'>
-        <body className={`dark snap-x snap-mandatory antialiased bg-background ${jetbrains.className}`}>
+        <body className={`dark snap-x snap-mandatory bg-background antialiased ${jetbrains.className}`}>
           <Toaster toastOptions={{ style: { background: 'gray' } }} />
           <Providers>
             <Analytics />

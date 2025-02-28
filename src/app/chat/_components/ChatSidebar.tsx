@@ -31,7 +31,7 @@ export default function ChatBotSidebar({ children }: { children: React.ReactNode
   return (
     <SidebarProvider open={open} onOpenChange={setOpen}>
       <Sidebar variant='inset' className='m-0 border border-border'>
-        <SidebarContent className='bg-gradient-to-bl from-[--background] to-[--background-secondary] rounded'>
+        <SidebarContent className='rounded bg-gradient-to-bl from-[--background] to-[--background-secondary]'>
           {/* <PageBack stayTop noFixed btnClassName='btn mt-2 w-fit bg-gray-700 hover:bg-gray-600' /> */}
           <div className='mt-2 w-fit'></div>
           {isMobile && (
@@ -49,7 +49,7 @@ export default function ChatBotSidebar({ children }: { children: React.ReactNode
             <div className='divider divider-neutral text-gray-200'>
               Chats{' '}
               {!isMobile && (
-                <Link href='/chat' type='button' title='New chat' className='p-2 m-0 hover:bg-gray-500/50 rounded-lg'>
+                <Link href='/chat' type='button' title='New chat' className='m-0 rounded-lg p-2 hover:bg-gray-500/50'>
                   <SquarePen className='h-4 w-4' />
                   <span className='sr-only'>New chat</span>
                 </Link>
@@ -59,12 +59,12 @@ export default function ChatBotSidebar({ children }: { children: React.ReactNode
               threads.reverse().map((thread) => (
                 <div key={thread.id} className='p-2'>
                   <div
-                    className={`my-0 flex items-center rounded-sm px-2 focus-within:outline-none hover:bg-gray-500/10 focus-within:ring-[1px] focus-within:ring-[hsl(var(--ring))] hover:bg-[--background]/10 ${isCurrentThread(thread.id) ? 'bg-gray-500/20' : ''}`}
+                    className={`hover:bg-[--background]/10 my-0 flex items-center rounded-sm px-2 focus-within:outline-none focus-within:ring-[1px] focus-within:ring-[hsl(var(--ring))] hover:bg-gray-500/10 ${isCurrentThread(thread.id) ? 'bg-gray-500/20' : ''}`}
                   >
                     <Link key={thread.id} href={`/chat/${thread.id}`} title={thread.title}>
-                      <div className='flex flex-1 flex-row gap-2 rounded-sm text-xs card items-center text-info-content group-data-[state=hover]:bg-[#2D2D2D]/50'>
+                      <div className='card flex flex-1 flex-row items-center gap-2 rounded-sm text-xs text-info-content group-data-[state=hover]:bg-[#2D2D2D]/50'>
                         <div
-                          className={`flex flex-1 flex-row gap-2 py-2 text-xs text-gray-200 ${isCurrentThread(thread.id) ? 'font-bold cursor-default' : ''}`}
+                          className={`flex flex-1 flex-row gap-2 py-2 text-xs text-gray-200 ${isCurrentThread(thread.id) ? 'cursor-default font-bold' : ''}`}
                         >
                           <MessageSquare className='h-5 w-5' />
                           {thread.title}

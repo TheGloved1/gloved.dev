@@ -26,7 +26,7 @@ export function PageVisits(): React.JSX.Element | null {
   if (ipQuery.isError) return null;
   if (ipQuery.isFetching) return null;
   return (
-    <div className='fixed bottom-0 right-0 left-0 items-center justify-center gap-4'>
+    <div className='fixed bottom-0 left-0 right-0 items-center justify-center gap-4'>
       <div className='text-center text-[0.5rem] sm:text-[0.6rem] md:text-[0.7rem] lg:text-[0.8rem]'>{`This page has been loaded ${ipQuery.data.visits} times by ${ipQuery.data.visitorIds.length} visitors`}</div>
     </div>
   );

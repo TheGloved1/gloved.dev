@@ -104,13 +104,13 @@ function ThreadPage(): React.JSX.Element {
         isAtBottom={isAtBottom}
       />
       <div className='relative flex-1 overflow-hidden'>
-        <div className='scrollbar scrollbar-w-2 scrollbar-thumb-gray-700 scrollbar-track-transparent hover:scrollbar-thumb-gray-600 h-[100dvh] overflow-y-auto pb-36'>
-          <div className='mx-auto flex w-full max-w-3xl flex-col space-y-12 p-4 translate-x-1 pb-8 text-sm'>
+        <div className='scrollbar-w-2 h-[100dvh] overflow-y-auto pb-36 scrollbar scrollbar-track-transparent scrollbar-thumb-gray-700 hover:scrollbar-thumb-gray-600'>
+          <div className='mx-auto flex w-full max-w-3xl translate-x-1 flex-col space-y-12 p-4 pb-8 text-sm'>
             {messages.map((message) => (
               <ChatMessage message={message} key={message.id} handleEditMessageAction={handleEditMessage} />
             ))}
           </div>
-          <div ref={messagesEndRef} className='w-0 h-0' />
+          <div ref={messagesEndRef} className='h-0 w-0' />
         </div>
       </div>
     </main>

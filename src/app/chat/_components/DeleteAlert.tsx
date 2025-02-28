@@ -35,7 +35,7 @@ const DeleteAlert = ({ id, isCurrentThread }: { id: string; isCurrentThread: boo
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <button
-          className='w-12 h-12 pl-7 ml-auto md:opacity-0 transition-opacity duration-500 text-gray-500 md:group-hover:opacity-100 hover:text-red-800'
+          className='ml-auto h-12 w-12 pl-7 text-gray-500 transition-opacity duration-500 hover:text-red-800 md:opacity-0 md:group-hover:opacity-100'
           title='Delete Chat'
           onClick={() => setIsOpen(true)}
         >
