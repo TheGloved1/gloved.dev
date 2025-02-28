@@ -22,7 +22,9 @@ export default class Constants {
     } as const,
     groq: {
       'Qwen 2.5 (32B)': 'qwen-2.5-32b',
+      'Qwen 2.5 Coder (32B)': 'qwen-2.5-coder-32b',
       'Llama 3.1 (8B)': 'llama-3.1-8b-instant',
+      'Llama 3.3 (70B)': 'llama-3.3-70b-versatile',
       'Deepseek R1 (Llama Distill)': 'deepseek-r1-distill-llama-70b',
     } as const,
   };
