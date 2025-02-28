@@ -1,6 +1,6 @@
 'use client';
 import { createMessage, db } from '@/db';
-import React, { memo, useMemo } from 'react';
+import React, { memo, useMemo, useState } from 'react';
 
 import { useIsMobile } from '@/hooks/use-mobile';
 import { usePersistentState } from '@/hooks/use-persistent-state';
@@ -10,8 +10,9 @@ import ImageCompressor from 'image-compressor.js';
 import { ChevronDown, Loader2, Paperclip, Send, X } from 'lucide-react';
 import NextImage from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { toast } from 'sonner';
+import MobileInputDialog from './MobileInputDialog';
 import ModelDropdown from './ModelDropdown';
 
 const models = { ...Constants.ChatModels.google, ...Constants.ChatModels.groq };
@@ -38,7 +39,7 @@ const ChatBotInput = memo(
     const router = useRouter();
     const { threadId } = useParams();
     const [loading, setLoading] = useState<boolean>(false);
-    const [rows, setRows] = useState<number>(1);
+    const [rows, setRows] = useState<number>(2);
     const [model, setModel] = usePersistentState<string>('model', 'gemini-1.5-flash');
 
     // Used to store the hashes of the compressed images to avoid re-compression
@@ -131,8 +132,8 @@ const ChatBotInput = memo(
       [compressedImageHashes, setCompressedImageHashes],
     );
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement> | React.KeyboardEvent<HTMLTextAreaElement>) => {
-      e.preventDefault();
+    const handleSubmit = async (e?: React.FormEvent<HTMLFormElement> | React.KeyboardEvent<HTMLTextAreaElement>) => {
+      e?.preventDefault();
       setLoading(true);
       setImagePreview(null);
       let imageBase64: string | null = null;
@@ -214,8 +215,16 @@ const ChatBotInput = memo(
       addBase64ImageToInput(imagePreview);
     }, [dataURLtoFile, imagePreview, setImagePreview]);
 
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+    const handleMobileInput = () => {
+      if (isMobile) {
+        setIsDialogOpen(true);
+      }
+    };
+
     return (
-      <div className='fixed bottom-0 z-20 w-full pr-2 md:absolute'>
+      <div className='fixed bottom-0 z-20 w-full pr-2 md:absolute md:z-auto'>
         <div className='relative z-10 mx-auto flex w-full max-w-3xl flex-col text-center'>
           {!isAtBottom && (
             <div className='flex justify-center pb-4'>
@@ -259,6 +268,7 @@ const ChatBotInput = memo(
                   disabled={loading}
                   placeholder={`Type message here...`}
                   rows={rows}
+                  onFocus={handleMobileInput}
                   onChange={(e) => {
                     setInput(e.target.value);
                   }}
@@ -329,6 +339,18 @@ const ChatBotInput = memo(
             </form>
           </div>
         </div>
+        <MobileInputDialog
+          input={input}
+          setInput={setInput}
+          rows={rows}
+          setRows={setRows}
+          isOpen={isDialogOpen}
+          setIsOpen={setIsDialogOpen}
+          onSubmit={(message) => {
+            // Handle the message submission here
+            handleSubmit();
+          }}
+        />
       </div>
     );
   },
