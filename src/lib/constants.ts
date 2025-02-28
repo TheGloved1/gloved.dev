@@ -8,8 +8,7 @@ type ChatModelCategory = 'google' | 'groq';
  */
 export default class Constants {
   static readonly NAME: string = 'gloved.dev';
-  static readonly DESC: string =
-    'A personal website for my projects and interests. Built using Next.js React Web Framework.';
+  static readonly DESC: string = 'A personal website for my projects and interests. Built with Next.js';
   static readonly ICON: string = '/Leo.png';
   static readonly API: string = 'https://api.gloved.dev';
   static readonly FILE_SIZE_LIMIT_MB: number = 2.5;
@@ -17,58 +16,56 @@ export default class Constants {
   public static readonly ChatModels = {
     google: {
       'Gemini 1.5 Flash': 'gemini-1.5-flash',
-      'Gemini 1.5 Flash (8B)': 'gemini-1.5-flash-8b',
       'Gemini 2.0 Flash Lite Preview': 'gemini-2.0-flash-lite-preview-02-05',
       'Gemini 2.0 Flash Experimental': 'gemini-2.0-flash-exp',
       'Gemini 2.0 Pro Experimental': 'gemini-2.0-pro-exp-02-05',
-    },
+    } as const,
     groq: {
       'Qwen 2.5 (32B)': 'qwen-2.5-32b',
       'Llama 3.1 (8B)': 'llama-3.1-8b-instant',
       'Deepseek R1 (Llama Distill)': 'deepseek-r1-distill-llama-70b',
-    },
+    } as const,
   };
   public static getModelName(modelKey: string): string | undefined {
     for (const category in this.ChatModels) {
-      const models = this.ChatModels[category as ChatModelCategory]; // Use the defined type
+      const models = this.ChatModels[category as ChatModelCategory];
       for (const name in models) {
         if (models[name as keyof typeof models] === modelKey) {
-          // Type assertion here
-          return name; // Return the model name
+          return name;
         }
       }
     }
-    return undefined; // Return undefined if not found
+    return undefined;
   }
   static readonly Home = {
     title: 'Home',
     link: '/home',
-    description: 'The home page for my About Me based web project built with Next.js React Web Framework.',
+    description: 'The home page for my About Me based web project built with Next.js',
   };
   static readonly FileUploader = {
     title: 'File Uploader',
     link: '/file-uploader',
-    description: 'Just the simple file uploader from the home page.',
+    description: 'Just the simple file uploader from the home page',
   };
   static readonly Todos = {
     title: 'Todo App',
     link: '/todos',
-    description: 'A simple todo list web app. Uses local storage to save and get todos list even after reloading.',
+    description: 'A simple todo list web app. Uses local storage to save and get todos list even after reloading',
   };
   static readonly Hangman = {
     title: 'Janky Hangman',
     link: '/hangman',
-    description: 'A simple hangman game web app. Guess the word. (Might be broken)',
+    description: 'A simple hangman game web app. Guess the word (Might be broken)',
   };
   static readonly Calc = {
     title: 'Calculator',
     link: '/calc',
-    description: 'A simple calculator web app. Do math calculations.',
+    description: 'A simple calculator web app. Do math calculations',
   };
   static readonly Github = {
     title: 'Github',
     link: 'https://github.com/TheGloved1/',
-    description: 'View the source code. Visit my Github profile to take a look at my other projects.',
+    description: 'View the source code. Visit my Github profile to take a look at my other projects',
   };
   static readonly Black = {
     title: 'Black Screen',
