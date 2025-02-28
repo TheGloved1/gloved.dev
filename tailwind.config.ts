@@ -1,8 +1,9 @@
-import daisyui, { Config as DaisyUIConfig } from 'daisyui'
-import fluid, { extract, fontSize, screens } from 'fluid-tailwind'
-import tailwindScrollbar from 'tailwind-scrollbar'
-import type { Config } from 'tailwindcss'
-import tailwindcssAnimate from 'tailwindcss-animate'
+import Typography from '@tailwindcss/typography';
+import daisyui, { Config as DaisyUIConfig } from 'daisyui';
+import fluid, { extract, fontSize, screens } from 'fluid-tailwind';
+import tailwindScrollbar from 'tailwind-scrollbar';
+import type { Config } from 'tailwindcss';
+import tailwindcssAnimate from 'tailwindcss-animate';
 
 export default {
   darkMode: ['class'],
@@ -140,7 +141,7 @@ export default {
       },
     },
   },
-  plugins: [daisyui, tailwindcssAnimate, fluid, tailwindScrollbar],
+  plugins: [daisyui, tailwindcssAnimate, fluid, tailwindScrollbar, Typography()],
   daisyui: {
     themes: false, // false: only light + dark | true: all themes | array: specific themes like this ["light", "dark", "cupcake"]
     darkTheme: 'dark', // name of one of the included themes for dark mode
@@ -151,4 +152,4 @@ export default {
     logs: false, // Shows info about daisyUI version and used config in the console when building your CSS
     themeRoot: ':root', // The element that receives theme color CSS variables
   } as DaisyUIConfig,
-} satisfies Config
+} satisfies Config;

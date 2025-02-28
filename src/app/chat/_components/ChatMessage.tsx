@@ -63,7 +63,9 @@ export default memo(function ChatMessage({
       >
         {renderImages(message.content)}
         <Markdown
-          className={'prose prose-neutral prose-invert max-w-none prose-pre:m-0 prose-pre:bg-transparent prose-pre:p-0'}
+          className={
+            'prose prose-neutral text-white prose-sm prose-invert max-w-none prose-pre:m-0 prose-pre:bg-transparent prose-pre:p-0'
+          }
         >
           {getTextParts(message.content)}
         </Markdown>
