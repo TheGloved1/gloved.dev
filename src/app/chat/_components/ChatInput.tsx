@@ -215,7 +215,7 @@ const ChatBotInput = memo(
     }, [dataURLtoFile, imagePreview, setImagePreview]);
 
     return (
-      <div className='fixed bottom-0 z-20 w-full pr-2 sm:absolute'>
+      <div className='fixed bottom-0 z-20 w-full pr-2 md:absolute'>
         <div className='relative z-10 mx-auto flex w-full max-w-3xl flex-col text-center'>
           {!isAtBottom && (
             <div className='flex justify-center pb-4'>
