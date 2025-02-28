@@ -2,6 +2,7 @@
 import { createMessage, db } from '@/db';
 import React, { memo, useMemo } from 'react';
 
+import { useIsMobile } from '@/hooks/use-mobile';
 import { usePersistentState } from '@/hooks/use-persistent-state';
 import Constants from '@/lib/constants';
 import { SHA256 } from 'crypto-js';
@@ -33,6 +34,7 @@ const ChatBotInput = memo(
     scrollCallback?: () => void;
     isAtBottom?: boolean;
   }) => {
+    const isMobile = useIsMobile();
     const router = useRouter();
     const { threadId } = useParams();
     const [loading, setLoading] = useState<boolean>(false);
@@ -275,21 +277,42 @@ const ChatBotInput = memo(
                 />
                 <div className='flex flex-col gap-2 md:flex-row md:items-center'>
                   <div className='flex items-center gap-1'>
-                    <ModelDropdown models={models} selectedModel={model} onModelChange={onModelChange} />
-                    <input
-                      type='file'
-                      ref={fileInputRef}
-                      onChange={handleImageChange}
-                      accept='image/jpeg, image/png, image/webp'
-                      className='hidden'
-                      id='image-upload'
-                    />
-                    <label
-                      htmlFor='image-upload'
-                      className='inline-flex items-center -translate-y-1.5 justify-center whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:bg-neutral-800/40 rounded-md text-xs h-auto gap-2 px-2 py-1.5 text-muted-foreground hover:text-neutral-300 -mb-2 cursor-pointer'
-                    >
-                      <Paperclip className='!size-5' />
-                    </label>
+                    {isMobile ?
+                      <>
+                        <input
+                          type='file'
+                          ref={fileInputRef}
+                          onChange={handleImageChange}
+                          accept='image/jpeg, image/png, image/webp'
+                          className='hidden'
+                          id='image-upload'
+                        />
+                        <label
+                          htmlFor='image-upload'
+                          className='inline-flex items-center -translate-y-1.5 justify-center whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:bg-neutral-800/40 rounded-md text-xs h-auto gap-2 px-2 py-1.5 text-muted-foreground hover:text-neutral-300 -mb-2 cursor-pointer'
+                        >
+                          <Paperclip className='!size-5' />
+                        </label>
+                        <ModelDropdown models={models} selectedModel={model} onModelChange={onModelChange} />
+                      </>
+                    : <>
+                        <ModelDropdown models={models} selectedModel={model} onModelChange={onModelChange} />
+                        <input
+                          type='file'
+                          ref={fileInputRef}
+                          onChange={handleImageChange}
+                          accept='image/jpeg, image/png, image/webp'
+                          className='hidden'
+                          id='image-upload'
+                        />
+                        <label
+                          htmlFor='image-upload'
+                          className='inline-flex items-center -translate-y-1.5 justify-center whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:bg-neutral-800/40 rounded-md text-xs h-auto gap-2 px-2 py-1.5 text-muted-foreground hover:text-neutral-300 -mb-2 cursor-pointer'
+                        >
+                          <Paperclip className='!size-5' />
+                        </label>
+                      </>
+                    }
                   </div>
                   <button
                     type='submit'

@@ -11,10 +11,10 @@ interface ModelDropdownProps {
 const ModelDropdown: React.FC<ModelDropdownProps> = ({ models, selectedModel, onModelChange }) => {
   return (
     <Select value={selectedModel} onValueChange={onModelChange}>
-      <SelectTrigger>
+      <SelectTrigger className='max-w-[60vw]'>
         <SelectValue placeholder='Model' />
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent className='max-w-[60vw]'>
         {Object.entries(models).map(([label, value]) => (
           <SelectItem key={value} value={value}>
             {label}
