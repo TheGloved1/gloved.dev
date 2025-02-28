@@ -143,7 +143,7 @@ const ChatBotInput = memo(
         });
         router.push('/chat/' + threadId);
         try {
-          await createMessage(threadId, input, setInput, imageBase64, scrollCallback, model);
+          await createMessage(threadId, input, model, setInput, imageBase64, scrollCallback);
         } catch (e) {
           toast.error('Failed to generate message');
           setLoading(false);
@@ -153,7 +153,7 @@ const ChatBotInput = memo(
       } else {
         if (!threadId || typeof threadId !== 'string') return;
 
-        await createMessage(threadId, input, setInput, imageBase64, scrollCallback, model);
+        await createMessage(threadId, input, model, setInput, imageBase64, scrollCallback);
         setLoading(false);
         setInput('');
         if (fileInputRef.current) {

@@ -1,3 +1,4 @@
+type ChatModelCategory = 'google' | 'groq';
 /**
  * The Constants class serves as a centralized collection of static constants
  * used throughout the application. It contains information related to various
@@ -19,6 +20,7 @@ export default class Constants {
       'Gemini 1.5 Flash (8B)': 'gemini-1.5-flash-8b',
       'Gemini 2.0 Flash Lite Preview': 'gemini-2.0-flash-lite-preview-02-05',
       'Gemini 2.0 Flash Experimental': 'gemini-2.0-flash-exp',
+      'Gemini 2.0 Pro Experimental': 'gemini-2.0-pro-exp-02-05',
     },
     groq: {
       'Qwen 2.5 (32B)': 'qwen-2.5-32b',
@@ -26,6 +28,18 @@ export default class Constants {
       'Deepseek R1 (Llama Distill)': 'deepseek-r1-distill-llama-70b',
     },
   };
+  public static getModelName(modelKey: string): string | undefined {
+    for (const category in this.ChatModels) {
+      const models = this.ChatModels[category as ChatModelCategory]; // Use the defined type
+      for (const name in models) {
+        if (models[name as keyof typeof models] === modelKey) {
+          // Type assertion here
+          return name; // Return the model name
+        }
+      }
+    }
+    return undefined; // Return undefined if not found
+  }
   static readonly Home = {
     title: 'Home',
     link: '/home',

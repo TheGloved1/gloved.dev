@@ -103,7 +103,7 @@ export default memo(function ChatMessage({
             </button>
             <div className='opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 group-focus:opacity-100'>
               {isHovered ?
-                <Timestamp date={message.created_at} />
+                <Timestamp date={message.created_at} model={message.model} />
               : null}
             </div>
           </div>

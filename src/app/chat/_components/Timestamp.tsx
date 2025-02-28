@@ -1,3 +1,4 @@
+import Constants from '@/lib/constants';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 /**
@@ -7,7 +8,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
  * @prop {Date} date - The date to display a relative timestamp for
  * @returns {ReactElement} A React element that displays the relative timestamp
  */
-const Timestamp = React.memo(({ date }: { date: Date }) => {
+const Timestamp = React.memo(({ date, model }: { date: Date; model: string }) => {
   const [timestamp, setTimestamp] = useState(createTimestamp(date));
   const [interval, setIntervalState] = useState(calculateInterval(date));
 
@@ -29,7 +30,11 @@ const Timestamp = React.memo(({ date }: { date: Date }) => {
     setIntervalState(memoizedInterval);
   }, [memoizedInterval]);
 
-  return <span>{timestamp}</span>;
+  return (
+    <span className='text-xs text-neutral-500 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 group-focus:opacity-100'>
+      Generated with {Constants.getModelName(model)} {timestamp}
+    </span>
+  );
 });
 Timestamp.displayName = 'Timestamp';
 
@@ -50,25 +55,25 @@ const createTimestamp = (date: Date) => {
   let interval = Math.floor(seconds / 31536000);
 
   if (interval >= 1) {
-    return `Sent ${interval} year${interval === 1 ? '' : 's'} ago`;
+    return `${interval} year${interval === 1 ? '' : 's'} ago`;
   }
   interval = Math.floor(seconds / 2592000);
   if (interval >= 1) {
-    return `Sent ${interval} month${interval === 1 ? '' : 's'} ago`;
+    return `${interval} month${interval === 1 ? '' : 's'} ago`;
   }
   interval = Math.floor(seconds / 86400);
   if (interval >= 1) {
-    return `Sent ${interval} day${interval === 1 ? '' : 's'} ago`;
+    return `${interval} day${interval === 1 ? '' : 's'} ago`;
   }
   interval = Math.floor(seconds / 3600);
   if (interval >= 1) {
-    return `Sent ${interval} hour${interval === 1 ? '' : 's'} ago`;
+    return `${interval} hour${interval === 1 ? '' : 's'} ago`;
   }
   interval = Math.floor(seconds / 60);
   if (interval >= 1) {
-    return `Sent ${interval} minute${interval === 1 ? '' : 's'} ago`;
+    return `${interval} minute${interval === 1 ? '' : 's'} ago`;
   }
-  return `Sent ${seconds} second${seconds === 1 ? '' : 's'} ago`;
+  return `${seconds} second${seconds === 1 ? '' : 's'} ago`;
 };
 
 export default Timestamp;

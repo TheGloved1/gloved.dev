@@ -15,7 +15,7 @@ export interface Message {
   id: string;
   threadId: string;
   content: string | (TextPart | ImagePart)[];
-  content_preview?: string;
+  model: string;
   role: 'user' | 'assistant';
   created_at: Date;
   finished: boolean;
@@ -30,7 +30,7 @@ class Database extends Dexie {
     super('chatdb');
     this.version(3).stores({
       threads: 'id, title, created_at, updated_at, last_message_at, removed',
-      messages: 'id, threadId, content, role, [threadId+created_at], finished, removed',
+      messages: 'id, threadId, content, model, role, [threadId+created_at], finished, removed',
     });
 
     this.threads.hook('creating', (primKey, obj) => {
@@ -162,10 +162,10 @@ export async function processStream(
 export async function createMessage(
   threadId: string,
   userContent: string,
+  model: string,
   setInput: (input: string) => void,
   image?: string | null,
   callback?: () => void,
-  model?: string,
 ) {
   setInput('');
   let messageContent: string | (TextPart | ImagePart)[];
@@ -185,6 +185,7 @@ export async function createMessage(
     content: messageContent,
     role: 'user',
     finished: true,
+    model,
   });
 
   generateTitle(threadId);
@@ -198,7 +199,9 @@ export async function createMessage(
     role: 'assistant',
     content: '',
     finished: false,
+    model,
   });
+
   callback?.();
 
   try {
@@ -210,7 +213,7 @@ export async function createMessage(
         },
         body: JSON.stringify({
           messages: contextMessages,
-          model: model ?? 'gemini-1.5-flash',
+          model,
         }),
       }),
     );
