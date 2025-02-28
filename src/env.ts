@@ -8,6 +8,7 @@ export const env = createEnv({
    */
   server: {
     GEMINI: z.string(),
+    GROQ: z.string(),
     NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   },
 
@@ -21,6 +22,7 @@ export const env = createEnv({
   runtimeEnv: {
     NODE_ENV: process.env.NODE_ENV,
     GEMINI: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
+    GROQ: process.env.GROQ_API_KEY,
     NEXT_PUBLIC_FILE_MANAGER_PASSKEY: process.env.NEXT_PUBLIC_FILE_MANAGER_PASSKEY,
   },
 

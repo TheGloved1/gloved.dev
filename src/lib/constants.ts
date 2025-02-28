@@ -13,6 +13,19 @@ export default class Constants {
   static readonly API: string = 'https://api.gloved.dev';
   static readonly FILE_SIZE_LIMIT_MB: number = 2.5;
   static readonly MAX_FILE_SIZE: number = this.FILE_SIZE_LIMIT_MB * 1024 * 1024;
+  public static readonly ChatModels = {
+    google: {
+      'Gemini 1.5 Flash': 'gemini-1.5-flash',
+      'Gemini 1.5 Flash (8B)': 'gemini-1.5-flash-8b',
+      'Gemini 2.0 Flash Lite Preview': 'gemini-2.0-flash-lite-preview-02-05',
+      'Gemini 2.0 Flash Experimental': 'gemini-2.0-flash-exp',
+    },
+    groq: {
+      'Qwen 2.5 (32B)': 'qwen-2.5-32b',
+      'Llama 3.1 (8B)': 'llama-3.1-8b-instant',
+      'Deepseek R1 (Llama Distill)': 'deepseek-r1-distill-llama-70b',
+    },
+  };
   static readonly Home = {
     title: 'Home',
     link: '/home',

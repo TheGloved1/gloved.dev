@@ -1,10 +1,13 @@
 import { Message } from '@/db';
 import { env } from '@/env';
 import { fetchSystemPrompt } from '@/lib/actions';
+import Constants from '@/lib/constants';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
-import { CoreMessage, createDataStreamResponse, smoothStream, streamText } from 'ai';
+import { createGroq } from '@ai-sdk/groq';
+import { CoreMessage, createDataStreamResponse, LanguageModelV1, smoothStream, streamText } from 'ai';
 
 const genAI = createGoogleGenerativeAI({ apiKey: env.GEMINI });
+const groq = createGroq({ apiKey: env.GROQ });
 
 const temperature = 0.95;
 const maxTokens = 8192;
@@ -45,6 +48,24 @@ const safetySettings: SafetySettings = [
   },
 ];
 
+const GoogleModels = Constants.ChatModels.google;
+const GroqModels = Constants.ChatModels.groq;
+
+function getModel(model?: string): LanguageModelV1 {
+  if (!model) {
+    return genAI.languageModel('gemini-1.5-flash', { safetySettings });
+  }
+
+  // Use a type assertion to specify that model is one of the keys of GoogleModels
+  if (model in GoogleModels) {
+    return genAI.languageModel(GoogleModels[model as keyof typeof GoogleModels], { safetySettings }) as LanguageModelV1;
+  } else if (model in GroqModels) {
+    return groq.languageModel(GroqModels[model as keyof typeof GroqModels]) as LanguageModelV1;
+  }
+
+  return genAI.languageModel('gemini-1.5-flash', { safetySettings }) as LanguageModelV1;
+}
+
 export async function POST(req: Request) {
   const parsed: { model?: string; system?: string; messages: Omit<Message, 'id'>[] } = await req.json();
   const { messages } = parsed;
@@ -55,9 +76,7 @@ export async function POST(req: Request) {
     content: msg.content,
   })) as CoreMessage[];
 
-  const model = genAI.languageModel(parsed.model ?? 'gemini-1.5-flash', {
-    safetySettings: safetySettings,
-  });
+  const model = getModel(parsed.model);
 
   return createDataStreamResponse({
     execute: (dataStream) => {

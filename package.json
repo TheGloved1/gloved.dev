@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "@ai-sdk/google": "^1.1.16",
+    "@ai-sdk/groq": "^1.1.11",
     "@ai-sdk/react": "^1.1.17",
     "@eslint/js": "^9.21.0",
     "@radix-ui/react-alert-dialog": "^1.1.6",

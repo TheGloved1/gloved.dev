@@ -13,6 +13,8 @@ import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import ModelDropdown from './ModelDropdown';
 
+const models = { ...Constants.ChatModels.google, ...Constants.ChatModels.groq };
+
 const ChatBotInput = memo(
   ({
     input,
@@ -36,13 +38,6 @@ const ChatBotInput = memo(
     const [loading, setLoading] = useState<boolean>(false);
     const [rows, setRows] = useState<number>(1);
     const [model, setModel] = usePersistentState<string>('model', 'gemini-1.5-flash');
-
-    const models: { [key: string]: string } = {
-      'Gemini 1.5 Flash': 'gemini-1.5-flash',
-      'Gemini 1.5 Flash (8B)': 'gemini-1.5-flash-8b',
-      'Gemini 2.0 Flash Lite Preview': 'gemini-2.0-flash-lite-preview-02-05',
-      'Gemini 2.0 Flash Experimental': 'gemini-2.0-flash-exp',
-    };
 
     // Used to store the hashes of the compressed images to avoid re-compression
     const [compressedImageHashes, setCompressedImageHashes] = usePersistentState<string[]>('compressedImageHashes', []);
