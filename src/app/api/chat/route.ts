@@ -10,7 +10,7 @@ const genAI = createGoogleGenerativeAI({ apiKey: env.GEMINI });
 const groq = createGroq({ apiKey: env.GROQ });
 
 const temperature = 0.95;
-const maxTokens = 8192;
+const maxTokens = 4096;
 const frequencyPenalty = 0.75;
 const presencePenalty = 0.15;
 
@@ -56,7 +56,6 @@ function getModel(model?: string): LanguageModelV1 {
     return genAI.languageModel('gemini-1.5-flash', { safetySettings });
   }
 
-  // Use a type assertion to specify that model is one of the keys of GoogleModels
   if (model in GoogleModels) {
     return genAI.languageModel(GoogleModels[model as keyof typeof GoogleModels], { safetySettings }) as LanguageModelV1;
   } else if (model in GroqModels) {
@@ -72,7 +71,7 @@ export async function POST(req: Request) {
   const system = parsed.system ?? (await fetchSystemPrompt());
 
   const coreMessages = messages.map((msg) => ({
-    role: msg.role, // Ensure this is set correctly
+    role: msg.role,
     content: msg.content,
   })) as CoreMessage[];
 
