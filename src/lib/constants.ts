@@ -26,6 +26,7 @@ export default class Constants {
       'Llama 3.1 (8B)': 'llama-3.1-8b-instant',
       'Llama 3.3 (70B)': 'llama-3.3-70b-versatile',
       'Mixtral 8x7b': 'mixtral-8x7b-32768',
+      'Deepseek R1 (Qwen Distill)': 'deepseek-r1-distill-qwen-32b',
       'Deepseek R1 (Llama Distill)': 'deepseek-r1-distill-llama-70b',
     } as const,
   };

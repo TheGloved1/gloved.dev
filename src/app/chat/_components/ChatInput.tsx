@@ -35,8 +35,8 @@ const ChatBotInput = memo(
     scrollCallback?: () => void;
     isAtBottom?: boolean;
   }) => {
-    const isMobile = useIsMobile();
     const router = useRouter();
+    const isMobile = useIsMobile();
     const { threadId } = useParams();
     const [loading, setLoading] = useState<boolean>(false);
     const [rows, setRows] = useState<number>(2);
