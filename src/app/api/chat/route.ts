@@ -14,7 +14,7 @@ import {
   wrapLanguageModel,
 } from 'ai';
 
-const genAI = createGoogleGenerativeAI({ apiKey: env.GEMINI });
+const google = createGoogleGenerativeAI({ apiKey: env.GEMINI });
 const groq = createGroq({ apiKey: env.GROQ });
 
 const temperature = 0.95;
@@ -61,11 +61,11 @@ const GroqModels = Constants.ChatModels.groq;
 
 function getModel(model?: string): LanguageModelV1 {
   if (!model) {
-    return genAI.languageModel('gemini-1.5-flash', { safetySettings });
+    return google.languageModel('gemini-1.5-flash', { safetySettings });
   }
 
   if (model in GoogleModels) {
-    return genAI.languageModel(GoogleModels[model as keyof typeof GoogleModels], { safetySettings }) as LanguageModelV1;
+    return google.languageModel(GoogleModels[model as keyof typeof GoogleModels], { safetySettings }) as LanguageModelV1;
   } else if (model in GroqModels) {
     if (model === 'deepseek-r1-distill-llama-70b') {
       const enhancedModel = wrapLanguageModel({
@@ -77,7 +77,7 @@ function getModel(model?: string): LanguageModelV1 {
     return groq.languageModel(GroqModels[model as keyof typeof GroqModels]) as LanguageModelV1;
   }
 
-  return genAI.languageModel('gemini-1.5-flash', { safetySettings }) as LanguageModelV1;
+  return google.languageModel('gemini-1.5-flash', { safetySettings }) as LanguageModelV1;
 }
 
 export async function POST(req: Request) {
