@@ -4,7 +4,15 @@ import { fetchSystemPrompt } from '@/lib/actions';
 import Constants from '@/lib/constants';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { createGroq } from '@ai-sdk/groq';
-import { CoreMessage, createDataStreamResponse, LanguageModelV1, smoothStream, streamText } from 'ai';
+import {
+  CoreMessage,
+  createDataStreamResponse,
+  extractReasoningMiddleware,
+  LanguageModelV1,
+  smoothStream,
+  streamText,
+  wrapLanguageModel,
+} from 'ai';
 
 const genAI = createGoogleGenerativeAI({ apiKey: env.GEMINI });
 const groq = createGroq({ apiKey: env.GROQ });
@@ -59,6 +67,13 @@ function getModel(model?: string): LanguageModelV1 {
   if (model in GoogleModels) {
     return genAI.languageModel(GoogleModels[model as keyof typeof GoogleModels], { safetySettings }) as LanguageModelV1;
   } else if (model in GroqModels) {
+    if (model === 'deepseek-r1-distill-llama-70b') {
+      const enhancedModel = wrapLanguageModel({
+        model: groq('deepseek-r1-distill-llama-70b') as LanguageModelV1,
+        middleware: [extractReasoningMiddleware({ tagName: 'think' })],
+      });
+      return enhancedModel;
+    }
     return groq.languageModel(GroqModels[model as keyof typeof GroqModels]) as LanguageModelV1;
   }
 
@@ -89,7 +104,7 @@ export async function POST(req: Request) {
         presencePenalty,
         experimental_transform: smoothStream(),
       });
-      result.mergeIntoDataStream(dataStream);
+      result.mergeIntoDataStream(dataStream, { sendReasoning: true });
     },
     onError: (error) => {
       // Error messages are masked by default for security reasons.

@@ -1,9 +1,12 @@
 'use client';
+import { Button } from '@/components/ui/button';
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
+  SidebarHeader,
   SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar';
@@ -11,14 +14,15 @@ import { db, Thread } from '@/db';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { usePersistentState } from '@/hooks/use-persistent-state';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { MessageSquare, Plus, SquarePen } from 'lucide-react';
+import { ChevronLeft, Home, MessageSquare, Plus, SquarePen } from 'lucide-react';
 import { Link } from 'next-view-transitions';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import DeleteAlert from './DeleteAlert';
 
 export default function ChatBotSidebar({ children }: { children: React.ReactNode }) {
   const { threadId } = useParams();
+  const router = useRouter();
   const isMobile = useIsMobile();
   const [open, setOpen] = useState(true);
   const [lastThreadList, setLastThreadList] = usePersistentState<Thread[]>('lastThreadList', []);
@@ -37,6 +41,17 @@ export default function ChatBotSidebar({ children }: { children: React.ReactNode
   return (
     <SidebarProvider open={open} onOpenChange={setOpen}>
       <Sidebar variant='inset' className='m-0 border border-border'>
+        <SidebarHeader>
+          <div className='divider divider-neutral text-gray-200'>
+            Chats{' '}
+            {!isMobile && (
+              <Link href='/chat' type='button' title='New chat' className='m-0 rounded-lg p-2 hover:bg-gray-500/50'>
+                <SquarePen className='h-4 w-4' />
+                <span className='sr-only'>New chat</span>
+              </Link>
+            )}
+          </div>
+        </SidebarHeader>
         <SidebarContent className='rounded bg-gradient-to-bl from-[--background] to-[--background-secondary]'>
           {isMobile && (
             <>
@@ -49,15 +64,6 @@ export default function ChatBotSidebar({ children }: { children: React.ReactNode
               </SidebarGroup>
             </>
           )}
-          <div className='divider divider-neutral text-gray-200'>
-            Chats{' '}
-            {!isMobile && (
-              <Link href='/chat' type='button' title='New chat' className='m-0 rounded-lg p-2 hover:bg-gray-500/50'>
-                <SquarePen className='h-4 w-4' />
-                <span className='sr-only'>New chat</span>
-              </Link>
-            )}
-          </div>
           {threads?.length ?
             threads.reverse().map((thread) => (
               <SidebarGroup key={thread.id} className='p-2'>
@@ -80,6 +86,13 @@ export default function ChatBotSidebar({ children }: { children: React.ReactNode
             ))
           : null}
         </SidebarContent>
+        <SidebarFooter className='p-2'>
+          <Button onClick={() => router.push('/')} variant='outline' className='w-full'>
+            <ChevronLeft className='h-4 w-4' />
+            <Home className='h-4 w-4' />
+            gloved.dev
+          </Button>
+        </SidebarFooter>
       </Sidebar>
       <SidebarTrigger className={`z-10 ml-4 mt-4 ${isMobile ? 'fixed left-0 top-0' : ''}`} />
       {children}
