@@ -3,7 +3,7 @@ import type { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: Constants.NAME + ' | ' + Constants.Chat.title,
+    name: 'GlovedBot Chat',
     short_name: 'GlovedChat',
     description: Constants.Chat.description,
     start_url: '/chat',
