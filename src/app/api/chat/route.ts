@@ -1,4 +1,4 @@
-import { Message } from '@/db';
+import { Message } from '@/dexie';
 import { env } from '@/env';
 import { fetchSystemPrompt } from '@/lib/actions';
 import Constants from '@/lib/constants';

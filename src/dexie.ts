@@ -89,7 +89,7 @@ class Database extends Dexie {
   }
 }
 
-export const db = new Database();
+export const dxdb = new Database();
 
 export function formatContent(content: string | (TextPart | ImagePart)[]): {
   content: string;
@@ -138,7 +138,7 @@ export async function processStream(
         const json = JSON.parse(line.slice(2)); // Remove the prefix
         messageContent += json; // Append the new content
         if (messageId) {
-          await db.messages.update(messageId, {
+          await dxdb.messages.update(messageId, {
             content: messageContent, // Update with the accumulated content
           });
         }
@@ -146,7 +146,7 @@ export async function processStream(
         // This indicates the end of the message
         done = true;
         if (messageId)
-          await db.messages.update(messageId, {
+          await dxdb.messages.update(messageId, {
             created_at: new Date(),
             finished: true, // Mark as finished
           });
@@ -180,7 +180,7 @@ export async function createMessage(
   } else {
     messageContent = userContent || '';
   }
-  await db.addMessage({
+  await dxdb.addMessage({
     threadId,
     content: messageContent,
     role: 'user',
@@ -189,12 +189,12 @@ export async function createMessage(
   });
 
   generateTitle(threadId);
-  const allMessages = await db.getThreadMessages(threadId);
+  const allMessages = await dxdb.getThreadMessages(threadId);
   const contextMessages = allMessages.map((m) => ({
     role: m.role,
     content: m.content,
   }));
-  const assistantMessageId = await db.addMessage({
+  const assistantMessageId = await dxdb.addMessage({
     threadId,
     role: 'assistant',
     content: '',
@@ -233,7 +233,7 @@ export async function createMessage(
 }
 
 export async function generateTitle(threadId: string) {
-  const allMessages = await db.getThreadMessages(threadId);
+  const allMessages = await dxdb.getThreadMessages(threadId);
   const contextMessages = allMessages.map((m) => ({
     role: m.role,
     content: m.content,
@@ -263,7 +263,7 @@ export async function generateTitle(threadId: string) {
     if (error) return;
     if (!data.body) return;
     const title = await processStream(data.body);
-    await db.threads.update(threadId, {
+    await dxdb.threads.update(threadId, {
       updated_at: new Date(),
       title,
     });

@@ -10,7 +10,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar';
-import { db, Thread } from '@/db';
+import { dxdb, Thread } from '@/dexie';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { usePersistentState } from '@/hooks/use-persistent-state';
 import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs';
@@ -29,11 +29,11 @@ export default function ChatBotSidebar({ children }: { children: React.ReactNode
   const [lastThreadList, setLastThreadList] = usePersistentState<Thread[]>('lastThreadList', []);
   const threads = useLiveQuery(
     async () => {
-      const threads = await db.getThreads();
+      const threads = await dxdb.getThreads();
       setLastThreadList(threads);
       return threads;
     },
-    [db.threads],
+    [dxdb.threads],
     lastThreadList,
   );
 

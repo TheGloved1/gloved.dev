@@ -1,5 +1,5 @@
 'use client';
-import { createMessage, db } from '@/db';
+import { createMessage, dxdb } from '@/dexie';
 import React, { memo, useMemo, useState } from 'react';
 
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -141,7 +141,7 @@ const ChatBotInput = memo(
         imageBase64 = await convertFileToBase64(fileInputRef.current.files[0]);
       }
       if (createThread) {
-        const threadId = await db.createThread({
+        const threadId = await dxdb.createThread({
           title: Date.now().toString(),
         });
         router.push('/chat/' + threadId);

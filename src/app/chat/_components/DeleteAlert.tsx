@@ -9,7 +9,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { db, Thread } from '@/db';
+import { dxdb, Thread } from '@/dexie';
 import { usePersistentState } from '@/hooks/use-persistent-state';
 import { tryCatch } from '@/lib/utils';
 import { X } from 'lucide-react';
@@ -23,7 +23,7 @@ const DeleteAlert = ({ id, isCurrentThread }: { id: string; isCurrentThread: boo
   const [lastThreadList, setLastThreadList] = usePersistentState<Thread[]>('lastThreadList', []);
 
   const handleDelete = async () => {
-    const { error } = await tryCatch(db.deleteThread(id)); // Delete the thread
+    const { error } = await tryCatch(dxdb.deleteThread(id)); // Delete the thread
     if (error) return toast.error('Error deleting thread'), router.replace('/chat');
     setLastThreadList(lastThreadList.filter((t) => t.id !== id));
     toast.success('Thread deleted');

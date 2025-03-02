@@ -1,6 +1,6 @@
 'use client';
 import Markdown from '@/components/Markdown';
-import { Message } from '@/db';
+import { Message } from '@/dexie';
 import { ImagePart, TextPart } from 'ai';
 import { Copy, SquarePen } from 'lucide-react';
 import Image from 'next/image';

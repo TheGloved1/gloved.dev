@@ -1,5 +1,5 @@
 'use client';
-import { db, formatContent, generateTitle, Message } from '@/db';
+import { dxdb, formatContent, generateTitle, Message } from '@/dexie';
 import { tryCatch } from '@/lib/utils';
 import { useLiveQuery } from 'dexie-react-hooks';
 import nextDynamic from 'next/dynamic';
@@ -19,7 +19,7 @@ function ThreadPage(): React.JSX.Element {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    db.getThreads().then((threads) => {
+    dxdb.getThreads().then((threads) => {
       if (threads.find((t) => t.id === threadId)) return threads;
       redirect('/chat');
     });
@@ -36,24 +36,24 @@ function ThreadPage(): React.JSX.Element {
   const messages = useLiveQuery(
     () => {
       scrollToBottom();
-      return db.getThreadMessages(threadId);
+      return dxdb.getThreadMessages(threadId);
     },
-    [threadId, db.messages],
+    [threadId, dxdb.messages],
     [],
   );
 
   const handleEditMessage = useCallback(
     async (m: Message) => {
       const { content, image } = formatContent(m.content);
-      const { data, error } = await tryCatch(db.getThreadMessages(threadId)); // Get all messages in the thread
+      const { data, error } = await tryCatch(dxdb.getThreadMessages(threadId)); // Get all messages in the thread
       if (error) return;
       const allMessages = data;
       const index = allMessages.findIndex((msg) => msg.id === m.id); // Find the index of the deleted message
 
       // Delete all subsequent messages
-      await db.removeMessage(m.id);
+      await dxdb.removeMessage(m.id);
       for (let i = index + 1; i < allMessages.length; i++) {
-        await db.removeMessage(allMessages[i].id);
+        await dxdb.removeMessage(allMessages[i].id);
       }
 
       // Regenerate the title
