@@ -19,7 +19,7 @@ const groq = createGroq({ apiKey: env.GROQ });
 
 const temperature = 0.95;
 const maxTokens = 4096;
-const frequencyPenalty = 0.75;
+const frequencyPenalty = 0.95;
 const presencePenalty = 0.15;
 
 type SafetySettings = {
