@@ -2,12 +2,13 @@ import Providers from '@/components/Providers';
 import { Toaster } from '@/components/ui/sonner';
 import Constants from '@/lib/constants';
 import { ClerkProvider } from '@clerk/nextjs';
+import { dark } from '@clerk/themes';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Metadata } from 'next';
 import { ViewTransitions } from 'next-view-transitions';
 import { JetBrains_Mono } from 'next/font/google';
-import React, { Suspense } from 'react';
+import React from 'react';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -41,14 +42,14 @@ const jetbrains = JetBrains_Mono({
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <ViewTransitions>
-      <ClerkProvider appearance={{ variables: { colorPrimary: '#333' } }}>
+      <ClerkProvider afterSignOutUrl='/chat' appearance={{ variables: { colorPrimary: '#333' }, baseTheme: dark }}>
         <html lang='en'>
           <body className={`dark snap-x snap-mandatory bg-background antialiased ${jetbrains.className}`}>
-            <Toaster toastOptions={{ style: { background: 'gray' } }} />
+            <Toaster toastOptions={{ style: { background: '#333' } }} />
             <Providers>
               <Analytics />
               <SpeedInsights />
-              <Suspense fallback={null}>{/* <RainingLetters /> */}</Suspense>
+              {/* <Suspense fallback={null}>{<RainingLetters />}</Suspense> */}
               {children}
             </Providers>
           </body>

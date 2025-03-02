@@ -20,6 +20,9 @@ importers:
       '@clerk/nextjs':
         specifier: ^6.12.2
         version: 6.12.2(next@15.2.0-canary.64(@opentelemetry/api@1.9.0)(babel-plugin-react-compiler@19.0.0-beta-e552027-20250112)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      '@clerk/themes':
+        specifier: ^2.2.20
+        version: 2.2.20
       '@eslint/js':
         specifier: ^9.21.0
         version: 9.21.0
@@ -496,6 +499,10 @@ packages:
         optional: true
       react-dom:
         optional: true
+
+  '@clerk/themes@2.2.20':
+    resolution: {integrity: sha512-ck93Yjpef8LQLXbMuVHYYbbZK+iESGvboT0zvR4Z8vmSePiNpFCvKHpl22hVdUxUPum4QhocuuOYFqxJ2nVSyQ==}
+    engines: {node: '>=18.17.0'}
 
   '@clerk/types@4.47.0':
     resolution: {integrity: sha512-xB/gqMq6cq6/47ymKs0WaaxKEFPzlvbSgJTLFIfnPMnFSNwYE4WVgVh6geFx6qWr3z588JDDZkJskBHZlgPmQQ==}
@@ -4634,6 +4641,11 @@ snapshots:
     optionalDependencies:
       react: 19.0.0
       react-dom: 19.0.0(react@19.0.0)
+
+  '@clerk/themes@2.2.20':
+    dependencies:
+      '@clerk/types': 4.47.0
+      tslib: 2.4.1
 
   '@clerk/types@4.47.0':
     dependencies:

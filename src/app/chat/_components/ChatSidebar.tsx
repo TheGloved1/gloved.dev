@@ -47,7 +47,7 @@ export default function ChatBotSidebar({ children }: { children: React.ReactNode
             <SignInButton />
           </SignedOut>
           <SignedIn>
-            <UserButton showName appearance={{ variables: { colorText: '#6B7280' } }} />
+            <UserButton showName />
           </SignedIn>
           <div className='divider divider-neutral text-gray-200'>
             Chats{' '}
