@@ -15,7 +15,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { usePersistentState } from '@/hooks/use-persistent-state';
 import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { ChevronLeft, Home, LucideCircleUser, MessageSquare, Plus, SquarePen } from 'lucide-react';
+import { ChevronLeft, Home, MessageSquare, Plus, SquarePen } from 'lucide-react';
 import { Link } from 'next-view-transitions';
 import { useParams, useRouter } from 'next/navigation';
 import React, { useState } from 'react';
@@ -45,10 +45,7 @@ export default function ChatBotSidebar({ children }: { children: React.ReactNode
         <SidebarHeader>
           <SignedOut>
             <SignInButton mode={'modal'}>
-              <Button className='btn gap-1'>
-                <LucideCircleUser className='mr-2 !size-5' />
-                Sign in
-              </Button>
+              <Button className='btn gap-1'>Sign in</Button>
             </SignInButton>
           </SignedOut>
           <SignedIn>
