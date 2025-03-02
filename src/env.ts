@@ -9,6 +9,7 @@ export const env = createEnv({
   server: {
     GEMINI: z.string(),
     GROQ: z.string(),
+    CLERK_SECRET_KEY: z.string(),
     NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   },
 
@@ -17,13 +18,19 @@ export const env = createEnv({
    */
   client: {
     NEXT_PUBLIC_FILE_MANAGER_PASSKEY: z.string(),
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string(),
   },
 
+  /**
+   * Specify your runtime environment variables schema here.
+   */
   runtimeEnv: {
     NODE_ENV: process.env.NODE_ENV,
     GEMINI: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
     GROQ: process.env.GROQ_API_KEY,
     NEXT_PUBLIC_FILE_MANAGER_PASSKEY: process.env.NEXT_PUBLIC_FILE_MANAGER_PASSKEY,
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
+    CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
   },
 
   emptyStringAsUndefined: true,

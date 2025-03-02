@@ -1,6 +1,7 @@
 import Providers from '@/components/Providers';
 import { Toaster } from '@/components/ui/sonner';
 import Constants from '@/lib/constants';
+import { ClerkProvider } from '@clerk/nextjs';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Metadata } from 'next';
@@ -40,17 +41,19 @@ const jetbrains = JetBrains_Mono({
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <ViewTransitions>
-      <html lang='en'>
-        <body className={`dark snap-x snap-mandatory bg-background antialiased ${jetbrains.className}`}>
-          <Toaster toastOptions={{ style: { background: 'gray' } }} />
-          <Providers>
-            <Analytics />
-            <SpeedInsights />
-            <Suspense fallback={null}>{/* <RainingLetters /> */}</Suspense>
-            {children}
-          </Providers>
-        </body>
-      </html>
+      <ClerkProvider appearance={{ variables: { colorPrimary: '#333' } }}>
+        <html lang='en'>
+          <body className={`dark snap-x snap-mandatory bg-background antialiased ${jetbrains.className}`}>
+            <Toaster toastOptions={{ style: { background: 'gray' } }} />
+            <Providers>
+              <Analytics />
+              <SpeedInsights />
+              <Suspense fallback={null}>{/* <RainingLetters /> */}</Suspense>
+              {children}
+            </Providers>
+          </body>
+        </html>
+      </ClerkProvider>
     </ViewTransitions>
   );
 }

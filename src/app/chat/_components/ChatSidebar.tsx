@@ -13,6 +13,7 @@ import {
 import { db, Thread } from '@/db';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { usePersistentState } from '@/hooks/use-persistent-state';
+import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { ChevronLeft, Home, MessageSquare, Plus, SquarePen } from 'lucide-react';
 import { Link } from 'next-view-transitions';
@@ -42,6 +43,12 @@ export default function ChatBotSidebar({ children }: { children: React.ReactNode
     <SidebarProvider open={open} onOpenChange={setOpen}>
       <Sidebar variant='inset' className='m-0 border border-border'>
         <SidebarHeader>
+          <SignedOut>
+            <SignInButton />
+          </SignedOut>
+          <SignedIn>
+            <UserButton showName appearance={{ variables: { colorText: '#6B7280' } }} />
+          </SignedIn>
           <div className='divider divider-neutral text-gray-200'>
             Chats{' '}
             {!isMobile && (
