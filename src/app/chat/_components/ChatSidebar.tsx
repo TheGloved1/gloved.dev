@@ -44,22 +44,11 @@ export default function ChatBotSidebar({ children }: { children: React.ReactNode
       <Sidebar variant='inset' className='m-0 border border-border'>
         <SidebarHeader>
           <SignedOut>
-            <SignInButton />
+            <SignInButton mode={'modal'} />
           </SignedOut>
           <SignedIn>
             <UserButton showName />
           </SignedIn>
-          <div className='divider divider-neutral text-gray-200'>
-            Chats{' '}
-            {!isMobile && (
-              <Link href='/chat' type='button' title='New chat' className='m-0 rounded-lg p-2 hover:bg-gray-500/50'>
-                <SquarePen className='h-4 w-4' />
-                <span className='sr-only'>New chat</span>
-              </Link>
-            )}
-          </div>
-        </SidebarHeader>
-        <SidebarContent className='rounded bg-gradient-to-bl from-[--background] to-[--background-secondary]'>
           {isMobile && (
             <>
               <div className='divider divider-neutral text-gray-200'>New Chat</div>
@@ -71,6 +60,17 @@ export default function ChatBotSidebar({ children }: { children: React.ReactNode
               </SidebarGroup>
             </>
           )}
+          <div className='divider divider-neutral text-gray-200'>
+            Chats{' '}
+            {!isMobile && (
+              <Link href='/chat' type='button' title='New chat' className='m-0 rounded-lg p-2 hover:bg-gray-500/50'>
+                <SquarePen className='h-4 w-4' />
+                <span className='sr-only'>New chat</span>
+              </Link>
+            )}
+          </div>
+        </SidebarHeader>
+        <SidebarContent className='rounded bg-gradient-to-bl from-[--background] to-[--background-secondary]'>
           {threads?.length ?
             threads.reverse().map((thread) => (
               <SidebarGroup key={thread.id} className='p-2'>
