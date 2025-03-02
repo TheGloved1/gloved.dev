@@ -1,6 +1,11 @@
 import { clerkMiddleware } from '@clerk/nextjs/server';
 
-export default clerkMiddleware();
+export default clerkMiddleware({
+  afterSignInUrl: '/chat',
+  afterSignUpUrl: '/chat',
+  signInUrl: 'https://accounts.gloved.dev/sign-in',
+  signUpUrl: 'https://accounts.gloved.dev/sign-up',
+});
 
 export const config = {
   matcher: [
