@@ -5,8 +5,8 @@ import React, { memo, useMemo, useState } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { usePersistentState } from '@/hooks/use-persistent-state';
 import Constants from '@/lib/constants';
+import Compressor from 'compressorjs';
 import { SHA256 } from 'crypto-js';
-import ImageCompressor from 'image-compressor.js';
 import { ChevronDown, Loader2, Paperclip, Send, X } from 'lucide-react';
 import NextImage from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
@@ -96,7 +96,7 @@ const ChatBotInput = memo(
               console.log('Original file size:', inKB(file.size), 'KB');
 
               // Use image-compressor.js to compress the image
-              new ImageCompressor(file, {
+              new Compressor(file, {
                 convertSize: 10000,
                 quality: 0.05,
                 success(result) {

@@ -26,6 +26,9 @@ importers:
       '@eslint/js':
         specifier: ^9.21.0
         version: 9.21.0
+      '@formkit/auto-animate':
+        specifier: ^0.8.2
+        version: 0.8.2
       '@radix-ui/react-alert-dialog':
         specifier: ^1.1.6
         version: 1.1.6(@types/react-dom@19.0.4(@types/react@19.0.10))(@types/react@19.0.10)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -89,6 +92,9 @@ importers:
       compress.js:
         specifier: ^2.1.2
         version: 2.1.2
+      compressorjs:
+        specifier: ^1.2.1
+        version: 1.2.1
       crypto-js:
         specifier: ^4.2.0
         version: 4.2.0
@@ -107,9 +113,6 @@ importers:
       framer-motion:
         specifier: ^12.4.4
         version: 12.4.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
-      image-compressor.js:
-        specifier: ^1.1.4
-        version: 1.1.4
       lucide-react:
         specifier: ^0.475.0
         version: 0.475.0(react@19.0.0)
@@ -571,6 +574,9 @@ packages:
 
   '@floating-ui/utils@0.2.9':
     resolution: {integrity: sha512-MDWhGtE+eHw5JW7lq4qhc5yRLS11ERl1c7Z6Xd0a58DozHES6EnNNwUWbMiG4J9Cgj053Bhk8zvlhFYKVhULwg==}
+
+  '@formkit/auto-animate@0.8.2':
+    resolution: {integrity: sha512-SwPWfeRa5veb1hOIBMdzI+73te5puUBHmqqaF1Bu7FjvxlYSz/kJcZKSa9Cg60zL0uRNeJL2SbRxV6Jp6Q1nFQ==}
 
   '@humanfs/core@0.19.1':
     resolution: {integrity: sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA==}
@@ -2012,6 +2018,9 @@ packages:
   compress.js@2.1.2:
     resolution: {integrity: sha512-DBb6M4wwe0rRAPeiKQ8HJrWuocVppUw9Qte4rEXiDrc5X3TrzeRKLzpvSE9oZ0Nd4HTXSSFphj3/XWwuptkQqw==}
 
+  compressorjs@1.2.1:
+    resolution: {integrity: sha512-+geIjeRnPhQ+LLvvA7wxBQE5ddeLU7pJ3FsKFWirDw6veY3s9iLxAQEw7lXGHnhCJvBujEQWuNnGzZcvCvdkLQ==}
+
   concat-map@0.0.1:
     resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}
 
@@ -2628,10 +2637,6 @@ packages:
     resolution: {integrity: sha512-hsBTNUqQTDwkWtcdYI2i06Y/nUBEsNEDJKjWdigLvegy8kDuJAS8uRlpkkcQpyEXL0Z/pjDy5HBmMjRCJ2gq+g==}
     engines: {node: '>= 4'}
 
-  image-compressor.js@1.1.4:
-    resolution: {integrity: sha512-DF1YFSw+m6FqpXsleD4+q9eu/wFFkm8sHuYhgYy5GWFVencXeuB1/UqC12xz+dCZooPetf5LIb8JOGkgEWmlcg==}
-    deprecated: No longer maintainted, please use `comprossorjs`
-
   immediate@3.0.6:
     resolution: {integrity: sha512-XXOFtyqDjNDAQxVfYxuF7g9Il/IbWmmlQg2MYKOH8ExIT1qg6xc4zyS3HaEEATgs1btfzxq15ciUiY7gjSXRGQ==}
 
@@ -2684,9 +2689,9 @@ packages:
     resolution: {integrity: sha512-ZMERYes6pDydyuGidse7OsHxtbI7WVeUEozgR/g7rd0xUimYNlvZRE/K2MgZTjWy725IfelLeVcEM97mmtRGXw==}
     engines: {node: '>=8'}
 
-  is-blob@1.0.0:
-    resolution: {integrity: sha512-QIZDHQZpRfMEZwSTD7egdNZS7H/awVW9FZ3yJv+gg1z8d8GPXEs76QWL67fZs2BoBqp2dGtamTJpEYFJHmD73g==}
-    engines: {node: '>=0.10.0'}
+  is-blob@2.1.0:
+    resolution: {integrity: sha512-SZ/fTft5eUhQM6oF/ZaASFDEdbFVe89Imltn9uZr03wdKMcWNVYSMjQPFtg05QuNkt5l5c135ElvXEQG0rk4tw==}
+    engines: {node: '>=6'}
 
   is-boolean-object@1.2.2:
     resolution: {integrity: sha512-wa56o2/ElJMYqjCjGkXri7it5FbebW5usLw/nPmCMs5DeZ7eziSYZhSmPRn0txqeW4LnAmQQU7FgqLpsEFKM4A==}
@@ -4723,6 +4728,8 @@ snapshots:
 
   '@floating-ui/utils@0.2.9': {}
 
+  '@formkit/auto-animate@0.8.2': {}
+
   '@humanfs/core@0.19.1': {}
 
   '@humanfs/node@0.16.6':
@@ -6258,6 +6265,11 @@ snapshots:
 
   compress.js@2.1.2: {}
 
+  compressorjs@1.2.1:
+    dependencies:
+      blueimp-canvas-to-blob: 3.29.0
+      is-blob: 2.1.0
+
   concat-map@0.0.1: {}
 
   cookie@1.0.2: {}
@@ -7046,11 +7058,6 @@ snapshots:
 
   ignore@5.3.2: {}
 
-  image-compressor.js@1.1.4:
-    dependencies:
-      blueimp-canvas-to-blob: 3.29.0
-      is-blob: 1.0.0
-
   immediate@3.0.6: {}
 
   import-fresh@3.3.1:
@@ -7110,7 +7117,7 @@ snapshots:
     dependencies:
       binary-extensions: 2.3.0
 
-  is-blob@1.0.0: {}
+  is-blob@2.1.0: {}
 
   is-boolean-object@1.2.2:
     dependencies:
