@@ -14,19 +14,17 @@ import { dxdb, Thread } from '@/dexie';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { usePersistentState } from '@/hooks/use-persistent-state';
 import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs';
-import autoAnimate from '@formkit/auto-animate';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { ChevronLeft, Home, MessageSquare, Plus, SquarePen } from 'lucide-react';
 import { Link } from 'next-view-transitions';
 import { useParams, useRouter } from 'next/navigation';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import DeleteAlert from './DeleteAlert';
 
 export default function ChatBotSidebar({ children }: { children: React.ReactNode }) {
   const { threadId } = useParams();
   const router = useRouter();
   const isMobile = useIsMobile();
-  const parent = useRef(null);
   const [open, setOpen] = useState(true);
   const [lastThreadList, setLastThreadList] = usePersistentState<Thread[]>('lastThreadList', []);
   const threads = useLiveQuery(
@@ -38,10 +36,6 @@ export default function ChatBotSidebar({ children }: { children: React.ReactNode
     [dxdb.threads],
     lastThreadList,
   );
-
-  useEffect(() => {
-    if (parent.current) autoAnimate(parent.current);
-  }, [parent]);
 
   const isCurrentThread = (id: string) => threadId === id;
 
@@ -78,7 +72,7 @@ export default function ChatBotSidebar({ children }: { children: React.ReactNode
             )}
           </div>
         </SidebarHeader>
-        <SidebarContent ref={parent} className='rounded bg-gradient-to-bl from-[--background] to-[--background-secondary]'>
+        <SidebarContent className='rounded bg-gradient-to-bl from-[--background] to-[--background-secondary]'>
           {threads?.length ?
             threads.reverse().map((thread) => (
               <SidebarGroup key={thread.id} className='p-2'>
