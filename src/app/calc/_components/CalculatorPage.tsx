@@ -25,7 +25,18 @@ export default function CalculatorPage(): React.JSX.Element {
     setIsCalculating(true);
     setTimeout(() => {
       try {
-        let result: number | string = eval(display.replace('√', 'Math.sqrt').replace('^', '**'));
+        const sanitizedDisplay = display
+          .replace(/[^\d\+\-\*\/\.\(\)\^eE]/g, '') // Replace any character that is not a number, +, -, *, /, ., (, ), ^, e, or E
+          .replace(/√(\d+)/g, 'Math.sqrt($1)') // This will replace √9 with Math.sqrt(9)
+          .replace(/^(-?\d+(\.\d+)?)[eE](-?\d+)$/, 'Math.pow($1, $3)') // Handle exponentiation (e.g. 2e3)
+          .replace(/^(-?\d+(\.\d+)?)[eE](-?\d+(\.\d+)?)$/, 'Math.pow($1, $4)') // Handle exponentiation with decimal numbers (e.g. 2.3e-4)
+          .replace(/^(-?\d+(\.\d+)?)[eE](-?\d+(\.\d+)?)$/, 'Math.pow($1, $4)') // Handle exponentiation with decimal numbers (e.g. 2.3e-4)
+          .replace(/^(-?\d+(\.\d+)?)(\.\s*\^?\s*(-?\d+(\.\d+)?))$/, 'Math.pow($1, $4)') // Handle exponentiation with caret (e.g. 2^3)
+          .replace(/\(\-/g, '(0-') // Handle negative numbers in parentheses
+          .replace(/\(([+-]?\d*\.?\d+)\)/g, '($1)') // Handle numbers inside parentheses
+          .replace(/\((\d+(\.\d+)?)\)(\d+(\.\d+)?)$/, '($1 * $3)') // Handle operations like (2)7
+          .replace(/(\d+(\.\d+)?)\((\d+(\.\d+)?)\)*/, '($1 * $3)'); // Handle operations like 2(7)
+        let result: number | string = eval(sanitizedDisplay);
         if (typeof result === 'number' && (Math.abs(result) > 1e6 || Math.abs(result) < 1e-6)) {
           result = result.toExponential();
         }
