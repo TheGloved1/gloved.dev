@@ -25,9 +25,11 @@ export default function SettingsPage() {
           <ChevronLeft className='h-5 w-5' />
           <span className='text-sm font-medium'>Back to chat</span>
         </Link>
-        <h1 className='text-3xl font-bold'>Settings</h1>
-        <div className='rounded border border-gray-300 p-4'>
-          <h2 className='text-xl font-bold'>AI Personality</h2>
+        <header className='mb-4 flex items-center justify-center'>
+          <h1 className='text-3xl font-bold'>Settings</h1>
+        </header>
+        <div className='rounded p-4'>
+          <h2 className='p-2 text-xl font-bold'>AI Personality</h2>
           <textarea
             value={systemPrompt ?? undefined}
             onChange={(e) => setSystemPrompt(e.target.value)}
