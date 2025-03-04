@@ -15,10 +15,11 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { usePersistentState } from '@/hooks/use-persistent-state';
 import { SignedIn, SignedOut, SignInButton, useAuth, UserButton } from '@clerk/nextjs';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { ChevronLeft, Home, MessageSquare, Plus, SquarePen } from 'lucide-react';
+import { ChevronLeft, Home, MessageSquare, Plus, Settings, SquarePen } from 'lucide-react';
 import { Link } from 'next-view-transitions';
 import { useParams, useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import DeleteAlert from './DeleteAlert';
 
 export default function ChatBotSidebar({ children }: { children: React.ReactNode }) {
@@ -55,7 +56,17 @@ export default function ChatBotSidebar({ children }: { children: React.ReactNode
             </SignInButton>
           </SignedOut>
           <SignedIn>
-            <UserButton showName />
+            <div className='flex items-center gap-2'>
+              <UserButton showName />
+              <Button
+                title='Settings'
+                variant='ghost'
+                className='ml-auto h-8 w-8 rounded-full p-0 text-2xl'
+                onClick={() => toast.info('Settings button is not implemented yet')}
+              >
+                <Settings className='h-5 w-5' />
+              </Button>
+            </div>
           </SignedIn>
           {isMobile && (
             <>
