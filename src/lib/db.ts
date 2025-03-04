@@ -38,18 +38,18 @@ export async function syncMessages(input: { userId: string; messages: Message[] 
       }),
   );
 
-  const keys = [];
-  const values = new Map<string, string>();
+  const keysToDel = [];
+  const valuesToSet = new Map<string, string>();
   for (const [key, value] of kvMap) {
     if (value === null) {
-      keys.push(key);
+      keysToDel.push(key);
     } else {
-      values.set(key, value);
+      valuesToSet.set(key, value);
     }
   }
 
-  await redis.del(...keys);
-  await redis.mset(mapToObject(values));
+  await redis.del(...keysToDel);
+  await redis.mset(mapToObject(valuesToSet));
   console.log('[SYNC] Synced', input.messages.length, 'messages');
 }
 
@@ -74,18 +74,18 @@ export async function syncThreads(input: { userId: string; threads: Thread[] }) 
       }),
   );
 
-  const keys = [];
-  const values = new Map<string, string>();
+  const keysToDel = [];
+  const valuesToSet = new Map<string, string>();
   for (const [key, value] of kvMap) {
     if (value === null) {
-      keys.push(key);
+      keysToDel.push(key);
     } else {
-      values.set(key, value);
+      valuesToSet.set(key, value);
     }
   }
 
-  await redis.del(...keys);
-  await redis.mset(mapToObject(values));
+  await redis.del(...keysToDel);
+  await redis.mset(mapToObject(valuesToSet));
   console.log('[SYNC] Synced', input.threads.length, 'threads');
 }
 
