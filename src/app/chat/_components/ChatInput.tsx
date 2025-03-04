@@ -40,6 +40,7 @@ const ChatBotInput = memo(
     const { threadId } = useParams();
     const [loading, setLoading] = useState<boolean>(false);
     const [rows, setRows] = useState<number>(2);
+    const [systemPrompt] = usePersistentState<string | undefined>('systemPrompt', undefined);
     const [model, setModel] = usePersistentState<string>('model', 'gemini-1.5-flash');
 
     // Used to store the hashes of the compressed images to avoid re-compression
@@ -148,7 +149,7 @@ const ChatBotInput = memo(
         });
         router.push('/chat/' + threadId);
         try {
-          await createMessage(threadId, input, model, setInput, imageBase64, scrollCallback);
+          await createMessage(threadId, input, model, setInput, imageBase64, scrollCallback, systemPrompt?.trim());
         } catch (e) {
           toast.error('Failed to generate message');
           setLoading(false);

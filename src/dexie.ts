@@ -236,6 +236,7 @@ export async function createMessage(
   setInput: (input: string) => void,
   image?: string | null,
   callback?: () => void,
+  systemPrompt?: string,
 ) {
   setInput('');
   let messageContent: string | (TextPart | ImagePart)[];
@@ -282,6 +283,7 @@ export async function createMessage(
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          system: systemPrompt,
           messages: contextMessages,
           model,
         }),

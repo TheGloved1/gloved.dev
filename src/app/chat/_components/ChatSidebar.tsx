@@ -19,7 +19,6 @@ import { ChevronLeft, Home, MessageSquare, Plus, Settings, SquarePen } from 'luc
 import { Link } from 'next-view-transitions';
 import { useParams, useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
-import { toast } from 'sonner';
 import DeleteAlert from './DeleteAlert';
 
 export default function ChatBotSidebar({ children }: { children: React.ReactNode }) {
@@ -58,14 +57,11 @@ export default function ChatBotSidebar({ children }: { children: React.ReactNode
           <SignedIn>
             <div className='flex items-center gap-2'>
               <UserButton showName />
-              <Button
-                title='Settings'
-                variant='ghost'
-                className='ml-auto h-8 w-8 rounded-full p-0 text-2xl'
-                onClick={() => toast.info('Settings button is not implemented yet')}
-              >
-                <Settings className='h-5 w-5' />
-              </Button>
+              <Link href='/chat/settings' className='ml-auto'>
+                <Button variant='ghost' className='h-8 w-8 rounded-full p-0 text-2xl'>
+                  <Settings className='h-5 w-5' />
+                </Button>
+              </Link>
             </div>
           </SignedIn>
           {isMobile && (
