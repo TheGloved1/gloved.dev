@@ -1,6 +1,7 @@
+import { syncDbFromServer, syncJsonToDb } from '@/lib/actions';
+import { tryCatch } from '@/lib/utils';
 import { ImagePart, TextPart } from 'ai';
 import Dexie, { type EntityTable } from 'dexie';
-import { tryCatch } from './lib/utils';
 
 export interface Thread {
   id: string;
@@ -14,7 +15,7 @@ export interface Thread {
 export interface Message {
   id: string;
   threadId: string;
-  content: string | (TextPart | ImagePart)[];
+  content: string | (TextPart | ImagePart)[] | null;
   model: string;
   role: 'user' | 'assistant';
   created_at: Date;
@@ -50,6 +51,10 @@ class Database extends Dexie {
     return await this.threads.where('removed').equals('false').sortBy('last_message_at');
   }
 
+  async getMessages() {
+    return await this.messages.where('removed').equals('false').sortBy('created_at');
+  }
+
   async addMessage(message: Omit<Message, 'id' | 'created_at' | 'removed'>) {
     const id = crypto.randomUUID();
     await this.transaction('rw', [this.messages, this.threads], async () => {
@@ -63,7 +68,7 @@ class Database extends Dexie {
   }
 
   async removeMessage(id: string) {
-    await this.messages.update(id, { removed: 'true' });
+    await this.messages.update(id, { removed: 'true', content: null });
   }
 
   async createThread(thread: Omit<Thread, 'id' | 'created_at' | 'updated_at' | 'last_message_at' | 'removed'>) {
@@ -86,16 +91,81 @@ class Database extends Dexie {
 
   async deleteThread(threadId: string) {
     await this.threads.update(threadId, { removed: 'true' });
+    await this.messages.where('threadId').equals(threadId).modify({ removed: 'true', content: null });
+  }
+
+  async exportDbToServer(userId: string) {
+    const threads = await this.threads.toArray();
+    const messages = await this.messages.toArray();
+    messages.map((m) => {
+      if (!m.content) return m;
+      if (typeof m.content === 'string') return m;
+      const newContent = m.content?.map((p) => {
+        if (p.type === 'image') {
+          return { ...p, image: null };
+        }
+        return p;
+      });
+      if (!newContent) return m;
+      return { ...m, content: newContent };
+    });
+
+    await syncJsonToDb({ threads, messages }, userId);
+    console.log('[SYNC] Exported', threads.length, 'threads');
+    console.log('[SYNC] Exported', messages.length, 'messages');
+  }
+
+  async importDbFromServer(userId: string) {
+    const data = await syncDbFromServer(userId);
+    if (!data) return console.log('[SYNC] Failed to import data');
+    const { threads, messages } = data;
+    console.log('[SYNC] Imported', threads.length, 'threads');
+    console.log('[SYNC] Imported', messages.length, 'messages');
+    const { error } = await tryCatch(
+      this.transaction('rw', [this.threads, this.messages], async () => {
+        const newThreads = (
+          await Promise.all(
+            threads.map(async (t) => {
+              const existing = await this.threads.get(t.id);
+              return !existing || existing.updated_at < t.updated_at ? t : null;
+            }),
+          )
+        ).filter(Boolean);
+        await this.threads.bulkPut(newThreads.map((t) => t!));
+
+        const threadsOnServer = new Set(threads.map((t) => t.id));
+        const threadsOnClient = (
+          await this.threads
+            .where('id')
+            .anyOf(...threadsOnServer)
+            .keys()
+        ).map((key) => key.toString());
+        const threadsToDelete = threadsOnClient.filter((id) => !threadsOnServer.has(id.toString()));
+        console.log('Threads to delete:', threadsToDelete);
+        await this.threads.bulkDelete(threadsToDelete);
+
+        const newMessages = (
+          await Promise.all(
+            messages.map(async (m) => {
+              const existing = await this.messages.get(m.id);
+              return !existing || existing.created_at < m.created_at ? m : null;
+            }),
+          )
+        ).filter(Boolean);
+        await this.messages.bulkPut(newMessages.filter((m) => m !== null));
+      }),
+    );
+    if (error) console.log('[SYNC] Failed to import data', error);
   }
 }
 
 export const dxdb = new Database();
 
-export function formatContent(content: string | (TextPart | ImagePart)[]): {
-  content: string;
+export function formatContent(content: string | (TextPart | ImagePart)[] | null): {
+  content: string | null;
   image?: string;
 } {
-  if (typeof content === 'string') {
+  if (typeof content === 'string' || content === null) {
     return { content };
   }
   const textParts = content.filter((part) => 'text' in part) as TextPart[];

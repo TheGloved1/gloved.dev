@@ -1,6 +1,7 @@
 'use client';
 import { dxdb, formatContent, generateTitle, Message } from '@/dexie';
 import { tryCatch } from '@/lib/utils';
+import { useAuth } from '@clerk/nextjs';
 import { useLiveQuery } from 'dexie-react-hooks';
 import nextDynamic from 'next/dynamic';
 import { redirect, useParams } from 'next/navigation';
@@ -17,6 +18,7 @@ function ThreadPage(): React.JSX.Element {
   const [imagePreview, setImagePreview] = useState<string | undefined | null>();
   const [isAtBottom, setIsAtBottom] = useState<boolean>(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const auth = useAuth();
 
   useEffect(() => {
     dxdb.getThreads().then((threads) => {
@@ -42,6 +44,16 @@ function ThreadPage(): React.JSX.Element {
     [],
   );
 
+  useLiveQuery(
+    async () => {
+      if (auth.userId) {
+        await dxdb.exportDbToServer(auth.userId);
+      }
+    },
+    [threadId, dxdb.messages],
+    [],
+  );
+
   const handleEditMessage = useCallback(
     async (m: Message) => {
       const { content, image } = formatContent(m.content);
@@ -59,7 +71,7 @@ function ThreadPage(): React.JSX.Element {
       // Regenerate the title
       generateTitle(threadId);
 
-      setInput(content); // Set the input field to the content of the deleted message
+      setInput(content ?? ''); // Set the input field to the content of the deleted message
       setImagePreview(image);
     },
     [threadId],

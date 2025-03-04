@@ -39,7 +39,12 @@ const Timestamp = React.memo(({ date, model }: { date: Date; model: string }) =>
 Timestamp.displayName = 'Timestamp';
 
 const calculateInterval = (date: Date) => {
-  const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
+  let seconds;
+  try {
+    seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
+  } catch (e) {
+    seconds = 0;
+  }
   if (seconds < 86400) {
     // Less than a day old
     if (seconds < 60) return 1000; // 1 second
@@ -51,7 +56,12 @@ const calculateInterval = (date: Date) => {
 };
 
 const createTimestamp = (date: Date) => {
-  const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
+  let seconds;
+  try {
+    seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
+  } catch (e) {
+    seconds = 0;
+  }
   let interval = Math.floor(seconds / 31536000);
 
   if (interval >= 1) {
