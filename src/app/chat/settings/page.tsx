@@ -33,7 +33,7 @@ export default function SettingsPage() {
           <textarea
             value={systemPrompt ?? undefined}
             onChange={(e) => setSystemPrompt(e.target.value)}
-            placeholder='How would you like the AI to respond? (Leave blank to use default)'
+            placeholder={`How would you like the AI to respond?\n(Leave blank to use default)`}
             className='h-[60vh] max-h-96 min-h-[200px] w-[60vw] min-w-[400px] max-w-full resize rounded border border-gray-300 p-2'
           />
         </div>
