@@ -38,16 +38,18 @@ export async function syncMessages(input: { userId: string; messages: Message[] 
       }),
   );
 
-  const promises = [];
+  const keys = [];
+  const values = new Map<string, string>();
   for (const [key, value] of kvMap) {
     if (value === null) {
-      promises.push(redis.del(key));
+      keys.push(key);
     } else {
-      promises.push(redis.set(key, value));
+      values.set(key, value);
     }
   }
 
-  await Promise.all(promises);
+  await redis.del(...keys);
+  await redis.mset(mapToObject(values));
   console.log('[SYNC] Synced', input.messages.length, 'messages');
 }
 
@@ -72,16 +74,18 @@ export async function syncThreads(input: { userId: string; threads: Thread[] }) 
       }),
   );
 
-  const promises = [];
+  const keys = [];
+  const values = new Map<string, string>();
   for (const [key, value] of kvMap) {
     if (value === null) {
-      promises.push(redis.del(key));
+      keys.push(key);
     } else {
-      promises.push(redis.set(key, value));
+      values.set(key, value);
     }
   }
 
-  await Promise.all(promises);
+  await redis.del(...keys);
+  await redis.mset(mapToObject(values));
   console.log('[SYNC] Synced', input.threads.length, 'threads');
 }
 
@@ -104,9 +108,6 @@ export async function getAllThreadsForUser(userId: string) {
 export async function deleteUserData(userId: string) {
   const threadKeys = await redis.keys(`sync:thread:${userId}:*`);
   const messagesKeys = await redis.keys(`sync:msg:${userId}:*`);
-  const threadPromises = threadKeys.map((key) => redis.del(key));
-  const messagePromises = messagesKeys.map((key) => redis.del(key));
-  await Promise.all(threadPromises);
-  await Promise.all(messagePromises);
+  await redis.del(...threadKeys, ...messagesKeys);
   console.log('[SYNC] Deleted user data for ', userId);
 }

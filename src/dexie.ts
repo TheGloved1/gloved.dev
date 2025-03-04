@@ -1,4 +1,4 @@
-import { syncDbFromServer, syncJsonToDb } from '@/lib/actions';
+import { deleteData, syncDbFromServer, syncJsonToDb } from '@/lib/actions';
 import { tryCatch } from '@/lib/utils';
 import { ImagePart, TextPart } from 'ai';
 import Dexie, { type EntityTable } from 'dexie';
@@ -92,6 +92,16 @@ class Database extends Dexie {
   async deleteThread(threadId: string) {
     await this.threads.update(threadId, { removed: 'true' });
     await this.messages.where('threadId').equals(threadId).modify({ removed: 'true', content: null });
+  }
+
+  async deleteAllData(userId: string | null | undefined) {
+    const threads = await this.threads.toArray();
+    const messages = await this.messages.toArray();
+    await Promise.all(threads.map((thread) => this.threads.delete(thread.id)));
+    await Promise.all(messages.map((msg) => this.messages.delete(msg.id)));
+    if (userId) {
+      await deleteData(userId);
+    }
   }
 
   async exportDbToServer(userId: string) {
