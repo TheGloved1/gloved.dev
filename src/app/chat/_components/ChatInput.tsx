@@ -47,6 +47,8 @@ const ChatBotInput = memo(
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
+    const canUpload = false;
+
     const dataURLtoFile = useMemo(
       () => (dataurl: string, filename: string) => {
         const arr = dataurl.split(',');
@@ -289,38 +291,46 @@ const ChatBotInput = memo(
                   <div className='flex items-center gap-1'>
                     {isMobile ?
                       <>
-                        <input
-                          type='file'
-                          ref={fileInputRef}
-                          onChange={handleImageChange}
-                          accept='image/jpeg, image/png, image/webp'
-                          className='hidden'
-                          id='image-upload'
-                        />
-                        <label
-                          htmlFor='image-upload'
-                          className='-mb-2 inline-flex h-auto -translate-y-1.5 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md px-2 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-neutral-800/40 hover:text-neutral-300 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
-                        >
-                          <Paperclip className='!size-5' />
-                        </label>
+                        {canUpload && (
+                          <>
+                            <input
+                              type='file'
+                              ref={fileInputRef}
+                              onChange={handleImageChange}
+                              accept='image/jpeg, image/png, image/webp'
+                              className='hidden'
+                              id='image-upload'
+                            />
+                            <label
+                              htmlFor='image-upload'
+                              className='-mb-2 inline-flex h-auto -translate-y-1.5 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md px-2 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-neutral-800/40 hover:text-neutral-300 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
+                            >
+                              <Paperclip className='!size-5' />
+                            </label>
+                          </>
+                        )}
                         <ModelDropdown models={models} selectedModel={model} onModelChange={onModelChange} />
                       </>
                     : <>
                         <ModelDropdown models={models} selectedModel={model} onModelChange={onModelChange} />
-                        <input
-                          type='file'
-                          ref={fileInputRef}
-                          onChange={handleImageChange}
-                          accept='image/jpeg, image/png, image/webp'
-                          className='hidden'
-                          id='image-upload'
-                        />
-                        <label
-                          htmlFor='image-upload'
-                          className='-mb-2 inline-flex h-auto -translate-y-1.5 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md px-2 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-neutral-800/40 hover:text-neutral-300 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
-                        >
-                          <Paperclip className='!size-5' />
-                        </label>
+                        {canUpload && (
+                          <>
+                            <input
+                              type='file'
+                              ref={fileInputRef}
+                              onChange={handleImageChange}
+                              accept='image/jpeg, image/png, image/webp'
+                              className='hidden'
+                              id='image-upload'
+                            />
+                            <label
+                              htmlFor='image-upload'
+                              className='-mb-2 inline-flex h-auto -translate-y-1.5 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md px-2 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-neutral-800/40 hover:text-neutral-300 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
+                            >
+                              <Paperclip className='!size-5' />
+                            </label>
+                          </>
+                        )}
                       </>
                     }
                   </div>
