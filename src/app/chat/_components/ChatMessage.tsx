@@ -8,16 +8,16 @@ import { memo, useState } from 'react';
 import { toast } from 'sonner';
 import Timestamp from './Timestamp';
 
-const getTextParts = (content: string | (TextPart | ImagePart)[]) => {
+const getTextParts = (content: string | (TextPart | ImagePart)[] | null) => {
   return Array.isArray(content) ?
       content
         .filter((part) => 'text' in part)
         .map((part) => part.text)
         .join('')
-    : content;
+    : (content ?? '');
 };
 
-const renderImages = (content: string | (TextPart | ImagePart)[]): React.JSX.Element[] | null => {
+const renderImages = (content: string | (TextPart | ImagePart)[] | null): React.JSX.Element[] | null => {
   if (Array.isArray(content)) {
     return content
       .filter((part) => 'image' in part)
