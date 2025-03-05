@@ -67,14 +67,15 @@ export default function SettingsPage() {
           <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
             <DialogTrigger asChild>
               <Button variant='destructive' onClick={() => setDeleteDialogOpen(true)}>
-                Delete Account Data
+                Delete All Data
               </Button>
             </DialogTrigger>
             <DialogContent className='sm:max-w-md'>
               <DialogHeader>
                 <DialogTitle>Are you absolutely sure?</DialogTitle>
                 <DialogDescription>
-                  This action cannot be undone. This will permanently delete all your data.
+                  This action cannot be undone. This will permanently delete all your data from your browser storage and all
+                  your account data if your currently logged in.
                 </DialogDescription>
               </DialogHeader>
               <DialogFooter>
