@@ -159,7 +159,7 @@ const ChatBotInput = memo(
       } else {
         if (!threadId || typeof threadId !== 'string') return;
 
-        await createMessage(threadId, input, model, setInput, imageBase64, scrollCallback);
+        await createMessage(threadId, input, model, setInput, imageBase64, scrollCallback, systemPrompt?.trim());
         setLoading(false);
         setInput('');
         if (fileInputRef.current) {

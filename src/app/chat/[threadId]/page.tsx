@@ -20,6 +20,23 @@ function ThreadPage(): React.JSX.Element {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const auth = useAuth();
 
+  async function checkSync(userId: string) {
+    const lastSync = localStorage.getItem('lastSync');
+    const now = new Date().getTime();
+
+    // If lastRun is null or more than 1 minute (60000 milliseconds) has passed
+    if (!lastSync || now - Number(lastSync) > 60000) {
+      // Your function logic here
+      console.log('[SYNC] Syncing...');
+      await dxdb.syncDexie(userId);
+
+      // Update the last run time in local storage
+      localStorage.setItem('lastSync', now.toString());
+    } else {
+      console.log('[SYNC] Function has run recently. Skipping...');
+    }
+  }
+
   useEffect(() => {
     dxdb.getThreads().then((threads) => {
       if (threads.find((t) => t.id === threadId)) return threads;
@@ -47,7 +64,8 @@ function ThreadPage(): React.JSX.Element {
   useLiveQuery(
     async () => {
       if (auth.userId) {
-        // await dxdb.exportDbToServer(auth.userId);
+        await checkSync(auth.userId);
+        await dxdb.exportDbToServer(auth.userId);
       }
     },
     [threadId, dxdb.messages],

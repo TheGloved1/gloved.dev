@@ -1,4 +1,4 @@
-import { syncDbFromServer, syncJsonToDb } from '@/lib/actions';
+import { deleteData, sync } from '@/lib/actions';
 import { tryCatch } from '@/lib/utils';
 import { ImagePart, TextPart } from 'ai';
 import Dexie, { type EntityTable } from 'dexie';
@@ -100,7 +100,7 @@ class Database extends Dexie {
     await Promise.all(threads.map((thread) => this.threads.delete(thread.id)));
     await Promise.all(messages.map((msg) => this.messages.delete(msg.id)));
     if (userId) {
-      // await deleteData(userId);
+      await deleteData(userId);
     }
   }
 
@@ -120,48 +120,22 @@ class Database extends Dexie {
       return { ...m, content: newContent };
     });
 
-    await syncJsonToDb({ threads, messages }, userId);
+    await sync({ threads, messages }, userId);
     console.log('[SYNC] Exported', threads.length, 'threads');
     console.log('[SYNC] Exported', messages.length, 'messages');
   }
 
-  async importDbFromServer(userId: string) {
-    const data = await syncDbFromServer(userId);
-    if (!data) return console.log('[SYNC] Failed to import data');
-    const { threads, messages } = data;
-    console.log('[SYNC] Imported', threads.length, 'threads');
-    console.log('[SYNC] Imported', messages.length, 'messages');
+  async syncDexie(userId: string) {
+    const threads = await this.threads.toArray();
+    const messages = await this.messages.toArray();
+    const { data, error: dbSyncError } = await tryCatch(sync({ threads, messages }, userId));
+    if (!data || dbSyncError) return console.log('[SYNC] Failed to import data');
+    const { threads: newThreads, messages: newMessages } = data;
+    console.log('[SYNC] Imported', newThreads.length, 'threads');
+    console.log('[SYNC] Imported', newMessages.length, 'messages');
     const { error } = await tryCatch(
       this.transaction('rw', [this.threads, this.messages], async () => {
-        const newThreads = (
-          await Promise.all(
-            threads.map(async (t) => {
-              const existing = await this.threads.get(t.id);
-              return !existing || existing.updated_at < t.updated_at ? t : null;
-            }),
-          )
-        ).filter(Boolean);
-        await this.threads.bulkPut(newThreads.map((t) => t!));
-
-        const threadsOnServer = new Set(threads.map((t) => t.id));
-        const threadsOnClient = (
-          await this.threads
-            .where('id')
-            .anyOf(...threadsOnServer)
-            .keys()
-        ).map((key) => key.toString());
-        const threadsToDelete = threadsOnClient.filter((id) => !threadsOnServer.has(id.toString()));
-        console.log('Threads to delete:', threadsToDelete);
-        await this.threads.bulkDelete(threadsToDelete);
-
-        const newMessages = (
-          await Promise.all(
-            messages.map(async (m) => {
-              const existing = await this.messages.get(m.id);
-              return !existing || existing.created_at < m.created_at ? m : null;
-            }),
-          )
-        ).filter(Boolean);
+        await this.threads.bulkPut(newThreads.filter((t) => t !== null));
         await this.messages.bulkPut(newMessages.filter((m) => m !== null));
       }),
     );

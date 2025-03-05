@@ -2,7 +2,7 @@
 import { Message, Thread } from '@/dexie';
 import { env } from '@/env';
 import { apiRoute, tryCatch } from '@/lib/utils';
-import { deleteUserData, getAllMessagesForUser, getAllThreadsForUser, syncMessages, syncThreads } from './db';
+import { deleteUserData, getAllMessagesForUser, getAllThreadsForUser, syncData } from './db';
 
 export async function fetchSystemPrompt() {
   const { data, error } = await tryCatch(fetch(apiRoute('/system-prompt')));
@@ -21,10 +21,9 @@ export async function checkDevMode(): Promise<boolean> {
   return false;
 }
 
-export async function syncJsonToDb(json: { threads: Thread[]; messages: Message[] }, userId: string) {
-  const asJson = json;
-  await syncThreads({ userId, threads: asJson.threads });
-  await syncMessages({ userId, messages: asJson.messages });
+export async function sync(data: { threads: Thread[]; messages: Message[] }, userId: string) {
+  const { messages, threads } = await syncData({ userId, threads: data.threads, messages: data.messages });
+  return { threads, messages };
 }
 
 export async function syncDbFromServer(userId: string) {

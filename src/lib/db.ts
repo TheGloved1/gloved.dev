@@ -3,9 +3,10 @@ import { tryCatch } from '@/lib/utils';
 import { Redis } from '@upstash/redis';
 import SuperJSON from 'superjson';
 
-function mapToObject(map: Map<string, string>): Record<string, unknown> {
+function mapToObject(map: Map<string, string | null>): Record<string, unknown> {
   const obj: Record<string, unknown> = {};
   map.forEach((value, key) => {
+    if (value === null) return;
     obj[key] = value;
   });
   return obj;
@@ -26,31 +27,6 @@ function threadSyncKey(userId: string, threadId: string) {
   return `sync:thread:${userId}:${sanitizedThreadId}`;
 }
 
-export async function syncMessages(input: { userId: string; messages: Message[] }) {
-  const kvMap = new Map<string, string | null>(
-    input.messages
-      .filter((m) => m.id && m.threadId)
-      .map((msg) => {
-        if (msg.removed === 'true') {
-          return [messageSyncKey(input.userId, msg.id), null];
-        }
-        return [messageSyncKey(input.userId, msg.id), SuperJSON.stringify(msg)];
-      }),
-  );
-
-  const promises = [];
-  for (const [key, value] of kvMap) {
-    if (value === null) {
-      promises.push(redis.del(key));
-    } else {
-      promises.push(redis.set(key, value));
-    }
-  }
-
-  await Promise.all(promises);
-  console.log('[SYNC] Synced', input.messages.length, 'messages');
-}
-
 export async function getAllMessagesForUser(userId: string) {
   const keys = await redis.keys(`sync:msg:${userId}:*`);
   if (keys.length === 0) return [];
@@ -58,31 +34,6 @@ export async function getAllMessagesForUser(userId: string) {
   console.log('[SYNC] Fetched', messages.length, 'messages');
   const parsedMessages = messages.map((message) => (message as { json: Message }).json);
   return parsedMessages;
-}
-
-export async function syncThreads(input: { userId: string; threads: Thread[] }) {
-  const kvMap = new Map<string, string | null>(
-    input.threads
-      .filter((thread) => thread.id)
-      .map((thread) => {
-        if (thread.removed === 'true') {
-          return [threadSyncKey(input.userId, thread.id), null];
-        }
-        return [threadSyncKey(input.userId, thread.id), SuperJSON.stringify(thread)];
-      }),
-  );
-
-  const promises = [];
-  for (const [key, value] of kvMap) {
-    if (value === null) {
-      promises.push(redis.del(key));
-    } else {
-      promises.push(redis.set(key, value));
-    }
-  }
-
-  await Promise.all(promises);
-  console.log('[SYNC] Synced', input.threads.length, 'threads');
 }
 
 export async function getAllThreadsForUser(userId: string) {
@@ -101,9 +52,78 @@ export async function getAllThreadsForUser(userId: string) {
   return parsedThreads;
 }
 
+export async function syncData(input: { userId: string; messages: Message[]; threads: Thread[] }) {
+  const dbMessages = await getAllMessagesForUser(input.userId);
+  const localMessages = input.messages;
+
+  const dbThreads = await getAllThreadsForUser(input.userId);
+  const localThreads = input.threads;
+
+  const deletedKeys = new Set<string>();
+  const kvMap: Record<string, string | null> = {};
+
+  // Sync Messages
+  localMessages.forEach((msg) => {
+    const dbMessage = dbMessages.find((dbMsg) => dbMsg.id === msg.id);
+    if (msg.id && !msg.removed) {
+      if (!dbMessage || new Date(msg.created_at) > new Date(dbMessage.created_at)) {
+        kvMap[messageSyncKey(input.userId, msg.id)] = SuperJSON.stringify(msg);
+      } else {
+        deletedKeys.add(messageSyncKey(input.userId, msg.id));
+      }
+    } else {
+      deletedKeys.add(messageSyncKey(input.userId, msg.id));
+    }
+  });
+
+  // Sync Threads
+  localThreads.forEach((thread) => {
+    const dbThread = dbThreads.find((dbThr) => dbThr.id === thread.id);
+    if (thread.id && !thread.removed) {
+      if (!dbThread || new Date(thread.updated_at) > new Date(dbThread.updated_at)) {
+        kvMap[threadSyncKey(input.userId, thread.id)] = SuperJSON.stringify(thread);
+      } else {
+        deletedKeys.add(threadSyncKey(input.userId, thread.id));
+      }
+    } else {
+      deletedKeys.add(threadSyncKey(input.userId, thread.id));
+    }
+  });
+
+  // Execute Redis operations
+  if (Object.keys(kvMap).length > 0) {
+    await redis.del(...deletedKeys);
+    await redis.mset(kvMap);
+    console.log('[SYNC] Synced', Object.keys(kvMap).length, 'messages and threads');
+  } else {
+    console.log('[SYNC] No valid messages or threads to sync');
+  }
+
+  // Check for newer messages and threads
+  const newerMessages = dbMessages.filter(
+    (dbMsg) =>
+      !localMessages.find((localMsg) => localMsg.id === dbMsg.id) ||
+      new Date(dbMsg.created_at) > new Date(localMessages.find((localMsg) => localMsg.id === dbMsg.id)?.created_at || 0),
+  );
+
+  const newerThreads = dbThreads.filter(
+    (dbThr) =>
+      !localThreads.find((localThr) => localThr.id === dbThr.id) ||
+      new Date(dbThr.updated_at) > new Date(localThreads.find((localThr) => localThr.id === dbThr.id)?.updated_at || 0),
+  );
+
+  console.log('[SYNC] Found', newerMessages.length, 'newer messages for', input.userId);
+  console.log('[SYNC] Found', newerThreads.length, 'newer threads for', input.userId);
+
+  return {
+    messages: newerMessages,
+    threads: newerThreads,
+  };
+}
+
 export async function deleteUserData(userId: string) {
   const threadKeys = await redis.keys(`sync:thread:${userId}:*`);
   const messagesKeys = await redis.keys(`sync:msg:${userId}:*`);
-  await redis.del(...threadKeys, ...messagesKeys);
-  console.log('[SYNC] Deleted user data for ', userId);
+  const keys = await redis.del(...threadKeys, ...messagesKeys);
+  console.log('[SYNC] Deleted', keys, 'keys for', userId);
 }

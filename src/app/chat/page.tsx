@@ -1,4 +1,6 @@
 'use client';
+import { dxdb } from '@/dexie';
+import { useAuth } from '@clerk/nextjs';
 import nextDynamic from 'next/dynamic';
 import React, { memo, useEffect, useState } from 'react';
 import ChatBotInput from './_components/ChatInput';
@@ -12,6 +14,7 @@ export default nextDynamic(
         const [input, setInput] = useState<string>('');
         const [rows, setRows] = useState<number>(2);
         const [imagePreview, setImagePreview] = useState<string | null | undefined>(null);
+        const auth = useAuth();
 
         useEffect(() => {
           // Count how many rows the textarea is by getting all '\n' in the input
@@ -20,6 +23,29 @@ export default nextDynamic(
           const newRows = input.split('\n').length;
           setRows(Math.min(Math.max(minRows, newRows), maxRows));
         }, [input, rows, setRows]);
+
+        async function checkSync(userId: string) {
+          const lastSync = localStorage.getItem('lastSync');
+          const now = new Date().getTime();
+
+          // If lastRun is null or more than 1 minute (60000 milliseconds) has passed
+          if (!lastSync || now - Number(lastSync) > 60000) {
+            // Your function logic here
+            console.log('[SYNC] Syncing...');
+            await dxdb.syncDexie(userId);
+
+            // Update the last run time in local storage
+            localStorage.setItem('lastSync', now.toString());
+          } else {
+            console.log('[SYNC] Function has run recently. Skipping...');
+          }
+        }
+
+        useEffect(() => {
+          if (auth.userId) {
+            checkSync(auth.userId);
+          }
+        }, [auth.userId]);
 
         return (
           <main className='relative flex w-full flex-1 flex-col'>
