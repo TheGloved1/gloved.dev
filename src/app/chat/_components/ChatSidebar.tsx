@@ -40,7 +40,7 @@ export default function ChatBotSidebar({ children }: { children: React.ReactNode
 
   useEffect(() => {
     if (!auth.userId) return;
-    dxdb.importDbFromServer(auth.userId);
+    // dxdb.importDbFromServer(auth.userId);
   }, [auth.userId]);
 
   const isCurrentThread = (id: string) => threadId === id;

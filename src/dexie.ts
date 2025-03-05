@@ -1,4 +1,4 @@
-import { deleteData, syncDbFromServer, syncJsonToDb } from '@/lib/actions';
+import { syncDbFromServer, syncJsonToDb } from '@/lib/actions';
 import { tryCatch } from '@/lib/utils';
 import { ImagePart, TextPart } from 'ai';
 import Dexie, { type EntityTable } from 'dexie';
@@ -100,7 +100,7 @@ class Database extends Dexie {
     await Promise.all(threads.map((thread) => this.threads.delete(thread.id)));
     await Promise.all(messages.map((msg) => this.messages.delete(msg.id)));
     if (userId) {
-      await deleteData(userId);
+      // await deleteData(userId);
     }
   }
 

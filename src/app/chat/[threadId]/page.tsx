@@ -47,7 +47,7 @@ function ThreadPage(): React.JSX.Element {
   useLiveQuery(
     async () => {
       if (auth.userId) {
-        await dxdb.exportDbToServer(auth.userId);
+        // await dxdb.exportDbToServer(auth.userId);
       }
     },
     [threadId, dxdb.messages],
