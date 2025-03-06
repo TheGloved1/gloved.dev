@@ -56,26 +56,38 @@ export async function syncData(input: { userId: string; messages: Message[]; thr
 
   // Sync Messages
   dbMessages.forEach((m) => {
-    if (!localMessages.find((dbM) => dbM.id === m.id)) {
+    const localMessage = localMessages.find((dbM) => dbM.id === m.id);
+    if (!localMessage) {
+      newMessages.push(m);
+    } else if (new Date(m.updated_at) > new Date(localMessage.updated_at)) {
       newMessages.push(m);
     }
   });
   localMessages.forEach((m) => {
     const key = messageSyncKey(input.userId, m.id);
-    if (!dbMessages.find((dbM) => dbM.id === m.id)) {
+    const dbMessage = dbMessages.find((dbM) => dbM.id === m.id);
+    if (!dbMessage) {
+      kvMap[key] = JSON.stringify(m);
+    } else if (new Date(m.updated_at) > new Date(dbMessage.updated_at)) {
       kvMap[key] = JSON.stringify(m);
     }
   });
 
   // Sync Threads
   dbThreads.forEach((t) => {
-    if (!localThreads.find((dbT) => dbT.id === t.id)) {
+    const localThread = localThreads.find((dbT) => dbT.id === t.id);
+    if (!localThread) {
+      newThreads.push(t);
+    } else if (new Date(t.updated_at) > new Date(localThread.updated_at)) {
       newThreads.push(t);
     }
   });
   localThreads.forEach((t) => {
     const key = threadSyncKey(input.userId, t.id);
-    if (!dbThreads.find((dbT) => dbT.id === t.id)) {
+    const dbThread = dbThreads.find((dbT) => dbT.id === t.id);
+    if (!dbThread) {
+      kvMap[key] = JSON.stringify(t);
+    } else if (new Date(t.updated_at) > new Date(dbThread.updated_at)) {
       kvMap[key] = JSON.stringify(t);
     }
   });

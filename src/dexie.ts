@@ -98,8 +98,11 @@ class Database extends Dexie {
   }
 
   async deleteThread(threadId: string) {
-    await this.threads.update(threadId, { removed: 'true' });
-    await this.messages.where('threadId').equals(threadId).modify({ removed: 'true', content: null });
+    await this.threads.update(threadId, { removed: 'true', updated_at: new Date().toISOString() });
+    await this.messages
+      .where('threadId')
+      .equals(threadId)
+      .modify({ removed: 'true', content: null, updated_at: new Date().toISOString() });
   }
 
   async deleteAllData(userId: string | null | undefined) {
@@ -118,7 +121,7 @@ class Database extends Dexie {
     const { data, error: dbSyncError } = await tryCatch(sync({ threads, messages }, userId));
     if (!data || dbSyncError) return console.log('[SYNC] Failed to import data');
     const { threads: newThreads, messages: newMessages } = data;
-    if (!newThreads.length || !newMessages.length) return console.log('[SYNC] No data to import');
+    if (!newThreads.length && !newMessages.length) return console.log('[SYNC] No data to import');
     await Promise.all([this.threads.bulkPut(newThreads), this.messages.bulkPut(newMessages)]);
     console.log('[SYNC] Imported', newThreads.length, 'threads');
     console.log('[SYNC] Imported', newMessages.length, 'messages');
