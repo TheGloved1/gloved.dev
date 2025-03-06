@@ -11,6 +11,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { dxdb } from '@/dexie';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { usePersistentState } from '@/hooks/use-persistent-state';
 import { useAuth } from '@clerk/nextjs';
 import { ChevronLeft } from 'lucide-react';
@@ -24,6 +25,7 @@ export default function SettingsPage() {
   const auth = useAuth();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const router = useRouter();
+  const isMobile = useIsMobile();
 
   const handleDelete = async () => {
     await dxdb.deleteAllData(auth.userId);
@@ -33,61 +35,88 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className='flex h-screen w-screen items-center justify-center'>
-      <div className='max-h-md min-h-[600px] min-w-[400px] max-w-2xl rounded border border-gray-300 p-4'>
-        <Link
-          href={'/chat'}
-          onClick={(e) => {
-            e.preventDefault();
-            if (window.history.length > 1) {
-              router.back();
-            } else {
-              router.push('/chat');
-            }
-          }}
-          className='mb-4 flex items-center gap-2 self-start'
-        >
-          <ChevronLeft className='h-5 w-5' />
-          <span className='text-sm font-medium'>Back to chat</span>
-        </Link>
-        <header className='mb-4 flex items-center justify-center'>
-          <h1 className='text-3xl font-bold'>Settings</h1>
-        </header>
-        <div className='rounded p-4'>
-          <h2 className='p-2 text-xl font-bold'>AI Personality</h2>
-          <textarea
-            value={systemPrompt ?? undefined}
-            onChange={(e) => setSystemPrompt(e.target.value)}
-            placeholder={`How would you like the AI to respond?\n(Leave blank to use default)`}
-            className='h-[80vh] max-h-96 w-[80vw] max-w-full resize rounded border border-gray-300 p-2'
-          />
+    <>
+      {!isMobile ?
+        <div className='flex h-screen w-screen items-center justify-center'>
+          <div className='m-auto max-h-[80vh] min-h-[600px] min-w-[400px] max-w-[80vw] rounded border border-gray-300 p-4'>
+            <Link
+              href={'/chat'}
+              onClick={(e) => {
+                e.preventDefault();
+                if (window.history.length > 1) {
+                  router.back();
+                } else {
+                  router.push('/chat');
+                }
+              }}
+              className='mb-4 flex items-center gap-2 self-start'
+            >
+              <ChevronLeft className='h-5 w-5' />
+              <span className='text-sm font-medium'>Back to chat</span>
+            </Link>
+            <header className='mb-4 flex items-center justify-center'>
+              <h1 className='text-3xl font-bold'>Settings</h1>
+            </header>
+            <div className='rounded p-4'>
+              <h2 className='p-2 text-xl font-bold'>AI Personality</h2>
+              <textarea
+                value={systemPrompt ?? undefined}
+                onChange={(e) => setSystemPrompt(e.target.value)}
+                placeholder={`How would you like the AI to respond?\n(Leave blank to use default)`}
+                className='h-[80vh] max-h-96 w-[80vw] max-w-full resize-none rounded border border-gray-300 p-2'
+              />
+            </div>
+            <div className='rounded p-4'>
+              <h2 className='p-2 text-xl font-bold'>Delete Data</h2>
+              <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button variant='destructive' onClick={() => setDeleteDialogOpen(true)}>
+                    Delete Data
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className='sm:max-w-md'>
+                  <DialogHeader>
+                    <DialogTitle>Are you absolutely sure?</DialogTitle>
+                    <DialogDescription>
+                      This action cannot be undone. This will permanently delete all your data from your browser storage and
+                      all your account data if your currently logged in.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <DialogFooter>
+                    <DialogClose asChild>
+                      <Button variant='secondary'>Cancel</Button>
+                    </DialogClose>
+                    <Button onClick={handleDelete}>Delete</Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </div>
+          </div>
         </div>
-        <div className='rounded p-4'>
-          <h2 className='p-2 text-xl font-bold'>Delete Data</h2>
-          <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-            <DialogTrigger asChild>
-              <Button variant='destructive' onClick={() => setDeleteDialogOpen(true)}>
-                Delete All Data
-              </Button>
-            </DialogTrigger>
-            <DialogContent className='sm:max-w-md'>
-              <DialogHeader>
-                <DialogTitle>Are you absolutely sure?</DialogTitle>
-                <DialogDescription>
-                  This action cannot be undone. This will permanently delete all your data from your browser storage and all
-                  your account data if your currently logged in.
-                </DialogDescription>
-              </DialogHeader>
-              <DialogFooter>
-                <DialogClose asChild>
-                  <Button variant='secondary'>Cancel</Button>
-                </DialogClose>
-                <Button onClick={handleDelete}>Delete</Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+      : <div className='flex h-screen w-screen items-center justify-center'>
+          <div className='m-auto max-h-[80vh] min-h-[600px] min-w-[400px] max-w-[80vw] rounded border border-gray-300 p-4'>
+            <Link
+              href={'/chat'}
+              onClick={(e) => {
+                e.preventDefault();
+                if (window.history.length > 1) {
+                  router.back();
+                } else {
+                  router.push('/chat');
+                }
+              }}
+              className='mb-4 flex items-center gap-2 self-start'
+            >
+              <ChevronLeft className='h-5 w-5' />
+              <span className='text-sm font-medium'>Back to chat</span>
+            </Link>
+            <div className='rounded p-4'>
+              <h2 className='p-2 text-3xl font-bold'>Sorry, loser...</h2>
+              <p className='p-2 text-center text-xl'>Chat settings are only available on desktop browsers.</p>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      }
+    </>
   );
 }
