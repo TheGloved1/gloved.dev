@@ -3,25 +3,26 @@ import { tryCatch } from '@/lib/utils';
 import { ImagePart, TextPart } from 'ai';
 import Dexie, { type EntityTable } from 'dexie';
 
-export interface Thread {
+export type Thread = {
   id: string;
   title: string;
-  created_at: Date;
-  updated_at: Date;
-  last_message_at: Date;
+  created_at: string;
+  updated_at: string;
+  last_message_at: string;
   removed: 'true' | 'false';
-}
+};
 
-export interface Message {
+export type Message = {
   id: string;
   threadId: string;
   content: string | (TextPart | ImagePart)[] | null;
   model: string;
   role: 'user' | 'assistant';
-  created_at: Date;
+  created_at: string;
+  updated_at: string;
   finished: boolean;
   removed: 'true' | 'false';
-}
+};
 
 class Database extends Dexie {
   threads!: EntityTable<Thread, 'id'>;
@@ -31,18 +32,19 @@ class Database extends Dexie {
     super('chatdb');
     this.version(3).stores({
       threads: 'id, title, created_at, updated_at, last_message_at, removed',
-      messages: 'id, threadId, content, model, role, [threadId+created_at], finished, removed',
+      messages: 'id, threadId, content, model, role, [threadId+created_at], updated_at, finished, removed',
     });
 
     this.threads.hook('creating', (primKey, obj) => {
-      obj.created_at = new Date();
-      obj.updated_at = new Date();
-      obj.last_message_at = new Date();
+      obj.created_at = new Date().toISOString();
+      obj.updated_at = new Date().toISOString();
+      obj.last_message_at = new Date().toISOString();
       obj.removed = 'false';
     });
 
     this.messages.hook('creating', (primKey, obj) => {
-      obj.created_at = new Date();
+      obj.created_at = new Date().toISOString();
+      obj.updated_at = new Date().toISOString();
       obj.removed = 'false';
     });
   }
@@ -55,20 +57,26 @@ class Database extends Dexie {
     return await this.messages.where('removed').equals('false').sortBy('created_at');
   }
 
-  async addMessage(message: Omit<Message, 'id' | 'created_at' | 'removed'>) {
+  async addMessage(message: Omit<Message, 'id' | 'created_at' | 'updated_at' | 'removed'>) {
     const id = crypto.randomUUID();
     await this.transaction('rw', [this.messages, this.threads], async () => {
-      await this.messages.add({ ...message, id, created_at: new Date(), removed: 'false' });
+      await this.messages.add({
+        ...message,
+        id,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        removed: 'false',
+      });
       await this.threads.update(message.threadId, {
-        last_message_at: new Date(),
-        updated_at: new Date(),
+        last_message_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
       });
     });
     return id;
   }
 
   async removeMessage(id: string) {
-    await this.messages.update(id, { removed: 'true', content: null });
+    await this.messages.update(id, { removed: 'true', updated_at: new Date().toISOString(), content: null });
   }
 
   async createThread(thread: Omit<Thread, 'id' | 'created_at' | 'updated_at' | 'last_message_at' | 'removed'>) {
@@ -76,9 +84,9 @@ class Database extends Dexie {
     await this.threads.add({
       ...thread,
       id,
-      created_at: new Date(),
-      updated_at: new Date(),
-      last_message_at: new Date(),
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      last_message_at: new Date().toISOString(),
       removed: 'false',
     });
     return id;
@@ -104,42 +112,16 @@ class Database extends Dexie {
     }
   }
 
-  async exportDbToServer(userId: string) {
-    const threads = await this.threads.toArray();
-    const messages = await this.messages.toArray();
-    messages.map((m) => {
-      if (!m.content) return m;
-      if (typeof m.content === 'string') return m;
-      const newContent = m.content?.map((p) => {
-        if (p.type === 'image') {
-          return { ...p, image: null };
-        }
-        return p;
-      });
-      if (!newContent) return m;
-      return { ...m, content: newContent };
-    });
-
-    await sync({ threads, messages }, userId);
-    console.log('[SYNC] Exported', threads.length, 'threads');
-    console.log('[SYNC] Exported', messages.length, 'messages');
-  }
-
   async syncDexie(userId: string) {
     const threads = await this.threads.toArray();
     const messages = await this.messages.toArray();
     const { data, error: dbSyncError } = await tryCatch(sync({ threads, messages }, userId));
     if (!data || dbSyncError) return console.log('[SYNC] Failed to import data');
     const { threads: newThreads, messages: newMessages } = data;
+    if (!newThreads.length || !newMessages.length) return console.log('[SYNC] No data to import');
+    await Promise.all([this.threads.bulkPut(newThreads), this.messages.bulkPut(newMessages)]);
     console.log('[SYNC] Imported', newThreads.length, 'threads');
     console.log('[SYNC] Imported', newMessages.length, 'messages');
-    const { error } = await tryCatch(
-      this.transaction('rw', [this.threads, this.messages], async () => {
-        await this.threads.bulkPut(newThreads.filter((t) => t !== null));
-        await this.messages.bulkPut(newMessages.filter((m) => m !== null));
-      }),
-    );
-    if (error) console.log('[SYNC] Failed to import data', error);
   }
 }
 
@@ -201,7 +183,7 @@ export async function processStream(
         done = true;
         if (messageId)
           await dxdb.messages.update(messageId, {
-            created_at: new Date(),
+            created_at: new Date().toISOString(),
             finished: true, // Mark as finished
           });
         callback();
@@ -320,7 +302,7 @@ export async function generateTitle(threadId: string) {
     if (!data.body) return;
     const title = await processStream(data.body);
     await dxdb.threads.update(threadId, {
-      updated_at: new Date(),
+      updated_at: new Date().toISOString(),
       title,
     });
   } catch (e) {

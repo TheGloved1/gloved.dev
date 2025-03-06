@@ -39,7 +39,7 @@ const jetbrains = JetBrains_Mono({
   subsets: ['latin', 'latin-ext'],
 });
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <ViewTransitions>
       <ClerkProvider afterSignOutUrl='/chat' appearance={{ variables: { colorPrimary: '#333' }, baseTheme: dark }}>
@@ -49,7 +49,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             <Providers>
               <Analytics />
               <SpeedInsights />
-              {/* <Suspense fallback={null}>{<RainingLetters />}</Suspense> */}
               {children}
             </Providers>
           </body>

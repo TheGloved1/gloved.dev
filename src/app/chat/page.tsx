@@ -35,7 +35,7 @@ export default nextDynamic(
             await dxdb.syncDexie(userId);
 
             // Update the last run time in local storage
-            localStorage.setItem('lastSync', now.toString());
+            // localStorage.setItem('lastSync', now.toString());
           } else {
             console.log('[SYNC] Function has run recently. Skipping...');
           }

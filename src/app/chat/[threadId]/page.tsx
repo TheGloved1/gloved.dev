@@ -29,9 +29,10 @@ function ThreadPage(): React.JSX.Element {
       // Your function logic here
       console.log('[SYNC] Syncing...');
       await dxdb.syncDexie(userId);
+      console.log('[SYNC] Synced!');
 
       // Update the last run time in local storage
-      localStorage.setItem('lastSync', now.toString());
+      // localStorage.setItem('lastSync', now.toString());
     } else {
       console.log('[SYNC] Function has run recently. Skipping...');
     }
@@ -61,16 +62,11 @@ function ThreadPage(): React.JSX.Element {
     [],
   );
 
-  useLiveQuery(
-    async () => {
-      if (auth.userId) {
-        await checkSync(auth.userId);
-        await dxdb.exportDbToServer(auth.userId);
-      }
-    },
-    [threadId, dxdb.messages],
-    [],
-  );
+  useEffect(() => {
+    if (auth.userId) {
+      checkSync(auth.userId);
+    }
+  }, [auth.userId, threadId]);
 
   const handleEditMessage = useCallback(
     async (m: Message) => {

@@ -22,8 +22,12 @@ export async function checkDevMode(): Promise<boolean> {
 }
 
 export async function sync(data: { threads: Thread[]; messages: Message[] }, userId: string) {
-  const { messages, threads } = await syncData({ userId, threads: data.threads, messages: data.messages });
-  return { threads, messages };
+  const { messages: newMessages, threads: newThreads } = await syncData({
+    userId,
+    threads: data.threads,
+    messages: data.messages,
+  });
+  return { threads: newThreads, messages: newMessages };
 }
 
 export async function syncDbFromServer(userId: string) {

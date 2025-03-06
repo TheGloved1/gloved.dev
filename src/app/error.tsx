@@ -12,7 +12,7 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
   return (
     <div className='flex h-screen w-screen items-center justify-center'>
       <div className='rounded-lg bg-white p-8 shadow-lg'>
-        <h2 className='text-2xl font-bold'>Something went wrong!</h2>
+        <h2 className='text-2xl font-bold text-purple-800'>Something went wrong!</h2>
         <Button
           onClick={
             // Attempt to recover by trying to re-render the segment

@@ -13,11 +13,14 @@ const nextConfig: NextConfig = {
     dynamicIO: false,
     ppr: true,
     webpackBuildWorker: true,
-    taint: true,
     appDocumentPreloading: true,
     optimizeCss: true,
+    inlineCss: true,
     newDevOverlay: true,
     parallelServerCompiles: true,
+  },
+  devIndicators: {
+    position: 'bottom-right',
   },
   images: {
     remotePatterns: [

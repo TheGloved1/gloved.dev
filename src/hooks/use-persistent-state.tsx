@@ -30,7 +30,7 @@ export function usePersistentState<T>(
 
   useEffect(() => {
     if (inBrowser()) {
-      localStorage.setItem(key, JSON.stringify(state));
+      localStorage.setItem(key, JSON.stringify(state || null));
     }
   }, [key, state]);
 
