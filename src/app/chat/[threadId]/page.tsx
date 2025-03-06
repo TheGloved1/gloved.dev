@@ -32,7 +32,7 @@ function ThreadPage(): React.JSX.Element {
       console.log('[SYNC] Synced!');
 
       // Update the last run time in local storage
-      // localStorage.setItem('lastSync', now.toString());
+      localStorage.setItem('lastSync', now.toString());
     } else {
       console.log('[SYNC] Function has run recently. Skipping...');
     }
