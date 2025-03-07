@@ -25,7 +25,6 @@ export async function getAllMessagesForUser(userId: string) {
   if (messages.length === 0) return [];
 
   console.log('[SYNC] Fetched', messages.length, 'messages');
-  console.log('[SYNC] Messages:', JSON.stringify(messages));
   return messages as Message[];
 }
 
@@ -37,7 +36,6 @@ export async function getAllThreadsForUser(userId: string) {
   if (threads.length === 0) return [];
 
   console.log('[SYNC] Fetched', threads.length, 'threads');
-  console.log('[SYNC] Threads:', JSON.stringify(threads));
   return threads as Thread[];
 }
 
