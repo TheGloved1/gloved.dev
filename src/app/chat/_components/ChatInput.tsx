@@ -98,7 +98,7 @@ const ChatBotInput = memo(
               // Log the original file size
               console.log('Original file size:', inKB(file.size), 'KB');
 
-              // Use image-compressor.js to compress the image
+              // Use compressor.js to compress the image
               new Compressor(file, {
                 convertSize: 10000,
                 quality: 0.05,

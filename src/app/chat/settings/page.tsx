@@ -94,7 +94,7 @@ export default function SettingsPage() {
           </div>
         </div>
       : <div className='flex h-screen w-screen items-center justify-center'>
-          <div className='m-auto max-h-[80vh] min-h-[600px] min-w-[400px] max-w-[80vw] rounded border border-gray-300 p-4'>
+          <div className='m-auto max-h-[80vh] min-h-[600px] min-w-[400px] max-w-[80vw] rounded p-4'>
             <Link
               href={'/chat'}
               onClick={(e) => {
@@ -105,7 +105,7 @@ export default function SettingsPage() {
                   router.push('/chat');
                 }
               }}
-              className='mb-4 flex items-center gap-2 self-start'
+              className='mb-4 flex items-center gap-2'
             >
               <ChevronLeft className='h-5 w-5' />
               <span className='text-sm font-medium'>Back to chat</span>

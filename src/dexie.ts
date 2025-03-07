@@ -144,6 +144,13 @@ export function formatContent(content: string | (TextPart | ImagePart)[] | null)
   return { content: text, image };
 }
 
+/**
+ * Process a readable stream of message chunks and update the message content.
+ * @param response The readable stream of message chunks.
+ * @param messageId The ID of the message to update with the new content.
+ * @param callback A function to call each time a message chunk is processed.
+ * @returns A promise that resolves with the accumulated message content.
+ */
 export async function processStream(
   response: ReadableStream<Uint8Array>,
   messageId?: string,
@@ -198,6 +205,17 @@ export async function processStream(
   return messageContent; // Return the accumulated message content
 }
 
+/**
+ * Sends a message to the chat server and updates the UI with the response.
+ * @param threadId The ID of the thread to send the message to.
+ * @param userContent The content of the message from the user.
+ * @param model The model to use for generating the response.
+ * @param setInput A function to call when the user's input has been processed.
+ * @param image An optional image to send with the message.
+ * @param callback A function to call when the response has been processed.
+ * @param systemPrompt An optional system prompt to send with the message.
+ * @returns The ID of the message that was sent.
+ */
 export async function createMessage(
   threadId: string,
   userContent: string,
@@ -273,6 +291,13 @@ export async function createMessage(
   return assistantMessageId;
 }
 
+/**
+ * Generates a short, concise title for a thread by sending the current
+ * conversation to the chat API. The title is then updated in the database.
+ *
+ * @param threadId The thread ID to generate a title for
+ * @returns A promise that resolves when the title is updated
+ */
 export async function generateTitle(threadId: string) {
   const allMessages = await dxdb.getThreadMessages(threadId);
   const contextMessages = allMessages.map((m) => ({

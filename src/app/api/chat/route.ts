@@ -83,7 +83,7 @@ function getModel(model?: string): LanguageModelV1 {
 export async function POST(req: Request) {
   const parsed: { model?: string; system?: string; messages: Omit<Message, 'id'>[] } = await req.json();
   const { messages } = parsed;
-  const system = parsed.system ?? (await fetchSystemPrompt());
+  const system = parsed.system?.trim() ?? (await fetchSystemPrompt());
 
   const coreMessages = messages.map((msg) => ({
     role: msg.role,
