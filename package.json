@@ -53,7 +53,6 @@
     "babel-plugin-react-compiler": "^19.0.0-beta-714736e-20250131",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "compress.js": "^2.1.2",
     "compressorjs": "^1.2.1",
     "crypto-js": "^4.2.0",
     "daisyui": "^4.12.23",

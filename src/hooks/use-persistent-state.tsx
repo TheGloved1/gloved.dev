@@ -18,7 +18,7 @@ export function usePersistentState<T>(
   const [state, setState] = useState<T>(() => {
     if (inBrowser() && enabled) {
       try {
-        const storedState = localStorage.getItem(key);
+        const storedState = localStorage.getItem(key)?.trim();
         return storedState ? JSON.parse(storedState) : initialValue;
       } catch (error) {
         console.error(`Error parsing localStorage data for key '${key}': `, error);

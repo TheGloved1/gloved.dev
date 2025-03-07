@@ -89,9 +89,6 @@ importers:
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
-      compress.js:
-        specifier: ^2.1.2
-        version: 2.1.2
       compressorjs:
         specifier: ^1.2.1
         version: 1.2.1
@@ -2014,9 +2011,6 @@ packages:
   commander@4.1.1:
     resolution: {integrity: sha512-NOKm8xhkzAjzFx8B2v5OAHT+u5pRQc2UCa2Vq9jYL/31o2wi9mxBA7LIFs3sV5VSC49z6pEhfbMULvShKj26WA==}
     engines: {node: '>= 6'}
-
-  compress.js@2.1.2:
-    resolution: {integrity: sha512-DBb6M4wwe0rRAPeiKQ8HJrWuocVppUw9Qte4rEXiDrc5X3TrzeRKLzpvSE9oZ0Nd4HTXSSFphj3/XWwuptkQqw==}
 
   compressorjs@1.2.1:
     resolution: {integrity: sha512-+geIjeRnPhQ+LLvvA7wxBQE5ddeLU7pJ3FsKFWirDw6veY3s9iLxAQEw7lXGHnhCJvBujEQWuNnGzZcvCvdkLQ==}
@@ -6264,8 +6258,6 @@ snapshots:
   comma-separated-tokens@2.0.3: {}
 
   commander@4.1.1: {}
-
-  compress.js@2.1.2: {}
 
   compressorjs@1.2.1:
     dependencies:

@@ -24,6 +24,16 @@ export type Message = {
   removed: 'true' | 'false';
 };
 
+/**
+ * A Dexie database for storing chat data. This database stores threads and messages, and provides
+ * methods for adding, removing, and retrieving data. It also provides methods for synchronizing the
+ * database with remote data.
+ * @class
+ * @extends Dexie
+ * @memberof module:dexie
+ * @property {EntityTable<Thread, 'id'>} threads - A table for storing threads.
+ * @property {EntityTable<Message, 'id'>} messages - A table for storing messages.
+ */
 class Database extends Dexie {
   threads!: EntityTable<Thread, 'id'>;
   messages!: EntityTable<Message, 'id'>;
@@ -49,14 +59,28 @@ class Database extends Dexie {
     });
   }
 
+  /**
+   * Retrieves all threads that have not been removed, sorted by their last message date.
+   * @returns A promise that resolves to an array of threads.
+   */
   async getThreads() {
     return await this.threads.where('removed').equals('false').sortBy('last_message_at');
   }
 
+  /**
+   * Retrieves all messages that have not been removed, sorted by their creation date.
+   * @returns A promise that resolves to an array of messages.
+   */
   async getMessages() {
     return await this.messages.where('removed').equals('false').sortBy('created_at');
   }
 
+  /**
+   * Adds a new message to the database, updating the last message time for the
+   * associated thread.
+   * @param message A partial `Message` object without the `id`, `created_at`, `updated_at`, and `removed` fields.
+   * @returns The ID of the created message.
+   */
   async addMessage(message: Omit<Message, 'id' | 'created_at' | 'updated_at' | 'removed'>) {
     const id = crypto.randomUUID();
     await this.transaction('rw', [this.messages, this.threads], async () => {
@@ -75,10 +99,20 @@ class Database extends Dexie {
     return id;
   }
 
+  /**
+   * Soft-deletes a message by setting `removed` to `'true'`, setting `updated_at` to the current timestamp,
+   * and setting `content` to `null`.
+   * @param id The ID of the message to remove.
+   */
   async removeMessage(id: string) {
     await this.messages.update(id, { removed: 'true', updated_at: new Date().toISOString(), content: null });
   }
 
+  /**
+   * Creates a new thread and adds it to the database.
+   * @param thread A partial `Thread` object without the `id`, `created_at`, `updated_at`, `last_message_at`, and `removed` fields.
+   * @returns The ID of the created thread.
+   */
   async createThread(thread: Omit<Thread, 'id' | 'created_at' | 'updated_at' | 'last_message_at' | 'removed'>) {
     const id = crypto.randomUUID();
     await this.threads.add({
@@ -92,11 +126,20 @@ class Database extends Dexie {
     return id;
   }
 
+  /**
+   * Fetches all messages for a given thread, sorted by creation date.
+   * @param threadId The ID of the thread to fetch messages for.
+   * @returns An array of all messages in the thread, excluding deleted messages.
+   */
   async getThreadMessages(threadId: string) {
     const messages = await this.messages.where('threadId').equals(threadId).sortBy('created_at');
     return messages.filter((m) => m.removed === 'false');
   }
 
+  /**
+   * Marks a thread as removed and all its messages as removed.
+   * @param threadId The ID of the thread to delete.
+   */
   async deleteThread(threadId: string) {
     await this.threads.update(threadId, { removed: 'true', updated_at: new Date().toISOString() });
     await this.messages
@@ -105,16 +148,31 @@ class Database extends Dexie {
       .modify({ removed: 'true', content: null, updated_at: new Date().toISOString() });
   }
 
+  /**
+   * Deletes all data from the database and, if a user ID is provided, all user data from the sync store.
+   * @param userId The user ID to delete data for, or `null` or `undefined` to only delete database data.
+   */
   async deleteAllData(userId: string | null | undefined) {
-    const threads = await this.threads.toArray();
-    const messages = await this.messages.toArray();
-    await Promise.all(threads.map((thread) => this.threads.delete(thread.id)));
-    await Promise.all(messages.map((msg) => this.messages.delete(msg.id)));
+    const threads = await this.threads.where('removed').equals('false').toArray();
+    const messages = await this.messages.where('removed').equals('false').toArray();
+    await Promise.all(
+      threads.map((thread) => this.threads.update(thread.id, { removed: 'true', updated_at: new Date().toISOString() })),
+    );
+    await Promise.all(
+      messages.map((msg) =>
+        this.messages.update(msg.id, { removed: 'true', content: null, updated_at: new Date().toISOString() }),
+      ),
+    );
     if (userId) {
       await deleteData(userId);
     }
   }
 
+  /**
+   * Synchronizes the database with the remote data. This function is idempotent. If the remote data
+   * is not available, it will return without doing anything.
+   * @param userId The user ID to sync data with.
+   */
   async syncDexie(userId: string) {
     const threads = await this.threads.toArray();
     const messages = await this.messages.toArray();
@@ -130,6 +188,19 @@ class Database extends Dexie {
 
 export const dxdb = new Database();
 
+/**
+ * Takes a content object and formats it into a simpler format.
+ *
+ * If the content is a string or null, it is returned as is.
+ *
+ * If the content is an array of parts, it is processed as follows:
+ * - All text parts are joined together into a single string.
+ * - The image part (if any) is extracted and returned as a string.
+ * - If there are no image parts, the image field is undefined.
+ *
+ * @param content The content object to format.
+ * @returns An object with a `content` field and an optional `image` field.
+ */
 export function formatContent(content: string | (TextPart | ImagePart)[] | null): {
   content: string | null;
   image?: string;
@@ -185,6 +256,7 @@ export async function processStream(
         messageContent += json; // Append the new content
         if (messageId) {
           await dxdb.messages.update(messageId, {
+            updated_at: new Date().toISOString(),
             content: messageContent, // Update with the accumulated content
           });
         }
