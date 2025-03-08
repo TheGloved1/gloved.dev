@@ -265,6 +265,7 @@ export async function processStream(
         if (messageId)
           await dxdb.messages.update(messageId, {
             created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
             finished: true, // Mark as finished
           });
         callback();
