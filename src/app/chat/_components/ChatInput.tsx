@@ -144,9 +144,7 @@ const ChatBotInput = memo(
         imageBase64 = await convertFileToBase64(fileInputRef.current.files[0]);
       }
       if (createThread) {
-        const threadId = await dxdb.createThread({
-          title: Date.now().toString(),
-        });
+        const threadId = await dxdb.createThread();
         router.push('/chat/' + threadId);
         try {
           await createMessage(threadId, input, model, setInput, imageBase64, scrollCallback, systemPrompt?.trim());
