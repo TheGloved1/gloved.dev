@@ -110,14 +110,13 @@ class Database extends Dexie {
 
   /**
    * Creates a new thread and adds it to the database.
-   * @param thread A partial `Thread` object without the `id`, `created_at`, `updated_at`, `last_message_at`, and `removed` fields.
    * @returns The ID of the created thread.
    */
-  async createThread(thread: Omit<Thread, 'id' | 'created_at' | 'updated_at' | 'last_message_at' | 'removed'>) {
+  async createThread() {
     const id = crypto.randomUUID();
     await this.threads.add({
-      ...thread,
       id,
+      title: 'New Chat',
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
       last_message_at: new Date().toISOString(),
