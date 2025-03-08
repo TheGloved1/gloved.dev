@@ -1,5 +1,6 @@
 import Providers from '@/components/Providers';
 import { Toaster } from '@/components/ui/sonner';
+import { env } from '@/env';
 import Constants from '@/lib/constants';
 import { ClerkProvider } from '@clerk/nextjs';
 import { dark } from '@clerk/themes';
@@ -8,6 +9,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Metadata } from 'next';
 import { ViewTransitions } from 'next-view-transitions';
 import { JetBrains_Mono } from 'next/font/google';
+import Script from 'next/script';
 import React from 'react';
 import './globals.css';
 
@@ -39,11 +41,14 @@ const jetbrains = JetBrains_Mono({
   subsets: ['latin', 'latin-ext'],
 });
 
-export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <ViewTransitions>
       <ClerkProvider afterSignOutUrl='/chat' appearance={{ variables: { colorPrimary: '#333' }, baseTheme: dark }}>
         <html lang='en'>
+          {env.NODE_ENV === 'development' && (
+            <Script defer crossOrigin='anonymous' src='//unpkg.com/react-scan/dist/auto.global.js' />
+          )}
           <body className={`dark snap-x snap-mandatory bg-background antialiased ${jetbrains.className}`}>
             <Toaster toastOptions={{ style: { background: '#333' } }} />
             <Providers>
