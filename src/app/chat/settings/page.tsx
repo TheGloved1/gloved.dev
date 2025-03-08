@@ -35,88 +35,60 @@ export default function SettingsPage() {
   };
 
   return (
-    <>
-      {!isMobile ?
-        <div className='flex h-screen w-screen items-center justify-center'>
-          <div className='m-auto max-h-[80vh] min-h-[600px] min-w-[400px] max-w-[80vw] rounded border border-gray-300 p-4'>
-            <Link
-              href={'/chat'}
-              onClick={(e) => {
-                e.preventDefault();
-                if (window.history.length > 1) {
-                  router.back();
-                } else {
-                  router.push('/chat');
-                }
-              }}
-              className='mb-4 flex items-center gap-2 self-start'
-            >
-              <ChevronLeft className='h-5 w-5' />
-              <span className='text-sm font-medium'>Back to chat</span>
-            </Link>
-            <header className='mb-4 flex items-center justify-center'>
-              <h1 className='text-3xl font-bold'>Settings</h1>
-            </header>
-            <div className='rounded p-4'>
-              <h2 className='p-2 text-xl font-bold'>AI Personality</h2>
-              <textarea
-                value={systemPrompt ?? undefined}
-                onChange={(e) => setSystemPrompt(e.target.value)}
-                placeholder={`How would you like the AI to respond?\n(Leave blank to use default)`}
-                className='h-[80vh] max-h-96 w-[80vw] max-w-full resize-none rounded border border-gray-300 p-2'
-              />
-            </div>
-            <div className='rounded p-4'>
-              <h2 className='p-2 text-xl font-bold'>Delete Data</h2>
-              <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button variant='destructive' onClick={() => setDeleteDialogOpen(true)}>
-                    Delete Data
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className='sm:max-w-md'>
-                  <DialogHeader>
-                    <DialogTitle>Are you absolutely sure?</DialogTitle>
-                    <DialogDescription>
-                      This action cannot be undone. This will permanently delete all your data from your browser storage and
-                      all your account data if your currently logged in.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <DialogFooter>
-                    <DialogClose asChild>
-                      <Button variant='secondary'>Cancel</Button>
-                    </DialogClose>
-                    <Button onClick={handleDelete}>Delete</Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
-            </div>
+    <div className='flex h-screen w-screen items-center justify-center text-xs sm:text-sm md:text-base'>
+      <div className='mx-auto rounded p-4'>
+        <Link
+          href={'/chat'}
+          onClick={(e) => {
+            e.preventDefault();
+            if (window.history.length > 1) {
+              router.back();
+            } else {
+              router.push('/chat');
+            }
+          }}
+          className='mb-4 flex items-center gap-2'
+        >
+          <ChevronLeft className='h-5 w-5' />
+          <span className='text-sm font-medium'>Back to chat</span>
+        </Link>
+        <div className='grid grid-cols-1 gap-4 lg:grid-cols-2'>
+          <div className='rounded p-4'>
+            <h2 className='p-2 font-bold md:text-3xl'>AI Personality</h2>
+            <textarea
+              value={systemPrompt ?? undefined}
+              onChange={(e) => setSystemPrompt(e.target.value)}
+              placeholder={`How would you like the AI to respond?\n(Leave blank to use default)`}
+              className='h-[calc(100%-2rem)] resize-none rounded border border-gray-300 p-2 text-xs md:w-full'
+            />
+          </div>
+          <div className='rounded p-4'>
+            <h2 className='p-2 font-bold md:text-3xl'>Delete Data</h2>
+            <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant='destructive' onClick={() => setDeleteDialogOpen(true)}>
+                  Delete Data
+                </Button>
+              </DialogTrigger>
+              <DialogContent className='sm:max-w-md'>
+                <DialogHeader>
+                  <DialogTitle>Are you absolutely sure?</DialogTitle>
+                  <DialogDescription>
+                    This action cannot be undone. This will permanently delete all your data from your browser storage and
+                    all your account data if your currently logged in.
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                  <DialogClose asChild>
+                    <Button variant='secondary'>Cancel</Button>
+                  </DialogClose>
+                  <Button onClick={handleDelete}>Delete</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
-      : <div className='flex h-screen w-screen items-center justify-center'>
-          <div className='m-auto max-h-[80vh] min-h-[600px] min-w-[400px] max-w-[80vw] rounded p-4'>
-            <Link
-              href={'/chat'}
-              onClick={(e) => {
-                e.preventDefault();
-                if (window.history.length > 1) {
-                  router.back();
-                } else {
-                  router.push('/chat');
-                }
-              }}
-              className='mb-4 flex items-center gap-2'
-            >
-              <ChevronLeft className='h-5 w-5' />
-              <span className='text-sm font-medium'>Back to chat</span>
-            </Link>
-            <div className='rounded p-4'>
-              <h2 className='p-2 text-3xl font-bold'>Sorry, loser...</h2>
-              <p className='p-2 text-center text-xl'>Chat settings are only available on desktop browsers.</p>
-            </div>
-          </div>
-        </div>
-      }
-    </>
+      </div>
+    </div>
   );
 }

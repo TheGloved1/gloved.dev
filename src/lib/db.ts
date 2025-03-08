@@ -78,7 +78,7 @@ export async function getAllThreadsForUser(userId: string) {
  * @param input An object containing the userId and arrays of Message and Thread objects to be synced.
  * @returns An object containing arrays of new messages and threads to be added to the local database.
  */
-export async function syncData(input: { userId: string; messages: Message[]; threads: Thread[] }) {
+export async function dbSync(input: { userId: string; messages: Message[]; threads: Thread[] }) {
   const dbMessages = await getAllMessagesForUser(input.userId);
   const localMessages = input.messages;
 

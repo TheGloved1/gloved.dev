@@ -1,5 +1,5 @@
 'use client';
-import { dxdb, formatContent, generateTitle, Message } from '@/dexie';
+import { checkSync, dxdb, formatContent, generateTitle, Message } from '@/dexie';
 import { tryCatch } from '@/lib/utils';
 import { useAuth } from '@clerk/nextjs';
 import { useLiveQuery } from 'dexie-react-hooks';
@@ -19,24 +19,6 @@ function ThreadPage(): React.JSX.Element {
   const [isAtBottom, setIsAtBottom] = useState<boolean>(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const auth = useAuth();
-
-  async function checkSync(userId: string) {
-    const lastSync = localStorage.getItem('lastSync');
-    const now = new Date().getTime();
-
-    // If lastRun is null or more than 1 minute (60000 milliseconds) has passed
-    if (!lastSync || now - Number(lastSync) > 60000) {
-      // Your function logic here
-      console.log('[SYNC] Syncing...');
-      await dxdb.syncDexie(userId);
-      console.log('[SYNC] Synced!');
-
-      // Update the last run time in local storage
-      localStorage.setItem('lastSync', now.toString());
-    } else {
-      console.log('[SYNC] Function has run recently. Skipping...');
-    }
-  }
 
   useEffect(() => {
     dxdb.getThreads().then((threads) => {
