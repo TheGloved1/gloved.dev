@@ -11,7 +11,6 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { dxdb } from '@/dexie';
-import { useIsMobile } from '@/hooks/use-mobile';
 import { usePersistentState } from '@/hooks/use-persistent-state';
 import { useAuth } from '@clerk/nextjs';
 import { ChevronLeft } from 'lucide-react';
@@ -25,7 +24,6 @@ export default function SettingsPage() {
   const auth = useAuth();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const router = useRouter();
-  const isMobile = useIsMobile();
 
   const handleDelete = async () => {
     await dxdb.deleteAllData(auth.userId);

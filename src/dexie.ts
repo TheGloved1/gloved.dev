@@ -1,4 +1,4 @@
-import { deleteData, syncAction } from '@/lib/actions';
+import { deleteDataAction, syncAction } from '@/lib/actions';
 import { tryCatch } from '@/lib/utils';
 import { ImagePart, TextPart } from 'ai';
 import Dexie, { type EntityTable } from 'dexie';
@@ -45,6 +45,8 @@ class Database extends Dexie {
       messages: 'id, threadId, content, model, role, [threadId+created_at], updated_at, finished, removed',
     });
 
+    this.on('populate', this.populate);
+
     this.threads.hook('creating', (primKey, obj) => {
       obj.created_at = new Date().toISOString();
       obj.updated_at = new Date().toISOString();
@@ -74,7 +76,7 @@ class Database extends Dexie {
       {
         id: 'WELCOME1',
         threadId: 'WELCOME',
-        content: 'Hello, how are you?',
+        content: 'What is GlovedBot Chat?',
         model: 'gemini-1.5-flash',
         role: 'user',
         created_at: new Date().toISOString(),
@@ -200,7 +202,7 @@ class Database extends Dexie {
       ),
     );
     if (userId) {
-      await deleteData(userId);
+      await deleteDataAction(userId);
     }
     await this.populate();
   }
@@ -225,8 +227,6 @@ class Database extends Dexie {
 }
 
 export const dxdb = new Database();
-
-dxdb.on('populate', dxdb.populate);
 
 export async function checkSync(userId: string) {
   const lastSync = localStorage.getItem('lastSync');

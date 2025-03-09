@@ -2,7 +2,7 @@
 import { Message, Thread } from '@/dexie';
 import { env } from '@/env';
 import { apiRoute, tryCatch } from '@/lib/utils';
-import { dbSync, deleteUserData, getAllMessagesForUser, getAllThreadsForUser } from './db';
+import { dbSync, deleteUserData } from './db';
 
 export async function fetchSystemPrompt() {
   const { data, error } = await tryCatch(fetch(apiRoute('/system-prompt')));
@@ -30,12 +30,7 @@ export async function syncAction(data: { threads: Thread[]; messages: Message[] 
   return { threads: newThreads, messages: newMessages };
 }
 
-export async function syncDbFromServer(userId: string) {
-  const [threads, messages] = await Promise.all([getAllThreadsForUser(userId), getAllMessagesForUser(userId)]);
-  return { threads, messages } as { threads: Thread[]; messages: Message[] };
-}
-
-export async function deleteData(userId: string) {
+export async function deleteDataAction(userId: string) {
   await deleteUserData(userId);
   console.log('[SYNC] Deleted user data for ', userId);
 }
