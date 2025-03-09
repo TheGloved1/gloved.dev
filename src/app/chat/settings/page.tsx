@@ -72,15 +72,19 @@ export default function SettingsPage() {
                 <DialogHeader>
                   <DialogTitle>Are you absolutely sure?</DialogTitle>
                   <DialogDescription>
-                    This action cannot be undone. This will permanently delete all your data from your browser storage and
-                    all your account data if your currently logged in.
+                    {`This action cannot be undone. This will permanently delete all your data from your browser storage and
+                    all your account data if you're currently logged in.`}
                   </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
                   <DialogClose asChild>
                     <Button variant='secondary'>Cancel</Button>
                   </DialogClose>
-                  <Button onClick={handleDelete}>Delete</Button>
+                  <DialogClose asChild>
+                    <Button variant='destructive' onClick={handleDelete}>
+                      Delete
+                    </Button>
+                  </DialogClose>
                 </DialogFooter>
               </DialogContent>
             </Dialog>

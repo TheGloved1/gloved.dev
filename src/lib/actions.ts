@@ -4,6 +4,10 @@ import { env } from '@/env';
 import { apiRoute, tryCatch } from '@/lib/utils';
 import { dbSync, deleteUserData } from './db';
 
+/**
+ * Fetches the system prompt from the server.
+ * @returns A promise that resolves to the system prompt text.
+ */
 export async function fetchSystemPrompt() {
   const { data, error } = await tryCatch(fetch(apiRoute('/system-prompt')));
   if (error) {
@@ -12,6 +16,10 @@ export async function fetchSystemPrompt() {
   return await data.text();
 }
 
+/**
+ * Checks if the current environment is development.
+ * @returns A promise that resolves to a boolean indicating if the environment is development.
+ */
 export async function checkDevMode(): Promise<boolean> {
   const environment = env.NODE_ENV;
 
@@ -21,6 +29,12 @@ export async function checkDevMode(): Promise<boolean> {
   return false;
 }
 
+/**
+ * Synchronizes the database with the remote data.
+ * @param data An object containing the threads and messages to sync.
+ * @param userId The user ID to sync data with.
+ * @returns An object containing the new threads and messages.
+ */
 export async function syncAction(data: { threads: Thread[]; messages: Message[] }, userId: string) {
   const { messages: newMessages, threads: newThreads } = await dbSync({
     userId,
@@ -30,7 +44,10 @@ export async function syncAction(data: { threads: Thread[]; messages: Message[] 
   return { threads: newThreads, messages: newMessages };
 }
 
-export async function deleteDataAction(userId: string) {
+/**
+ * Deletes all data associated with a user.
+ * @param userId The user ID for which data should be deleted.
+ */
+export async function deleteUserDataAction(userId: string) {
   await deleteUserData(userId);
-  console.log('[SYNC] Deleted user data for ', userId);
 }

@@ -13,12 +13,12 @@ import {
 import { dxdb, Thread } from '@/dexie';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { usePersistentState } from '@/hooks/use-persistent-state';
-import { SignedIn, SignedOut, SignInButton, useAuth, UserButton } from '@clerk/nextjs';
+import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { ChevronLeft, Home, MessageSquare, Plus, Settings, SquarePen } from 'lucide-react';
 import { Link } from 'next-view-transitions';
 import { useParams, useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import DeleteAlert from './DeleteAlert';
 
 export default function ChatBotSidebar({ children }: { children: React.ReactNode }) {
@@ -27,7 +27,6 @@ export default function ChatBotSidebar({ children }: { children: React.ReactNode
   const isMobile = useIsMobile();
   const [open, setOpen] = useState(true);
   const [lastThreadList, setLastThreadList] = usePersistentState<Thread[]>('lastThreadList', []);
-  const auth = useAuth();
   const threads = useLiveQuery(
     async () => {
       const threads = await dxdb.getThreads();
@@ -37,11 +36,6 @@ export default function ChatBotSidebar({ children }: { children: React.ReactNode
     [dxdb.threads],
     lastThreadList,
   );
-
-  useEffect(() => {
-    if (!auth.userId) return;
-    // dxdb.importDbFromServer(auth.userId);
-  }, [auth.userId]);
 
   const isCurrentThread = (id: string) => threadId === id;
 

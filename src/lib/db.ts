@@ -148,6 +148,7 @@ export async function deleteUserData(userId: string) {
   const threadKeys = await redis.keys(`sync:thread:${userId}:*`);
   const messagesKeys = await redis.keys(`sync:msg:${userId}:*`);
   const allKeys = threadKeys.concat(messagesKeys);
+  if (allKeys.length === 0) return;
   const keys = await redis.del(...allKeys);
   console.log('[SYNC] Deleted', keys, 'keys for', userId);
 }

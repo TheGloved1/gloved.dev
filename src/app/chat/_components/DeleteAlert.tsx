@@ -51,7 +51,11 @@ const DeleteAlert = ({ id, isCurrentThread }: { id: string; isCurrentThread: boo
           <DialogClose asChild>
             <Button variant='secondary'>Cancel</Button>
           </DialogClose>
-          <Button onClick={handleDelete}>Delete</Button>
+          <DialogClose asChild>
+            <Button variant='destructive' onClick={handleDelete}>
+              Delete
+            </Button>
+          </DialogClose>
         </DialogFooter>
       </DialogContent>
     </Dialog>
