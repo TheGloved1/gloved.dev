@@ -144,7 +144,7 @@ class Database extends Dexie {
    * @param id The ID of the message to remove.
    */
   async removeMessage(id: string) {
-    await this.messages.update(id, { removed: 'true', updated_at: new Date().toISOString(), content: null });
+    await this.messages.update(id, { removed: 'true', updated_at: new Date().toISOString(), content: '' });
   }
 
   /**
@@ -183,7 +183,7 @@ class Database extends Dexie {
     await this.messages
       .where('threadId')
       .equals(threadId)
-      .modify({ removed: 'true', content: null, updated_at: new Date().toISOString() });
+      .modify({ removed: 'true', content: '', updated_at: new Date().toISOString() });
   }
 
   /**
@@ -198,7 +198,7 @@ class Database extends Dexie {
     );
     await Promise.all(
       messages.map((msg) =>
-        this.messages.update(msg.id, { removed: 'true', content: null, updated_at: new Date().toISOString() }),
+        this.messages.update(msg.id, { removed: 'true', content: '', updated_at: new Date().toISOString() }),
       ),
     );
     if (userId) {
