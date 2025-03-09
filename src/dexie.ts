@@ -65,7 +65,7 @@ class Database extends Dexie {
     await dxdb.threads.bulkPut([
       {
         id: 'welcome',
-        title: 'Welcome',
+        title: 'Welcome!',
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
         last_message_at: new Date().toISOString(),
