@@ -8,7 +8,7 @@ import Constants from '@/lib/constants';
 import Compressor from 'compressorjs';
 import { SHA256 } from 'crypto-js';
 import { ChevronDown, Loader2, Paperclip, Send, X } from 'lucide-react';
-import NextImage from 'next/image';
+import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 import { toast } from 'sonner';
@@ -246,13 +246,7 @@ const ChatBotInput = memo(
               <div className='flex flex-grow flex-col'>
                 {imagePreview && (
                   <div className='relative mb-2 h-20 w-20'>
-                    <NextImage
-                      src={imagePreview}
-                      alt='Image preview'
-                      layout='fill'
-                      objectFit='cover'
-                      className='rounded-md'
-                    />
+                    <Image src={imagePreview} alt='Image preview' layout='fill' objectFit='cover' className='rounded-md' />
                     <button
                       onClick={removeImage}
                       type='button'
