@@ -10,9 +10,8 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar';
-import { dxdb, Thread } from '@/dexie';
+import { dxdb } from '@/dexie';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { usePersistentState } from '@/hooks/use-persistent-state';
 import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { ChevronLeft, Home, MessageSquare, Plus, Settings, SquarePen } from 'lucide-react';
@@ -26,16 +25,7 @@ export default function ChatBotSidebar({ children }: { children: React.ReactNode
   const router = useRouter();
   const isMobile = useIsMobile();
   const [open, setOpen] = useState(true);
-  const [lastThreadList, setLastThreadList] = usePersistentState<Thread[]>('lastThreadList', []);
-  const threads = useLiveQuery(
-    async () => {
-      const threads = await dxdb.getThreads();
-      setLastThreadList(threads);
-      return threads;
-    },
-    [dxdb.threads],
-    lastThreadList,
-  );
+  const threads = useLiveQuery(async () => await dxdb.getThreads(), [dxdb.threads], []);
 
   const isCurrentThread = (id: string) => threadId === id;
 
@@ -81,7 +71,7 @@ export default function ChatBotSidebar({ children }: { children: React.ReactNode
         </SidebarHeader>
         <SidebarContent className='rounded bg-gradient-to-bl from-[--background] to-[--background-secondary]'>
           {threads?.length ?
-            threads.reverse().map((thread) => (
+            threads.map((thread) => (
               <SidebarGroup key={thread.id} className='p-2'>
                 <SidebarGroupContent
                   className={`hover:bg-[--background]/10 my-0 flex items-center rounded-sm px-2 focus-within:outline-none focus-within:ring-[1px] focus-within:ring-[hsl(var(--ring))] hover:bg-gray-500/10 ${isCurrentThread(thread.id) ? 'bg-gray-500/20' : ''}`}
