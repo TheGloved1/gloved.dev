@@ -113,7 +113,7 @@ function ThreadPage(): React.JSX.Element {
       />
       <div className='relative flex-1 overflow-hidden'>
         <div className='scrollbar-w-2 h-[100dvh] overflow-y-auto pb-36 scrollbar scrollbar-track-transparent scrollbar-thumb-gray-700 hover:scrollbar-thumb-gray-600'>
-          <div className='mx-auto flex w-full max-w-3xl translate-x-1 flex-col space-y-12 p-4 pb-8 text-sm'>
+          <div className='mx-auto flex w-full max-w-3xl translate-x-1 flex-col space-y-12 p-4 pb-12 text-sm'>
             {messages.map((message) => (
               <ChatMessage message={message} key={message.id} handleEditMessageAction={handleEditMessage} />
             ))}

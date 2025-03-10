@@ -25,7 +25,7 @@ export default function ChatBotSidebar({ children }: { children: React.ReactNode
   const router = useRouter();
   const isMobile = useIsMobile();
   const [open, setOpen] = useState(true);
-  const threads = useLiveQuery(async () => await dxdb.getThreads(), [dxdb.threads], []);
+  const threads = useLiveQuery(() => dxdb.getThreads(), [dxdb.threads], []);
 
   const isCurrentThread = (id: string) => threadId === id;
 

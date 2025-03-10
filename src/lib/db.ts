@@ -71,17 +71,19 @@ export async function getAllThreadsForUser(userId: string) {
 }
 
 /**
- * Synchronizes local data with data stored in the key-value store for a given user.
- * It compares messages and threads from the local input with those in the key-value store.
- * Newer or non-existing records in the key-value store are added to the local data, and vice versa.
+ * Synchronizes local data with data stored in the KV (key-value) store for a given user.
+ * It compares messages and threads from the local input with those in the KV store.
+ * Newer or non-existing records in the KV store are added to the local data, and vice versa.
  *
  * @param input An object containing the userId and arrays of Message and Thread objects to be synced.
  * @returns An object containing arrays of new messages and threads to be added to the local database.
  */
 export async function dbSync(input: { userId: string; messages: Message[]; threads: Thread[] }) {
+  // Get all messages from the KV (key-value) store
   const dbMessages = await getAllMessagesForUser(input.userId);
   const localMessages = input.messages;
 
+  // Get all threads from the KV (key-value) store
   const dbThreads = await getAllThreadsForUser(input.userId);
   const localThreads = input.threads;
 
@@ -91,45 +93,57 @@ export async function dbSync(input: { userId: string; messages: Message[]; threa
 
   // Sync Messages
   dbMessages.forEach((m) => {
+    // Check if message exists in local database
     const localMessage = localMessages.find((dbM) => dbM.id === m.id);
+    // If message does not exist in local database, add it
     if (!localMessage) {
       newMessages.push(m);
     } else if (new Date(m.updated_at) > new Date(localMessage.updated_at)) {
+      // If message exists in local database, update it if it is newer
       newMessages.push(m);
     }
   });
   localMessages.forEach((m) => {
+    // Check if message exists in KV store
     const key = messageSyncKey(input.userId, m.id);
     const dbMessage = dbMessages.find((dbM) => dbM.id === m.id);
+    // If message does not exist in KV store, add it
     if (!dbMessage) {
       kvMap[key] = JSON.stringify(m);
     } else if (new Date(m.updated_at) > new Date(dbMessage.updated_at)) {
+      // If message exists in KV store, update it if it is newer
       kvMap[key] = JSON.stringify(m);
     }
   });
 
   // Sync Threads
   dbThreads.forEach((t) => {
+    // Check if thread exists in local database
     const localThread = localThreads.find((dbT) => dbT.id === t.id);
+    // If thread does not exist in local database, add it
     if (!localThread) {
       newThreads.push(t);
     } else if (new Date(t.updated_at) > new Date(localThread.updated_at)) {
+      // If thread exists in local database, update it if it is newer
       newThreads.push(t);
     }
   });
   localThreads.forEach((t) => {
+    // Check if thread exists in KV store
     const key = threadSyncKey(input.userId, t.id);
     const dbThread = dbThreads.find((dbT) => dbT.id === t.id);
+    // If thread does not exist in KV store, add it
     if (!dbThread) {
       kvMap[key] = JSON.stringify(t);
     } else if (new Date(t.updated_at) > new Date(dbThread.updated_at)) {
+      // If thread exists in KV store, update it if it is newer
       kvMap[key] = JSON.stringify(t);
     }
   });
 
-  // Execute Redis operations
+  // Execute Redis Database operations
   if (Object.keys(kvMap).length > 0) {
-    // Sync new messages and threads to KV
+    // Sync new messages and threads to KV store
     console.log('[SYNC] Syncing', Object.keys(kvMap).length, 'keys to KV');
     await redis.mset(kvMap);
   }
