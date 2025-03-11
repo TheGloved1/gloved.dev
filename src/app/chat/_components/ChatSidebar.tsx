@@ -73,21 +73,27 @@ export default function ChatBotSidebar({ children }: { children: React.ReactNode
           {threads?.length ?
             threads.map((thread) => (
               <SidebarGroup key={thread.id} className='p-2'>
-                <SidebarGroupContent
-                  className={`hover:bg-[--background]/10 my-0 flex items-center rounded-sm px-2 focus-within:outline-none focus-within:ring-[1px] focus-within:ring-[hsl(var(--ring))] hover:bg-gray-500/10 ${isCurrentThread(thread.id) ? 'bg-gray-500/20' : ''}`}
-                >
-                  <Link key={thread.id} href={`/chat/${thread.id}`} title={thread.title}>
-                    <div className='card flex flex-1 flex-row items-center gap-2 rounded-sm text-xs text-info-content group-data-[state=hover]:bg-[#2D2D2D]/50'>
+                <Link key={thread.id} href={`/chat/${thread.id}`} title={thread.title}>
+                  <SidebarGroupContent
+                    className={`hover:bg-[--background]/10 my-0 flex h-14 max-h-14 cursor-pointer items-center rounded-sm px-2 focus-within:outline-none focus-within:ring-[1px] focus-within:ring-[hsl(var(--ring))] hover:bg-gray-500/10 ${isCurrentThread(thread.id) ? 'bg-gray-500/20' : ''}`}
+                  >
+                    <div className='card flex flex-1 flex-row items-center gap-2 rounded-sm text-xs text-gray-200'>
+                      <MessageSquare className='!size-5' width={16} height={16} />
                       <div
                         className={`flex flex-1 flex-row gap-2 py-2 text-xs text-gray-200 ${isCurrentThread(thread.id) ? 'cursor-default font-bold' : ''}`}
                       >
-                        <MessageSquare className='h-5 w-5' />
-                        {thread.title}
+                        <span
+                          style={{
+                            fontSize: Math.max(10, 16 - thread.title.length / 2.5) + 'px',
+                          }}
+                        >
+                          {thread.title}
+                        </span>
                       </div>
                     </div>
-                  </Link>
-                  <DeleteAlert id={thread.id} isCurrentThread={isCurrentThread(thread.id)} />
-                </SidebarGroupContent>
+                  </SidebarGroupContent>
+                </Link>
+                <DeleteAlert id={thread.id} isCurrentThread={isCurrentThread(thread.id)} />
               </SidebarGroup>
             ))
           : null}
