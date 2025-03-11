@@ -2,6 +2,7 @@
 import { Message, Thread } from '@/dexie';
 import { env } from '@/env';
 import { apiRoute, tryCatch } from '@/lib/utils';
+import { IgDownloader } from 'ig-downloader';
 import { dbSync, deleteUserData } from './db';
 
 /**
@@ -52,11 +53,16 @@ export async function deleteUserDataAction(userId: string) {
   await deleteUserData(userId);
 }
 
-export async function downloadReel(link: string): Promise<{ success: boolean; error?: Error }> {
+export async function uploadReel(link: string) {
   // Send the video to Discord
-  const { data, error } = await tryCatch(postToDiscord(link));
+  const { data, error } = await tryCatch(IgDownloader(link));
   if (error) {
     return { success: false, error };
+  }
+  console.log('Downloaded reel:', JSON.stringify(data));
+  const { error: postError } = await tryCatch(postToDiscord(data.is_video ? data.video_url : data.display_url));
+  if (postError) {
+    return { success: false, error: postError };
   }
   return { success: true };
 }
