@@ -1,13 +1,18 @@
 'use client';
 import { Input } from '@/components/Input';
 import { Button } from '@/components/ui/button';
+import VideoPreview from '@/components/VideoPreview';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { uploadReel } from '@/lib/actions';
+import Image from 'next/image';
 import React, { useState } from 'react';
 import { toast } from 'sonner';
 
-const ReelDownloader = () => {
+export default function Page() {
   const [link, setLink] = useState('');
   const [loading, setLoading] = useState(false);
+  const [post, setPost] = useState<{ url: string; type: 'video' | 'image' } | null>(null);
+  const isMobile = useIsMobile();
 
   const handleDownload = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -17,6 +22,7 @@ const ReelDownloader = () => {
 
     if (response.success) {
       setLink('');
+      setPost(response.post);
       toast.success('Reel sent to Discord!');
     } else {
       toast.error('Error sending to Discord.');
@@ -32,7 +38,7 @@ const ReelDownloader = () => {
           type='url'
           value={link}
           onChange={(e) => setLink(e.target.value.trim())}
-          placeholder='Enter Link to Reel'
+          placeholder='Enter Shareable Link to Reel'
           required
         />
         <span className='flex w-full items-center justify-center gap-2'>
@@ -49,19 +55,23 @@ const ReelDownloader = () => {
           </Button>
         </span>
         <span className='text-sm text-gray-400'>
-          View reels on{' '}
+          View uploaded reels{' '}
           <a
             href='https://discord.com/channels/937806100546351174/1348939117190447136'
             target='_blank'
             rel='noopener noreferrer'
             className='fancy-link'
           >
-            Discord
+            here
           </a>
+          .
         </span>
       </form>
+      {post ?
+        post.type === 'video' ?
+          <VideoPreview src={post.url} />
+        : <Image width={isMobile ? 250 : 500} height={isMobile ? 250 : 500} src={post.url} alt='Reel' />
+      : null}
     </div>
   );
-};
-
-export default ReelDownloader;
+}

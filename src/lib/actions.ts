@@ -56,15 +56,15 @@ export async function deleteUserDataAction(userId: string) {
 export async function uploadReel(link: string) {
   const { data, error } = await tryCatch(IgDownloader(link));
   if (error) {
-    return { success: false, error };
+    return { post: null, success: false, error };
   }
-  const { error: postError } = await tryCatch(
+  const { data: post, error: postError } = await tryCatch(
     postToDiscord(data.is_video ? data.video_url : data.display_url, data.is_video ? 'video' : 'image'),
   );
   if (postError) {
-    return { success: false, error: postError };
+    return { post: null, success: false, error: postError };
   }
-  return { success: true };
+  return { post, success: true };
 }
 
 async function postToDiscord(url: string, type: 'video' | 'image') {
@@ -80,4 +80,5 @@ async function postToDiscord(url: string, type: 'video' | 'image') {
     method: 'POST',
     body: formData,
   });
+  return { url: url, type: type };
 }
