@@ -32,7 +32,7 @@ const ReelDownloader = () => {
           type='url'
           value={link}
           onChange={(e) => setLink(e.target.value.trim())}
-          placeholder='Enter Instagram Reel Link'
+          placeholder='Enter Link to Reel'
           required
         />
         <span className='flex w-full items-center justify-center gap-2'>
@@ -47,6 +47,17 @@ const ReelDownloader = () => {
           <Button type='submit' disabled={loading} className='p-4'>
             {loading ? 'Downloading...' : 'Send to Discord'}
           </Button>
+        </span>
+        <span className='text-sm text-gray-400'>
+          View reels on{' '}
+          <a
+            href='https://discord.com/channels/937806100546351174/1348939117190447136'
+            target='_blank'
+            rel='noopener noreferrer'
+            className='fancy-link'
+          >
+            Discord
+          </a>
         </span>
       </form>
     </div>

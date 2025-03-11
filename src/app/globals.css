@@ -14,13 +14,13 @@
 
 @layer utilities {
   .fancy-link {
-    @apply bg-gradient-to-r from-red-500 to-blue-500 bg-no-repeat py-1 text-gray-500 no-underline transition-all duration-500 ease-in-out;
-    background-size: 0% 3px; /* Custom style */
+    @apply bg-gradient-to-r from-red-500 to-blue-500 bg-no-repeat py-1.5 text-gray-600 no-underline transition-all duration-500 ease-in-out;
+    background-size: 0% 2px; /* Custom style */
     background-position: left 1.5rem; /* Custom style */
   }
   .fancy-link:hover,
   .fancy-link:focus {
-    @apply bg-[length:100%_3px] text-purple-800;
+    @apply bg-[length:100%_2px] text-purple-800;
   }
 }
 
