@@ -1,4 +1,5 @@
 import Providers from '@/components/Providers';
+import SourceCodeButton from '@/components/SourceCodeButton';
 import { Toaster } from '@/components/ui/sonner';
 import { env } from '@/env';
 import Constants from '@/lib/constants';
@@ -54,6 +55,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             <Providers>
               <Analytics />
               <SpeedInsights />
+              <SourceCodeButton />
               {children}
             </Providers>
           </body>
