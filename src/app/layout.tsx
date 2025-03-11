@@ -44,8 +44,8 @@ const jetbrains = JetBrains_Mono({
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <ViewTransitions>
-      <ClerkProvider afterSignOutUrl='/chat' appearance={{ variables: { colorPrimary: '#333' }, baseTheme: dark }}>
+    <ClerkProvider afterSignOutUrl='/chat' appearance={{ variables: { colorPrimary: '#333' }, baseTheme: dark }}>
+      <ViewTransitions>
         <html lang='en'>
           {env.NODE_ENV === 'development' && (
             <Script defer crossOrigin='anonymous' src='//unpkg.com/react-scan/dist/auto.global.js' />
@@ -60,7 +60,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             </Providers>
           </body>
         </html>
-      </ClerkProvider>
-    </ViewTransitions>
+      </ViewTransitions>
+    </ClerkProvider>
   );
 }
