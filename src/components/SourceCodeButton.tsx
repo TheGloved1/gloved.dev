@@ -8,9 +8,13 @@ import React from 'react';
 import { Button } from './ui/button';
 
 export default function SourceCodeButton(): React.JSX.Element | null {
-  const location = usePathname();
+  const pathname = usePathname();
   const isMobile = useIsMobile();
-  const sourceCodeUrl = `${Constants.GITHUB_URL}${location}/page.tsx`;
+  console.log('path', pathname);
+  const sourceCodeUrl =
+    pathname.includes('-') && pathname.split('-').length === 5 ?
+      `${Constants.GITHUB_URL}${pathname.split('/').slice(0, -1).join('/')}/page.tsx`
+    : `${Constants.GITHUB_URL}${pathname == '/' ? '' : pathname}/page.tsx`;
 
   return isMobile ? null : (
       <Link href={sourceCodeUrl} target='_blank' rel='noopener noreferrer'>
