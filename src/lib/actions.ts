@@ -54,25 +54,30 @@ export async function deleteUserDataAction(userId: string) {
 }
 
 export async function uploadReel(link: string) {
-  // Send the video to Discord
   const { data, error } = await tryCatch(IgDownloader(link));
   if (error) {
     return { success: false, error };
   }
-  const { error: postError } = await tryCatch(postToDiscord(data.is_video ? data.video_url : data.display_url));
+  const { error: postError } = await tryCatch(
+    postToDiscord(data.is_video ? data.video_url : data.display_url, data.is_video ? 'video' : 'image'),
+  );
   if (postError) {
     return { success: false, error: postError };
   }
   return { success: true };
 }
 
-// Placeholder for the Discord webhook function
-async function postToDiscord(videoUrl: string) {
+async function postToDiscord(url: string, type: 'video' | 'image') {
+  const response = await fetch(url);
+  const blob = await response.blob();
+
+  const formData = new FormData();
+  formData.append('file', blob, type === 'video' ? 'video.mp4' : 'image.jpg');
+
   const webhookUrl =
     'https://discord.com/api/webhooks/1348939145942405161/Yw1uZCyWalvDtYTTj-h499v0shalBvfhSx1rkptnlM7TTldnwecKioXr_Uh7iZawQgmc'; // Replace with your Discord webhook URL
   await fetch(webhookUrl, {
     method: 'POST',
-    body: JSON.stringify({ content: videoUrl }),
-    headers: { 'Content-Type': 'application/json' },
+    body: formData,
   });
 }
