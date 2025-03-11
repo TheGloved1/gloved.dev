@@ -51,3 +51,23 @@ export async function syncAction(data: { threads: Thread[]; messages: Message[] 
 export async function deleteUserDataAction(userId: string) {
   await deleteUserData(userId);
 }
+
+export async function downloadReel(link: string): Promise<{ success: boolean; error?: Error }> {
+  // Send the video to Discord
+  const { data, error } = await tryCatch(postToDiscord(link));
+  if (error) {
+    return { success: false, error };
+  }
+  return { success: true };
+}
+
+// Placeholder for the Discord webhook function
+async function postToDiscord(videoUrl: string) {
+  const webhookUrl =
+    'https://discord.com/api/webhooks/1348939145942405161/Yw1uZCyWalvDtYTTj-h499v0shalBvfhSx1rkptnlM7TTldnwecKioXr_Uh7iZawQgmc'; // Replace with your Discord webhook URL
+  await fetch(webhookUrl, {
+    method: 'POST',
+    body: JSON.stringify({ content: videoUrl }),
+    headers: { 'Content-Type': 'application/json' },
+  });
+}
