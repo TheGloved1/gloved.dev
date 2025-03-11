@@ -10,7 +10,6 @@ import { Button } from './ui/button';
 export default function SourceCodeButton(): React.JSX.Element | null {
   const pathname = usePathname();
   const isMobile = useIsMobile();
-  console.log('path', pathname);
   const sourceCodeUrl =
     (
       (pathname.includes('-') && pathname.split('-').length === 5) ||
