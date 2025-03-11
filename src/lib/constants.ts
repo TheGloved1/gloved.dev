@@ -9,7 +9,7 @@ type ChatModelCategory = 'google' | 'groq';
 export default class Constants {
   static readonly NAME: string = 'gloved.dev';
   static readonly DESC: string = 'A personal website for my projects and interests. Built with Next.js';
-  static readonly ICON: string = '/Leo.png';
+  static readonly ICON: string = '/logo.png';
   static readonly API: string = 'https://api.gloved.dev';
   static readonly FILE_SIZE_LIMIT_MB: number = 2.5;
   static readonly MAX_FILE_SIZE: number = this.FILE_SIZE_LIMIT_MB * 1024 * 1024;
