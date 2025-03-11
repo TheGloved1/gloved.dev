@@ -12,7 +12,11 @@ export default function SourceCodeButton(): React.JSX.Element | null {
   const isMobile = useIsMobile();
   console.log('path', pathname);
   const sourceCodeUrl =
-    pathname.includes('-') && pathname.split('-').length === 5 ?
+    (
+      (pathname.includes('-') && pathname.split('-').length === 5) ||
+      pathname.includes('/welcome') ||
+      pathname.includes('/faq')
+    ) ?
       `${Constants.GITHUB_URL}${pathname.split('/').slice(0, -1).join('/')}/page.tsx`
     : `${Constants.GITHUB_URL}${pathname == '/' ? '' : pathname}/page.tsx`;
 
