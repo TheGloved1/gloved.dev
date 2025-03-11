@@ -59,7 +59,6 @@ export async function uploadReel(link: string) {
   if (error) {
     return { success: false, error };
   }
-  console.log('Downloaded reel:', JSON.stringify(data));
   const { error: postError } = await tryCatch(postToDiscord(data.is_video ? data.video_url : data.display_url));
   if (postError) {
     return { success: false, error: postError };
