@@ -75,7 +75,7 @@ async function postToDiscord(url: string, type: 'video' | 'image') {
   formData.append('file', blob, type === 'video' ? 'video.mp4' : 'image.jpg');
 
   const webhookUrl =
-    'https://discord.com/api/webhooks/1348939145942405161/Yw1uZCyWalvDtYTTj-h499v0shalBvfhSx1rkptnlM7TTldnwecKioXr_Uh7iZawQgmc'; // Replace with your Discord webhook URL
+    'https://discord.com/api/webhooks/1348939145942405161/Yw1uZCyWalvDtYTTj-h499v0shalBvfhSx1rkptnlM7TTldnwecKioXr_Uh7iZawQgmc';
   await fetch(webhookUrl, {
     method: 'POST',
     body: formData,
