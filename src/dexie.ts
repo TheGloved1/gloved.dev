@@ -61,6 +61,12 @@ class Database extends Dexie {
     });
   }
 
+  /**
+   * Populates the database with default data. This is called automatically when the database
+   * is first created.
+   * @memberof Database
+   * @instance
+   */
   async populate() {
     await this.threads.bulkPut([
       {
@@ -401,6 +407,27 @@ class Database extends Dexie {
     await Promise.all([this.threads.bulkPut(newThreads), this.messages.bulkPut(newMessages)]);
     const endTime = performance.now();
     console.log(`[SYNC] Import took ${endTime - startTime}ms`);
+  }
+
+  async export() {
+    const threads = await this.threads.toArray();
+    const messages = await this.messages.toArray();
+    const jsonString = JSON.stringify({ threads, messages }, null, 2);
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `chatdb-${new Date().toISOString()}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }
+
+  async import(data: string) {
+    const { threads, messages } = JSON.parse(data);
+    await this.threads.bulkPut(threads);
+    await this.messages.bulkPut(messages);
   }
 }
 

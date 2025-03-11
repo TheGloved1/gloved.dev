@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/dialog';
 import { dxdb } from '@/dexie';
 import { usePersistentState } from '@/hooks/use-persistent-state';
+import { tryCatch } from '@/lib/utils';
 import { useAuth } from '@clerk/nextjs';
 import { ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
@@ -30,6 +31,20 @@ export default function SettingsPage() {
     toast.success('Data deleted');
     setDeleteDialogOpen(false);
     router.push('/chat');
+  };
+
+  const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const text = await file.text();
+    await dxdb.import(text);
+    toast.success('Data imported');
+  };
+
+  const handleExport = async () => {
+    const { error } = await tryCatch(dxdb.export());
+    if (error) return toast.error('Failed to export data');
+    toast.success('Data exported');
   };
 
   return (
@@ -61,7 +76,18 @@ export default function SettingsPage() {
             />
           </div>
           <div className='rounded p-4'>
-            <h2 className='p-2 font-bold md:text-3xl'>Delete Data</h2>
+            <h2 className='p-2 font-bold md:text-3xl'>Import & Export</h2>
+            <div className='mb-4 flex items-center gap-2'>
+              <Button variant='secondary'>
+                <input type='file' accept='.json' onChange={handleImport} className='hidden' id='import-data' />
+                <label htmlFor='import-data' className='cursor-pointer'>
+                  Import
+                </label>
+              </Button>
+              <Button variant='secondary' onClick={handleExport}>
+                Export
+              </Button>
+            </div>
             <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
               <DialogTrigger asChild>
                 <Button variant='destructive' onClick={() => setDeleteDialogOpen(true)}>
