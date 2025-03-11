@@ -23,7 +23,7 @@ export default function SourceCodeButton(): React.JSX.Element | null {
   return isMobile ? null : (
       <Link href={sourceCodeUrl} target='_blank' rel='noopener noreferrer'>
         <Button
-          className='group fixed bottom-2 right-2 z-50 rounded-full p-2 text-white hover:bg-gray-500 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black'
+          className='group fixed bottom-2 right-2 z-50 min-w-10 rounded-full p-2 text-white hover:bg-gray-500 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black'
           aria-label='View Source Code'
         >
           <Code2 />
