@@ -195,7 +195,7 @@ export async function addAdmin(email: string) {
 }
 
 export async function removeAdmin(email: string) {
-  const admins = ((await redis.get('admins')) as { admins: string[] })?.admins || [];
+  const admins = ((await redis.get('admins')) as string[]) || [];
   if (admins.includes(email)) {
     await redis.set(
       'admins',
@@ -205,5 +205,5 @@ export async function removeAdmin(email: string) {
 }
 
 export async function getAdmins() {
-  return ((await redis.get('admins')) as { admins: string[] })?.admins || [];
+  return ((await redis.get('admins')) as string[]) || [];
 }
