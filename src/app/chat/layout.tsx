@@ -29,7 +29,7 @@ export const dynamic = 'force-static';
 
 export default nextDynamic(() =>
   Promise.resolve(
-    memo(function ChatLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+    memo(function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
       return <>{children}</>;
     }),
   ),
