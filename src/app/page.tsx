@@ -2,7 +2,6 @@
 import AdminComponent from '@/components/AdminComponent';
 import Counter from '@/components/Counter';
 import { PageVisits } from '@/components/PageVisits';
-import TopScrollVisibility from '@/components/TopScrollVisibility';
 import { Button } from '@/components/ui/button';
 import Constants from '@/lib/constants';
 import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs';
@@ -24,15 +23,6 @@ export default function Page(): React.JSX.Element {
           </div>
         </SignedIn>
       </div>
-      <TopScrollVisibility offset={100}>
-        <Link
-          href={'/gallery'}
-          className='fixed left-2 top-2 flex items-center justify-center self-center pl-0 sm:hidden lg:hidden'
-          prefetch
-        >
-          <button className='rounded bg-blue-500 px-4 py-2 text-white'>Go to Gallery</button>
-        </Link>
-      </TopScrollVisibility>
       <div className='container flex flex-col items-center justify-center gap-8 px-1 py-16 md:px-4'>
         <h1 className='text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]'>
           gloved<span className='text-[hsl(280,100%,40%)]'>.</span>dev
