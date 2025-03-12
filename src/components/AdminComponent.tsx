@@ -1,27 +1,30 @@
 'use client';
 import Loading from '@/components/loading';
-import { apiRoute, fetchIp } from '@/lib/utils';
-import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
-import React from 'react';
-
-async function fetchAllowedIps() {
-  const res = await axios.get<string[]>(apiRoute('/admin-ips'));
-  return res.data;
-}
+import { getAdminsAction } from '@/lib/actions';
+import { tryCatch } from '@/lib/utils';
+import { useUser } from '@clerk/nextjs';
+import React, { useEffect, useState } from 'react';
 
 export default function AdminComponent({ children }: { children: React.ReactNode }): React.JSX.Element {
-  const clientIp = useQuery<string>({ queryKey: ['clientIp'], queryFn: fetchIp });
-  const allowedIps = useQuery<string[]>({
-    queryKey: ['allowedIps'],
-    queryFn: fetchAllowedIps,
-    refetchOnWindowFocus: true,
-  });
+  const { user } = useUser();
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isErrored, setIsErrored] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const isLoading = clientIp.isLoading || allowedIps.isLoading;
-  const isErrored = clientIp.isError || allowedIps.isError;
-  const isAllowed = allowedIps.data?.includes(clientIp.data ?? '') ?? false;
-
+  useEffect(() => {
+    setIsLoading(true);
+    const currentUserAsync = async () => {
+      const { data: admins, error: getAdminsError } = await tryCatch(getAdminsAction());
+      if (getAdminsError) {
+        setIsErrored(true);
+        setIsLoading(false);
+        return;
+      }
+      setIsAdmin(admins.includes(user?.primaryEmailAddress?.emailAddress || ''));
+      setIsLoading(false);
+    };
+    currentUserAsync();
+  }, [user?.primaryEmailAddress?.emailAddress]);
   if (isErrored) {
     return <></>;
   }
@@ -30,7 +33,7 @@ export default function AdminComponent({ children }: { children: React.ReactNode
     return <Loading />;
   }
 
-  if (isAllowed) {
+  if (isAdmin) {
     return <>{children}</>;
   }
 

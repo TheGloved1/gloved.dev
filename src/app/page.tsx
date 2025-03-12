@@ -1,30 +1,29 @@
-import Leo from '@/../public/Leo.png';
+'use client';
 import AdminComponent from '@/components/AdminComponent';
 import Counter from '@/components/Counter';
 import { PageVisits } from '@/components/PageVisits';
 import TopScrollVisibility from '@/components/TopScrollVisibility';
+import { Button } from '@/components/ui/button';
 import Constants from '@/lib/constants';
+import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs';
 import { Link } from 'next-view-transitions';
-import Image from 'next/image';
 import React from 'react';
 
 export default function Page(): React.JSX.Element {
   return (
     <>
-      <Link
-        href={'/gallery'}
-        className='fixed bottom-2 left-2 flex flex-row items-center justify-center pl-0 lg:bottom-auto lg:top-2'
-        prefetch
-      >
-        <Image
-          src={Leo}
-          alt=''
-          placeholder='blur'
-          width={100}
-          height={100}
-          className='fixed left-1 top-1 hidden h-12 w-12 rounded-xl border-2 border-white shadow-lg sm:left-4 sm:top-4 sm:block sm:h-16 sm:w-16 sm:transform md:left-4 md:top-4 md:h-24 md:w-24 lg:left-4 lg:top-4 xl:left-4 xl:top-4 2xl:left-4 2xl:top-4'
-        />
-      </Link>
+      <div className='absolute left-0 top-0 flex items-center gap-2 border border-border p-2'>
+        <SignedOut>
+          <SignInButton mode={'modal'}>
+            <Button className='btn gap-1'>Sign in</Button>
+          </SignInButton>
+        </SignedOut>
+        <SignedIn>
+          <div className='flex items-center gap-2'>
+            <UserButton showName />
+          </div>
+        </SignedIn>
+      </div>
       <TopScrollVisibility offset={100}>
         <Link
           href={'/gallery'}

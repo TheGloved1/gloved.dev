@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 export default function Page() {
-  const { user, isSignedIn } = useUser();
+  const { user } = useUser();
   const [isAdmin, setIsAdmin] = useState(false);
   const [admins, setAdmins] = useState<string[]>([]);
   const [newAdmin, setNewAdmin] = useState('');
