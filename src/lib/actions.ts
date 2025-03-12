@@ -3,7 +3,7 @@ import { Message, Thread } from '@/dexie';
 import { env } from '@/env';
 import { apiRoute, tryCatch } from '@/lib/utils';
 import { IgDownloader } from 'ig-downloader';
-import { dbSync, deleteUserData } from './db';
+import { addAdmin, dbSync, deleteUserData, getAdmins, removeAdmin } from './db';
 
 /**
  * Fetches the system prompt from the server.
@@ -81,4 +81,16 @@ async function postToDiscord(url: string, type: 'video' | 'image') {
     body: formData,
   });
   return { url: url, type: type };
+}
+
+export async function addAdminAction(email: string) {
+  await addAdmin(email);
+}
+
+export async function removeAdminAction(email: string) {
+  await removeAdmin(email);
+}
+
+export async function getAdminsAction() {
+  return await getAdmins();
 }

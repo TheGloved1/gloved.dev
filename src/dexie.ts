@@ -385,8 +385,12 @@ class Database extends Dexie {
     await Promise.all(threads.map((thread) => this.threads.delete(thread.id)));
     await Promise.all(messages.map((msg) => this.messages.delete(msg.id)));
     if (userId) {
-      await deleteUserDataAction(userId);
-      console.log('[SYNC] Deleted user data for', userId);
+      const { error: deleteUserDataError } = await tryCatch(deleteUserDataAction(userId));
+      if (deleteUserDataError) {
+        console.log('[SYNC] Failed to delete user data for', userId);
+      } else {
+        console.log('[SYNC] Deleted user data for', userId);
+      }
     }
     await this.populate();
   }

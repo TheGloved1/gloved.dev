@@ -87,7 +87,7 @@ export async function dbSync(input: { userId: string; messages: Message[]; threa
   const dbThreads = await getAllThreadsForUser(input.userId);
   const localThreads = input.threads;
 
-  const kvMap: Record<string, string | null> = {};
+  const kvMap: Record<string, string> = {};
   const newThreads: Thread[] = [];
   const newMessages: Message[] = [];
 
@@ -159,10 +159,51 @@ export async function dbSync(input: { userId: string; messages: Message[]; threa
 }
 
 export async function deleteUserData(userId: string) {
-  const threadKeys = await redis.keys(`sync:thread:${userId}:*`);
-  const messagesKeys = await redis.keys(`sync:msg:${userId}:*`);
-  const allKeys = threadKeys.concat(messagesKeys);
-  if (allKeys.length === 0) return;
-  const keys = await redis.del(...allKeys);
-  console.log('[SYNC] Deleted', keys, 'keys for', userId);
+  const dbThreads = await getAllThreadsForUser(userId);
+  const dbMessages = await getAllMessagesForUser(userId);
+
+  const kvMap: Record<string, string> = {};
+
+  dbThreads.forEach((t) => {
+    const key = threadSyncKey(userId, t.id);
+    kvMap[key] = JSON.stringify({
+      ...t,
+      updated_at: new Date().toISOString(),
+      removed: 'true',
+    });
+  });
+  dbMessages.forEach((m) => {
+    const key = messageSyncKey(userId, m.id);
+    kvMap[key] = JSON.stringify({
+      ...m,
+      content: '',
+      updated_at: new Date().toISOString(),
+      removed: 'true',
+    });
+  });
+
+  if (Object.keys(kvMap).length > 0) {
+    await redis.mset(kvMap);
+  }
+}
+
+export async function addAdmin(email: string) {
+  const admins = ((await redis.get('admins')) as { admins: string[] })?.admins || [];
+  if (!admins.includes(email)) {
+    await redis.set('admins', [...admins, email]);
+  }
+}
+
+export async function removeAdmin(email: string) {
+  const admins = ((await redis.get('admins')) as { admins: string[] })?.admins || [];
+  if (admins.includes(email)) {
+    await redis.set(
+      'admins',
+      admins.filter((admin) => admin !== email),
+    );
+  }
+}
+
+export async function getAdmins() {
+  return ((await redis.get('admins')) as { admins: string[] })?.admins || [];
 }
