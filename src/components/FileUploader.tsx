@@ -7,9 +7,10 @@ import { usePersistentState } from '@/hooks/use-persistent-state';
 import { apiRoute, tryCatch } from '@/lib/utils';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import axios, { type AxiosProgressEvent } from 'axios';
+import { RefreshCcw } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
-import Button, { RedButton } from './Buttons';
 import { DeleteConfirmDialog } from './DeleteConfirmDialog';
+import { Button } from './ui/button';
 
 export type FileInfo = {
   name: string;
@@ -204,19 +205,17 @@ export default function FileUploader(): React.JSX.Element {
           <div className='mt-2 w-full'>
             <progress className='progress progress-primary w-full' value={uploadProgress} max='100' />
             <p className='text-center'>{`Uploading: ${uploadProgress}%`}</p>
-            <Button onClick={handleCancelUpload}>Cancel</Button>
+            <Button variant='destructive' onClick={handleCancelUpload}>
+              Cancel
+            </Button>
           </div>
         )}
 
         <h2 className='place-items-center content-center justify-center pb-4 pt-4 text-center'>
           {'Download Files '}
-          <button
-            className='btn btn-circle btn-sm hover:animate-spin'
-            onClick={() => queryClient.invalidateQueries({ queryKey: ['files'] })}
-            title='Refresh Files'
-          >
-            ↻
-          </button>
+          <Button onClick={() => queryClient.invalidateQueries({ queryKey: ['files'] })} title='Refresh Files'>
+            <RefreshCcw className='h-4 w-4' />
+          </Button>
         </h2>
         <h3 className='rounded-2xl bg-gray-500 bg-opacity-50 px-2 py-1 text-sm underline'>
           {'(Click file to Copy or Download)'}
@@ -234,7 +233,8 @@ export default function FileUploader(): React.JSX.Element {
                   .map((file) => (
                     <li className='flex w-64 flex-row p-1 text-[.2rem]' key={file.name}>
                       <FileButton file={file} />
-                      <RedButton
+                      <Button
+                        variant={'destructive'}
                         disabled={false}
                         onClick={() => {
                           setFileToDelete(file);
@@ -242,7 +242,7 @@ export default function FileUploader(): React.JSX.Element {
                         title={`Delete file ${filesQuery.data.findIndex((f) => f.name === file.name) + 1} of ${filesQuery.data.length}`}
                       >
                         {'X'}
-                      </RedButton>
+                      </Button>
                     </li>
                   ))
               }
@@ -257,7 +257,8 @@ export default function FileUploader(): React.JSX.Element {
                     .map((file) => (
                       <li className='flex w-64 flex-row p-1 text-[.2rem]' key={file.name}>
                         <FileButton file={file} />
-                        <RedButton
+                        <Button
+                          variant={'destructive'}
                           disabled={false}
                           onClick={() => {
                             setFileToDelete(file);
@@ -265,7 +266,7 @@ export default function FileUploader(): React.JSX.Element {
                           title={`Delete file ${filesQuery.data.findIndex((f) => f.name === file.name) + 1} of ${filesQuery.data.length}`}
                         >
                           {'X'}
-                        </RedButton>
+                        </Button>
                       </li>
                     ))}
                 </ul>

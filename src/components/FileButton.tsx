@@ -1,9 +1,10 @@
 'use client';
-import Button, { LinkButton } from '@/components/Buttons';
+import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { apiRoute } from '@/lib/utils';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useState } from 'react';
 import { FileInfo } from './FileUploader';
 import VideoPreview from './VideoPreview';
@@ -64,12 +65,9 @@ export default function FileButton({ file }: FileButtonProps): React.JSX.Element
   return (
     <>
       <div className='mx-2 w-64 truncate rounded-xl'>
-        <button
-          onClick={() => setShowDialog(true)}
-          className='btn mx-2 rounded-xl p-3 hover:animate-pulse hover:bg-gray-700'
-        >
+        <Button onClick={() => setShowDialog(true)} className='mx-2 rounded-xl p-3 hover:animate-pulse hover:bg-gray-700'>
           {file.name}
-        </button>
+        </Button>
       </div>
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
         <DialogContent className='w-fit sm:max-w-[425px] md:max-w-[650px]'>
@@ -99,11 +97,15 @@ export default function FileButton({ file }: FileButtonProps): React.JSX.Element
             )}
             {!isImage && !isVideo && null}
           </div>
-          <div className='grid grid-cols-2 items-center justify-center self-center'>
-            <Button onClick={() => copyToClipboard()}>Copy</Button>
-            <LinkButton href={fileUrl} onClick={() => setShowDialog(false)}>
-              Download
-            </LinkButton>
+          <div className='flex w-full items-center justify-center gap-2 self-center'>
+            <Button className='w-fill' onClick={() => copyToClipboard()}>
+              Copy
+            </Button>
+            <Link href={fileUrl}>
+              <Button className='w-fill' onClick={() => setShowDialog(false)}>
+                Download
+              </Button>
+            </Link>
           </div>
         </DialogContent>
       </Dialog>
