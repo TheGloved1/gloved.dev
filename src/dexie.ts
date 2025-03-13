@@ -410,7 +410,7 @@ class Database extends Dexie {
     if (!newThreads.length && !newMessages.length) return console.log('[SYNC] No data found in server');
     await Promise.all([this.threads.bulkPut(newThreads), this.messages.bulkPut(newMessages)]);
     const endTime = performance.now();
-    console.log(`[SYNC] Import took ${endTime - startTime}ms`);
+    console.log(`[SYNC] Import took ${(endTime - startTime).toFixed(2)}ms`);
   }
 
   async export() {
