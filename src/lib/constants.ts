@@ -24,6 +24,7 @@ export default class Constants {
     groq: {
       'Qwen 2.5 (32B)': 'qwen-2.5-32b',
       'Qwen 2.5 Coder (32B)': 'qwen-2.5-coder-32b',
+      'Qwen QwQ (32B)': 'qwen-qwq-32b',
       'Llama 3.1 (8B)': 'llama-3.1-8b-instant',
       'Llama 3.3 (70B)': 'llama-3.3-70b-versatile',
       'Mixtral 8x7b': 'mixtral-8x7b-32768',
