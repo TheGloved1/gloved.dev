@@ -44,7 +44,9 @@ class Database extends Dexie {
       messages: '++id, threadId, content, model, role, [threadId+created_at], updated_at, status',
     });
 
-    this.on('populate', this.populate);
+    this.on('populate', async () => {
+      await this.populate();
+    });
 
     this.threads.hook('creating', (primKey, obj) => {
       obj.created_at = new Date().toISOString();
@@ -386,7 +388,7 @@ class Database extends Dexie {
         console.log('[SYNC] Deleted user data for', userId);
       }
     }
-    await this.populate();
+    this.populate();
   }
 
   /**
