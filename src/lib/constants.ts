@@ -22,8 +22,8 @@ export default class Constants {
       'Gemini 2.0 Pro Experimental': 'gemini-2.0-pro-exp-02-05',
     } as const,
     groq: {
-      'Qwen 2.5-32b': 'qwen-2.5-32b',
-      'Qwen 2.5 Coder-32b': 'qwen-2.5-coder-32b',
+      'Qwen-32b': 'qwen-2.5-32b',
+      'Qwen Coder-32b': 'qwen-2.5-coder-32b',
       'Qwen qwq-32b': 'qwen-qwq-32b',
       'Llama 3.1-8b': 'llama-3.1-8b-instant',
       'Llama 3.3-70b': 'llama-3.3-70b-versatile',
