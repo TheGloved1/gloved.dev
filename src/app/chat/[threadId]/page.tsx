@@ -11,7 +11,7 @@ import ChatMessage from '../_components/ChatMessage';
 
 export const dynamic = 'force-static';
 
-function ThreadPage(): React.JSX.Element {
+function Page(): React.JSX.Element {
   const { threadId } = useParams();
   if (!threadId || typeof threadId !== 'string') redirect('/chat');
   const [input, setInput] = useState<string>('');
@@ -21,19 +21,14 @@ function ThreadPage(): React.JSX.Element {
   const auth = useAuth();
 
   useEffect(() => {
-    dxdb.getThreads().then((threads) => {
-      if (threads.find((t) => t.id === threadId)) return threads;
-      redirect('/chat');
+    dxdb.getThread(threadId).then((thread) => {
+      if (!thread) redirect('/chat');
     });
   }, [threadId]);
 
   const scrollToBottom = useCallback((noSmooth?: boolean) => {
     messagesEndRef.current?.scrollIntoView({ behavior: noSmooth ? 'auto' : 'smooth' });
   }, []);
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [scrollToBottom]);
 
   const messages = useLiveQuery(
     () => {
@@ -92,10 +87,6 @@ function ThreadPage(): React.JSX.Element {
     };
   }, [messagesEndRef, scrollToBottom]);
 
-  useEffect(() => {
-    if (isAtBottom && messages) scrollToBottom();
-  }, [messages, isAtBottom, scrollToBottom]);
-
   // Initial scroll to bottom (after component mounts and data is available)
   useEffect(() => {
     if (messages) scrollToBottom();
@@ -125,4 +116,4 @@ function ThreadPage(): React.JSX.Element {
   );
 }
 
-export default nextDynamic(() => Promise.resolve(memo(ThreadPage)), { ssr: false });
+export default nextDynamic(() => Promise.resolve(memo(Page)), { ssr: false });
