@@ -10,7 +10,6 @@ export const redis = new Redis({
   url: process.env.KV_REST_API_URL,
   token: process.env.KV_REST_API_TOKEN,
   enableTelemetry: true,
-  enableAutoPipelining: true,
 });
 
 /**
@@ -169,8 +168,8 @@ export async function deleteUserData(userId: string) {
     kvMap[key] = JSON.stringify({
       ...t,
       updated_at: new Date().toISOString(),
-      removed: 'true',
-    });
+      status: 'deleted',
+    } as Thread);
   });
   dbMessages.forEach((m) => {
     const key = messageSyncKey(userId, m.id);
@@ -178,8 +177,8 @@ export async function deleteUserData(userId: string) {
       ...m,
       content: '',
       updated_at: new Date().toISOString(),
-      removed: 'true',
-    });
+      status: 'deleted',
+    } as Message);
   });
 
   if (Object.keys(kvMap).length > 0) {
@@ -206,4 +205,9 @@ export async function removeAdmin(email: string) {
 
 export async function getAdmins() {
   return ((await redis.get('admins')) as string[]) || [];
+}
+
+export async function deleteSync() {
+  const keys = await redis.keys('sync*');
+  await redis.del(...keys);
 }

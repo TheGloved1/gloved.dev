@@ -1,5 +1,5 @@
 import { deleteUserDataAction, syncAction } from '@/lib/actions';
-import { tryCatch } from '@/lib/utils';
+import { sleep, tryCatch } from '@/lib/utils';
 import { ImagePart, TextPart } from 'ai';
 import Dexie, { type EntityTable } from 'dexie';
 
@@ -9,7 +9,7 @@ export type Thread = {
   created_at: string;
   updated_at: string;
   last_message_at: string;
-  removed: 'true' | 'false';
+  status: 'streaming' | 'done' | 'error' | 'deleted';
 };
 
 export type Message = {
@@ -20,8 +20,7 @@ export type Message = {
   role: 'user' | 'assistant';
   created_at: string;
   updated_at: string;
-  finished: boolean;
-  removed: 'true' | 'false';
+  status: 'streaming' | 'done' | 'error' | 'deleted';
 };
 
 /**
@@ -40,10 +39,41 @@ class Database extends Dexie {
 
   constructor() {
     super('chatdb');
-    this.version(1).stores({
-      threads: '++id, title, created_at, updated_at, last_message_at, removed',
-      messages: '++id, threadId, content, model, role, [threadId+created_at], updated_at, finished, removed',
-    });
+    this.version(2)
+      .stores({
+        threads: '++id, title, created_at, updated_at, last_message_at, status',
+        messages: '++id, threadId, content, model, role, [threadId+created_at], updated_at, status',
+      })
+      .upgrade(async (tx) => {
+        // Upgrade threads
+        await tx
+          .table('threads')
+          .toCollection()
+          .modify((thread) => {
+            if ('deleted' in thread) {
+              thread.status = thread.deleted === 'true' ? 'deleted' : 'done';
+              delete thread.deleted;
+            }
+          });
+
+        // Upgrade messages
+        await tx
+          .table('messages')
+          .toCollection()
+          .modify((message) => {
+            if ('finished' in message && 'deleted' in message) {
+              if (message.deleted === 'true') {
+                message.status = 'deleted';
+              } else if (message.finished) {
+                message.status = 'done';
+              } else {
+                message.status = 'deleted';
+              }
+              delete message.finished;
+              delete message.deleted;
+            }
+          });
+      });
 
     this.on('populate', this.populate);
 
@@ -51,13 +81,11 @@ class Database extends Dexie {
       obj.created_at = new Date().toISOString();
       obj.updated_at = new Date().toISOString();
       obj.last_message_at = new Date().toISOString();
-      obj.removed = 'false';
     });
 
     this.messages.hook('creating', (primKey, obj) => {
       obj.created_at = new Date().toISOString();
       obj.updated_at = new Date().toISOString();
-      obj.removed = 'false';
     });
   }
 
@@ -75,7 +103,7 @@ class Database extends Dexie {
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
         last_message_at: new Date().toISOString(),
-        removed: 'false',
+        status: 'done',
       },
       {
         id: 'faq',
@@ -83,7 +111,7 @@ class Database extends Dexie {
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
         last_message_at: new Date().toISOString(),
-        removed: 'false',
+        status: 'done',
       },
     ]);
 
@@ -95,9 +123,9 @@ class Database extends Dexie {
       role: 'user',
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
-      finished: true,
-      removed: 'false',
+      status: 'done',
     });
+    await sleep(1);
     await this.messages.put({
       id: 'WELCOME2',
       threadId: 'welcome',
@@ -106,9 +134,9 @@ class Database extends Dexie {
       role: 'assistant',
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
-      finished: true,
-      removed: 'false',
+      status: 'done',
     });
+    await sleep(1);
     await this.messages.put({
       id: 'FAQ1',
       threadId: 'faq',
@@ -117,9 +145,9 @@ class Database extends Dexie {
       role: 'user',
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
-      finished: true,
-      removed: 'false',
+      status: 'done',
     });
+    await sleep(1);
     await this.messages.put({
       id: 'FAQ2',
       threadId: 'faq',
@@ -128,9 +156,9 @@ class Database extends Dexie {
       role: 'assistant',
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
-      finished: true,
-      removed: 'false',
+      status: 'done',
     });
+    await sleep(1);
     await this.messages.put({
       id: 'FAQ3',
       threadId: 'faq',
@@ -139,8 +167,7 @@ class Database extends Dexie {
       role: 'user',
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
-      finished: true,
-      removed: 'false',
+      status: 'done',
     });
     await this.messages.put({
       id: 'FAQ4',
@@ -150,9 +177,9 @@ class Database extends Dexie {
       role: 'assistant',
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
-      finished: true,
-      removed: 'false',
+      status: 'done',
     });
+    await sleep(1);
     await this.messages.put({
       id: 'FAQ5',
       threadId: 'faq',
@@ -161,9 +188,9 @@ class Database extends Dexie {
       role: 'user',
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
-      finished: true,
-      removed: 'false',
+      status: 'done',
     });
+    await sleep(1);
     await this.messages.put({
       id: 'FAQ6',
       threadId: 'faq',
@@ -172,9 +199,9 @@ class Database extends Dexie {
       role: 'assistant',
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
-      finished: true,
-      removed: 'false',
+      status: 'done',
     });
+    await sleep(1);
     await this.messages.put({
       id: 'FAQ7',
       threadId: 'faq',
@@ -183,9 +210,9 @@ class Database extends Dexie {
       role: 'user',
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
-      finished: true,
-      removed: 'false',
+      status: 'done',
     });
+    await sleep(1);
     await this.messages.put({
       id: 'FAQ8',
       threadId: 'faq',
@@ -194,9 +221,9 @@ class Database extends Dexie {
       role: 'assistant',
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
-      finished: true,
-      removed: 'false',
+      status: 'done',
     });
+    await sleep(1);
     await this.messages.put({
       id: 'FAQ9',
       threadId: 'faq',
@@ -205,9 +232,9 @@ class Database extends Dexie {
       role: 'user',
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
-      finished: true,
-      removed: 'false',
+      status: 'done',
     });
+    await sleep(1);
     await this.messages.put({
       id: 'FAQ10',
       threadId: 'faq',
@@ -216,9 +243,9 @@ class Database extends Dexie {
       role: 'assistant',
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
-      finished: true,
-      removed: 'false',
+      status: 'done',
     });
+    await sleep(1);
     await this.messages.put({
       id: 'FAQ11',
       threadId: 'faq',
@@ -227,9 +254,9 @@ class Database extends Dexie {
       role: 'user',
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
-      finished: true,
-      removed: 'false',
+      status: 'done',
     });
+    await sleep(1);
     await this.messages.put({
       id: 'FAQ12',
       threadId: 'faq',
@@ -238,9 +265,9 @@ class Database extends Dexie {
       role: 'assistant',
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
-      finished: true,
-      removed: 'false',
+      status: 'done',
     });
+    await sleep(1);
     await this.messages.put({
       id: 'FAQ13',
       threadId: 'faq',
@@ -249,9 +276,9 @@ class Database extends Dexie {
       role: 'user',
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
-      finished: true,
-      removed: 'false',
+      status: 'done',
     });
+    await sleep(1);
     await this.messages.put({
       id: 'FAQ14',
       threadId: 'faq',
@@ -260,9 +287,9 @@ class Database extends Dexie {
       role: 'assistant',
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
-      finished: true,
-      removed: 'false',
+      status: 'done',
     });
+    await sleep(1);
     await this.messages.put({
       id: 'FAQ15',
       threadId: 'faq',
@@ -271,9 +298,9 @@ class Database extends Dexie {
       role: 'user',
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
-      finished: true,
-      removed: 'false',
+      status: 'done',
     });
+    await sleep(1);
     await this.messages.put({
       id: 'FAQ16',
       threadId: 'faq',
@@ -282,8 +309,7 @@ class Database extends Dexie {
       role: 'assistant',
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
-      finished: true,
-      removed: 'false',
+      status: 'done',
     });
   }
 
@@ -292,7 +318,7 @@ class Database extends Dexie {
    * @returns A promise that resolves to an array of threads.
    */
   async getThreads() {
-    return (await this.threads.where('removed').equals('false').sortBy('last_message_at')).toReversed();
+    return (await this.threads.where('status').notEqual('deleted').sortBy('last_message_at')).toReversed();
   }
 
   /**
@@ -300,7 +326,7 @@ class Database extends Dexie {
    * @returns A promise that resolves to an array of messages.
    */
   async getMessages() {
-    return await this.messages.where('removed').equals('false').sortBy('created_at');
+    return await this.messages.where('status').notEqual('deleted').sortBy('created_at');
   }
 
   /**
@@ -309,7 +335,7 @@ class Database extends Dexie {
    * @param message A partial `Message` object without the `id`, `created_at`, `updated_at`, and `removed` fields.
    * @returns The ID of the created message.
    */
-  async addMessage(message: Omit<Message, 'id' | 'created_at' | 'updated_at' | 'removed'>) {
+  async addMessage(message: Omit<Message, 'id' | 'created_at' | 'updated_at'>) {
     const id = crypto.randomUUID();
     await this.transaction('rw', [this.messages, this.threads], async () => {
       await this.messages.add({
@@ -317,7 +343,6 @@ class Database extends Dexie {
         id,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
-        removed: 'false',
       });
       await this.threads.update(message.threadId, {
         last_message_at: new Date().toISOString(),
@@ -328,12 +353,12 @@ class Database extends Dexie {
   }
 
   /**
-   * Soft-deletes a message by setting `removed` to `'true'`, setting `updated_at` to the current timestamp,
+   * Soft-deletes a message by setting `status` to `'deleted'`, setting `updated_at` to the current timestamp,
    * and setting `content` to `null`.
    * @param id The ID of the message to remove.
    */
   async removeMessage(id: string) {
-    await this.messages.update(id, { removed: 'true', updated_at: new Date().toISOString(), content: '' });
+    await this.messages.update(id, { status: 'deleted', updated_at: new Date().toISOString(), content: '' });
   }
 
   /**
@@ -348,7 +373,7 @@ class Database extends Dexie {
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
       last_message_at: new Date().toISOString(),
-      removed: 'false',
+      status: 'done',
     });
     return id;
   }
@@ -360,7 +385,7 @@ class Database extends Dexie {
    */
   async getThreadMessages(threadId: string) {
     const messages = await this.messages.where('threadId').equals(threadId).sortBy('created_at');
-    return messages.filter((m) => m.removed === 'false');
+    return messages.filter((m) => m.status !== 'deleted');
   }
 
   /**
@@ -368,11 +393,11 @@ class Database extends Dexie {
    * @param threadId The ID of the thread to delete.
    */
   async deleteThread(threadId: string) {
-    await this.threads.update(threadId, { removed: 'true', updated_at: new Date().toISOString() });
+    await this.threads.update(threadId, { status: 'deleted', updated_at: new Date().toISOString() });
     await this.messages
       .where('threadId')
       .equals(threadId)
-      .modify({ removed: 'true', content: '', updated_at: new Date().toISOString() });
+      .modify({ status: 'deleted', content: '', updated_at: new Date().toISOString() });
   }
 
   /**
@@ -413,6 +438,10 @@ class Database extends Dexie {
     console.log(`[SYNC] Import took ${(endTime - startTime).toFixed(2)}ms`);
   }
 
+  /**
+   * Exports all threads and messages from the database to a JSON file.
+   * The file is automatically downloaded to the user's device with a timestamped filename.
+   */
   async export() {
     const threads = await this.threads.toArray();
     const messages = await this.messages.toArray();
@@ -428,8 +457,12 @@ class Database extends Dexie {
     URL.revokeObjectURL(url);
   }
 
-  async import(data: string) {
-    const { threads, messages } = JSON.parse(data);
+  /**
+   * Imports all threads and messages from a JSON file.
+   * @param json A JSON string containing the threads and messages to import.
+   */
+  async import(json: string) {
+    const { threads, messages } = JSON.parse(json);
     await this.threads.bulkPut(threads);
     await this.messages.bulkPut(messages);
   }
@@ -538,7 +571,7 @@ export async function processStream(
           await dxdb.messages.update(messageId, {
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
-            finished: true, // Mark as finished
+            status: 'done', // Mark as finished
           });
         callback();
         break; // Exit the loop since we are done processing
@@ -586,7 +619,7 @@ export async function createMessage(
     threadId,
     content: messageContent,
     role: 'user',
-    finished: true,
+    status: 'streaming',
     model,
   });
 
@@ -600,7 +633,7 @@ export async function createMessage(
     threadId,
     role: 'assistant',
     content: '',
-    finished: false,
+    status: 'streaming',
     model,
   });
 
@@ -625,7 +658,9 @@ export async function createMessage(
     if (!reader) return;
 
     // Call the helper function to process the stream
+    await dxdb.threads.update(assistantMessageId, { status: 'streaming' });
     await processStream(reader, assistantMessageId, callback);
+    await dxdb.threads.update(assistantMessageId, { status: 'done' });
   } catch (e) {
     console.log('Uncaught error', e);
   }

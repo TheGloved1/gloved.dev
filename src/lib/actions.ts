@@ -3,7 +3,7 @@ import { Message, Thread } from '@/dexie';
 import { env } from '@/env';
 import { apiRoute, tryCatch } from '@/lib/utils';
 import { IgDownloader } from 'ig-downloader';
-import { addAdmin, dbSync, deleteUserData, getAdmins, removeAdmin } from './db';
+import { addAdmin, dbSync, deleteSync, deleteUserData, getAdmins, removeAdmin } from './db';
 
 /**
  * Fetches the system prompt from the server.
@@ -52,6 +52,14 @@ export async function syncAction(data: { threads: Thread[]; messages: Message[] 
  */
 export async function deleteUserDataAction(userId: string) {
   await deleteUserData(userId);
+}
+
+/**
+ * Deletes all sync data from the key-value store.
+ * @returns A promise that resolves when the sync data has been deleted.
+ */
+export async function deleteSyncAction() {
+  await deleteSync();
 }
 
 /**

@@ -1,7 +1,7 @@
 'use client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { addAdminAction, getAdminsAction, removeAdminAction } from '@/lib/actions';
+import { addAdminAction, deleteSyncAction, getAdminsAction, removeAdminAction } from '@/lib/actions';
 import { tryCatch } from '@/lib/utils';
 import { useUser } from '@clerk/nextjs';
 import { Loader2 } from 'lucide-react';
@@ -77,22 +77,44 @@ export default function Page() {
         <ul className='mt-4 flex flex-col gap-2'>
           {admins.map((admin) => (
             <li key={admin} className='flex items-center justify-between p-2'>
+              {admin === user?.primaryEmailAddress?.emailAddress && <span className='text-red-500'>{'You ->'}</span>}
               <span>{admin}</span>
-              <Button
-                variant='destructive'
-                className='m-2 rounded p-2 text-white'
-                onClick={async () => {
-                  if (admin === user?.primaryEmailAddress?.emailAddress)
-                    return toast.error('You cannot remove yourself as an admin');
-                  await removeAdminAction(admin);
-                  toast.success(`Removed ${admin} as an admin`);
-                }}
-              >
-                Remove
-              </Button>
+              {admin !== user?.primaryEmailAddress?.emailAddress && (
+                <Button
+                  variant='destructive'
+                  className='m-2 rounded p-2 text-white'
+                  onClick={async () => {
+                    if (admin === user?.primaryEmailAddress?.emailAddress)
+                      return toast.error('You cannot remove yourself as an admin');
+                    await removeAdminAction(admin);
+                    toast.success(`Removed ${admin} as an admin`);
+                  }}
+                >
+                  Remove
+                </Button>
+              )}
             </li>
           ))}
         </ul>
+        {user.primaryEmailAddress?.emailAddress === 'gloves1229@gmail.com' && (
+          <div className='mt-4 flex flex-col gap-4'>
+            <h2 className='text-xl font-bold'>Danger Zone</h2>
+            <Button
+              variant='destructive'
+              className='m-2 rounded p-2 text-white'
+              onClick={async () => {
+                const { error: deleteSyncError } = await tryCatch(deleteSyncAction());
+                if (deleteSyncError) {
+                  toast.error('Failed to delete all sync data in KV');
+                  return;
+                }
+                toast.success('Deleted all sync data in KV');
+              }}
+            >
+              Delete Sync Data
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );

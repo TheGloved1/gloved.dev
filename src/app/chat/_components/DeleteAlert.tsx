@@ -47,9 +47,9 @@ const DeleteAlert = ({ id, isCurrentThread }: { id: string; isCurrentThread: boo
           <DialogTitle>Are you absolutely sure?</DialogTitle>
           <DialogDescription>This action cannot be undone. This will permanently delete this thread.</DialogDescription>
         </DialogHeader>
-        <DialogFooter>
+        <DialogFooter className='pt-4'>
           <DialogClose asChild>
-            <Button variant='secondary'>Cancel</Button>
+            <Button variant='ghost'>Cancel</Button>
           </DialogClose>
           <DialogClose asChild>
             <Button variant='destructive' onClick={handleDelete}>
