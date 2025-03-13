@@ -1,7 +1,7 @@
 'use client';
-import Button, { RedButton } from '@/components/Buttons';
 import Loading from '@/components/loading';
 import PageBack from '@/components/PageBack';
+import { Button } from '@/components/ui/button';
 import { apiRoute } from '@/lib/utils';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import axios, { AxiosProgressEvent, AxiosResponse } from 'axios';
@@ -169,7 +169,8 @@ export default function GalleryPage(): React.JSX.Element {
                   />
                 </Link>
                 {windowWidth >= 768 && (
-                  <RedButton
+                  <Button
+                    variant='destructive'
                     className='absolute right-2 top-2 opacity-0 group-hover:opacity-100'
                     onClick={() => deleteFile(file.name)}
                     title={`Delete file ${galleryQuery.data.findIndex((f) => f.name === file.name) + 1} of ${
@@ -177,7 +178,7 @@ export default function GalleryPage(): React.JSX.Element {
                     }`}
                   >
                     X
-                  </RedButton>
+                  </Button>
                 )}
               </div>
             ))}
