@@ -55,25 +55,6 @@ export async function deleteUserDataAction(userId: string) {
 }
 
 /**
- * Uploads a reel to Discord.
- * @param link The link to the reel to upload.
- * @returns An object containing the post and success status.
- */
-export async function uploadReelAction(link: string) {
-  const { data, error } = await tryCatch(IgDownloader(link));
-  if (error) {
-    return { post: null, success: false, error };
-  }
-  const { data: post, error: postError } = await tryCatch(
-    postToDiscord(data.is_video ? data.video_url : data.display_url, data.is_video ? 'video' : 'image'),
-  );
-  if (postError) {
-    return { post: null, success: false, error: postError };
-  }
-  return { post, success: true };
-}
-
-/**
  * Posts a file to Discord.
  * @param url The URL of the file to post.
  * @param type The type of the file (video or image).
@@ -95,7 +76,12 @@ async function postToDiscord(url: string, type: 'video' | 'image') {
   return { url, type };
 }
 
-export async function uploadReel(link: string) {
+/**
+ * Uploads a reel to Discord.
+ * @param link The link to the reel to upload.
+ * @returns An object containing the post and success status.
+ */
+export async function uploadReelAction(link: string) {
   const { data, error } = await tryCatch(IgDownloader(link));
   if (error) {
     return { post: null, success: false, error };

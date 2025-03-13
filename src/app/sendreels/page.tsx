@@ -3,7 +3,7 @@ import { Input } from '@/components/Input';
 import { Button } from '@/components/ui/button';
 import VideoPreview from '@/components/VideoPreview';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { uploadReel } from '@/lib/actions';
+import { uploadReelAction } from '@/lib/actions';
 import Image from 'next/image';
 import Link from 'next/link';
 import React, { useState } from 'react';
@@ -19,7 +19,7 @@ export default function Page() {
     e.preventDefault();
     setLoading(true);
 
-    const response = await uploadReel(link);
+    const response = await uploadReelAction(link);
 
     if (response.success) {
       setLink('');
