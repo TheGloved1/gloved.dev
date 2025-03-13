@@ -39,41 +39,10 @@ class Database extends Dexie {
 
   constructor() {
     super('chatdb');
-    this.version(2)
-      .stores({
-        threads: '++id, title, created_at, updated_at, last_message_at, status',
-        messages: '++id, threadId, content, model, role, [threadId+created_at], updated_at, status',
-      })
-      .upgrade(async (tx) => {
-        // Upgrade threads
-        await tx
-          .table('threads')
-          .toCollection()
-          .modify((thread) => {
-            if ('deleted' in thread) {
-              thread.status = thread.deleted === 'true' ? 'deleted' : 'done';
-              delete thread.deleted;
-            }
-          });
-
-        // Upgrade messages
-        await tx
-          .table('messages')
-          .toCollection()
-          .modify((message) => {
-            if ('finished' in message && 'deleted' in message) {
-              if (message.deleted === 'true') {
-                message.status = 'deleted';
-              } else if (message.finished) {
-                message.status = 'done';
-              } else {
-                message.status = 'deleted';
-              }
-              delete message.finished;
-              delete message.deleted;
-            }
-          });
-      });
+    this.version(2).stores({
+      threads: '++id, title, created_at, updated_at, last_message_at, status',
+      messages: '++id, threadId, content, model, role, [threadId+created_at], updated_at, status',
+    });
 
     this.on('populate', this.populate);
 
