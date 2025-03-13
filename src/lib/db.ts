@@ -92,7 +92,7 @@ export async function dbSync(input: { userId: string; messages: Message[]; threa
   const newMessages: Message[] = [];
 
   // Sync Messages
-  dbMessages.forEach((m) => {
+  for (const m of dbMessages) {
     // Check if message exists in local database
     const localMessage = localMessages.find((dbM) => dbM.id === m.id);
     // If message does not exist in local database, add it
@@ -102,8 +102,8 @@ export async function dbSync(input: { userId: string; messages: Message[]; threa
       // If message exists in local database, update it if it is newer
       newMessages.push(m);
     }
-  });
-  localMessages.forEach((m) => {
+  }
+  for (const m of localMessages) {
     // Check if message exists in KV store
     const key = messageSyncKey(input.userId, m.id);
     const dbMessage = dbMessages.find((dbM) => dbM.id === m.id);
@@ -114,10 +114,10 @@ export async function dbSync(input: { userId: string; messages: Message[]; threa
       // If message exists in KV store, update it if it is newer
       kvMap[key] = JSON.stringify(m);
     }
-  });
+  }
 
   // Sync Threads
-  dbThreads.forEach((t) => {
+  for (const t of dbThreads) {
     // Check if thread exists in local database
     const localThread = localThreads.find((dbT) => dbT.id === t.id);
     // If thread does not exist in local database, add it
@@ -127,8 +127,8 @@ export async function dbSync(input: { userId: string; messages: Message[]; threa
       // If thread exists in local database, update it if it is newer
       newThreads.push(t);
     }
-  });
-  localThreads.forEach((t) => {
+  }
+  for (const t of localThreads) {
     // Check if thread exists in KV store
     const key = threadSyncKey(input.userId, t.id);
     const dbThread = dbThreads.find((dbT) => dbT.id === t.id);
@@ -139,7 +139,7 @@ export async function dbSync(input: { userId: string; messages: Message[]; threa
       // If thread exists in KV store, update it if it is newer
       kvMap[key] = JSON.stringify(t);
     }
-  });
+  }
 
   // Execute Redis Database operations
   if (Object.keys(kvMap).length > 0) {

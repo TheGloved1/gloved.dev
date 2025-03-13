@@ -25,6 +25,7 @@ export async function checkDevMode(): Promise<boolean> {
   const environment = env.NODE_ENV;
 
   if (environment === 'development') {
+    console.log('[DEV] Development mode enabled');
     return true;
   }
   return false;
@@ -53,7 +54,12 @@ export async function deleteUserDataAction(userId: string) {
   await deleteUserData(userId);
 }
 
-export async function uploadReel(link: string) {
+/**
+ * Uploads a reel to Discord.
+ * @param link The link to the reel to upload.
+ * @returns An object containing the post and success status.
+ */
+export async function uploadReelAction(link: string) {
   const { data, error } = await tryCatch(IgDownloader(link));
   if (error) {
     return { post: null, success: false, error };
@@ -67,6 +73,12 @@ export async function uploadReel(link: string) {
   return { post, success: true };
 }
 
+/**
+ * Posts a file to Discord.
+ * @param url The URL of the file to post.
+ * @param type The type of the file (video or image).
+ * @returns An object containing the post and success status.
+ */
 async function postToDiscord(url: string, type: 'video' | 'image') {
   const response = await fetch(url);
   const blob = await response.blob();
@@ -80,7 +92,21 @@ async function postToDiscord(url: string, type: 'video' | 'image') {
     method: 'POST',
     body: formData,
   });
-  return { url: url, type: type };
+  return { url, type };
+}
+
+export async function uploadReel(link: string) {
+  const { data, error } = await tryCatch(IgDownloader(link));
+  if (error) {
+    return { post: null, success: false, error };
+  }
+  const { data: post, error: postError } = await tryCatch(
+    postToDiscord(data.is_video ? data.video_url : data.display_url, data.is_video ? 'video' : 'image'),
+  );
+  if (postError) {
+    return { post: null, success: false, error: postError };
+  }
+  return { post, success: true };
 }
 
 export async function addAdminAction(email: string) {
