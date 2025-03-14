@@ -24,6 +24,12 @@
   }
 }
 
+@media (min-width: 768px) {
+  .group-chatbar:hover .group-chatbar-hover {
+    @apply translate-x-0 opacity-100;
+  }
+}
+
 @keyframes fadeInLeft {
   from {
     opacity: 0;
