@@ -78,23 +78,25 @@ export default memo(function ChatMessage({ message, scrollCallback }: { message:
       <div
         className={
           message.role === 'user' ?
-            `group relative inline-block max-w-[80%] break-words rounded-2xl bg-[#2D2D2D] p-4 text-left`
+            input !== null ?
+              `group relative w-full max-w-[80%] rounded-2xl bg-[#2D2D2D] p-4 text-left`
+            : `group relative inline-block max-w-[80%] break-words rounded-2xl bg-[#2D2D2D] p-4 text-left`
           : `group relative w-full max-w-full break-words`
         }
       >
         {message.role === 'user' && input !== null ?
-          <div className='flex flex-col gap-2'>
+          <>
             <textarea
-              className='h-auto w-full resize-none rounded-lg border border-neutral-800 bg-transparent p-2 text-sm text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring'
+              className='flex min-h-[100px] w-full rounded-md border border-none border-input bg-transparent px-3 py-2 text-base shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm'
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder='Edit message...'
               rows={5}
             />
-            <div className='flex items-center justify-end gap-2'>
+            <div className='mt-4 flex items-center justify-end gap-2'>
               <Button
                 variant='ghost'
-                className='inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-neutral-800/0 p-0 px-1 text-xs font-medium transition-colors hover:bg-neutral-700 hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
+                className='inline-flex h-8 items-center justify-center gap-2 whitespace-nowrap rounded-md px-3 text-xs font-medium transition-colors hover:bg-neutral-800/40 hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
                 onClick={() => {
                   setInput(null);
                 }}
@@ -122,7 +124,7 @@ export default memo(function ChatMessage({ message, scrollCallback }: { message:
                 <span className='sr-only'>Send</span>
               </Button>
             </div>
-          </div>
+          </>
         : <>
             {renderImages(message.content)}
             <Markdown
