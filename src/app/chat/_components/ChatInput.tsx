@@ -1,12 +1,10 @@
 'use client';
 import { createMessage, dxdb } from '@/dexie';
-import React, { memo, useMemo, useState } from 'react';
+import React, { memo, useState } from 'react';
 
 import { useIsMobile } from '@/hooks/use-mobile';
 import { usePersistentState } from '@/hooks/use-persistent-state';
 import Constants from '@/lib/constants';
-import Compressor from 'compressorjs';
-import { SHA256 } from 'crypto-js';
 import { ChevronDown, Loader2, Paperclip, Send, X } from 'lucide-react';
 import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
@@ -19,27 +17,21 @@ const models = { ...Constants.ChatModels.google, ...Constants.ChatModels.groq };
 
 const ChatBotInput = memo(
   ({
-    input,
-    setInputAction: setInput,
-    imagePreview,
-    setImagePreviewAction: setImagePreview,
     createThread,
     scrollCallback,
     isAtBottom,
   }: {
-    input: string;
-    setInputAction: React.Dispatch<React.SetStateAction<string>>;
-    imagePreview?: string | null;
-    setImagePreviewAction: React.Dispatch<React.SetStateAction<string | undefined | null>>;
     createThread?: boolean;
     scrollCallback?: () => void;
     isAtBottom?: boolean;
   }) => {
+    const [input, setInput] = usePersistentState('input', '');
+    const [imagePreview, setImagePreview] = usePersistentState<string | undefined | null>('imagePreview', null);
+    const [rows, setRows] = usePersistentState<number>('rows', 2);
     const router = useRouter();
     const isMobile = useIsMobile();
     const { threadId } = useParams();
     const [loading, setLoading] = useState<boolean>(false);
-    const [rows, setRows] = useState<number>(2);
     const [systemPrompt] = usePersistentState<string | undefined>('systemPrompt', undefined);
     const [model, setModel] = usePersistentState<string>('model', 'gemini-1.5-flash');
 
@@ -50,99 +42,10 @@ const ChatBotInput = memo(
 
     const canUpload = false;
 
-    const dataURLtoFile = useMemo(
-      () => (dataurl: string, filename: string) => {
-        const arr = dataurl.split(',');
-        const mime = arr[0].match(/:(.*?);/)![1];
-        const bstr = atob(arr[1]);
-        let n = bstr.length; // Changed to let
-        const u8arr = new Uint8Array(n);
-
-        while (n--) {
-          u8arr[n] = bstr.charCodeAt(n);
-        }
-
-        return new File([u8arr], filename, { type: mime });
-      },
-      [],
-    );
-
-    const convertFileToBase64 = useMemo(
-      () =>
-        async (file: File): Promise<string> => {
-          return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onloadend = async () => {
-              const dataUrl = reader.result as string;
-
-              // Create a hash of the data URL
-              const hash = SHA256(dataUrl).toString();
-
-              // Check if the hash already exists
-              if (compressedImageHashes.includes(hash)) {
-                console.log('Hash already exists, skipping compression:', hash);
-                resolve(dataUrl);
-                return;
-              }
-
-              // Check if the file is a GIF
-              const EXCLUDED_IMAGE_TYPES = new Set(['image/gif', 'image/apng']);
-              if (EXCLUDED_IMAGE_TYPES.has(file.type)) {
-                console.log('Excluding file type:', file.type);
-                resolve(dataUrl); // Return the Base64 directly for animated images
-                return;
-              }
-
-              const inKB = (size: number) => (size / 1024).toFixed(2);
-
-              // Log the original file size
-              console.log('Original file size:', inKB(file.size), 'KB');
-
-              // Use compressor.js to compress the image
-              new Compressor(file, {
-                convertSize: 10000,
-                quality: 0.05,
-                success(result) {
-                  const reader = new FileReader();
-                  reader.onloadend = () => {
-                    // The result will be a Base64 string
-                    const compressedDataUrl = reader.result as string;
-                    const hash = SHA256(compressedDataUrl).toString();
-                    setCompressedImageHashes((prev) => [...prev, hash]);
-                    resolve(compressedDataUrl);
-                  };
-                  reader.onerror = (error) => {
-                    console.error('Error reading blob:', error);
-                    reject(error);
-                  };
-
-                  // Log the new compressed file size
-                  console.log('Compressed file size:', inKB(result.size), 'KB');
-
-                  // Read the Blob as a Data URL
-                  reader.readAsDataURL(result);
-                },
-                error(err) {
-                  console.error(err);
-                  reject(err);
-                },
-              });
-            };
-            reader.onerror = reject;
-            reader.readAsDataURL(file);
-          });
-        },
-      [compressedImageHashes, setCompressedImageHashes],
-    );
-
     const handleSubmit = async (e?: React.FormEvent<HTMLFormElement> | React.KeyboardEvent<HTMLTextAreaElement>) => {
       e?.preventDefault();
       setLoading(true);
-      setImagePreview(null);
-      let imageBase64: string | null = null;
-      if (fileInputRef.current?.files?.[0]) {
-        imageBase64 = await convertFileToBase64(fileInputRef.current.files[0]);
-      }
+      const imageBase64: string | null = null;
       if (createThread) {
         const threadId = await dxdb.createThread();
         router.push('/chat/' + threadId);
@@ -170,9 +73,9 @@ const ChatBotInput = memo(
     useEffect(() => {
       const minRows = 2;
       const maxRows = 6;
-      const newRows = input.split('\n').length;
+      const newRows = input?.split('\n').length ?? 0;
       setRows(Math.min(Math.max(minRows, newRows), maxRows));
-    }, [input]);
+    }, [input, setRows]);
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
@@ -203,18 +106,6 @@ const ChatBotInput = memo(
     const onModelChange = (model: string) => {
       setModel(model);
     };
-
-    useEffect(() => {
-      const addBase64ImageToInput = (base64Image: string) => {
-        const file = dataURLtoFile(base64Image, 'image.png');
-        const fileList = new DataTransfer();
-        fileList.items.add(file);
-        fileInputRef.current!.files = fileList.files;
-      };
-      if (!imagePreview) return;
-      setImagePreview(imagePreview);
-      addBase64ImageToInput(imagePreview);
-    }, [dataURLtoFile, imagePreview, setImagePreview]);
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -259,7 +150,7 @@ const ChatBotInput = memo(
                 <textarea
                   className='w-full resize-none bg-transparent text-base leading-6 text-neutral-100 outline-none disabled:opacity-0'
                   style={{ height: `${(rows + 1) * 24}px` }}
-                  value={input}
+                  value={input || ''}
                   disabled={loading}
                   placeholder={`Type message here...`}
                   rows={rows}
@@ -270,7 +161,7 @@ const ChatBotInput = memo(
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && e.shiftKey) {
                       e.preventDefault();
-                      setInput((prev) => prev + '\n');
+                      setInput(input + '\n');
                     } else if (e.key === 'Enter') {
                       if (!input.trim() && !imagePreview) {
                         e.preventDefault();
@@ -345,14 +236,13 @@ const ChatBotInput = memo(
         <MobileInputDialog
           input={input}
           setInput={setInput}
-          rows={rows}
-          setRows={setRows}
           isOpen={isDialogOpen}
           setIsOpen={setIsDialogOpen}
           onSubmit={(message) => {
             // Handle the message submission here
             handleSubmit();
           }}
+          rows={rows}
         />
       </div>
     );

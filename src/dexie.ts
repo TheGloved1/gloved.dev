@@ -15,7 +15,7 @@ export type Thread = {
 export type Message = {
   id: string;
   threadId: string;
-  content: string | (TextPart | ImagePart)[] | null;
+  content: string | (TextPart | ImagePart)[];
   model: string;
   role: 'user' | 'assistant';
   created_at: string;
@@ -361,8 +361,8 @@ export async function createMessage(
       {
         type: 'text',
         text: userContent || '',
-      },
-      { type: 'image', image },
+      } as TextPart,
+      { type: 'image', image } as ImagePart,
     ];
   } else {
     messageContent = userContent || '';
@@ -371,8 +371,8 @@ export async function createMessage(
     threadId,
     content: messageContent,
     role: 'user',
-    status: 'streaming',
     model,
+    status: 'done',
   });
 
   generateTitle(threadId);
@@ -418,6 +418,74 @@ export async function createMessage(
   }
 
   generateTitle(threadId);
+
+  return assistantMessageId;
+}
+
+/**
+ * Updates an existing message and generates a new assistant response.
+ * @param threadId The ID of the thread to update the message in.
+ * @param messageId The ID of the message to update.
+ * @param userContent The new content for the user's message.
+ * @param model The model to use for generating the response.
+ * @param setInput A function to call when the user's input has been processed.
+ * @param image An optional image to send with the message.
+ * @param callback A function to call when the response has been processed.
+ * @param systemPrompt An optional system prompt to send with the message.
+ * @returns The ID of the new assistant message.
+ */
+export async function updateMessage(
+  message: Message,
+  newContent: string,
+  model: string,
+  callback: () => void,
+  systemPrompt?: string,
+) {
+  callback();
+  const messageContent: string = newContent || '';
+  await dxdb.messages.update(message.id, { content: messageContent });
+
+  generateTitle(message.threadId);
+  const allMessages = await dxdb.getThreadMessages(message.threadId);
+  const contextMessages = allMessages.map((m) => ({
+    role: m.role,
+    content: m.content,
+  }));
+  const assistantMessageId = await dxdb.addMessage({
+    threadId: message.threadId,
+    role: 'assistant',
+    content: '',
+    status: 'streaming',
+    model,
+  });
+
+  try {
+    const { data, error } = await tryCatch(
+      fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          system: systemPrompt,
+          messages: contextMessages,
+          model,
+        }),
+      }),
+    );
+    if (error) return;
+    const reader = data.body as ReadableStream<Uint8Array>;
+    if (!reader) return;
+
+    // Call the helper function to process the stream
+    await dxdb.threads.update(assistantMessageId, { status: 'streaming' });
+    await processStream(reader, assistantMessageId, callback);
+    await dxdb.threads.update(assistantMessageId, { status: 'done' });
+  } catch (e) {
+    console.log('Uncaught error', e);
+  }
+
+  generateTitle(message.threadId);
 
   return assistantMessageId;
 }

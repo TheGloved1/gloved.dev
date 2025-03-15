@@ -37,14 +37,14 @@ export default function ChatBotSidebar({ children }: { children: React.ReactNode
   const router = useRouter();
   const isMobile = useIsMobile();
   const [open, setOpen] = useState(true);
-  const threads = useLiveQuery(() => dxdb.getThreads(), [dxdb.threads], []);
+  const threads = useLiveQuery(() => dxdb.getThreads(), [], []);
   const [lastThreadList, setLastThreadList] = usePersistentState<Thread[]>('lastThreadList', []);
 
   const isCurrentThread = useCallback((id: string) => threadId === id, [threadId]);
 
   const handleDelete = async (id: string) => {
     const { error } = await tryCatch(dxdb.deleteThread(id)); // Delete the thread
-    if (error) return toast.error('Error deleting thread'), router.replace('/chat');
+    if (error) return toast.error('Error deleting thread'), router.push('/chat');
     setLastThreadList(lastThreadList.filter((t) => t.id !== id));
     toast.success('Thread deleted');
     if (isCurrentThread(id)) router.replace('/chat');
@@ -105,7 +105,7 @@ export default function ChatBotSidebar({ children }: { children: React.ReactNode
                       >
                         <span
                           style={{
-                            fontSize: Math.max(10, 16 - thread.title.length / 2.5) + 'px',
+                            fontSize: Math.max(12, 16 - thread.title.length / 2.5) + 'px',
                           }}
                         >
                           {thread.title}

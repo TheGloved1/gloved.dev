@@ -4,19 +4,17 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 export default function MobileInputDialog({
   input,
   setInput,
-  rows,
-  setRows,
   isOpen,
   setIsOpen,
   onSubmit,
+  rows,
 }: {
   input: string;
-  setInput: React.Dispatch<React.SetStateAction<string>>;
-  rows: number;
-  setRows: React.Dispatch<React.SetStateAction<number>>;
+  setInput: (value: string) => void;
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
   onSubmit: (value: string) => void;
+  rows: number;
 }) {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

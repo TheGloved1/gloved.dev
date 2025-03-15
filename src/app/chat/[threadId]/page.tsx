@@ -1,6 +1,5 @@
 'use client';
-import { checkSync, dxdb, formatContent, generateTitle, Message } from '@/dexie';
-import { tryCatch } from '@/lib/utils';
+import { checkSync, dxdb } from '@/dexie';
 import { useAuth } from '@clerk/nextjs';
 import { useLiveQuery } from 'dexie-react-hooks';
 import nextDynamic from 'next/dynamic';
@@ -14,8 +13,6 @@ export const dynamic = 'force-static';
 function Page(): React.JSX.Element {
   const { threadId } = useParams();
   if (!threadId || typeof threadId !== 'string') redirect('/chat');
-  const [input, setInput] = useState<string>('');
-  const [imagePreview, setImagePreview] = useState<string | undefined | null>();
   const [isAtBottom, setIsAtBottom] = useState<boolean>(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const auth = useAuth();
@@ -45,29 +42,6 @@ function Page(): React.JSX.Element {
     }
   }, [auth.userId, threadId]);
 
-  const handleEditMessage = useCallback(
-    async (m: Message) => {
-      const { content, image } = formatContent(m.content);
-      const { data, error } = await tryCatch(dxdb.getThreadMessages(threadId)); // Get all messages in the thread
-      if (error) return;
-      const allMessages = data;
-      const index = allMessages.findIndex((msg) => msg.id === m.id); // Find the index of the deleted message
-
-      // Delete all subsequent messages
-      await dxdb.removeMessage(m.id);
-      for (let i = index + 1; i < allMessages.length; i++) {
-        await dxdb.removeMessage(allMessages[i].id);
-      }
-
-      // Regenerate the title
-      generateTitle(threadId);
-
-      setInput(content ?? ''); // Set the input field to the content of the deleted message
-      setImagePreview(image);
-    },
-    [threadId],
-  );
-
   useEffect(() => {
     scrollToBottom();
     const msgEndRef = messagesEndRef?.current;
@@ -94,19 +68,12 @@ function Page(): React.JSX.Element {
 
   return (
     <main className='relative flex w-full flex-1 flex-col'>
-      <ChatBotInput
-        input={input}
-        setInputAction={setInput}
-        imagePreview={imagePreview}
-        setImagePreviewAction={setImagePreview}
-        scrollCallback={scrollToBottom}
-        isAtBottom={isAtBottom}
-      />
+      <ChatBotInput scrollCallback={scrollToBottom} isAtBottom={isAtBottom} />
       <div className='relative flex-1 overflow-hidden'>
         <div className='scrollbar-w-2 h-[100dvh] overflow-y-auto pb-36 scrollbar scrollbar-track-transparent scrollbar-thumb-gray-700 hover:scrollbar-thumb-gray-600'>
           <div className='mx-auto flex w-full max-w-3xl translate-x-1 flex-col space-y-12 p-4 pb-12 text-sm'>
             {messages.map((message) => (
-              <ChatMessage message={message} key={message.id} handleEditMessageAction={handleEditMessage} />
+              <ChatMessage scrollCallback={() => scrollToBottom(true)} message={message} key={message.id} />
             ))}
           </div>
           <div ref={messagesEndRef} className='h-0 w-0' />
