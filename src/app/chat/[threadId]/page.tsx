@@ -2,15 +2,14 @@
 import { checkSync, dxdb } from '@/dexie';
 import { useAuth } from '@clerk/nextjs';
 import { useLiveQuery } from 'dexie-react-hooks';
-import nextDynamic from 'next/dynamic';
 import { redirect, useParams } from 'next/navigation';
-import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import ChatBotInput from '../_components/ChatInput';
 import ChatMessage from '../_components/ChatMessage';
 
 export const dynamic = 'force-static';
 
-function Page(): React.JSX.Element {
+export default function Page(): React.JSX.Element {
   const { threadId } = useParams();
   if (!threadId || typeof threadId !== 'string') redirect('/chat');
   const [isAtBottom, setIsAtBottom] = useState<boolean>(false);
@@ -82,5 +81,3 @@ function Page(): React.JSX.Element {
     </main>
   );
 }
-
-export default nextDynamic(() => Promise.resolve(memo(Page)), { ssr: false });

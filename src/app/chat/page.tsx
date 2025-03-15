@@ -1,7 +1,6 @@
 'use client';
 import { checkSync } from '@/dexie';
 import { useAuth } from '@clerk/nextjs';
-import { useParams } from 'next/navigation';
 import React, { useEffect } from 'react';
 import ChatBotInput from './_components/ChatInput';
 
@@ -9,7 +8,6 @@ export const dynamic = 'force-static';
 
 export default function Page(): React.JSX.Element {
   const auth = useAuth();
-  const { threadId } = useParams();
 
   useEffect(() => {
     if (auth.userId) {
