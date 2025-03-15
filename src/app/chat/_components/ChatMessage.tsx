@@ -39,7 +39,13 @@ const renderImages = (content: string | (TextPart | ImagePart)[] | null): React.
   return null;
 };
 
-export default memo(function ChatMessage({ message, scrollCallback }: { message: Message; scrollCallback: () => void }) {
+export default memo(function ChatMessage({
+  message,
+  scrollEditCallback,
+}: {
+  message: Message;
+  scrollEditCallback: () => void;
+}) {
   const { threadId } = useParams<{ threadId: string }>();
   const [input, setInput] = useState<string | null>(null);
   const [isHovered, setIsHovered] = useState<boolean>(false);
@@ -113,7 +119,7 @@ export default memo(function ChatMessage({ message, scrollCallback }: { message:
                     input,
                     model,
                     () => {
-                      scrollCallback();
+                      scrollEditCallback();
                       setInput(null);
                     },
                     systemPrompt,

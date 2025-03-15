@@ -72,7 +72,7 @@ export default function Page(): React.JSX.Element {
         <div className='scrollbar-w-2 h-[100dvh] overflow-y-auto pb-36 scrollbar scrollbar-track-transparent scrollbar-thumb-gray-700 hover:scrollbar-thumb-gray-600'>
           <div className='mx-auto flex w-full max-w-3xl translate-x-1 flex-col space-y-12 p-4 pb-12 text-sm'>
             {messages.map((message) => (
-              <ChatMessage scrollCallback={() => scrollToBottom(true)} message={message} key={message.id} />
+              <ChatMessage scrollEditCallback={() => scrollToBottom(true)} message={message} key={message.id} />
             ))}
           </div>
           <div ref={messagesEndRef} className='h-0 w-0' />
