@@ -12,7 +12,7 @@ import { memo, useCallback, useState } from 'react';
 import { toast } from 'sonner';
 import Timestamp from './Timestamp';
 
-const getTextParts = (content: string | (TextPart | ImagePart)[] | null) => {
+const getTextParts = (content: string | (TextPart | ImagePart)[]) => {
   return Array.isArray(content) ?
       content
         .filter((part) => 'text' in part)
@@ -96,7 +96,7 @@ export default memo(function ChatMessage({
               className='flex min-h-[100px] w-full rounded-md border border-none border-input bg-transparent px-3 py-2 text-base shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm'
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder='Edit message...'
+              placeholder={getTextParts(message.content)}
               rows={5}
             />
             <div className='mt-4 flex items-center justify-end gap-2'>
