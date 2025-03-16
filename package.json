@@ -39,7 +39,7 @@
     "@ai-sdk/react": "^1.1.17",
     "@clerk/nextjs": "^6.12.5",
     "@clerk/themes": "^2.2.20",
-    "@eslint/js": "^9.21.0",
+    "@eslint/js": "^9.22.0",
     "@radix-ui/react-alert-dialog": "^1.1.6",
     "@radix-ui/react-dialog": "^1.1.6",
     "@radix-ui/react-progress": "^1.1.2",
