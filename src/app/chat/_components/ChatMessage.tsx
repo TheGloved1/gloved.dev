@@ -5,7 +5,7 @@ import { dxdb, formatContent, Message, updateMessage } from '@/dexie';
 import { usePersistentState } from '@/hooks/use-persistent-state';
 import { tryCatch } from '@/lib/utils';
 import { ImagePart, TextPart } from 'ai';
-import { Copy, Send, SquarePen } from 'lucide-react';
+import { Copy, RefreshCcw, Send, SquarePen } from 'lucide-react';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import { memo, useCallback, useState } from 'react';
@@ -54,7 +54,6 @@ export default memo(function ChatMessage({
 
   const handleEditMessage = useCallback(
     async (m: Message) => {
-      if (!input) return;
       const { content, image } = formatContent(m.content);
       const { data, error } = await tryCatch(dxdb.getThreadMessages(threadId)); // Get all messages in the thread
       if (error) return;
@@ -65,10 +64,8 @@ export default memo(function ChatMessage({
       for (let i = index + 1; i < allMessages.length; i++) {
         await dxdb.removeMessage(allMessages[i].id);
       }
-
-      setInput(content ?? '');
     },
-    [input, threadId],
+    [threadId],
   );
 
   if (getTextParts(message.content).trim() === '' && renderImages(message.content) === null) return null;
@@ -146,22 +143,43 @@ export default memo(function ChatMessage({
           <div className='absolute right-0 mt-5 flex items-center gap-2 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 group-focus:opacity-100'>
             <button
               className='inline-flex h-8 w-8 items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-neutral-800/0 p-0 text-xs font-medium transition-colors hover:bg-neutral-700 hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
-              onClick={() => {
-                navigator.clipboard.writeText(getTextParts(message.content));
-                toast.success('Copied response to clipboard!');
+              onClick={async () => {
+                await handleEditMessage(message);
+                await updateMessage(
+                  message,
+                  getTextParts(message.content),
+                  model,
+                  () => {
+                    scrollEditCallback();
+                  },
+                  systemPrompt,
+                );
               }}
+              title='Retry'
             >
-              <Copy className='-mb-0.5 -ml-0.5 !size-5' />
-              <span className='sr-only'>Copy</span>
+              <RefreshCcw className='-mb-0.5 -ml-0.5 !size-5' />
+              <span className='sr-only'>Retry</span>
             </button>
             <button
               onClick={() => {
                 setInput(getTextParts(message.content));
               }}
               className='inline-flex h-8 w-8 items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-neutral-800/0 p-0 text-xs font-medium transition-colors hover:bg-neutral-700 hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
+              title='Edit'
             >
               <SquarePen className='-mb-0.5 -ml-0.5 !size-5' />
               <span className='sr-only'>Edit</span>
+            </button>
+            <button
+              className='inline-flex h-8 w-8 items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-neutral-800/0 p-0 text-xs font-medium transition-colors hover:bg-neutral-700 hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
+              onClick={() => {
+                navigator.clipboard.writeText(getTextParts(message.content));
+                toast.success('Copied response to clipboard!');
+              }}
+              title='Copy'
+            >
+              <Copy className='-mb-0.5 -ml-0.5 !size-5' />
+              <span className='sr-only'>Copy</span>
             </button>
           </div>
         )}
