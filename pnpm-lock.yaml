@@ -114,8 +114,8 @@ importers:
         specifier: ^1.1.4
         version: 1.1.4
       lucide-react:
-        specifier: ^0.475.0
-        version: 0.475.0(react@19.0.0)
+        specifier: ^0.482.0
+        version: 0.482.0(react@19.0.0)
       next:
         specifier: 15.2.0-canary.64
         version: 15.2.0-canary.64(@opentelemetry/api@1.9.0)(babel-plugin-react-compiler@19.0.0-beta-e552027-20250112)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -197,7 +197,7 @@ importers:
         version: 9.20.1(jiti@1.21.7)
       eslint-config-next:
         specifier: canary
-        version: 15.2.2-canary.3(eslint@9.20.1(jiti@1.21.7))(typescript@5.7.3)
+        version: 15.3.0-canary.10(eslint@9.20.1(jiti@1.21.7))(typescript@5.7.3)
       eslint-plugin-react-hooks:
         specifier: ^5.1.0
         version: 5.1.0(eslint@9.20.1(jiti@1.21.7))
@@ -787,8 +787,8 @@ packages:
   '@next/eslint-plugin-next@15.1.7':
     resolution: {integrity: sha512-kRP7RjSxfTO13NE317ek3mSGzoZlI33nc/i5hs1KaWpK+egs85xg0DJ4p32QEiHnR0mVjuUfhRIun7awqfL7pQ==}
 
-  '@next/eslint-plugin-next@15.2.2-canary.3':
-    resolution: {integrity: sha512-6iCJYt42wxJqjusg5QQhSN/XYGQostwHHelvek4P5TZfZc2J6RSGhO5ebFaoKcvXh7xDf5/Ob10rP/FDxgkLrg==}
+  '@next/eslint-plugin-next@15.3.0-canary.10':
+    resolution: {integrity: sha512-jMh292/BkGHdwaNLqZ1oQChB3Wmd/8ACKFdpnUz+vTLW9pjvXHdpRsgyHgm1eDgOCL24fkKu3DAGwJs403VLiQ==}
 
   '@next/swc-darwin-arm64@15.2.0-canary.64':
     resolution: {integrity: sha512-i6OX3WK++7aqUp2d2t5RbMM27FyynHluchihjL0VFpBZ1HSjWIZ2pu6Fo/pMA65rU9OtuZqAjU1jXN/XIHnZUw==}
@@ -2232,8 +2232,8 @@ packages:
     resolution: {integrity: sha512-TtpcNJ3XAzx3Gq8sWRzJaVajRs0uVxA2YAkdb1jm2YkPz4G6egUFAyA3n5vtEIZefPk5Wa4UXbKuS5fKkJWdgA==}
     engines: {node: '>=10'}
 
-  eslint-config-next@15.2.2-canary.3:
-    resolution: {integrity: sha512-IJzjFxm+mmtV75SzcEUjmw7oCYm6l07kndrYwKxTDAV7u8W3+S75mlxey3myMpyU9Db5b+K9YxMsTI+8zaEPGA==}
+  eslint-config-next@15.3.0-canary.10:
+    resolution: {integrity: sha512-ulrwZqqMpLZtDXeHtyCQNJTjEy20O6Z9urU9V8nU2TTM71eqIt1pz8dDS+vLoTRRJJjFRLWpOJI94QNPqvqFRw==}
     peerDependencies:
       eslint: ^7.23.0 || ^8.0.0 || ^9.0.0
       typescript: '>=3.3.1'
@@ -2920,8 +2920,8 @@ packages:
   lru-cache@10.4.3:
     resolution: {integrity: sha512-JNAzZcXrCt42VGLuYz0zfAzDfAvJWW6AfYlDBQyDV5DClI2m5sAmK+OIO7s59XfsRsWHp02jAJrRadPRGTt6SQ==}
 
-  lucide-react@0.475.0:
-    resolution: {integrity: sha512-NJzvVu1HwFVeZ+Gwq2q00KygM1aBhy/ZrhY9FsAgJtpB+E4R7uxRk9M2iKvHa6/vNxZydIB59htha4c2vvwvVg==}
+  lucide-react@0.482.0:
+    resolution: {integrity: sha512-XM8PzHzSrg8ATmmO+fzf+JyYlVVdQnJjuyLDj2p4V2zEtcKeBNAqAoJIGFv1x2HSBa7kT8gpYUxwdQ0g7nypfw==}
     peerDependencies:
       react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
@@ -4950,7 +4950,7 @@ snapshots:
     dependencies:
       fast-glob: 3.3.1
 
-  '@next/eslint-plugin-next@15.2.2-canary.3':
+  '@next/eslint-plugin-next@15.3.0-canary.10':
     dependencies:
       fast-glob: 3.3.1
 
@@ -6545,9 +6545,9 @@ snapshots:
 
   escape-string-regexp@4.0.0: {}
 
-  eslint-config-next@15.2.2-canary.3(eslint@9.20.1(jiti@1.21.7))(typescript@5.7.3):
+  eslint-config-next@15.3.0-canary.10(eslint@9.20.1(jiti@1.21.7))(typescript@5.7.3):
     dependencies:
-      '@next/eslint-plugin-next': 15.2.2-canary.3
+      '@next/eslint-plugin-next': 15.3.0-canary.10
       '@rushstack/eslint-patch': 1.10.5
       '@typescript-eslint/eslint-plugin': 8.24.1(@typescript-eslint/parser@8.24.1(eslint@9.20.1(jiti@1.21.7))(typescript@5.7.3))(eslint@9.20.1(jiti@1.21.7))(typescript@5.7.3)
       '@typescript-eslint/parser': 8.24.1(eslint@9.20.1(jiti@1.21.7))(typescript@5.7.3)
@@ -7341,7 +7341,7 @@ snapshots:
 
   lru-cache@10.4.3: {}
 
-  lucide-react@0.475.0(react@19.0.0):
+  lucide-react@0.482.0(react@19.0.0):
     dependencies:
       react: 19.0.0
 
