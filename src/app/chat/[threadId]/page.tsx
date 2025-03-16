@@ -10,8 +10,7 @@ import ChatMessage from '../_components/ChatMessage';
 export const dynamic = 'force-static';
 
 export default function Page(): React.JSX.Element {
-  const { threadId } = useParams();
-  if (!threadId || typeof threadId !== 'string') redirect('/chat');
+  const { threadId } = useParams<{ threadId: string }>();
   const [isAtBottom, setIsAtBottom] = useState<boolean>(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const auth = useAuth();
