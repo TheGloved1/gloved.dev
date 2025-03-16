@@ -20,7 +20,7 @@ const nextConfig: NextConfig = {
     parallelServerCompiles: true,
   },
   devIndicators: {
-    position: 'bottom-right',
+    position: 'bottom-left',
   },
   images: {
     remotePatterns: [
