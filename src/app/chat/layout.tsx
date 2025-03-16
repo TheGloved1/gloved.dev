@@ -1,7 +1,6 @@
 import Constants from '@/lib/constants';
 import { Metadata } from 'next';
-import nextDynamic from 'next/dynamic';
-import { memo } from 'react';
+import ChatBotSidebar from './_components/ChatSidebar';
 
 export const metadata: Metadata = {
   title: Constants.NAME + ' | ' + Constants.Chat.title,
@@ -27,10 +26,6 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-static';
 
-export default nextDynamic(() =>
-  Promise.resolve(
-    memo(function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
-      return <>{children}</>;
-    }),
-  ),
-);
+export default function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
+  return <ChatBotSidebar>{children}</ChatBotSidebar>;
+}

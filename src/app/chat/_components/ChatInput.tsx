@@ -30,13 +30,10 @@ const ChatBotInput = memo(
     const [rows, setRows] = usePersistentState<number>('rows', 2);
     const router = useRouter();
     const isMobile = useIsMobile();
-    const { threadId } = useParams();
+    const { threadId } = useParams<{ threadId: string }>();
     const [loading, setLoading] = useState<boolean>(false);
     const [systemPrompt] = usePersistentState<string | undefined>('systemPrompt', undefined);
     const [model, setModel] = usePersistentState<string>('model', 'gemini-1.5-flash');
-
-    // Used to store the hashes of the compressed images to avoid re-compression
-    const [compressedImageHashes, setCompressedImageHashes] = usePersistentState<string[]>('compressedImageHashes', []);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -58,8 +55,6 @@ const ChatBotInput = memo(
         }
         setLoading(false);
       } else {
-        if (!threadId || typeof threadId !== 'string') return;
-
         await createMessage(threadId, input, model, setInput, imageBase64, scrollCallback, systemPrompt?.trim());
         setLoading(false);
         setInput('');

@@ -33,7 +33,7 @@ import React, { useCallback, useState } from 'react';
 import { toast } from 'sonner';
 
 export default function ChatBotSidebar({ children }: { children: React.ReactNode }) {
-  const { threadId } = useParams();
+  const { threadId } = useParams<{ threadId: string }>();
   const router = useRouter();
   const isMobile = useIsMobile();
   const [open, setOpen] = useState(true);
