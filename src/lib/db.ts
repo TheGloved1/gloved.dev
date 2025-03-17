@@ -70,7 +70,7 @@ export async function getAllThreadsForUser(userId: string) {
 }
 
 /**
- * Synchronizes local data with data stored in the KV (key-value) store for a given user.
+ * Synchronizes local data with data stored in the KV (key-value) database store for a given user.
  * It compares messages and threads from the local input with those in the KV store.
  * Newer or non-existing records in the KV store are added to the local data, and vice versa.
  *

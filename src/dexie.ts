@@ -2,26 +2,31 @@ import { deleteUserDataAction, syncAction } from '@/lib/actions';
 import { populateOnboardingThreads, tryCatch } from '@/lib/utils';
 import { ImagePart, TextPart } from 'ai';
 import Dexie, { type EntityTable } from 'dexie';
+import { toast } from 'sonner';
+import { z } from 'zod';
 
-export type Thread = {
-  id: string;
-  title: string;
-  created_at: string;
-  updated_at: string;
-  last_message_at: string;
-  status: 'streaming' | 'done' | 'error' | 'deleted';
-};
+export const threadSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  created_at: z.string(),
+  updated_at: z.string(),
+  last_message_at: z.string(),
+  status: z.enum(['streaming', 'done', 'error', 'deleted']),
+});
 
-export type Message = {
-  id: string;
-  threadId: string;
-  content: string | (TextPart | ImagePart)[];
-  model: string;
-  role: 'user' | 'assistant';
-  created_at: string;
-  updated_at: string;
-  status: 'streaming' | 'done' | 'error' | 'deleted';
-};
+export const messageSchema = z.object({
+  id: z.string(),
+  threadId: z.string(),
+  content: z.string(),
+  model: z.string(),
+  role: z.enum(['user', 'assistant']),
+  created_at: z.string(),
+  updated_at: z.string(),
+  status: z.enum(['streaming', 'done', 'error', 'deleted']),
+});
+
+export type Thread = z.infer<typeof threadSchema>;
+export type Message = z.infer<typeof messageSchema>;
 
 /**
  * A Dexie database for storing chat data. This database stores threads and messages, and provides
@@ -194,9 +199,9 @@ class Database extends Dexie {
    * The file is automatically downloaded to the user's device with a timestamped filename.
    */
   async export() {
-    const threads = await this.threads.toArray();
-    const messages = await this.messages.toArray();
-    const jsonString = JSON.stringify({ threads, messages }, null, 2);
+    const threads = await this.getThreads();
+    const messages = await this.getMessages();
+    const jsonString = JSON.stringify({ threads, messages });
     const blob = new Blob([jsonString], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -213,7 +218,12 @@ class Database extends Dexie {
    * @param json A JSON string containing the threads and messages to import.
    */
   async import(json: string) {
-    const { threads, messages } = JSON.parse(json);
+    const result = JSON.parse(json);
+    if (!result.messages || !result.threads) {
+      toast.error('[IMPORT] Invalid JSON');
+      return;
+    }
+    const { threads, messages } = result as { threads: Thread[]; messages: Message[] };
     await this.threads.bulkPut(threads);
     await this.messages.bulkPut(messages);
   }
@@ -350,26 +360,13 @@ export async function createMessage(
   userContent: string,
   model: string,
   setInput: (input: string) => void,
-  image?: string | null,
   callback?: () => void,
   systemPrompt?: string,
 ) {
   setInput('');
-  let messageContent: string | (TextPart | ImagePart)[];
-  if (image) {
-    messageContent = [
-      {
-        type: 'text',
-        text: userContent || '',
-      } as TextPart,
-      { type: 'image', image } as ImagePart,
-    ];
-  } else {
-    messageContent = userContent || '';
-  }
   await dxdb.addMessage({
     threadId,
-    content: messageContent,
+    content: userContent,
     role: 'user',
     model,
     status: 'done',
@@ -424,12 +421,9 @@ export async function createMessage(
 
 /**
  * Updates an existing message and generates a new assistant response.
- * @param threadId The ID of the thread to update the message in.
- * @param messageId The ID of the message to update.
- * @param userContent The new content for the user's message.
+ * @param message The message to update.
+ * @param newContent The new content for the user's message.
  * @param model The model to use for generating the response.
- * @param setInput A function to call when the user's input has been processed.
- * @param image An optional image to send with the message.
  * @param callback A function to call when the response has been processed.
  * @param systemPrompt An optional system prompt to send with the message.
  * @returns The ID of the new assistant message.

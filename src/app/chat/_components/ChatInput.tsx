@@ -42,12 +42,11 @@ const ChatBotInput = memo(
     const handleSubmit = async (e?: React.FormEvent<HTMLFormElement> | React.KeyboardEvent<HTMLTextAreaElement>) => {
       e?.preventDefault();
       setLoading(true);
-      const imageBase64: string | null = null;
       if (createThread) {
         const threadId = await dxdb.createThread();
         router.push('/chat/' + threadId);
         try {
-          await createMessage(threadId, input, model, setInput, imageBase64, scrollCallback, systemPrompt?.trim());
+          await createMessage(threadId, input, model, setInput, scrollCallback, systemPrompt?.trim());
         } catch (e) {
           toast.error('Failed to generate message');
           setLoading(false);
@@ -55,7 +54,7 @@ const ChatBotInput = memo(
         }
         setLoading(false);
       } else {
-        await createMessage(threadId, input, model, setInput, imageBase64, scrollCallback, systemPrompt?.trim());
+        await createMessage(threadId, input, model, setInput, scrollCallback, systemPrompt?.trim());
         setLoading(false);
         setInput('');
         if (fileInputRef.current) {
