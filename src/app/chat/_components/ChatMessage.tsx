@@ -49,8 +49,8 @@ export default memo(function ChatMessage({
   const { threadId } = useParams<{ threadId: string }>();
   const [input, setInput] = useState<string | null>(null);
   const [isHovered, setIsHovered] = useState<boolean>(false);
-  const [systemPrompt] = usePersistentState<string | undefined>('systemPrompt', undefined);
-  const [model] = usePersistentState<string>('model', 'gemini-1.5-flash');
+  const [, , getSystemPrompt] = usePersistentState<string | undefined>('systemPrompt', undefined);
+  const [, , getModel] = usePersistentState<string>('model', 'gemini-1.5-flash');
 
   const handleEditMessage = useCallback(
     async (m: Message) => {
@@ -114,12 +114,12 @@ export default memo(function ChatMessage({
                   await updateMessage(
                     message,
                     input,
-                    model,
+                    getModel(),
                     () => {
                       scrollEditCallback();
                       setInput(null);
                     },
-                    systemPrompt,
+                    getSystemPrompt(),
                   );
                 }}
               >
@@ -148,11 +148,11 @@ export default memo(function ChatMessage({
                 await updateMessage(
                   message,
                   getTextParts(message.content),
-                  model,
+                  getModel(),
                   () => {
                     scrollEditCallback();
                   },
-                  systemPrompt,
+                  getSystemPrompt(),
                 );
               }}
               title='Retry'

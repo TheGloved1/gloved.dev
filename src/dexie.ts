@@ -437,7 +437,7 @@ export async function updateMessage(
 ) {
   callback();
   const messageContent: string = newContent || '';
-  await dxdb.messages.update(message.id, { content: messageContent, updated_at: new Date().toISOString(), model });
+  await dxdb.messages.update(message.id, { content: messageContent, updated_at: new Date().toISOString(), model: model });
 
   generateTitle(message.threadId);
   const allMessages = await dxdb.getThreadMessages(message.threadId);

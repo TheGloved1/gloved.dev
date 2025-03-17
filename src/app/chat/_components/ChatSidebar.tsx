@@ -29,18 +29,17 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { ChevronLeft, Home, MessageSquare, Plus, Settings, SquarePen, X } from 'lucide-react';
 import { Link } from 'next-view-transitions';
 import { useParams, useRouter } from 'next/navigation';
-import React, { useCallback, useState } from 'react';
+import React from 'react';
 import { toast } from 'sonner';
 
 export default function ChatBotSidebar({ children }: { children?: React.ReactNode }) {
   const { threadId } = useParams<{ threadId: string }>();
   const router = useRouter();
   const isMobile = useIsMobile();
-  const [open, setOpen] = useState(true);
   const threads = useLiveQuery(() => dxdb.getThreads());
   const [lastThreadList, setLastThreadList] = usePersistentState<Thread[]>('lastThreadList', []);
 
-  const isCurrentThread = useCallback((id: string) => threadId === id, [threadId]);
+  const isCurrentThread = (id: string) => threadId === id;
 
   const handleDelete = async (id: string) => {
     const { error } = await tryCatch(dxdb.deleteThread(id)); // Delete the thread
@@ -51,7 +50,7 @@ export default function ChatBotSidebar({ children }: { children?: React.ReactNod
   };
 
   return (
-    <SidebarProvider open={open} onOpenChange={setOpen}>
+    <SidebarProvider>
       <Sidebar variant='inset' className='m-0 border border-border'>
         <SidebarHeader>
           <SignedOut>
