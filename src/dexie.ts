@@ -109,8 +109,7 @@ class Database extends Dexie {
   }
 
   /**
-   * Soft-deletes a message by setting `status` to `'deleted'`, setting `updated_at` to the current timestamp,
-   * and setting `content` to `null`.
+   * Marks a message as deleted by updating its status and clearing its content.
    * @param id The ID of the message to remove.
    */
   async removeMessage(id: string) {
@@ -140,8 +139,9 @@ class Database extends Dexie {
    * @returns An array of all messages in the thread, excluding deleted messages.
    */
   async getThreadMessages(threadId: string) {
-    const messages = await this.messages.where('threadId').equals(threadId).sortBy('created_at');
-    return messages.filter((m) => m.status !== 'deleted');
+    return (await this.messages.where('threadId').equals(threadId).sortBy('created_at')).filter(
+      (m) => m.status !== 'deleted',
+    );
   }
 
   /**

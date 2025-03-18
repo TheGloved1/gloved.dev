@@ -1,43 +1,15 @@
 'use client';
+import ErrorAlert from '@/components/ErrorAlert';
 import Markdown from '@/components/Markdown';
 import { Button } from '@/components/ui/button';
-import { dxdb, formatContent, Message, updateMessage } from '@/dexie';
+import { dxdb, Message, updateMessage } from '@/dexie';
 import { usePersistentState } from '@/hooks/use-persistent-state';
 import { tryCatch } from '@/lib/utils';
-import { ImagePart, TextPart } from 'ai';
 import { Copy, RefreshCcw, Send, SquarePen } from 'lucide-react';
-import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import { memo, useCallback, useState } from 'react';
 import { toast } from 'sonner';
 import Timestamp from './Timestamp';
-
-const getTextParts = (content: string | (TextPart | ImagePart)[]) => {
-  return Array.isArray(content) ?
-      content
-        .filter((part) => 'text' in part)
-        .map((part) => part.text)
-        .join('')
-    : (content ?? '');
-};
-
-const renderImages = (content: string | (TextPart | ImagePart)[] | null): React.JSX.Element[] | null => {
-  if (Array.isArray(content)) {
-    return content
-      .filter((part) => 'image' in part)
-      .map((imagePart) => (
-        <Image
-          key={imagePart.image as string}
-          src={imagePart.image as string}
-          alt={''}
-          width={200}
-          height={200}
-          className='my-4 rounded-lg'
-        />
-      ));
-  }
-  return null;
-};
 
 export default memo(function ChatMessage({
   message,
@@ -54,7 +26,6 @@ export default memo(function ChatMessage({
 
   const handleEditMessage = useCallback(
     async (m: Message) => {
-      const { content, image } = formatContent(m.content);
       const { data, error } = await tryCatch(dxdb.getThreadMessages(threadId)); // Get all messages in the thread
       if (error) return;
       const allMessages = data;
@@ -68,7 +39,8 @@ export default memo(function ChatMessage({
     [threadId],
   );
 
-  if (getTextParts(message.content).trim() === '' && renderImages(message.content) === null) return null;
+  if (message.status === 'error') return <ErrorAlert>Error: Something went wrong, please try again.</ErrorAlert>;
+  if (message.content.trim() === '') return <div>...</div>;
 
   return (
     <div
@@ -93,7 +65,7 @@ export default memo(function ChatMessage({
               className='flex min-h-[100px] w-full rounded-md border border-none border-input bg-transparent px-3 py-2 text-base shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm'
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder={getTextParts(message.content)}
+              placeholder={message.content}
               rows={5}
             />
             <div className='mt-4 flex items-center justify-end gap-2'>
@@ -129,13 +101,12 @@ export default memo(function ChatMessage({
             </div>
           </>
         : <>
-            {renderImages(message.content)}
             <Markdown
               className={
                 'prose prose-sm prose-neutral prose-invert max-w-none text-white prose-pre:m-0 prose-pre:bg-transparent prose-pre:p-0'
               }
             >
-              {getTextParts(message.content)}
+              {message.content}
             </Markdown>
           </>
         }
@@ -147,7 +118,7 @@ export default memo(function ChatMessage({
                 await handleEditMessage(message);
                 await updateMessage(
                   message,
-                  getTextParts(message.content),
+                  message.content,
                   getModel(),
                   () => {
                     scrollEditCallback();
@@ -162,7 +133,7 @@ export default memo(function ChatMessage({
             </button>
             <button
               onClick={() => {
-                setInput(getTextParts(message.content));
+                setInput(message.content);
               }}
               className='inline-flex h-8 w-8 items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-neutral-800/0 p-0 text-xs font-medium transition-colors hover:bg-neutral-700 hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
               title='Edit'
@@ -173,7 +144,7 @@ export default memo(function ChatMessage({
             <button
               className='inline-flex h-8 w-8 items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-neutral-800/0 p-0 text-xs font-medium transition-colors hover:bg-neutral-700 hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
               onClick={() => {
-                navigator.clipboard.writeText(getTextParts(message.content));
+                navigator.clipboard.writeText(message.content);
                 toast.success('Copied response to clipboard!');
               }}
               title='Copy'
@@ -187,7 +158,7 @@ export default memo(function ChatMessage({
           <div className='absolute left-0 mt-2 flex items-center gap-2'>
             <button
               onClick={() => {
-                navigator.clipboard.writeText(getTextParts(message.content));
+                navigator.clipboard.writeText(message.content);
                 toast.success('Copied response to clipboard!');
               }}
               className='inline-flex h-8 items-center justify-center gap-2 whitespace-nowrap rounded-md bg-secondary px-3 text-xs font-medium text-secondary-foreground opacity-0 shadow-sm transition-opacity hover:bg-secondary/80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 group-focus-within:opacity-100 group-hover:opacity-100 group-focus:opacity-100 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'

@@ -48,7 +48,7 @@ export async function fetchIp() {
   console.log('Client IP:', response.data.ip);
   return response.data.ip;
 }
-// Types for the result object with discriminated union
+
 type Success<T> = {
   data: T;
   error: null;

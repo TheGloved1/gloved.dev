@@ -102,9 +102,9 @@ export async function POST(req: Request) {
         maxTokens,
         frequencyPenalty,
         presencePenalty,
-        experimental_transform: smoothStream(),
+        experimental_transform: smoothStream({ delayInMs: null }),
       });
-      result.mergeIntoDataStream(dataStream, { sendReasoning: true });
+      result.mergeIntoDataStream(dataStream, { sendReasoning: true, sendSources: true, sendUsage: true });
     },
     onError: (error) => {
       // Error messages are masked by default for security reasons.
