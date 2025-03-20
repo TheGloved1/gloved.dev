@@ -5,7 +5,7 @@ import type React from 'react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowBigUp, MousePointer, Sparkles, Volume2, VolumeX } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 // Game data
@@ -139,6 +139,7 @@ const useSoundEffects = () => {
     // Only create AudioContext when needed (on first interaction)
     if (typeof window !== 'undefined' && soundEnabled && !audioContext) {
       try {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
         if (AudioContextClass) {
           setAudioContext(new AudioContextClass());
@@ -224,22 +225,25 @@ export function CookieGame() {
   const prestigeCost = 1000000 * (prestigeLevel + 1);
 
   // Function to check and unlock achievements
-  const checkAchievement = (achievementId: string) => {
-    if (unlockedAchievements.includes(achievementId)) return;
+  const checkAchievement = useCallback(
+    (achievementId: string) => {
+      if (unlockedAchievements.includes(achievementId)) return;
 
-    const achievement = ACHIEVEMENTS.find((a) => a.id === achievementId);
-    if (!achievement) return;
+      const achievement = ACHIEVEMENTS.find((a) => a.id === achievementId);
+      if (!achievement) return;
 
-    setUnlockedAchievements((prev) => [...prev, achievementId]);
-    playSound('achievement');
+      setUnlockedAchievements((prev) => [...prev, achievementId]);
+      playSound('achievement');
 
-    toast(`Achievement Unlocked: ${achievement.name}`, {
-      description: achievement.description,
-    });
-  };
+      toast(`Achievement Unlocked: ${achievement.name}`, {
+        description: achievement.description,
+      });
+    },
+    [playSound, unlockedAchievements],
+  );
 
   // Calculate effective CPC with all bonuses
-  const calculateEffectiveCpc = () => {
+  const calculateEffectiveCpc = useCallback(() => {
     let effectiveCpc = baseCpc * prestigeMultiplier;
 
     // Apply active powerups
@@ -248,7 +252,7 @@ export function CookieGame() {
     }
 
     return effectiveCpc;
-  };
+  }, [activePowerups.doubleClick, baseCpc, prestigeMultiplier]);
 
   // Click the cookie
   const handleCookieClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -441,7 +445,7 @@ export function CookieGame() {
     }, 100);
 
     return () => clearInterval(gameInterval);
-  }, [cps, totalCookies, toast, ownedUpgrades, baseCpc, prestigeMultiplier]);
+  }, [cps, totalCookies, ownedUpgrades, baseCpc, prestigeMultiplier, calculateEffectiveCpc, checkAchievement]);
 
   // Calculate effective CPS with powerups
   const effectiveCPS = () => {
@@ -798,84 +802,86 @@ export function CookieGame() {
       </div>
 
       {/* Add custom CSS for animations */}
-      <style jsx global>{`
-        @keyframes float {
-          0% {
-            transform: translateY(0);
-            opacity: 1;
+      <style jsx global>
+        {`
+          @keyframes float {
+            0% {
+              transform: translateY(0);
+              opacity: 1;
+            }
+            100% {
+              transform: translateY(-50px);
+              opacity: 0;
+            }
           }
-          100% {
-            transform: translateY(-50px);
-            opacity: 0;
+          .animate-float {
+            animation: float 1s ease-out forwards;
           }
-        }
-        .animate-float {
-          animation: float 1s ease-out forwards;
-        }
-        @keyframes cursorOrbit {
-          0% {
-            opacity: 0;
-            transform: translate(-50%, -50%) rotate(var(--angle)) scale(0.8);
+          @keyframes cursorOrbit {
+            0% {
+              opacity: 0;
+              transform: translate(-50%, -50%) rotate(var(--angle)) scale(0.8);
+            }
+            20% {
+              opacity: 1;
+              transform: translate(-50%, -50%) rotate(calc(var(--angle) + 10deg)) scale(1);
+            }
+            80% {
+              opacity: 1;
+              transform: translate(-50%, -50%) rotate(calc(var(--angle) + 350deg)) scale(1);
+            }
+            100% {
+              opacity: 0;
+              transform: translate(-50%, -50%) rotate(calc(var(--angle) + 360deg)) scale(0.8);
+            }
           }
-          20% {
-            opacity: 1;
-            transform: translate(-50%, -50%) rotate(calc(var(--angle) + 10deg)) scale(1);
+          .animate-cursor-orbit {
+            animation: cursorOrbit 20s linear infinite;
           }
-          80% {
-            opacity: 1;
-            transform: translate(-50%, -50%) rotate(calc(var(--angle) + 350deg)) scale(1);
+          @keyframes pulse-soft {
+            0% {
+              box-shadow: 0 0 5px 0 rgba(255, 204, 0, 0.3);
+            }
+            50% {
+              box-shadow: 0 0 15px 5px rgba(255, 204, 0, 0.5);
+            }
+            100% {
+              box-shadow: 0 0 5px 0 rgba(255, 204, 0, 0.3);
+            }
           }
-          100% {
-            opacity: 0;
-            transform: translate(-50%, -50%) rotate(calc(var(--angle) + 360deg)) scale(0.8);
+          @keyframes pulse-glow {
+            0% {
+              box-shadow: 0 0 10px 0 rgba(255, 204, 0, 0.5);
+            }
+            50% {
+              box-shadow: 0 0 30px 10px rgba(255, 204, 0, 0.8);
+            }
+            100% {
+              box-shadow: 0 0 10px 0 rgba(255, 204, 0, 0.5);
+            }
           }
-        }
-        .animate-cursor-orbit {
-          animation: cursorOrbit 20s linear infinite;
-        }
-        @keyframes pulse-soft {
-          0% {
-            box-shadow: 0 0 5px 0 rgba(255, 204, 0, 0.3);
+          @keyframes sparkle {
+            0% {
+              opacity: 0;
+              transform: scale(0.8) rotate(0deg);
+            }
+            50% {
+              opacity: 1;
+              transform: scale(1.2) rotate(180deg);
+            }
+            100% {
+              opacity: 0;
+              transform: scale(0.8) rotate(360deg);
+            }
           }
-          50% {
-            box-shadow: 0 0 15px 5px rgba(255, 204, 0, 0.5);
+          .animate-pulse-soft {
+            animation: pulse-soft 2s ease-in-out infinite;
           }
-          100% {
-            box-shadow: 0 0 5px 0 rgba(255, 204, 0, 0.3);
+          .animate-pulse-glow {
+            animation: pulse-glow 1.5s ease-in-out infinite;
           }
-        }
-        @keyframes pulse-glow {
-          0% {
-            box-shadow: 0 0 10px 0 rgba(255, 204, 0, 0.5);
-          }
-          50% {
-            box-shadow: 0 0 30px 10px rgba(255, 204, 0, 0.8);
-          }
-          100% {
-            box-shadow: 0 0 10px 0 rgba(255, 204, 0, 0.5);
-          }
-        }
-        @keyframes sparkle {
-          0% {
-            opacity: 0;
-            transform: scale(0.8) rotate(0deg);
-          }
-          50% {
-            opacity: 1;
-            transform: scale(1.2) rotate(180deg);
-          }
-          100% {
-            opacity: 0;
-            transform: scale(0.8) rotate(360deg);
-          }
-        }
-        .animate-pulse-soft {
-          animation: pulse-soft 2s ease-in-out infinite;
-        }
-        .animate-pulse-glow {
-          animation: pulse-glow 1.5s ease-in-out infinite;
-        }
-      `}</style>
+        `}
+      </style>
     </div>
   );
 }
