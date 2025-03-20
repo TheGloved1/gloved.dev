@@ -601,10 +601,10 @@ export function CookieGame() {
         <div className='flex flex-col items-center'>
           {/* Cookie counter */}
           <div className='mb-4 text-center'>
-            <h2 className='text-3xl font-bold text-amber-800 dark:text-amber-300'>{formatNumber(cookies)} cookies</h2>
+            <h2 className='text-3xl font-bold text-amber-800 dark:text-amber-300'>{formatNumber(cookies)} Cookies</h2>
             <div className='flex justify-center gap-4 text-gray-600 dark:text-amber-200/70'>
-              <p>per second: {formatNumber(effectiveCPS())}</p>
-              <p>per click: {formatNumber(calculateEffectiveCpc())}</p>
+              <p>CPS: {formatNumber(effectiveCPS())}</p>
+              {/* <p>per click: {formatNumber(calculateEffectiveCpc())}</p> */}
             </div>
           </div>
 
