@@ -187,12 +187,13 @@ class Database extends Dexie {
     const threads = await this.threads.toArray();
     const messages = await this.messages.toArray();
     const { data, error: dbSyncError } = await tryCatch(syncAction({ threads, messages }, userId));
-    if (!data || dbSyncError) return console.log('[SYNC] Failed to import data');
+    if (!data || dbSyncError) return console.log('[SYNC] Failed to import data'), toast.error('Failed to import data');
     const { threads: newThreads, messages: newMessages } = data;
     if (!newThreads.length && !newMessages.length) return console.log('[SYNC] No data found in server');
     await Promise.all([this.threads.bulkPut(newThreads), this.messages.bulkPut(newMessages)]);
     const endTime = performance.now();
     console.log(`[SYNC] Import took ${(endTime - startTime).toFixed(2)}ms`);
+    toast.success(`Imported data in ${(endTime - startTime).toFixed(2)}ms`);
   }
 
   /**
@@ -297,7 +298,7 @@ export async function processStream(
         messageContent += json; // Append the new content
         if (messageId) {
           await dxdb.messages.update(messageId, {
-            updated_at: new Date().toISOString(),
+            updated_at: createDate(),
             content: messageContent, // Update with the accumulated content
           });
         }
@@ -308,7 +309,7 @@ export async function processStream(
         reasoning += json; // Append the new content
         if (messageId) {
           await dxdb.messages.update(messageId, {
-            updated_at: new Date().toISOString(),
+            updated_at: createDate(),
             reasoning: reasoning, // Update with the accumulated reasoning
           });
         }
@@ -317,8 +318,8 @@ export async function processStream(
         done = true;
         if (messageId)
           await dxdb.messages.update(messageId, {
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
+            created_at: createDate(),
+            updated_at: createDate(),
             status: 'done', // Mark as finished
           });
         callback();
@@ -356,7 +357,7 @@ export async function createMessage(
     role: 'user',
     model,
     status: 'done',
-    created_at: new Date().toISOString(),
+    created_at: createDate(),
   });
 
   generateTitle(threadId);
@@ -371,7 +372,7 @@ export async function createMessage(
     content: '',
     status: 'streaming',
     model,
-    created_at: new Date().toISOString(),
+    created_at: createDate(),
   });
 
   callback?.();
@@ -425,7 +426,7 @@ export async function updateMessage(
 ) {
   callback();
   const messageContent: string = newContent || '';
-  await dxdb.messages.update(message.id, { content: messageContent, updated_at: new Date().toISOString(), model: model });
+  await dxdb.messages.update(message.id, { content: messageContent, updated_at: createDate(), model: model });
 
   generateTitle(message.threadId);
   const allMessages = await dxdb.getThreadMessages(message.threadId);
@@ -439,7 +440,7 @@ export async function updateMessage(
     content: '',
     status: 'streaming',
     model,
-    created_at: new Date().toISOString(),
+    created_at: createDate(),
   });
 
   try {
@@ -466,6 +467,7 @@ export async function updateMessage(
     await dxdb.threads.update(assistantMessageId, { status: 'done' });
   } catch (e) {
     console.log('Uncaught error', e);
+    toast.error('Uh Oh! Something went wrong.');
   }
 
   generateTitle(message.threadId);
@@ -508,14 +510,15 @@ export async function generateTitle(threadId: string) {
         }),
       }),
     );
-    if (error) return;
-    if (!data.body) return;
+    if (error) return toast.error('Failed to generate title');
+    if (!data.body) return toast.error('Failed to generate title');
     const title = await processStream(data.body);
     await dxdb.threads.update(threadId, {
-      updated_at: new Date().toISOString(),
+      updated_at: createDate(),
       title,
     });
   } catch (e) {
-    throw e;
+    console.log('Uncaught error', e);
+    toast.error('Failed to generate title');
   }
 }

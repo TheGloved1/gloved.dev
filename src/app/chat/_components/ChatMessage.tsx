@@ -22,7 +22,7 @@ export default memo(function ChatMessage({
   const [input, setInput] = useState<string | null>(null);
   const [isHovered, setIsHovered] = useState<boolean>(false);
   const [, , getSystemPrompt] = usePersistentState<string | undefined>('systemPrompt', undefined);
-  const [, , getModel] = usePersistentState<string>('model', 'gemini-1.5-flash');
+  const [, , getModel] = usePersistentState<string>('model', 'gemini-2.0-flash');
 
   const handleEditMessage = useCallback(
     async (m: Message) => {

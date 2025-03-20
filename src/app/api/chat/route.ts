@@ -61,7 +61,7 @@ const GroqModels = Constants.ChatModels.groq;
 
 function getModel(model?: string): LanguageModelV1 {
   if (!model) {
-    return google.languageModel('gemini-1.5-flash', { safetySettings });
+    return google.languageModel('gemini-2.0-flash', { safetySettings });
   }
 
   if (model in GoogleModels) {
@@ -77,7 +77,7 @@ function getModel(model?: string): LanguageModelV1 {
     return groq.languageModel(GroqModels[model as keyof typeof GroqModels]) as LanguageModelV1;
   }
 
-  return google.languageModel('gemini-1.5-flash', { safetySettings }) as LanguageModelV1;
+  return google.languageModel('gemini-2.0-flash', { safetySettings }) as LanguageModelV1;
 }
 
 export async function POST(req: Request) {
