@@ -147,7 +147,7 @@ export default function Page(): React.JSX.Element {
           </Link>
         </div>
         <AdminComponent>
-          <div className='divider w-[75vw] max-w-[1000px] items-center self-center' />
+          <div className='divider mx-auto w-[75vw] max-w-[1000px] items-center self-center' />
           <h2 className='text-3xl font-bold'>
             <u>{'Admin Stuff'}</u>
           </h2>
@@ -197,7 +197,7 @@ export default function Page(): React.JSX.Element {
           <Counter />
         </AdminComponent>
       </div>
-      <div className='divider w-[75vw] max-w-[1000px] items-center self-center' />
+      <div className='divider mx-auto w-[75vw] max-w-[1000px] items-center self-center' />
       <div className='px-30 container flex flex-col items-center gap-1 self-center px-4 py-4 text-xs md:text-sm lg:text-base'>
         <p className='p-4 text-sm'>
           {'Help me improve the site and '}
