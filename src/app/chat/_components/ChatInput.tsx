@@ -32,8 +32,8 @@ const ChatBotInput = memo(
     const isMobile = useIsMobile();
     const { threadId } = useParams<{ threadId: string }>();
     const [loading, setLoading] = useState<boolean>(false);
-    const [systemPrompt] = usePersistentState<string | undefined>('systemPrompt', undefined);
-    const [model, setModel] = usePersistentState<string>('model', 'gemini-2.0-flash');
+    const [, , getSystemPrompt] = usePersistentState<string | undefined>('systemPrompt', undefined);
+    const [, setModel, getModel] = usePersistentState<string>('model', 'gemini-2.0-flash');
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -46,7 +46,7 @@ const ChatBotInput = memo(
         const threadId = await dxdb.createThread();
         router.push('/chat/' + threadId);
         try {
-          await createMessage(threadId, input, model, setInput, scrollCallback, systemPrompt?.trim());
+          await createMessage(threadId, input, getModel(), setInput, scrollCallback, getSystemPrompt()?.trim());
         } catch (e) {
           toast.error('Failed to generate message');
           setLoading(false);
@@ -54,7 +54,7 @@ const ChatBotInput = memo(
         }
         setLoading(false);
       } else {
-        await createMessage(threadId, input, model, setInput, scrollCallback, systemPrompt?.trim());
+        await createMessage(threadId, input, getModel(), setInput, scrollCallback, getSystemPrompt()?.trim());
         setLoading(false);
         setInput('');
         if (fileInputRef.current) {
@@ -187,10 +187,10 @@ const ChatBotInput = memo(
                             </label>
                           </>
                         )}
-                        <ModelDropdown models={models} selectedModel={model} onModelChange={onModelChange} />
+                        <ModelDropdown models={models} selectedModel={getModel()} onModelChange={onModelChange} />
                       </>
                     : <>
-                        <ModelDropdown models={models} selectedModel={model} onModelChange={onModelChange} />
+                        <ModelDropdown models={models} selectedModel={getModel()} onModelChange={onModelChange} />
                         {canUpload && (
                           <>
                             <input

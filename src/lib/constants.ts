@@ -14,7 +14,8 @@ export default class Constants {
   static readonly GITHUB_URL: string = 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app';
   static readonly FILE_SIZE_LIMIT_MB: number = 2.5;
   static readonly MAX_FILE_SIZE: number = this.FILE_SIZE_LIMIT_MB * 1024 * 1024;
-  public static readonly ChatModels = {
+  static readonly ChatModels = {
+    default: 'gemini-2.0-flash' as const,
     google: {
       // 'Gemini 1.5 Flash': 'gemini-1.5-flash', // being deprecated
       'Gemini 2.0 Flash': 'gemini-2.0-flash',
@@ -32,7 +33,7 @@ export default class Constants {
       'Deepseek R1 (Llama Distill)': 'deepseek-r1-distill-llama-70b',
     } as const,
   };
-  public static getModelName(modelKey: string): string | undefined {
+  static getModelName(modelKey: string): string | undefined {
     for (const category in this.ChatModels) {
       const models = this.ChatModels[category as ChatModelCategory];
       for (const name in models) {
@@ -47,50 +48,55 @@ export default class Constants {
     title: 'Home',
     link: '/home',
     description: 'The home page for my About Me based web project built with Next.js',
-  };
+  } as const;
   static readonly FileUploader = {
     title: 'File Uploader',
     link: '/file-uploader',
     description: 'Just the simple file uploader from the home page',
-  };
+  } as const;
   static readonly Todos = {
     title: 'Todo App',
     link: '/todos',
     description: 'A simple todo list web app. Uses local storage to save and get todos list even after reloading',
-  };
+  } as const;
   static readonly Hangman = {
     title: 'Janky Hangman',
     link: '/hangman',
     description: 'A simple hangman game web app. Guess the word (Might be broken)',
-  };
+  } as const;
   static readonly Calc = {
     title: 'Calculator',
     link: '/calc',
     description: 'A simple calculator web app. Do math calculations',
-  };
+  } as const;
   static readonly Github = {
     title: 'Github',
     link: 'https://github.com/TheGloved1/',
     description: 'View the source code. Visit my Github profile to take a look at my other projects',
-  };
+  } as const;
   static readonly Black = {
     title: 'Black Screen',
     link: '/black',
     description: 'This is just a black screen',
-  };
+  } as const;
   static readonly Discord = {
     title: 'Discord',
     link: '/discord',
     description: 'Join my Discord to chat!',
-  };
+  } as const;
   static readonly Chat = {
     title: 'Chat',
     link: '/chat',
     description: 'A VERY fast, local-first, AI chat web app using a local IndexedDB database, WARNING: HE IS EVIL',
-  };
+  } as const;
   static readonly Colors = {
     title: 'Stupid Game',
     link: '/colors',
     description: 'Play the stupid game...',
-  };
+  } as const;
+  static readonly Cookies = {
+    title: 'Cookie Clicker',
+    link: '/cookies',
+    description: 'Cookie Clicker Clone',
+  } as const;
 }

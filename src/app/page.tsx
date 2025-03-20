@@ -27,7 +27,7 @@ export default function Page(): React.JSX.Element {
         <h1 className='text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]'>
           gloved<span className='text-[hsl(280,100%,40%)]'>.</span>dev
         </h1>
-        <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8'>
+        <div className='grid grid-cols-1 justify-items-center gap-4 sm:grid-cols-2 md:gap-8 lg:grid-cols-3'>
           <Link
             className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
             href={Constants.Home.link}
@@ -54,8 +54,6 @@ export default function Page(): React.JSX.Element {
             </h3>
             <div className='text-lg'>{Constants.Chat.description}</div>
           </Link>
-        </div>
-        <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8'>
           <Link
             className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
             href={Constants.FileUploader.link}
@@ -82,8 +80,19 @@ export default function Page(): React.JSX.Element {
             </h3>
             <div className='text-lg'>{Constants.Colors.description}</div>
           </Link>
-        </div>
-        <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8'>
+          <Link
+            className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
+            href={Constants.Cookies.link}
+            prefetch
+          >
+            <h3 className='text-2xl font-bold'>
+              {Constants.Cookies.title}{' '}
+              <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
+                {'->'}
+              </span>
+            </h3>
+            <div className='text-lg'>{Constants.Cookies.description}</div>
+          </Link>
           <Link
             className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
             href={Constants.Todos.link}
@@ -98,7 +107,7 @@ export default function Page(): React.JSX.Element {
             <div className='text-lg'>{Constants.Todos.description}</div>
           </Link>
           <Link
-            className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
+            className='group flex max-w-xs flex-col gap-4 self-center rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
             href={Constants.Hangman.link}
             prefetch
           >
@@ -110,8 +119,6 @@ export default function Page(): React.JSX.Element {
             </h3>
             <div className='text-lg'>{Constants.Hangman.description}</div>
           </Link>
-        </div>
-        <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8'>
           <Link
             className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
             href={Constants.Calc.link}
