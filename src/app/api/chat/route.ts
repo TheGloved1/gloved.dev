@@ -1,7 +1,7 @@
-import { Message } from '@/dexie';
 import { env } from '@/env';
 import { fetchSystemPrompt } from '@/lib/actions';
 import Constants from '@/lib/constants';
+import { Message } from '@/lib/dexie';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { createGroq } from '@ai-sdk/groq';
 import {

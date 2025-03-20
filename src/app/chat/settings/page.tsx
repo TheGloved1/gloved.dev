@@ -10,8 +10,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { dxdb } from '@/dexie';
 import { usePersistentState } from '@/hooks/use-persistent-state';
+import { dxdb } from '@/lib/dexie';
 import { tryCatch } from '@/lib/utils';
 import { useAuth } from '@clerk/nextjs';
 import { ChevronLeft } from 'lucide-react';

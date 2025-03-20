@@ -16,9 +16,9 @@ export default class Constants {
   static readonly MAX_FILE_SIZE: number = this.FILE_SIZE_LIMIT_MB * 1024 * 1024;
   public static readonly ChatModels = {
     google: {
-      'Gemini 1.5 Flash': 'gemini-1.5-flash',
-      'Gemini 2.0 Flash Lite Preview': 'gemini-2.0-flash-lite-preview-02-05',
-      // 'Gemini 2.0 Flash Experimental': 'gemini-2.0-flash-exp',
+      // 'Gemini 1.5 Flash': 'gemini-1.5-flash', // being deprecated
+      'Gemini 2.0 Flash': 'gemini-2.0-flash',
+      'Gemini 2.0 Flash Lite': 'gemini-2.0-flash-lite',
       'Gemini 2.0 Pro Experimental': 'gemini-2.0-pro-exp-02-05',
     } as const,
     groq: {

@@ -1,5 +1,5 @@
 'use client';
-import { checkSync, dxdb } from '@/dexie';
+import { checkSync, dxdb } from '@/lib/dexie';
 import { useAuth } from '@clerk/nextjs';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { redirect, useParams } from 'next/navigation';

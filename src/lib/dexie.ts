@@ -1,9 +1,10 @@
 import { deleteUserDataAction, syncAction } from '@/lib/actions';
 import { populateOnboardingThreads, tryCatch } from '@/lib/utils';
-import { ImagePart, TextPart } from 'ai';
 import Dexie, { type EntityTable } from 'dexie';
 import { toast } from 'sonner';
 import { z } from 'zod';
+
+export const createDate = () => new Date().toISOString();
 
 export const threadSchema = z.object({
   id: z.string(),
@@ -18,6 +19,7 @@ export const messageSchema = z.object({
   id: z.string(),
   threadId: z.string(),
   content: z.string(),
+  reasoning: z.string().optional(),
   model: z.string(),
   role: z.enum(['user', 'assistant']),
   created_at: z.string(),
@@ -54,14 +56,14 @@ class Database extends Dexie {
     });
 
     this.threads.hook('creating', (primKey, obj) => {
-      obj.created_at = new Date().toISOString();
-      obj.updated_at = new Date().toISOString();
-      obj.last_message_at = new Date().toISOString();
+      obj.created_at = createDate();
+      obj.updated_at = createDate();
+      obj.last_message_at = createDate();
     });
 
     this.messages.hook('creating', (primKey, obj) => {
-      obj.created_at = new Date().toISOString();
-      obj.updated_at = new Date().toISOString();
+      obj.created_at = createDate();
+      obj.updated_at = createDate();
     });
   }
 
@@ -91,18 +93,17 @@ class Database extends Dexie {
    * @param message A partial `Message` object without the `id`, `created_at`, `updated_at`, and `removed` fields.
    * @returns The ID of the created message.
    */
-  async addMessage(message: Omit<Message, 'id' | 'created_at' | 'updated_at'>) {
+  async addMessage(message: Omit<Message, 'id' | 'updated_at'>) {
     const id = crypto.randomUUID();
     await this.transaction('rw', [this.messages, this.threads], async () => {
       await this.messages.add({
         ...message,
         id,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
+        updated_at: createDate(),
       });
       await this.threads.update(message.threadId, {
-        last_message_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
+        last_message_at: createDate(),
+        updated_at: createDate(),
       });
     });
     return id;
@@ -113,7 +114,7 @@ class Database extends Dexie {
    * @param id The ID of the message to remove.
    */
   async removeMessage(id: string) {
-    await this.messages.update(id, { status: 'deleted', updated_at: new Date().toISOString(), content: '' });
+    await this.messages.update(id, { status: 'deleted', updated_at: createDate(), content: '' });
   }
 
   /**
@@ -125,9 +126,9 @@ class Database extends Dexie {
     await this.threads.add({
       id,
       title: 'New Chat',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      last_message_at: new Date().toISOString(),
+      created_at: createDate(),
+      updated_at: createDate(),
+      last_message_at: createDate(),
       status: 'done',
     });
     return id;
@@ -149,11 +150,11 @@ class Database extends Dexie {
    * @param threadId The ID of the thread to delete.
    */
   async deleteThread(threadId: string) {
-    await this.threads.update(threadId, { status: 'deleted', updated_at: new Date().toISOString() });
+    await this.threads.update(threadId, { status: 'deleted', updated_at: createDate() });
     await this.messages
       .where('threadId')
       .equals(threadId)
-      .modify({ status: 'deleted', content: '', updated_at: new Date().toISOString() });
+      .modify({ status: 'deleted', content: '', updated_at: createDate() });
   }
 
   /**
@@ -255,33 +256,6 @@ export async function checkSync(userId: string) {
 }
 
 /**
- * Takes a content object and formats it into a simpler format.
- *
- * If the content is a string or null, it is returned as is.
- *
- * If the content is an array of parts, it is processed as follows:
- * - All text parts are joined together into a single string.
- * - The image part (if any) is extracted and returned as a string.
- * - If there are no image parts, the image field is undefined.
- *
- * @param content The content object to format.
- * @returns An object with a `content` field and an optional `image` field.
- */
-export function formatContent(content: string | (TextPart | ImagePart)[] | null): {
-  content: string | null;
-  image?: string;
-} {
-  if (typeof content === 'string' || content === null) {
-    return { content };
-  }
-  const textParts = content.filter((part) => 'text' in part) as TextPart[];
-  const imageParts = content.filter((part) => 'image' in part) as ImagePart[];
-  const text = textParts.map((part) => part.text).join('');
-  const image = imageParts.length ? imageParts[0].image.toString() : undefined;
-  return { content: text, image };
-}
-
-/**
  * Process a readable stream of message chunks and update the message content.
  * @param response The readable stream of message chunks.
  * @param messageId The ID of the message to update with the new content.
@@ -299,6 +273,7 @@ export async function processStream(
   let done = false;
   let messageContent = '';
   let buffer = '';
+  let reasoning = '';
 
   while (true) {
     if (done) break;
@@ -324,6 +299,17 @@ export async function processStream(
           await dxdb.messages.update(messageId, {
             updated_at: new Date().toISOString(),
             content: messageContent, // Update with the accumulated content
+          });
+        }
+      } else if (line.startsWith('g:')) {
+        callback();
+        // This is a reasoning chunk
+        const json = JSON.parse(line.slice(2)); // Remove the prefix
+        reasoning += json; // Append the new content
+        if (messageId) {
+          await dxdb.messages.update(messageId, {
+            updated_at: new Date().toISOString(),
+            reasoning: reasoning, // Update with the accumulated reasoning
           });
         }
       } else if (line.startsWith('e:')) {
@@ -370,6 +356,7 @@ export async function createMessage(
     role: 'user',
     model,
     status: 'done',
+    created_at: new Date().toISOString(),
   });
 
   generateTitle(threadId);
@@ -384,6 +371,7 @@ export async function createMessage(
     content: '',
     status: 'streaming',
     model,
+    created_at: new Date().toISOString(),
   });
 
   callback?.();
@@ -451,6 +439,7 @@ export async function updateMessage(
     content: '',
     status: 'streaming',
     model,
+    created_at: new Date().toISOString(),
   });
 
   try {

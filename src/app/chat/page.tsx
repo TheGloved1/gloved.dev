@@ -1,5 +1,5 @@
 'use client';
-import { checkSync } from '@/dexie';
+import { checkSync } from '@/lib/dexie';
 import { useAuth } from '@clerk/nextjs';
 import React, { useEffect } from 'react';
 import ChatBotInput from './_components/ChatInput';

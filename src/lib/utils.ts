@@ -1,4 +1,4 @@
-import { dxdbType } from '@/dexie';
+import { dxdbType } from '@/lib/dexie';
 import axios from 'axios';
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';

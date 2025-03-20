@@ -2,8 +2,8 @@
 import ErrorAlert from '@/components/ErrorAlert';
 import Markdown from '@/components/Markdown';
 import { Button } from '@/components/ui/button';
-import { dxdb, Message, updateMessage } from '@/dexie';
 import { usePersistentState } from '@/hooks/use-persistent-state';
+import { dxdb, Message, updateMessage } from '@/lib/dexie';
 import { tryCatch } from '@/lib/utils';
 import { Copy, RefreshCcw, Send, SquarePen } from 'lucide-react';
 import { useParams } from 'next/navigation';

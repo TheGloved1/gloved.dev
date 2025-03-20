@@ -1,14 +1,14 @@
-import { Message, Thread } from '@/dexie';
+import { env } from '@/env';
+import { Message, Thread } from '@/lib/dexie';
 import { Redis } from '@upstash/redis';
 
 /**
- * An instance of the Upstash Redis client, used for storing and retrieving
- * Message and Thread objects in the key-value store.
+ * An instance of the Upstash Redis client.
  * @see https://upstash.com/docs/redis/sdks/ts
  */
 export const redis = new Redis({
-  url: process.env.KV_REST_API_URL,
-  token: process.env.KV_REST_API_TOKEN,
+  url: env.KV_REST_API_URL,
+  token: env.KV_REST_API_TOKEN,
   enableTelemetry: true,
 });
 

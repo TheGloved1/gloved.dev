@@ -1,6 +1,6 @@
 'use server';
-import { Message, Thread } from '@/dexie';
 import { env } from '@/env';
+import { Message, Thread } from '@/lib/dexie';
 import { apiRoute, tryCatch } from '@/lib/utils';
 import { IgDownloader } from 'ig-downloader';
 import { addAdmin, dbSync, deleteSync, deleteUserData, getAdmins, removeAdmin } from './db';

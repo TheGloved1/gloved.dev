@@ -1,5 +1,5 @@
 'use client';
-import { createMessage, dxdb } from '@/dexie';
+import { createMessage, dxdb } from '@/lib/dexie';
 import React, { memo, useState } from 'react';
 
 import { useIsMobile } from '@/hooks/use-mobile';

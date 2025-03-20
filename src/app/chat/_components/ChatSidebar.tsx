@@ -20,9 +20,9 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar';
-import { dxdb, Thread } from '@/dexie';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { usePersistentState } from '@/hooks/use-persistent-state';
+import { dxdb, Thread } from '@/lib/dexie';
 import { tryCatch } from '@/lib/utils';
 import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs';
 import { useLiveQuery } from 'dexie-react-hooks';
@@ -154,7 +154,7 @@ export default function ChatBotSidebar({ children }: { children?: React.ReactNod
           </Button>
         </SidebarFooter>
       </Sidebar>
-      <SidebarTrigger className={`z-10 ml-4 mt-4 ${isMobile ? 'fixed left-0 top-0' : ''}`} />
+      <SidebarTrigger className={`z-20 ml-4 mt-4 ${isMobile ? 'fixed left-0 top-0' : ''}`} />
       {children}
     </SidebarProvider>
   );
