@@ -3,9 +3,10 @@ import ErrorAlert from '@/components/ErrorAlert';
 import Markdown from '@/components/Markdown';
 import { Button } from '@/components/ui/button';
 import { usePersistentState } from '@/hooks/use-persistent-state';
+import { useTextToSpeech } from '@/hooks/use-tts';
 import { dxdb, Message, updateMessage } from '@/lib/dexie';
 import { tryCatch } from '@/lib/utils';
-import { Copy, RefreshCcw, Send, SquarePen } from 'lucide-react';
+import { Copy, RefreshCcw, Send, SquarePen, Volume2Icon, VolumeXIcon } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { memo, useCallback, useState } from 'react';
 import { toast } from 'sonner';
@@ -23,6 +24,7 @@ export default memo(function ChatMessage({
   const [isHovered, setIsHovered] = useState<boolean>(false);
   const [, , getSystemPrompt] = usePersistentState<string | undefined>('systemPrompt', undefined);
   const [, , getModel] = usePersistentState<string>('model', 'gemini-2.0-flash');
+  const [speak, stopSpeech, isSpeaking] = useTextToSpeech();
 
   const handleEditMessage = useCallback(
     async (m: Message) => {
@@ -156,6 +158,26 @@ export default memo(function ChatMessage({
         )}
         {message.role === 'assistant' && (
           <div className='absolute left-0 mt-2 flex items-center gap-2'>
+            {!isSpeaking ?
+              <button
+                className='inline-flex h-8 items-center justify-center gap-2 whitespace-nowrap rounded-md bg-secondary px-3 text-xs font-medium text-secondary-foreground opacity-0 shadow-sm transition-opacity hover:bg-secondary/80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 group-focus-within:opacity-100 group-hover:opacity-100 group-focus:opacity-100 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
+                title='Speak message'
+                onClick={() => {
+                  speak(message.content);
+                }}
+              >
+                <Volume2Icon className='-ml-0.5!size-5 -mb-0.5' />
+              </button>
+            : <button
+                className='inline-flex h-8 items-center justify-center gap-2 whitespace-nowrap rounded-md bg-secondary px-3 text-xs font-medium text-secondary-foreground opacity-0 shadow-sm transition-opacity hover:bg-secondary/80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 group-focus-within:opacity-100 group-hover:opacity-100 group-focus:opacity-100 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
+                title='Stop speaking'
+                onClick={() => {
+                  stopSpeech();
+                }}
+              >
+                <VolumeXIcon className='-ml-0.5!size-5 -mb-0.5' />
+              </button>
+            }
             <button
               onClick={() => {
                 navigator.clipboard.writeText(message.content);

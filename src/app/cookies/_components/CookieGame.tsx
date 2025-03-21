@@ -4,6 +4,7 @@ import type React from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { usePersistentState } from '@/hooks/use-persistent-state';
 import { ArrowBigUp, MousePointer, Sparkles, Volume2, VolumeX } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
@@ -133,7 +134,7 @@ const ACHIEVEMENTS = [
 // Sound effects - using simple audio context for sound effects
 const useSoundEffects = () => {
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
-  const [soundEnabled, setSoundEnabled] = useState(true);
+  const [soundEnabled, setSoundEnabled] = usePersistentState('soundEnabled', true);
 
   useEffect(() => {
     // Only create AudioContext when needed (on first interaction)
@@ -146,6 +147,7 @@ const useSoundEffects = () => {
         }
       } catch (e) {
         console.warn('Web Audio API not supported in this browser');
+        toast.error('Web Audio API not supported in this browser');
       }
     }
   }, [soundEnabled, audioContext]);
@@ -204,17 +206,17 @@ const useSoundEffects = () => {
 
 export function CookieGame() {
   // Game state
-  const [cookies, setCookies] = useState(0);
-  const [totalCookies, setTotalCookies] = useState(0);
+  const [cookies, setCookies] = usePersistentState('cookies', 0);
+  const [totalCookies, setTotalCookies] = usePersistentState('totalCookies', 0);
   const [clickPower, setClickPower] = useState(1);
-  const [baseCpc, setBaseCpc] = useState(1); // Base cookies per click
-  const [cps, setCps] = useState(0);
-  const [ownedUpgrades, setOwnedUpgrades] = useState<Record<string, number>>({});
-  const [ownedCpcUpgrades, setOwnedCpcUpgrades] = useState<Record<string, number>>({});
+  const [baseCpc, setBaseCpc] = usePersistentState('baseCpc', 1); // Base cookies per click
+  const [cps, setCps] = usePersistentState('cps', 0);
+  const [ownedUpgrades, setOwnedUpgrades] = usePersistentState<Record<string, number>>('ownedUpgrades', {});
+  const [ownedCpcUpgrades, setOwnedCpcUpgrades] = usePersistentState<Record<string, number>>('ownedCpcUpgrades', {});
   const [activePowerups, setActivePowerups] = useState<Record<string, { timeLeft: number; multiplier: number }>>({});
-  const [unlockedAchievements, setUnlockedAchievements] = useState<string[]>([]);
-  const [prestigeLevel, setPrestigeLevel] = useState(0);
-  const [prestigeMultiplier, setPrestigeMultiplier] = useState(1);
+  const [unlockedAchievements, setUnlockedAchievements] = usePersistentState<string[]>('unlockedAchievements', []);
+  const [prestigeLevel, setPrestigeLevel] = usePersistentState('prestigeLevel', 0);
+  const [prestigeMultiplier, setPrestigeMultiplier] = usePersistentState('prestigeMultiplier', 1);
   const [floatingTexts, setFloatingTexts] = useState<{ id: number; value: string; x: number; y: number }[]>([]);
   const [nextFloatingId, setNextFloatingId] = useState(0);
   const [activeTab, setActiveTab] = useState('cps');
