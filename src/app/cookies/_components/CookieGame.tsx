@@ -447,6 +447,7 @@ export function CookieGame() {
     }, 100);
 
     return () => clearInterval(gameInterval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Calculate effective CPS with powerups
