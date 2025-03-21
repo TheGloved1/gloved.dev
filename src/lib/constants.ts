@@ -42,7 +42,7 @@ export default class Constants {
         }
       }
     }
-    return undefined;
+    return 'unknown';
   }
   static readonly Home = {
     title: 'Home',
