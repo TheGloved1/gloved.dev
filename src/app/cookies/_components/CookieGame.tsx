@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { usePersistentState } from '@/hooks/use-persistent-state';
 import { ArrowBigUp, MousePointer, Sparkles, Volume2, VolumeX } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 // Game data
@@ -398,7 +398,7 @@ export function CookieGame() {
   };
 
   // Game loop for auto-clickers and powerups
-  useEffect(() => {
+  useLayoutEffect(() => {
     const gameInterval = setInterval(() => {
       // Auto-generate cookies based on CPS
       if (cps > 0) {
@@ -447,7 +447,7 @@ export function CookieGame() {
     }, 100);
 
     return () => clearInterval(gameInterval);
-  }, [cps, totalCookies, ownedUpgrades, baseCpc, prestigeMultiplier, calculateEffectiveCpc, checkAchievement]);
+  }, []);
 
   // Calculate effective CPS with powerups
   const effectiveCPS = () => {
