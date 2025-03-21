@@ -220,6 +220,7 @@ export function CookieGame() {
   const [floatingTexts, setFloatingTexts] = useState<{ id: number; value: string; x: number; y: number }[]>([]);
   const [nextFloatingId, setNextFloatingId] = useState(0);
   const [activeTab, setActiveTab] = useState('cps');
+  const [lastGameUpdate, setGameLastUpdate] = usePersistentState('lastGameUpdate', Date.now());
 
   const { soundEnabled, setSoundEnabled, playSound } = useSoundEffects();
 
@@ -241,7 +242,7 @@ export function CookieGame() {
         description: achievement.description,
       });
     },
-    [playSound, unlockedAchievements],
+    [playSound, setUnlockedAchievements, unlockedAchievements],
   );
 
   // Calculate effective CPC with all bonuses
@@ -400,17 +401,23 @@ export function CookieGame() {
   // Game loop for auto-clickers and powerups
   useLayoutEffect(() => {
     const gameInterval = setInterval(() => {
+      const now = Date.now();
+      const deltaTime = (now - lastGameUpdate) / 1000; // Convert to seconds
+      setGameLastUpdate(now);
+
       // Auto-generate cookies based on CPS
       if (cps > 0) {
-        setCookies((prev) => prev + cps / 10);
-        setTotalCookies((prev) => prev + cps / 10);
+        const cookiesToAdd = cps * deltaTime;
+        setCookies((prev) => prev + cookiesToAdd);
+        setTotalCookies((prev) => prev + cookiesToAdd);
       }
 
       if (ownedUpgrades.cursor && ownedUpgrades.cursor > 0) {
-        // Simulate cursor clicks every 10 seconds per cursor
-        const cursorClicks = ownedUpgrades.cursor * (0.1 / 10); // 0.1 CPS per cursor = 1 click per 10 seconds
-        setCookies((prev) => prev + cursorClicks * calculateEffectiveCpc());
-        setTotalCookies((prev) => prev + cursorClicks * calculateEffectiveCpc());
+        // Simulate cursor clicks (0.1 CPS per cursor)
+        const cursorCPS = ownedUpgrades.cursor * 0.1;
+        const cursorCookies = cursorCPS * deltaTime * calculateEffectiveCpc();
+        setCookies((prev) => prev + cursorCookies);
+        setTotalCookies((prev) => prev + cursorCookies);
       }
 
       // Check for cookie count achievements
@@ -429,7 +436,7 @@ export function CookieGame() {
           if (updated[id].timeLeft > 0) {
             updated[id] = {
               ...updated[id],
-              timeLeft: updated[id].timeLeft - 0.1,
+              timeLeft: Math.max(0, updated[id].timeLeft - deltaTime),
             };
             changed = true;
           } else if (updated[id].timeLeft <= 0) {
