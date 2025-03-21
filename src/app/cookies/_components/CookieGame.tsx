@@ -454,8 +454,17 @@ export function CookieGame() {
     }, 100);
 
     return () => clearInterval(gameInterval);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [
+    calculateEffectiveCpc,
+    checkAchievement,
+    cps,
+    lastGameUpdate,
+    ownedUpgrades.cursor,
+    setCookies,
+    setGameLastUpdate,
+    setTotalCookies,
+    totalCookies,
+  ]);
 
   // Calculate effective CPS with powerups
   const effectiveCPS = () => {
