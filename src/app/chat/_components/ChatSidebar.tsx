@@ -18,6 +18,8 @@ import {
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarHeader,
+  SidebarMenu,
+  SidebarMenuItem,
   SidebarProvider,
 } from '@/components/ui/sidebar';
 import { usePersistentState } from '@/hooks/use-persistent-state';
@@ -25,7 +27,7 @@ import { dxdb, Thread } from '@/lib/dexie';
 import { tryCatch } from '@/lib/utils';
 import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { MessageSquare, Settings, X } from 'lucide-react';
+import { Settings, X } from 'lucide-react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import React from 'react';
@@ -73,59 +75,69 @@ export default function ChatBotSidebar({ children }: { children?: React.ReactNod
           </SidebarGroup>
         </SidebarHeader>
         <SidebarGroupLabel>Chats</SidebarGroupLabel>
-        <SidebarContent className='rounded bg-gradient-to-bl from-[--background] to-[--background-secondary]'>
+        <SidebarContent className='rounded bg-gradient-to-bl from-[--background] to-[--background-secondary] text-white'>
           {threads?.length ?
             threads.map((thread) => (
-              <SidebarGroup key={thread.id} className='group-chatbar peer m-0 overflow-x-hidden p-0'>
-                <Link key={thread.id} href={`/chat/${thread.id}`} title={thread.title}>
-                  <SidebarGroupContent
-                    className={`hover:bg-[--background]/10 my-0 flex h-12 max-h-14 cursor-pointer items-center rounded-sm px-2 focus-within:outline-none focus-within:ring-[1px] focus-within:ring-[hsl(var(--ring))] hover:bg-gray-500/10 ${isCurrentThread(thread.id) ? 'bg-gray-500/20' : ''}`}
-                  >
-                    <div className='card flex flex-1 flex-row items-center gap-2 rounded-sm text-xs text-gray-200'>
-                      <MessageSquare className='!size-5' width={16} height={16} />
-                      <div
-                        className={`flex flex-1 flex-row gap-2 py-1 text-xs text-gray-200 ${isCurrentThread(thread.id) ? 'cursor-default font-bold' : ''}`}
-                      >
-                        <span
-                          style={{
-                            fontSize: Math.max(12, 16 - thread.title.length / 2.5) + 'px',
-                          }}
+              <SidebarGroup key={thread.id}>
+                <SidebarGroupContent>
+                  <SidebarMenu>
+                    <span data-state='closed'>
+                      <SidebarMenuItem>
+                        <Link
+                          className={
+                            'group/link relative flex h-9 w-full items-center overflow-hidden rounded-lg px-2 py-1 text-sm outline-none hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:text-sidebar-accent-foreground focus-visible:ring-2 focus-visible:ring-sidebar-ring hover:focus-visible:bg-sidebar-accent' +
+                            (isCurrentThread(thread.id) ? ' bg-sidebar-accent text-sidebar-accent-foreground' : '')
+                          }
+                          href={`/chat/${thread.id}`}
+                          title={thread.title}
                         >
-                          {thread.title}
-                        </span>
-                      </div>
-                    </div>
-                  </SidebarGroupContent>
-                </Link>
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button
-                      className='group-chatbar-hover absolute right-0 top-1/2 h-12 w-12 -translate-y-1/2 pl-4 text-gray-500 transition-all duration-200 hover:bg-transparent hover:text-red-800 md:translate-x-3 md:opacity-0'
-                      variant='ghost'
-                      title='Delete Chat'
-                    >
-                      <X height={16} width={16} />
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className='sm:max-w-md'>
-                    <DialogHeader>
-                      <DialogTitle>Are you absolutely sure?</DialogTitle>
-                      <DialogDescription>
-                        This action cannot be undone. This will permanently delete this thread.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <DialogFooter className='pt-4'>
-                      <DialogClose asChild>
-                        <Button variant='ghost'>Cancel</Button>
-                      </DialogClose>
-                      <DialogClose asChild>
-                        <Button variant='destructive' onClick={() => handleDelete(thread.id)}>
-                          Delete
-                        </Button>
-                      </DialogClose>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
+                          <div className='relative flex w-full items-center'>
+                            <div className='relative w-full'>
+                              <div
+                                title={thread.title}
+                                className='hover:truncate-none pointer-events-none h-full w-full cursor-pointer overflow-hidden truncate rounded bg-transparent px-1 py-1 text-sm text-muted-foreground outline-none'
+                              >
+                                {thread.title}
+                              </div>
+                            </div>
+                            <div className='pointer-events-auto absolute -right-1 bottom-0 top-0 z-50 flex translate-x-full items-center justify-end text-muted-foreground transition-transform group-hover/link:translate-x-0 group-hover/link:bg-sidebar-accent'>
+                              <div className='pointer-events-none absolute bottom-0 right-[100%] top-0 h-12 w-8 bg-gradient-to-l from-sidebar-accent to-transparent opacity-0 group-hover/link:opacity-100'></div>
+                              <Dialog>
+                                <DialogTrigger asChild>
+                                  <button
+                                    className='rounded-md p-1.5 hover:bg-destructive/50 hover:text-destructive-foreground'
+                                    onClick={() => handleDelete(thread.id)}
+                                    title='Delete Chat'
+                                  >
+                                    <X width={24} height={24} className='!size-4' />
+                                  </button>
+                                </DialogTrigger>
+                                <DialogContent className='sm:max-w-md'>
+                                  <DialogHeader>
+                                    <DialogTitle>Are you absolutely sure?</DialogTitle>
+                                    <DialogDescription>
+                                      This action cannot be undone. This will permanently delete this thread.
+                                    </DialogDescription>
+                                  </DialogHeader>
+                                  <DialogFooter className='pt-4'>
+                                    <DialogClose asChild>
+                                      <Button variant='ghost'>Cancel</Button>
+                                    </DialogClose>
+                                    <DialogClose asChild>
+                                      <Button variant='destructive' onClick={() => handleDelete(thread.id)}>
+                                        Delete
+                                      </Button>
+                                    </DialogClose>
+                                  </DialogFooter>
+                                </DialogContent>
+                              </Dialog>
+                            </div>
+                          </div>
+                        </Link>
+                      </SidebarMenuItem>
+                    </span>
+                  </SidebarMenu>
+                </SidebarGroupContent>
               </SidebarGroup>
             ))
           : null}

@@ -28,7 +28,7 @@ export default function ChatSidebarTrigger() {
           : 'inline-flex size-8 translate-x-0 items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium text-muted-foreground opacity-100 transition-[transform,opacity] delay-150 duration-150 hover:bg-muted/40 hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
         }
       >
-        <Plus width={24} height={24} />
+        <Plus width={24} height={24} className='!size-4' />
       </Link>
     </div>
   );
