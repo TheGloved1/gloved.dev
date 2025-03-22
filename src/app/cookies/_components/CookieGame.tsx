@@ -5,8 +5,9 @@ import type React from 'react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { usePersistentState } from '@/hooks/use-persistent-state';
+import { useInterval } from '@uidotdev/usehooks';
 import { ArrowBigUp, MousePointer, Sparkles, Volume2, VolumeX } from 'lucide-react';
-import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 // Game data
@@ -110,9 +111,9 @@ const ACHIEVEMENTS = [
   },
   {
     id: 'fiveUpgrades',
-    name: 'Cookie Empire',
+    name: 'Freddy Five Bear',
     requirement: 'upgrades5',
-    description: 'Own 5 different types of upgrades',
+    description: 'Own 5 different types of upgrades. You want him?',
     icon: '🏭',
   },
   {
@@ -398,8 +399,53 @@ export function CookieGame() {
     }
   };
 
+  useInterval(() => {
+    const now = Date.now();
+    const deltaTime = (now - lastGameUpdate) / 1000; // Convert to seconds
+    setGameLastUpdate(now);
+
+    // Auto-generate cookies based on CPS
+    if (cps > 0) {
+      const cookiesToAdd = cps * deltaTime;
+      setCookies((prev) => prev + cookiesToAdd);
+      setTotalCookies((prev) => prev + cookiesToAdd);
+    }
+
+    // Check for cookie count achievements
+    ACHIEVEMENTS.forEach((achievement) => {
+      if (typeof achievement.requirement === 'number' && totalCookies >= achievement.requirement) {
+        checkAchievement(achievement.id);
+      }
+    });
+
+    // Update powerup timers
+    setActivePowerups((prev) => {
+      const updated = { ...prev };
+      let changed = false;
+
+      Object.keys(updated).forEach((id) => {
+        if (updated[id].timeLeft > 0) {
+          updated[id] = {
+            ...updated[id],
+            timeLeft: Math.max(0, updated[id].timeLeft - deltaTime),
+          };
+          changed = true;
+        } else if (updated[id].timeLeft <= 0) {
+          delete updated[id];
+          changed = true;
+
+          toast(`${POWERUPS.find((p) => p.id === id)?.name} Expired`, {
+            description: 'The powerup effect has worn off.',
+          });
+        }
+      });
+
+      return changed ? updated : prev;
+    });
+  }, 100);
+
   // Game loop for auto-clickers and powerups
-  useLayoutEffect(() => {
+  /* useLayoutEffect(() => {
     const gameInterval = setInterval(() => {
       const now = Date.now();
       const deltaTime = (now - lastGameUpdate) / 1000; // Convert to seconds
@@ -410,14 +456,6 @@ export function CookieGame() {
         const cookiesToAdd = cps * deltaTime;
         setCookies((prev) => prev + cookiesToAdd);
         setTotalCookies((prev) => prev + cookiesToAdd);
-      }
-
-      if (ownedUpgrades.cursor && ownedUpgrades.cursor > 0) {
-        // Simulate cursor clicks (0.1 CPS per cursor)
-        const cursorCPS = ownedUpgrades.cursor * 0.1;
-        const cursorCookies = cursorCPS * deltaTime * calculateEffectiveCpc();
-        setCookies((prev) => prev + cursorCookies);
-        setTotalCookies((prev) => prev + cursorCookies);
       }
 
       // Check for cookie count achievements
@@ -464,7 +502,7 @@ export function CookieGame() {
     setGameLastUpdate,
     setTotalCookies,
     totalCookies,
-  ]);
+  ]); */
 
   // Calculate effective CPS with powerups
   const effectiveCPS = () => {
