@@ -4,6 +4,7 @@ import type React from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useInterval } from '@/hooks/use-interval';
 import { usePersistentState } from '@/hooks/use-persistent-state';
 import { ArrowBigUp, MousePointer, Sparkles, Volume2, VolumeX } from 'lucide-react';
 import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
@@ -399,64 +400,50 @@ export function CookieGame() {
   };
 
   // Game loop for auto-clickers and powerups
-  useLayoutEffect(() => {
-    const gameInterval = setInterval(() => {
-      const now = Date.now();
-      const deltaTime = (now - lastGameUpdate) / 1000; // Convert to seconds
-      setGameLastUpdate(now);
+  useInterval(() => {
+    const now = Date.now();
+    const deltaTime = (now - lastGameUpdate) / 1000; // Convert to seconds
+    setGameLastUpdate(now);
 
-      // Auto-generate cookies based on CPS
-      if (cps > 0) {
-        const cookiesToAdd = cps * deltaTime;
-        setCookies((prev) => prev + cookiesToAdd);
-        setTotalCookies((prev) => prev + cookiesToAdd);
+    // Auto-generate cookies based on CPS
+    if (cps > 0) {
+      const cookiesToAdd = cps * deltaTime;
+      setCookies((prev) => prev + cookiesToAdd);
+      setTotalCookies((prev) => prev + cookiesToAdd);
+    }
+
+    // Check for cookie count achievements
+    ACHIEVEMENTS.forEach((achievement) => {
+      if (typeof achievement.requirement === 'number' && totalCookies >= achievement.requirement) {
+        checkAchievement(achievement.id);
       }
+    });
 
-      // Check for cookie count achievements
-      ACHIEVEMENTS.forEach((achievement) => {
-        if (typeof achievement.requirement === 'number' && totalCookies >= achievement.requirement) {
-          checkAchievement(achievement.id);
+    // Update powerup timers
+    setActivePowerups((prev) => {
+      const updated = { ...prev };
+      let changed = false;
+
+      Object.keys(updated).forEach((id) => {
+        if (updated[id].timeLeft > 0) {
+          updated[id] = {
+            ...updated[id],
+            timeLeft: Math.max(0, updated[id].timeLeft - deltaTime),
+          };
+          changed = true;
+        } else if (updated[id].timeLeft <= 0) {
+          delete updated[id];
+          changed = true;
+
+          toast(`${POWERUPS.find((p) => p.id === id)?.name} Expired`, {
+            description: 'The powerup effect has worn off.',
+          });
         }
       });
 
-      // Update powerup timers
-      setActivePowerups((prev) => {
-        const updated = { ...prev };
-        let changed = false;
-
-        Object.keys(updated).forEach((id) => {
-          if (updated[id].timeLeft > 0) {
-            updated[id] = {
-              ...updated[id],
-              timeLeft: Math.max(0, updated[id].timeLeft - deltaTime),
-            };
-            changed = true;
-          } else if (updated[id].timeLeft <= 0) {
-            delete updated[id];
-            changed = true;
-
-            toast(`${POWERUPS.find((p) => p.id === id)?.name} Expired`, {
-              description: 'The powerup effect has worn off.',
-            });
-          }
-        });
-
-        return changed ? updated : prev;
-      });
-    }, 1000);
-
-    return () => clearInterval(gameInterval);
-  }, [
-    calculateEffectiveCpc,
-    checkAchievement,
-    cps,
-    lastGameUpdate,
-    ownedUpgrades.cursor,
-    setCookies,
-    setGameLastUpdate,
-    setTotalCookies,
-    totalCookies,
-  ]);
+      return changed ? updated : prev;
+    });
+  }, 1000);
 
   // Calculate effective CPS with powerups
   const effectiveCPS = () => {
