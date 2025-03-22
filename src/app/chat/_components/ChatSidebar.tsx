@@ -20,7 +20,6 @@ import {
   SidebarHeader,
   SidebarProvider,
 } from '@/components/ui/sidebar';
-import { useIsMobile } from '@/hooks/use-mobile';
 import { usePersistentState } from '@/hooks/use-persistent-state';
 import { dxdb, Thread } from '@/lib/dexie';
 import { tryCatch } from '@/lib/utils';
@@ -36,7 +35,6 @@ import ChatSidebarTrigger from './ChatSidebarTrigger';
 export default function ChatBotSidebar({ children }: { children?: React.ReactNode }) {
   const { threadId } = useParams<{ threadId: string }>();
   const router = useRouter();
-  const isMobile = useIsMobile();
   const threads = useLiveQuery(() => dxdb.getThreads());
   const [lastThreadList, setLastThreadList] = usePersistentState<Thread[]>('lastThreadList', []);
 
