@@ -27,7 +27,7 @@ import { tryCatch } from '@/lib/utils';
 import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { MessageSquare, Settings, X } from 'lucide-react';
-import { Link } from 'next-view-transitions';
+import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import React from 'react';
 import { toast } from 'sonner';
