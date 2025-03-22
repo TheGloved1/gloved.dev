@@ -50,7 +50,7 @@ export default function ChatBotSidebar({ children }: { children?: React.ReactNod
 
   return (
     <SidebarProvider className='flex min-h-svh w-full'>
-      <Sidebar className='border border-border'>
+      <Sidebar variant='inset' className='border border-border p-1'>
         <SidebarHeader>
           <h1 className='flex h-8 shrink-0 items-center justify-center text-lg text-muted-foreground transition-opacity delay-75 duration-75'>
             <Link
@@ -60,33 +60,31 @@ export default function ChatBotSidebar({ children }: { children?: React.ReactNod
               gloved<span className='text-[hsl(280,93%,72%)]'>.</span>dev
             </Link>
           </h1>
-          <>
-            <SidebarGroup>
-              <Button
-                className='w-full rounded-sm bg-[--background-secondary] p-2 text-gray-200'
-                variant='outline'
-                title='New chat'
-              >
-                <Link href='/chat' type='button' title='New chat'>
-                  New Chat
-                </Link>
-              </Button>
-            </SidebarGroup>
-          </>
+          <SidebarGroup>
+            <Button
+              className='w-full rounded-sm bg-[--background-secondary] p-2 text-gray-200'
+              variant='outline'
+              title='New chat'
+            >
+              <Link href='/chat' type='button' title='New chat'>
+                New Chat
+              </Link>
+            </Button>
+          </SidebarGroup>
         </SidebarHeader>
         <SidebarGroupLabel>Chats</SidebarGroupLabel>
         <SidebarContent className='rounded bg-gradient-to-bl from-[--background] to-[--background-secondary]'>
           {threads?.length ?
             threads.map((thread) => (
-              <SidebarGroup key={thread.id} className='group-chatbar peer overflow-x-hidden p-2'>
+              <SidebarGroup key={thread.id} className='group-chatbar peer m-0 overflow-x-hidden p-0'>
                 <Link key={thread.id} href={`/chat/${thread.id}`} title={thread.title}>
                   <SidebarGroupContent
-                    className={`hover:bg-[--background]/10 my-0 flex h-14 max-h-14 cursor-pointer items-center rounded-sm px-2 focus-within:outline-none focus-within:ring-[1px] focus-within:ring-[hsl(var(--ring))] hover:bg-gray-500/10 ${isCurrentThread(thread.id) ? 'bg-gray-500/20' : ''}`}
+                    className={`hover:bg-[--background]/10 my-0 flex h-12 max-h-14 cursor-pointer items-center rounded-sm px-2 focus-within:outline-none focus-within:ring-[1px] focus-within:ring-[hsl(var(--ring))] hover:bg-gray-500/10 ${isCurrentThread(thread.id) ? 'bg-gray-500/20' : ''}`}
                   >
                     <div className='card flex flex-1 flex-row items-center gap-2 rounded-sm text-xs text-gray-200'>
                       <MessageSquare className='!size-5' width={16} height={16} />
                       <div
-                        className={`flex flex-1 flex-row gap-2 py-2 text-xs text-gray-200 ${isCurrentThread(thread.id) ? 'cursor-default font-bold' : ''}`}
+                        className={`flex flex-1 flex-row gap-2 py-1 text-xs text-gray-200 ${isCurrentThread(thread.id) ? 'cursor-default font-bold' : ''}`}
                       >
                         <span
                           style={{

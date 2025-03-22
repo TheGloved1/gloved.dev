@@ -1,10 +1,8 @@
 import { deleteUserDataAction, syncAction } from '@/lib/actions';
-import { populateOnboardingThreads, tryCatch } from '@/lib/utils';
+import { createDate, populateOnboardingThreads, tryCatch } from '@/lib/utils';
 import Dexie, { type EntityTable } from 'dexie';
 import { toast } from 'sonner';
 import { z } from 'zod';
-
-export const createDate = () => new Date().toISOString();
 
 export const threadSchema = z.object({
   id: z.string(),

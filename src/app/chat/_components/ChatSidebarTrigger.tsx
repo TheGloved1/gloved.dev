@@ -1,16 +1,19 @@
 import { SidebarTrigger, useSidebar } from '@/components/ui/sidebar';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { Plus } from 'lucide-react';
 import Link from 'next/link';
 
 export default function ChatSidebarTrigger() {
   const { open } = useSidebar();
+  const isMobile = useIsMobile();
+  const isOpen = isMobile ? false : open;
   return (
     <div className='pointer-events-auto fixed left-2 top-2 z-50 flex flex-row content-center items-center justify-center gap-0.5 p-1'>
       <div
         className={
-          open ?
+          isOpen ?
             'duration-250 pointer-events-none absolute inset-0 right-auto -z-10 w-8 rounded-md bg-transparent backdrop-blur-sm transition-[background-color,width] delay-0'
-          : 'pointer-events-none absolute inset-0 right-auto -z-10 w-[4.65rem] rounded-md bg-sidebar/50 backdrop-blur-sm transition-[background-color,width] delay-150 duration-150'
+          : 'pointer-events-none absolute inset-0 right-auto -z-10 w-[4.65rem] rounded-md bg-gray-800/25 backdrop-blur-sm transition-[background-color,width] delay-150 duration-150'
         }
       ></div>
       <SidebarTrigger
@@ -20,7 +23,7 @@ export default function ChatSidebarTrigger() {
         href='/chat'
         title='New chat'
         className={
-          open ?
+          isOpen ?
             'pointer-events-none inline-flex size-8 -translate-x-[2.125rem] items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium text-muted-foreground opacity-0 transition-[transform,opacity] delay-0 duration-150 hover:bg-muted/40 hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
           : 'inline-flex size-8 translate-x-0 items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium text-muted-foreground opacity-100 transition-[transform,opacity] delay-150 duration-150 hover:bg-muted/40 hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
         }
