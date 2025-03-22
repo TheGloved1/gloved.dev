@@ -106,7 +106,6 @@ export default function ChatBotSidebar({ children }: { children?: React.ReactNod
                                 <DialogTrigger asChild>
                                   <button
                                     className='rounded-md p-1.5 hover:bg-destructive/50 hover:text-destructive-foreground'
-                                    onClick={() => handleDelete(thread.id)}
                                     title='Delete Chat'
                                   >
                                     <X width={24} height={24} className='!size-4' />
