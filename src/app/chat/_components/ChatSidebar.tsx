@@ -22,8 +22,7 @@ import {
   SidebarMenuItem,
   SidebarProvider,
 } from '@/components/ui/sidebar';
-import { usePersistentState } from '@/hooks/use-persistent-state';
-import { dxdb, Thread } from '@/lib/dexie';
+import { dxdb } from '@/lib/dexie';
 import { tryCatch } from '@/lib/utils';
 import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs';
 import { useLiveQuery } from 'dexie-react-hooks';
@@ -38,14 +37,12 @@ export default function ChatBotSidebar({ children }: { children?: React.ReactNod
   const { threadId } = useParams<{ threadId: string }>();
   const router = useRouter();
   const threads = useLiveQuery(() => dxdb.getThreads());
-  const [lastThreadList, setLastThreadList] = usePersistentState<Thread[]>('lastThreadList', []);
 
   const isCurrentThread = (id: string) => threadId === id;
 
   const handleDelete = async (id: string) => {
     const { error } = await tryCatch(dxdb.deleteThread(id)); // Delete the thread
     if (error) return toast.error('Error deleting thread'), router.push('/chat');
-    setLastThreadList(lastThreadList.filter((t) => t.id !== id));
     toast.success('Thread deleted');
     if (isCurrentThread(id)) router.replace('/chat');
   };
