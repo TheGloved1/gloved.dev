@@ -18,6 +18,7 @@ const nextConfig: NextConfig = {
     inlineCss: true,
     newDevOverlay: true,
     parallelServerCompiles: true,
+    taint: true,
   },
   devIndicators: {
     position: 'bottom-left',
