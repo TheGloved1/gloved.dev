@@ -16,8 +16,7 @@
     "start": "next start",
     "build:start": "next build && next start",
     "lint": "next lint",
-    "prettier:check": "prettier --config ./package.json --check ./src",
-    "prettier:fix": "prettier --config ./package.json --write ./src"
+    "prettier": "prettier --config ./package.json --write ./src"
   },
   "prettier": {
     "printWidth": 125,
@@ -27,6 +26,9 @@
     "tabWidth": 2,
     "bracketSpacing": true,
     "experimentalTernaries": true,
+    "arrowParens": "always",
+    "objectWrap": "preserve",
+    "bracketSameLine": false,
     "htmlWhitespaceSensitivity": "strict",
     "plugins": [
       "prettier-plugin-organize-imports",
@@ -101,7 +103,6 @@
     "eslint": "^9",
     "eslint-config-next": "canary",
     "eslint-plugin-react-hooks": "^5.1.0",
-    "fluid-tailwind": "^1.0.4",
     "postcss": "^8",
     "prettier": "^3.4.2",
     "prettier-plugin-organize-imports": "^4.1.0",

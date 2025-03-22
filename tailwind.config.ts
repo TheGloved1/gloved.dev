@@ -1,6 +1,5 @@
 import Typography from '@tailwindcss/typography';
 import daisyui, { Config as DaisyUIConfig } from 'daisyui';
-import fluid, { extract } from 'fluid-tailwind';
 import tailwindScrollbar from 'tailwind-scrollbar';
 import type { Config } from 'tailwindcss';
 import tailwindcssAnimate from 'tailwindcss-animate';
@@ -9,7 +8,6 @@ export default {
   darkMode: ['class'],
   content: {
     files: ['./src/components/**/*.{js,ts,jsx,tsx,mdx}', './src/app/**/*.{js,ts,jsx,tsx,mdx}'],
-    extract,
   },
   theme: {
     container: {
@@ -139,7 +137,7 @@ export default {
       },
     },
   },
-  plugins: [daisyui, tailwindcssAnimate, fluid, tailwindScrollbar, Typography()],
+  plugins: [daisyui, tailwindcssAnimate, tailwindScrollbar, Typography()],
   daisyui: {
     themes: false, // false: only light + dark | true: all themes | array: specific themes like this ["light", "dark", "cupcake"]
     darkTheme: 'dark', // name of one of the included themes for dark mode
