@@ -2,7 +2,7 @@
 
 import { Slot } from '@radix-ui/react-slot';
 import { VariantProps, cva } from 'class-variance-authority';
-import { ChevronLeft, ChevronRight, SidebarIcon } from 'lucide-react';
+import { SidebarIcon } from 'lucide-react';
 import * as React from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -232,18 +232,14 @@ const SidebarTrigger = React.forwardRef<React.ComponentRef<typeof Button>, React
         data-sidebar='trigger'
         variant='ghost'
         size='icon'
-        className={cn('m-2 h-7 w-7', className)}
+        className={cn('h-7 w-7', className)}
         onClick={(event) => {
           onClick?.(event);
           toggleSidebar();
         }}
         {...props}
       >
-        {isMobile ?
-          <SidebarIcon className='!size-6' />
-        : open ?
-          <ChevronLeft className='!size-6' />
-        : <ChevronRight className='!size-6' />}
+        <SidebarIcon className='!size-6' />
         <span className='sr-only'>Toggle Sidebar</span>
       </Button>
     );

@@ -16,9 +16,9 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarHeader,
   SidebarProvider,
-  SidebarTrigger,
 } from '@/components/ui/sidebar';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { usePersistentState } from '@/hooks/use-persistent-state';
@@ -26,11 +26,12 @@ import { dxdb, Thread } from '@/lib/dexie';
 import { tryCatch } from '@/lib/utils';
 import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { ChevronLeft, Home, MessageSquare, Plus, Settings, SquarePen, X } from 'lucide-react';
+import { MessageSquare, Settings, X } from 'lucide-react';
 import { Link } from 'next-view-transitions';
 import { useParams, useRouter } from 'next/navigation';
 import React from 'react';
 import { toast } from 'sonner';
+import ChatSidebarTrigger from './ChatSidebarTrigger';
 
 export default function ChatBotSidebar({ children }: { children?: React.ReactNode }) {
   const { threadId } = useParams<{ threadId: string }>();
@@ -50,45 +51,32 @@ export default function ChatBotSidebar({ children }: { children?: React.ReactNod
   };
 
   return (
-    <SidebarProvider>
-      <Sidebar variant='inset' className='m-0 border border-border'>
+    <SidebarProvider className='flex min-h-svh w-full'>
+      <Sidebar className='border border-border'>
         <SidebarHeader>
-          <SignedOut>
-            <SignInButton mode={'modal'}>
-              <Button className='btn gap-1'>Sign in</Button>
-            </SignInButton>
-          </SignedOut>
-          <SignedIn>
-            <div className='flex items-center gap-2'>
-              <UserButton showName />
-              <Link href='/chat/settings' className='ml-auto'>
-                <Button variant='ghost' className='h-8 w-8 rounded-full p-0 text-2xl'>
-                  <Settings className='h-5 w-5' />
-                </Button>
-              </Link>
-            </div>
-          </SignedIn>
-          {isMobile && (
-            <>
-              <div className='divider divider-neutral text-gray-200'>New Chat</div>
-              <SidebarGroup>
-                <Link href='/chat' type='button' title='New chat' className='btn card rounded-xl'>
-                  <Plus className='h-4 w-4' />
-                  <span className='sr-only'>New chat</span>
+          <h1 className='flex h-8 shrink-0 items-center justify-center text-lg text-muted-foreground transition-opacity delay-75 duration-75'>
+            <Link
+              href={'/'}
+              className={'relative flex h-8 w-24 items-center justify-center text-sm font-semibold text-foreground'}
+            >
+              gloved<span className='text-[hsl(280,93%,72%)]'>.</span>dev
+            </Link>
+          </h1>
+          <>
+            <SidebarGroup>
+              <Button
+                className='w-full rounded-sm bg-[--background-secondary] p-2 text-gray-200'
+                variant='outline'
+                title='New chat'
+              >
+                <Link href='/chat' type='button' title='New chat'>
+                  New Chat
                 </Link>
-              </SidebarGroup>
-            </>
-          )}
-          <div className='divider divider-neutral text-gray-200'>
-            Chats{' '}
-            {!isMobile && (
-              <Link href='/chat' type='button' title='New chat' className='m-0 rounded-lg p-2 hover:bg-gray-500/50'>
-                <SquarePen className='h-4 w-4' />
-                <span className='sr-only'>New chat</span>
-              </Link>
-            )}
-          </div>
+              </Button>
+            </SidebarGroup>
+          </>
         </SidebarHeader>
+        <SidebarGroupLabel>Chats</SidebarGroupLabel>
         <SidebarContent className='rounded bg-gradient-to-bl from-[--background] to-[--background-secondary]'>
           {threads?.length ?
             threads.map((thread) => (
@@ -147,14 +135,31 @@ export default function ChatBotSidebar({ children }: { children?: React.ReactNod
           : null}
         </SidebarContent>
         <SidebarFooter className='p-2'>
-          <Button onClick={() => router.push('/')} variant='outline' className='w-full'>
-            <ChevronLeft className='h-4 w-4' />
-            <Home className='h-4 w-4' />
-            gloved.dev
-          </Button>
+          <SignedOut>
+            <div className='flex items-center gap-2'>
+              <SignInButton mode={'modal'}>
+                <Button className='w-full gap-1'>Sign in</Button>
+              </SignInButton>
+              <Link href='/chat/settings' type='button'>
+                <Button variant='ghost' className='h-8 w-8 rounded-full p-0 text-2xl'>
+                  <Settings className='h-5 w-5' />
+                </Button>
+              </Link>
+            </div>
+          </SignedOut>
+          <SignedIn>
+            <div className='flex items-center gap-2'>
+              <UserButton showName />
+              <Link href='/chat/settings' className='ml-auto'>
+                <Button variant='ghost' className='h-8 w-8 rounded-full p-0 text-2xl'>
+                  <Settings className='h-5 w-5' />
+                </Button>
+              </Link>
+            </div>
+          </SignedIn>
         </SidebarFooter>
       </Sidebar>
-      <SidebarTrigger className={`z-20 ml-4 mt-4 ${isMobile ? 'fixed left-0 top-0' : ''}`} />
+      <ChatSidebarTrigger />
       {children}
     </SidebarProvider>
   );
