@@ -68,9 +68,6 @@ importers:
       '@tanstack/react-query-devtools':
         specifier: ^5.66.0
         version: 5.66.6(@tanstack/react-query@5.66.6(react@0.0.0-experimental-e1e74071-20250321))(react@0.0.0-experimental-e1e74071-20250321)
-      '@uidotdev/usehooks':
-        specifier: 2.4.1-experimental.1
-        version: 2.4.1-experimental.1(react-dom@0.0.0-experimental-e1e74071-20250321(react@0.0.0-experimental-e1e74071-20250321))(react@0.0.0-experimental-e1e74071-20250321)
       '@upstash/redis':
         specifier: ^1.34.4
         version: 1.34.4
@@ -1668,13 +1665,6 @@ packages:
   '@typescript-eslint/visitor-keys@8.24.1':
     resolution: {integrity: sha512-EwVHlp5l+2vp8CoqJm9KikPZgi3gbdZAtabKT9KPShGeOcJhsv4Zdo3oc8T8I0uKEmYoU4ItyxbptjF08enaxg==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
-
-  '@uidotdev/usehooks@2.4.1-experimental.1':
-    resolution: {integrity: sha512-rcDUGS2Cpw6fTkdvYAytK+ej2nW0/ZNTAVvN9Eyj1Fu5XshsZPjnstDCDjkO/J6w7W9cwPWPoj4q4iiYW2seZA==}
-    engines: {node: '>=16'}
-    peerDependencies:
-      react: 0.0.0-experimental-bfb9cbd8c-20230223
-      react-dom: 0.0.0-experimental-bfb9cbd8c-20230223
 
   '@ungap/structured-clone@1.3.0':
     resolution: {integrity: sha512-WmoN8qaIAo7WTYWbAZuG8PYEhn5fkz7dZrqTBZ7dtt//lL2Gwms1IcnQ5yHqjDfX8Ft5j4YzDM23f87zBfDe9g==}
@@ -5972,11 +5962,6 @@ snapshots:
     dependencies:
       '@typescript-eslint/types': 8.24.1
       eslint-visitor-keys: 4.2.0
-
-  '@uidotdev/usehooks@2.4.1-experimental.1(react-dom@0.0.0-experimental-e1e74071-20250321(react@0.0.0-experimental-e1e74071-20250321))(react@0.0.0-experimental-e1e74071-20250321)':
-    dependencies:
-      react: 0.0.0-experimental-e1e74071-20250321
-      react-dom: 0.0.0-experimental-e1e74071-20250321(react@0.0.0-experimental-e1e74071-20250321)
 
   '@ungap/structured-clone@1.3.0': {}
 

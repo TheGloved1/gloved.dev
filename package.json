@@ -54,7 +54,6 @@
     "@t3-oss/env-nextjs": "^0.12.0",
     "@tanstack/react-query": "^5.66.0",
     "@tanstack/react-query-devtools": "^5.66.0",
-    "@uidotdev/usehooks": "2.4.1-experimental.1",
     "@upstash/redis": "^1.34.4",
     "@vercel/analytics": "^1.4.1",
     "@vercel/speed-insights": "^1.1.0",
