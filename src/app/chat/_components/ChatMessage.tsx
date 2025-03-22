@@ -169,7 +169,7 @@ export default memo(function ChatMessage({
                 <Volume2Icon className='-ml-0.5!size-5 -mb-0.5' />
               </button>
             : <button
-                className='inline-flex h-8 items-center justify-center gap-2 whitespace-nowrap rounded-md bg-secondary px-3 text-xs font-medium text-secondary-foreground opacity-0 shadow-sm transition-opacity hover:bg-secondary/80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 group-focus-within:opacity-100 group-hover:opacity-100 group-focus:opacity-100 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
+                className='inline-flex h-8 items-center justify-center gap-2 whitespace-nowrap rounded-md bg-destructive/80 px-3 text-xs font-medium text-destructive-foreground opacity-0 shadow-sm transition-opacity hover:bg-destructive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 group-focus-within:opacity-100 group-hover:opacity-100 group-focus:opacity-100 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
                 title='Stop speaking'
                 onClick={() => {
                   stopSpeech();
