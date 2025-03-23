@@ -16,7 +16,6 @@ const nextConfig: NextConfig = {
     appDocumentPreloading: true,
     optimizeCss: true,
     inlineCss: true,
-    newDevOverlay: true,
     parallelServerCompiles: true,
   },
   devIndicators: {
