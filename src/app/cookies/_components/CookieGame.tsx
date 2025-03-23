@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useInterval } from '@/hooks/use-interval';
 import { usePersistentState } from '@/hooks/use-persistent-state';
 import { ArrowBigUp, MousePointer, Sparkles, Volume2, VolumeX } from 'lucide-react';
-import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 // Game data
@@ -214,7 +214,9 @@ export function CookieGame() {
   const [cps, setCps] = usePersistentState('cps', 0);
   const [ownedUpgrades, setOwnedUpgrades] = usePersistentState<Record<string, number>>('ownedUpgrades', {});
   const [ownedCpcUpgrades, setOwnedCpcUpgrades] = usePersistentState<Record<string, number>>('ownedCpcUpgrades', {});
-  const [activePowerups, setActivePowerups] = useState<Record<string, { timeLeft: number; multiplier: number }>>({});
+  const [activePowerups, setActivePowerups] = useState<
+    Record<string, { startTime: number; duration: number; multiplier: number }>
+  >({});
   const [unlockedAchievements, setUnlockedAchievements] = usePersistentState<string[]>('unlockedAchievements', []);
   const [prestigeLevel, setPrestigeLevel] = usePersistentState('prestigeLevel', 0);
   const [prestigeMultiplier, setPrestigeMultiplier] = usePersistentState('prestigeMultiplier', 1);
@@ -268,8 +270,10 @@ export function CookieGame() {
 
     // Create floating text
     const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const randomX = Math.random() * 35 - 35;
+    const randomY = Math.random() * 35 - 35;
+    const x = e.clientX - rect.left + randomX;
+    const y = e.clientY - rect.top - 10 + randomY;
 
     setFloatingTexts((prev) => [
       ...prev,
@@ -388,7 +392,8 @@ export function CookieGame() {
       setActivePowerups((prev) => ({
         ...prev,
         [powerupId]: {
-          timeLeft: powerup.duration,
+          startTime: Date.now(),
+          duration: powerup.duration,
           multiplier: typeof powerup.effect === 'number' ? powerup.effect : 1,
         },
       }));
@@ -407,7 +412,7 @@ export function CookieGame() {
 
     // Auto-generate cookies based on CPS
     if (cps > 0) {
-      const cookiesToAdd = cps * deltaTime;
+      const cookiesToAdd = effectiveCPS() * deltaTime;
       setCookies((prev) => prev + cookiesToAdd);
       setTotalCookies((prev) => prev + cookiesToAdd);
     }
@@ -425,13 +430,7 @@ export function CookieGame() {
       let changed = false;
 
       Object.keys(updated).forEach((id) => {
-        if (updated[id].timeLeft > 0) {
-          updated[id] = {
-            ...updated[id],
-            timeLeft: Math.max(0, updated[id].timeLeft - deltaTime),
-          };
-          changed = true;
-        } else if (updated[id].timeLeft <= 0) {
+        if (updated[id].startTime + updated[id].duration * 1000 <= now) {
           delete updated[id];
           changed = true;
 
@@ -443,7 +442,7 @@ export function CookieGame() {
 
       return changed ? updated : prev;
     });
-  }, 1000);
+  }, 100);
 
   // Calculate effective CPS with powerups
   const effectiveCPS = () => {
@@ -506,67 +505,8 @@ export function CookieGame() {
     playSound('achievement');
   };
 
-  useLayoutEffect(() => {
-    const gameInterval = setInterval(() => {
-      const now = Date.now();
-      const deltaTime = (now - lastGameUpdate) / 1000; // Convert to seconds
-      setGameLastUpdate(now);
-
-      // Auto-generate cookies based on CPS
-      if (cps > 0) {
-        const cookiesToAdd = cps * deltaTime;
-        setCookies((prev) => prev + cookiesToAdd);
-        setTotalCookies((prev) => prev + cookiesToAdd);
-      }
-
-      // Check for cookie count achievements
-      ACHIEVEMENTS.forEach((achievement) => {
-        if (typeof achievement.requirement === 'number' && totalCookies >= achievement.requirement) {
-          checkAchievement(achievement.id);
-        }
-      });
-
-      // Update powerup timers
-      setActivePowerups((prev) => {
-        const updated = { ...prev };
-        let changed = false;
-
-        Object.keys(updated).forEach((id) => {
-          if (updated[id].timeLeft > 0) {
-            updated[id] = {
-              ...updated[id],
-              timeLeft: Math.max(0, updated[id].timeLeft - deltaTime),
-            };
-            changed = true;
-          } else if (updated[id].timeLeft <= 0) {
-            delete updated[id];
-            changed = true;
-
-            toast(`${POWERUPS.find((p) => p.id === id)?.name} Expired`, {
-              description: 'The powerup effect has worn off.',
-            });
-          }
-        });
-
-        return changed ? updated : prev;
-      });
-    }, 100);
-
-    return () => clearInterval(gameInterval);
-  }, [
-    calculateEffectiveCpc,
-    checkAchievement,
-    cps,
-    lastGameUpdate,
-    ownedUpgrades.cursor,
-    setCookies,
-    setGameLastUpdate,
-    setTotalCookies,
-    totalCookies,
-  ]);
-
   return (
-    <div className='container mx-auto max-w-6xl px-4 py-8'>
+    <div className='container mx-auto max-w-6xl select-none px-4 py-8' suppressHydrationWarning>
       {/* Game header */}
       <div className='mb-6 flex items-center justify-between'>
         <h1 className='text-3xl font-bold text-amber-800 dark:text-amber-300'>Cookie Clicker</h1>
@@ -734,7 +674,7 @@ export function CookieGame() {
                       style={{
                         left: `${50 + Math.cos(angle) * radius * 0.45}%`,
                         top: `${50 + Math.sin(angle) * radius * 0.45}%`,
-                        animationDelay: `${(index / totalCursors) * 20}s`,
+                        animation: `cursorOrbit 20s linear infinite ${(index / totalCursors) * 20}s`,
                         transform: `translate(-50%, -50%) rotate(${cursorAngle}deg)`,
                         zIndex: 10,
                       }}
@@ -805,6 +745,8 @@ export function CookieGame() {
               {POWERUPS.map((powerup) => {
                 const canAfford = cookies >= powerup.cost;
                 const isActive = activePowerups[powerup.id];
+                const timeLeft =
+                  isActive ? Math.max(0, (isActive.startTime + isActive.duration * 1000 - Date.now()) / 1000).toFixed(1) : 0;
 
                 return (
                   <div key={powerup.id} className='rounded bg-white p-3 shadow-sm dark:bg-amber-800/30'>
@@ -813,9 +755,7 @@ export function CookieGame() {
                         <h3 className='font-medium'>{powerup.name}</h3>
                         <p className='text-sm text-gray-600 dark:text-amber-200/70'>{powerup.description}</p>
                         {isActive && (
-                          <p className='mt-1 text-xs text-green-600 dark:text-green-400'>
-                            Active: {isActive.timeLeft.toFixed(1)}s remaining
-                          </p>
+                          <p className='mt-1 text-xs text-green-600 dark:text-green-400'>Active: {timeLeft}s remaining</p>
                         )}
                       </div>
                       <Button
