@@ -49,7 +49,7 @@ export default function ChatBotSidebar({ children }: { children?: React.ReactNod
 
   return (
     <SidebarProvider className='flex min-h-svh w-full'>
-      <Sidebar variant='inset' className='border border-border p-1'>
+      <Sidebar variant='inset' className='border border-border'>
         <SidebarHeader>
           <h1 className='flex h-8 shrink-0 items-center justify-center text-lg text-muted-foreground transition-opacity delay-75 duration-75'>
             <Link
