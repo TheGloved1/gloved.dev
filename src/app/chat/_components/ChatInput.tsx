@@ -33,7 +33,7 @@ const ChatBotInput = memo(
     const { threadId } = useParams<{ threadId: string }>();
     const [loading, setLoading] = useState<boolean>(false);
     const [, , getSystemPrompt] = usePersistentState<string | undefined>('systemPrompt', undefined);
-    const [model, setModel, getModel] = usePersistentState<string>('model', 'gemini-2.0-flash');
+    const [model, setModel, getModel] = usePersistentState<string>('model', Constants.ChatModels.default);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -187,10 +187,10 @@ const ChatBotInput = memo(
                             </label>
                           </>
                         )}
-                        <ModelDropdown models={models} selectedModel={model} onModelChange={onModelChange} />
+                        <ModelDropdown selectedModel={model} onModelChange={onModelChange} />
                       </>
                     : <>
-                        <ModelDropdown models={models} selectedModel={model} onModelChange={onModelChange} />
+                        <ModelDropdown selectedModel={model} onModelChange={onModelChange} />
                         {canUpload && (
                           <>
                             <input

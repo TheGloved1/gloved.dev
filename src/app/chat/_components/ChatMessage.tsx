@@ -4,6 +4,7 @@ import Markdown from '@/components/Markdown';
 import { Button } from '@/components/ui/button';
 import { usePersistentState } from '@/hooks/use-persistent-state';
 import { useTextToSpeech } from '@/hooks/use-tts';
+import Constants from '@/lib/constants';
 import { dxdb, Message, updateMessage } from '@/lib/dexie';
 import { tryCatch } from '@/lib/utils';
 import { Copy, RefreshCcw, Send, SquarePen, Volume2Icon, VolumeXIcon } from 'lucide-react';
@@ -23,7 +24,7 @@ export default memo(function ChatMessage({
   const [input, setInput] = useState<string | null>(null);
   const [isHovered, setIsHovered] = useState<boolean>(false);
   const [, , getSystemPrompt] = usePersistentState<string | undefined>('systemPrompt', undefined);
-  const [, , getModel] = usePersistentState<string>('model', 'gemini-2.0-flash');
+  const [, , getModel] = usePersistentState<string>('model', Constants.ChatModels.default);
   const [speak, stopSpeech, isSpeaking] = useTextToSpeech();
 
   const handleEditMessage = useCallback(

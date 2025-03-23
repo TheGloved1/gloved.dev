@@ -1,3 +1,4 @@
+'use client';
 import { SidebarTrigger, useSidebar } from '@/components/ui/sidebar';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Plus } from 'lucide-react';

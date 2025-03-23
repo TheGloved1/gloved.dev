@@ -1,6 +1,17 @@
 import React from 'react';
 
-export function useTextToSpeech(): readonly [speak: (text: string) => void, stop: () => void, isSpeaking: boolean] {
+/**
+ * Returns a tuple of three values:
+ *  - A `speak` function that takes a string and uses the Web Speech API to
+ *    read it aloud.
+ *  - A `stop` function that stops any ongoing speech.
+ *  - A boolean `isSpeaking` value that indicates whether speech is currently
+ *    happening.
+ *
+ * If the Web Speech API is not supported, the `speak` and `stop` functions will
+ * do nothing, and `isSpeaking` will always be false.
+ */
+export function useTextToSpeech(): [speak: (text: string) => void, stop: () => void, isSpeaking: boolean] {
   const synth = window.speechSynthesis;
   const [isSpeaking, setIsSpeaking] = React.useState(false);
   const speak = React.useCallback(
