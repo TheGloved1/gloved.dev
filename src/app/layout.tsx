@@ -45,7 +45,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <ClerkProvider afterSignOutUrl='/chat' appearance={{ variables: { colorPrimary: '#333' }, baseTheme: dark }}>
       <ViewTransitions>
-        <html lang='en'>
+        <html lang='en' suppressHydrationWarning>
           {env.NODE_ENV === 'development' && (
             <>
               {/* Dev Only Scripts Here */}

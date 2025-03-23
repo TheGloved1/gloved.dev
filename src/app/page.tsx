@@ -5,7 +5,7 @@ import { PageVisits } from '@/components/PageVisits';
 import { Button } from '@/components/ui/button';
 import Constants from '@/lib/constants';
 import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs';
-import { Link } from 'next-view-transitions';
+import Link from 'next/link';
 import React from 'react';
 
 export default function Page(): React.JSX.Element {

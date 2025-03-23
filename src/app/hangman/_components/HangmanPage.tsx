@@ -71,7 +71,7 @@ export default function Page(): React.JSX.Element {
   return (
     <>
       <PageBack />
-      <div className='flex max-w-4xl flex-col items-center gap-8'>
+      <div className='mx-auto flex h-dvh w-dvw max-w-4xl flex-col items-center gap-8'>
         <div className='items-center text-[2rem]'>
           {isWinner && 'Winner! - Refresh to try again'}
           {isLoser && 'Nice Try - Refresh to try again'}

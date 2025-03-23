@@ -2,6 +2,7 @@ import FileUploader from '@/components/FileUploader';
 import GitUser from '@/components/GitUser';
 import ObserverSection from '@/components/ObserverSection';
 import ScrollLink from '@/components/ScrollLink';
+import { Button } from '@/components/ui/button';
 import Constants from '@/lib/constants';
 import { ChevronLeft } from 'lucide-react';
 import { Metadata } from 'next';
@@ -23,9 +24,11 @@ export default function Page(): React.JSX.Element {
       <div className='fixed left-0 right-0 top-0 z-[1000]'>
         <div className='navbar bg-zinc-800'>
           <div className='navbar-start'>
-            <Link href={'/'} className='btn btn-ghost text-xl'>
-              <ChevronLeft />
-              <span className='hidden p-1 sm:block'>{'Back'}</span>
+            <Link href={'/'}>
+              <Button variant='ghost'>
+                <ChevronLeft />
+                <span className='hidden p-1 sm:block'>{'Back'}</span>
+              </Button>
             </Link>
           </div>
           <div className='navbar-center hidden md:flex'>

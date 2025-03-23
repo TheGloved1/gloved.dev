@@ -54,7 +54,9 @@ export default function ChatBotSidebar({ children }: { children?: React.ReactNod
           <h1 className='flex h-8 shrink-0 items-center justify-center text-lg text-muted-foreground transition-opacity delay-75 duration-75'>
             <Link
               href={'/'}
-              className={'relative flex h-8 w-24 items-center justify-center text-sm font-semibold text-foreground'}
+              className={
+                'relative flex h-8 w-24 items-center justify-center rounded border border-border/10 text-sm font-semibold text-foreground hover:border-border/90'
+              }
             >
               gloved<span className='text-[hsl(280,93%,72%)]'>.</span>dev
             </Link>
