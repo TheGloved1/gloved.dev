@@ -488,7 +488,7 @@ export function CookieGame() {
     if (cookies < prestigeCost) return;
 
     setPrestigeLevel((prev) => prev + 1);
-    setPrestigeMultiplier((prev) => prev + 0.2);
+    setPrestigeMultiplier(prestigeLevel + 1 + 0.25);
 
     // Reset game state but keep achievements
     setCookies(0);
