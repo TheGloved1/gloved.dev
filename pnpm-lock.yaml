@@ -184,14 +184,14 @@ importers:
         specifier: ^8.27.0
         version: 8.27.0(eslint@9.20.1(jiti@1.21.7))(typescript@5.7.3)
       critters:
-        specifier: ^0.0.23
-        version: 0.0.23
+        specifier: ^0.0.25
+        version: 0.0.25
       eslint:
         specifier: ^9
         version: 9.20.1(jiti@1.21.7)
       eslint-config-next:
         specifier: canary
-        version: 15.3.0-canary.10(eslint@9.20.1(jiti@1.21.7))(typescript@5.7.3)
+        version: 15.3.0-canary.19(eslint@9.20.1(jiti@1.21.7))(typescript@5.7.3)
       eslint-plugin-react-hooks:
         specifier: ^5.1.0
         version: 5.1.0(eslint@9.20.1(jiti@1.21.7))
@@ -761,8 +761,8 @@ packages:
   '@next/eslint-plugin-next@15.2.3':
     resolution: {integrity: sha512-eNSOIMJtjs+dp4Ms1tB1PPPJUQHP3uZK+OQ7iFY9qXpGO6ojT6imCL+KcUOqE/GXGidWbBZJzYdgAdPHqeCEPA==}
 
-  '@next/eslint-plugin-next@15.3.0-canary.10':
-    resolution: {integrity: sha512-jMh292/BkGHdwaNLqZ1oQChB3Wmd/8ACKFdpnUz+vTLW9pjvXHdpRsgyHgm1eDgOCL24fkKu3DAGwJs403VLiQ==}
+  '@next/eslint-plugin-next@15.3.0-canary.19':
+    resolution: {integrity: sha512-FvCznlWQV+Du2ImiuBX5UPyIJ++9d1/3qp4BwuL2R527Bl7AqEdOUAvpGxz44lEk8qJLEh5B0qkH5xsq0X3WrA==}
 
   '@next/swc-darwin-arm64@15.3.0-canary.19':
     resolution: {integrity: sha512-NhO7NswDPM/DxxbjMEdtGD8R8ubrfujabjcs6ztqFZC/O1jVUJ9DjReE3DSxLUID3Q0VrJLtimP3m+Nm0cc53w==}
@@ -2020,8 +2020,9 @@ packages:
     resolution: {integrity: sha512-9Kr/j4O16ISv8zBBhJoi4bXOYNTkFLOqSL3UDB0njXxCXNezjeyVrJyGOWtgfs/q2km1gwBcfH8q1yEGoMYunA==}
     engines: {node: '>=18'}
 
-  critters@0.0.23:
-    resolution: {integrity: sha512-/MCsQbuzTPA/ZTOjjyr2Na5o3lRpr8vd0MZE8tMP0OBNg/VrLxWHteVKalQ8KR+fBmUadbJLdoyEz9sT+q84qg==}
+  critters@0.0.25:
+    resolution: {integrity: sha512-ROF/tjJyyRdM8/6W0VqoN5Ql05xAGnkf5b7f3sTEl1bI5jTQQf8O918RD/V9tEb9pRY/TKcvJekDbJtniHyPtQ==}
+    deprecated: Ownership of Critters has moved to the Nuxt team, who will be maintaining the project going forward. If you'd like to keep using Critters, please switch to the actively-maintained fork at https://github.com/danielroe/beasties
 
   cross-fetch@4.1.0:
     resolution: {integrity: sha512-uKm5PU+MHTootlWEY+mZ4vvXoCn4fLQxT9dSc1sXVMSFkINTJVN8cAQROpwcKm8bJ/c7rgZVIBWzH5T78sNZZw==}
@@ -2236,8 +2237,8 @@ packages:
     resolution: {integrity: sha512-TtpcNJ3XAzx3Gq8sWRzJaVajRs0uVxA2YAkdb1jm2YkPz4G6egUFAyA3n5vtEIZefPk5Wa4UXbKuS5fKkJWdgA==}
     engines: {node: '>=10'}
 
-  eslint-config-next@15.3.0-canary.10:
-    resolution: {integrity: sha512-ulrwZqqMpLZtDXeHtyCQNJTjEy20O6Z9urU9V8nU2TTM71eqIt1pz8dDS+vLoTRRJJjFRLWpOJI94QNPqvqFRw==}
+  eslint-config-next@15.3.0-canary.19:
+    resolution: {integrity: sha512-slpbC0jkvQNyugmlqXjQmyiaPzIseeZPX3OBuUI4rGN7VsB18NvuJz9keKkq/MtJsMz5V0Pmxc7b1yugLyzxfw==}
     peerDependencies:
       eslint: ^7.23.0 || ^8.0.0 || ^9.0.0
       typescript: '>=3.3.1'
@@ -4929,7 +4930,7 @@ snapshots:
     dependencies:
       fast-glob: 3.3.1
 
-  '@next/eslint-plugin-next@15.3.0-canary.10':
+  '@next/eslint-plugin-next@15.3.0-canary.19':
     dependencies:
       fast-glob: 3.3.1
 
@@ -6275,7 +6276,7 @@ snapshots:
 
   cookie@1.0.2: {}
 
-  critters@0.0.23:
+  critters@0.0.25:
     dependencies:
       chalk: 4.1.2
       css-select: 5.1.0
@@ -6572,9 +6573,9 @@ snapshots:
 
   escape-string-regexp@4.0.0: {}
 
-  eslint-config-next@15.3.0-canary.10(eslint@9.20.1(jiti@1.21.7))(typescript@5.7.3):
+  eslint-config-next@15.3.0-canary.19(eslint@9.20.1(jiti@1.21.7))(typescript@5.7.3):
     dependencies:
-      '@next/eslint-plugin-next': 15.3.0-canary.10
+      '@next/eslint-plugin-next': 15.3.0-canary.19
       '@rushstack/eslint-patch': 1.10.5
       '@typescript-eslint/eslint-plugin': 8.24.1(@typescript-eslint/parser@8.27.0(eslint@9.20.1(jiti@1.21.7))(typescript@5.7.3))(eslint@9.20.1(jiti@1.21.7))(typescript@5.7.3)
       '@typescript-eslint/parser': 8.27.0(eslint@9.20.1(jiti@1.21.7))(typescript@5.7.3)
