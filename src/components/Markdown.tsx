@@ -33,10 +33,12 @@ const components: Components = {
  * @param {React.ReactNode} props.children - The Markdown content to be rendered.
  * @returns {React.JSX.Element} The rendered Markdown content as a React element.
  */
-export default function CustomMarkdown({ children, ...props }: Options): React.JSX.Element {
+export default function CustomMarkdown({ children, className, ...props }: Options): React.JSX.Element {
   return (
-    <Markdown components={components} {...props}>
-      {children}
-    </Markdown>
+    <div className={className || undefined}>
+      <Markdown components={components} {...props}>
+        {children}
+      </Markdown>
+    </div>
   );
 }

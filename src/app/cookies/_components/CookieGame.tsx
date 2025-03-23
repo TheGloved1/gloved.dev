@@ -464,8 +464,8 @@ export function CookieGame() {
     }
   };
 
-  // Calculate upgrade cost
-  const getUpgradeCost = (upgradeId: string) => {
+  // Calculate CPS upgrade cost
+  const getCpsUpgradeCost = (upgradeId: string) => {
     const upgrade = UPGRADES.find((u) => u.id === upgradeId);
     if (!upgrade) return 0;
 
@@ -473,14 +473,13 @@ export function CookieGame() {
     return Math.ceil(upgrade.baseCost * Math.pow(1.15, owned));
   };
 
-  // Modify the getCpcUpgradeCost function to use a steeper scaling factor of 1.35 (35%)
-  // Replace the existing getCpcUpgradeCost function with this one
+  // Calculate CPC upgrade cost
   const getCpcUpgradeCost = (upgradeId: string) => {
     const upgrade = CPC_UPGRADES.find((u) => u.id === upgradeId);
     if (!upgrade) return 0;
 
     const owned = ownedCpcUpgrades[upgradeId] || 0;
-    return Math.ceil(upgrade.baseCost * Math.pow(1.35, owned)); // Changed from 1.15 to 1.35
+    return Math.ceil(upgrade.baseCost * Math.pow(1.35, owned));
   };
 
   // Prestige reset
@@ -539,7 +538,7 @@ export function CookieGame() {
             <TabsContent value='cps' className='space-y-3'>
               {UPGRADES.map((upgrade) => {
                 const owned = ownedUpgrades[upgrade.id] || 0;
-                const cost = getUpgradeCost(upgrade.id);
+                const cost = getCpsUpgradeCost(upgrade.id);
                 const canAfford = cookies >= cost;
 
                 return (
