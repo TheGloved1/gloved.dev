@@ -488,7 +488,7 @@ export function CookieGame() {
     if (cookies < prestigeCost) return;
 
     setPrestigeLevel((prev) => prev + 1);
-    setPrestigeMultiplier((prev) => prev + 0.1);
+    setPrestigeMultiplier((prev) => prev + 0.2);
 
     // Reset game state but keep achievements
     setCookies(0);
@@ -499,7 +499,7 @@ export function CookieGame() {
     setActivePowerups({});
 
     toast('Prestige Level Up!', {
-      description: `You've reached prestige level ${prestigeLevel + 1}. All production multiplied by ${(prestigeMultiplier + 0.1).toFixed(1)}x`,
+      description: `You've reached prestige level ${prestigeLevel + 1}. All production multiplied by ${(prestigeMultiplier + 0.2).toFixed(1)}x`,
     });
 
     playSound('achievement');
