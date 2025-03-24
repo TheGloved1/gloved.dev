@@ -1,6 +1,6 @@
 'use client';
 import { createMessage, dxdb } from '@/lib/dexie';
-import React, { memo, useState } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -8,12 +8,12 @@ import Constants from '@/lib/constants';
 import { ChevronDown, Loader2, Paperclip, Send, X } from 'lucide-react';
 import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { toast } from 'sonner';
 import MobileInputDialog from './MobileInputDialog';
 import ModelDropdown from './ModelDropdown';
 
-const ChatBotInput = memo(
+const ChatInput = memo(
   ({
     createThread,
     scrollCallback,
@@ -32,6 +32,8 @@ const ChatBotInput = memo(
     const [loading, setLoading] = useState<boolean>(false);
     const [systemPrompt, setSystemPrompt] = useLocalStorage<string | undefined>('systemPrompt', undefined);
     const [model, setModel] = useLocalStorage<string>('model', Constants.ChatModels.default);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const inputRef = useRef<HTMLTextAreaElement>(null);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -95,12 +97,6 @@ const ChatBotInput = memo(
       }
     };
 
-    const onModelChange = (model: string) => {
-      setModel(model);
-    };
-
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
-
     const handleMobileInput = () => {
       if (isMobile) {
         setIsDialogOpen(true);
@@ -108,121 +104,150 @@ const ChatBotInput = memo(
     };
 
     return (
-      <div className='fixed bottom-0 z-20 w-full pr-2 md:absolute md:z-auto'>
-        <div className='relative z-10 mx-auto flex w-full max-w-3xl flex-col text-center'>
+      <div className='fixed bottom-0 z-10 w-full px-2 md:absolute md:z-auto'>
+        <div className='relative mx-auto flex w-full max-w-3xl flex-col text-center'>
           {!isAtBottom && (
-            <div className='flex justify-center pb-4'>
+            <div className='z-10 flex justify-center pb-4'>
               <button
                 type='button'
-                className='flex h-8 items-center justify-center gap-2 whitespace-nowrap rounded-full bg-secondary px-3 text-xs font-medium text-secondary-foreground opacity-90 shadow-sm transition-colors hover:bg-secondary/80 hover:opacity-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
+                className='pointer-events-auto flex h-8 items-center justify-center gap-2 whitespace-nowrap rounded-full border border-secondary/40 bg-[#f7dcf3b8] px-3 text-xs font-medium text-secondary-foreground/70 backdrop-blur-xl transition-colors hover:bg-secondary focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 dark:bg-[#29242eb5] [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
                 onClick={scrollCallback}
               >
                 Scroll to bottom <ChevronDown />
               </button>
             </div>
           )}
-          <div className='px-4'>
-            <form
-              onSubmit={handleSubmit}
-              className='relative flex w-full flex-col items-stretch gap-2 rounded-t-xl bg-[#2D2D2D] px-3 py-3 shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)] sm:max-w-3xl'
-            >
-              <div className='flex flex-grow flex-col'>
-                {imagePreview && (
-                  <div className='relative mb-2 h-20 w-20'>
-                    <Image src={imagePreview} alt='Image preview' layout='fill' objectFit='cover' className='rounded-md' />
-                    <button
-                      onClick={removeImage}
-                      type='button'
-                      className='absolute -right-2 -top-2 rounded-full bg-neutral-800 p-1 text-neutral-200 hover:bg-neutral-700'
-                    >
-                      <X className='h-4 w-4' />
-                    </button>
-                  </div>
-                )}
-                <textarea
-                  className='w-full resize-none bg-transparent text-base leading-6 text-neutral-100 outline-none disabled:opacity-0'
-                  style={{ height: `${(rows + 1) * 24}px` }}
-                  value={input || ''}
-                  disabled={loading}
-                  placeholder={`Type message here...`}
-                  rows={rows}
-                  onFocus={handleMobileInput}
-                  onChange={(e) => {
-                    setInput(e.target.value);
+          <div className='pointer-events-none z-10'>
+            <div className='pointer-events-auto mx-auto w-fit'>
+              <p id='radix-:rf:' className='sr-only text-sm text-muted-foreground'>
+                Upgrade to Pro
+              </p>
+            </div>
+            <div className='pointer-events-auto'>
+              <div
+                className='dark:border-reflect dark:rounded-t-[20px] dark:bg-background/40 dark:p-2 dark:pb-0 dark:backdrop-blur-lg'
+                /* style={{
+                  '--gradientBorder-gradient':
+                    'linear-gradient(180deg, var(--min), var(--max), var(--min)), linear-gradient(15deg, var(--min) 50%, var(--max))',
+                  '--start': '#2a2a2ae0',
+                  '--opacity': '1',
+                }} */
+              >
+                <form
+                  onSubmit={handleSubmit}
+                  className='dark:outline-chat-background/90 relative flex w-full flex-col items-stretch gap-2 rounded-t-xl border border-b-0 border-white/30 bg-[#3030309c] px-3 py-3 text-secondary-foreground outline outline-4 outline-[hsl(0,0%,63%)]/5 dark:border-[hsl(0,0%,83%)]/[0.04] dark:bg-background/40 sm:max-w-3xl'
+                  style={{
+                    boxShadow:
+                      'rgba(0, 0, 0, 0.1) 0px 80px 50px 0px, rgba(0, 0, 0, 0.07) 0px 50px 30px 0px, rgba(0, 0, 0, 0.06) 0px 30px 15px 0px, rgba(0, 0, 0, 0.04) 0px 15px 8px, rgba(0, 0, 0, 0.04) 0px 6px 4px, rgba(0, 0, 0, 0.02) 0px 2px 2px',
                   }}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && e.shiftKey) {
-                      e.preventDefault();
-                      setInput(input + '\n');
-                    } else if (e.key === 'Enter') {
-                      if (!input.trim() && !imagePreview) {
-                        e.preventDefault();
-                        return;
-                      }
-                      handleSubmit(e);
-                    }
-                  }}
-                />
-                <div className='flex flex-col gap-2 md:flex-row md:items-center'>
-                  <div className='flex items-center gap-1'>
-                    {isMobile ?
-                      <>
-                        {canUpload && (
+                >
+                  <div className='flex flex-grow flex-col'>
+                    {imagePreview && (
+                      <div className='relative mb-2 h-20 w-20'>
+                        <Image
+                          src={imagePreview}
+                          fill
+                          alt='Image preview'
+                          className='h-full w-full rounded-md object-cover'
+                        />
+                        <button
+                          onClick={removeImage}
+                          type='button'
+                          className='absolute -right-2 -top-2 rounded-full bg-neutral-800 p-1 text-neutral-200 hover:bg-neutral-700'
+                        >
+                          <X className='h-4 w-4' />
+                        </button>
+                      </div>
+                    )}
+                    <div className='flex flex-grow flex-row items-start'>
+                      <textarea
+                        className='w-full resize-none bg-transparent pr-10 text-base leading-6 text-foreground outline-none placeholder:text-secondary-foreground/60 disabled:opacity-0'
+                        style={{ height: `${(rows + 1) * 24}px` }}
+                        value={input || ''}
+                        ref={inputRef}
+                        disabled={loading}
+                        placeholder='Type message here...'
+                        rows={rows}
+                        onFocus={handleMobileInput}
+                        onChange={(e) => {
+                          setInput(e.target.value);
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && e.shiftKey) {
+                            e.preventDefault();
+                            setInput(input + '\n');
+                          } else if (e.key === 'Enter') {
+                            if (!input.trim() && !imagePreview) {
+                              e.preventDefault();
+                              return;
+                            }
+                            handleSubmit(e);
+                          }
+                        }}
+                      />
+                      <button
+                        type='submit'
+                        disabled={loading || (!input && !imagePreview)}
+                        className='border-reflect button-reflect relative inline-flex h-9 w-9 items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-[rgb(162,59,103)] p-2 text-sm font-semibold text-pink-50 shadow transition-colors hover:bg-[#d56698] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring active:bg-[rgb(162,59,103)] disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
+                      >
+                        {loading ?
+                          <Loader2 className='h-4 w-4 animate-spin' />
+                        : <Send className='-mb-0.5 -ml-0.5 !size-5' />}
+                        <span className='sr-only'>Send</span>
+                      </button>
+                    </div>
+                    <div className='flex flex-col gap-2 md:flex-row md:items-center'>
+                      <div className='flex items-center gap-1'>
+                        {isMobile ?
                           <>
-                            <input
-                              type='file'
-                              ref={fileInputRef}
-                              onChange={handleImageChange}
-                              accept='image/jpeg, image/png, image/webp'
-                              className='hidden'
-                              id='image-upload'
-                            />
-                            <label
-                              htmlFor='image-upload'
-                              className='-mb-2 inline-flex h-auto -translate-y-1.5 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md px-2 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-neutral-800/40 hover:text-neutral-300 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
-                            >
-                              <Paperclip className='!size-5' />
-                            </label>
+                            {canUpload && (
+                              <>
+                                <input
+                                  type='file'
+                                  ref={fileInputRef}
+                                  onChange={handleImageChange}
+                                  accept='image/jpeg, image/png, image/webp'
+                                  className='hidden'
+                                  id='image-upload'
+                                />
+                                <label
+                                  htmlFor='image-upload'
+                                  className='-mb-2 inline-flex h-auto -translate-y-1.5 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md px-2 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-neutral-800/40 hover:text-neutral-300 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
+                                >
+                                  <Paperclip className='!size-5' />
+                                </label>
+                              </>
+                            )}
+                            <ModelDropdown />
                           </>
-                        )}
-                        <ModelDropdown />
-                      </>
-                    : <>
-                        <ModelDropdown />
-                        {canUpload && (
-                          <>
-                            <input
-                              type='file'
-                              ref={fileInputRef}
-                              onChange={handleImageChange}
-                              accept='image/jpeg, image/png, image/webp'
-                              className='hidden'
-                              id='image-upload'
-                            />
-                            <label
-                              htmlFor='image-upload'
-                              className='-mb-2 inline-flex h-auto -translate-y-1.5 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md px-2 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-neutral-800/40 hover:text-neutral-300 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
-                            >
-                              <Paperclip className='!size-5' />
-                            </label>
+                        : <>
+                            <ModelDropdown />
+                            {canUpload && (
+                              <>
+                                <input
+                                  type='file'
+                                  ref={fileInputRef}
+                                  onChange={handleImageChange}
+                                  accept='image/jpeg, image/png, image/webp'
+                                  className='hidden'
+                                  id='image-upload'
+                                />
+                                <label
+                                  htmlFor='image-upload'
+                                  className='-mb-2 inline-flex h-auto -translate-y-1.5 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md px-2 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-neutral-800/40 hover:text-neutral-300 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
+                                >
+                                  <Paperclip className='!size-5' />
+                                </label>
+                              </>
+                            )}
                           </>
-                        )}
-                      </>
-                    }
+                        }
+                      </div>
+                    </div>
                   </div>
-                  <button
-                    type='submit'
-                    disabled={loading || (!input && !imagePreview)}
-                    className='absolute bottom-3 right-3 inline-flex h-9 w-9 items-center justify-center gap-2 whitespace-nowrap rounded-full bg-pink-600/70 p-2 text-sm font-medium text-neutral-100 shadow transition-colors hover:bg-pink-500/70 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
-                  >
-                    {loading ?
-                      <Loader2 className='h-4 w-4 animate-spin' />
-                    : <Send className='-mb-0.5 -ml-0.5 !size-5' />}
-                    <span className='sr-only'>Send</span>
-                  </button>
-                </div>
+                </form>
               </div>
-            </form>
+            </div>
           </div>
         </div>
         <MobileInputDialog
@@ -240,6 +265,6 @@ const ChatBotInput = memo(
     );
   },
 );
-ChatBotInput.displayName = 'ChatBotInput';
+ChatInput.displayName = 'ChatInput';
 
-export default ChatBotInput;
+export default ChatInput;

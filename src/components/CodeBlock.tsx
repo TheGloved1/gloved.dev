@@ -14,10 +14,10 @@ type CodeBlockProps = {
 
 const CodeBlock = ({ children = '', language = 'plaintext', props }: CodeBlockProps) => {
   return (
-    <div className='relative mt-2 flex w-full flex-col py-4'>
-      <div className='flex w-full items-center justify-between rounded-t-xl bg-neutral-800 px-4 py-2 text-sm text-neutral-300'>
+    <div className='relative flex w-full flex-col py-9'>
+      <div className='flex w-full items-center justify-between rounded-t-sm bg-neutral-800 px-4 py-2 text-sm text-neutral-300'>
         <span className='font-mono'>{language}</span>
-        <CopyButton btnClassName={'transition-colors hover:text-white'} text={String(children)} />
+        <CopyButton btnClassName={'transition-colors hover:text-white z-50'} className='!size-4' text={String(children)} />
       </div>
       <pre className='!mt-0 !rounded-t-none'>
         <SyntaxHighlighter
@@ -25,7 +25,7 @@ const CodeBlock = ({ children = '', language = 'plaintext', props }: CodeBlockPr
             style: {
               whiteSpace: 'pre',
               color: 'rgb(212, 212, 212)',
-              fontSize: '13px',
+              fontSize: '12px',
               textShadow: 'none',
               fontFamily: 'Menlo, Monaco, Consolas, "Andale Mono", "Ubuntu Mono", "Courier New", monospace',
               direction: 'ltr',
@@ -50,13 +50,11 @@ const CodeBlock = ({ children = '', language = 'plaintext', props }: CodeBlockPr
             lineHeight: '1.5',
             tabSize: '4',
             hyphens: 'none',
-            margin: '0.1rem 0px',
+            margin: '0.0rem 0px',
             overflow: 'auto',
             background: 'rgb(30, 30, 30)',
-            borderBottomLeftRadius: '0.75rem',
-            borderBottomRightRadius: '0.75rem',
           }}
-          className='scroll-smooth scrollbar scrollbar-track-transparent scrollbar-thumb-neutral-500'
+          className='scroll-smooth !rounded-t-none rounded-b-sm scrollbar scrollbar-track-transparent scrollbar-thumb-neutral-500'
           language={language}
           style={styles}
           {...props}

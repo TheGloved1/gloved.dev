@@ -1,6 +1,7 @@
 'use client';
-import { Copy } from 'lucide-react';
-import React from 'react';
+import { cn } from '@/lib/utils';
+import { Check, Copy } from 'lucide-react';
+import React, { useState } from 'react';
 import { toast } from 'sonner';
 
 interface CopyButtonProps {
@@ -16,14 +17,19 @@ export default function CopyButton({
   title = 'Copy message',
   btnClassName,
 }: CopyButtonProps): React.JSX.Element {
+  const [copied, setCopied] = useState(false);
   const handleCopy = async () => {
     navigator.clipboard.writeText(text);
     toast.success('Copied to clipboard!');
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
-    <button onClick={handleCopy} title={title} className={btnClassName}>
-      <Copy size={24} className={className} />
+    <button onClick={handleCopy} disabled={copied} title={title} className={btnClassName}>
+      {copied ?
+        <Check width={24} height={24} className={cn('!size-4 text-green-500', className)} />
+      : <Copy width={24} height={24} className={cn('!size-4', className)} />}
     </button>
   );
 }

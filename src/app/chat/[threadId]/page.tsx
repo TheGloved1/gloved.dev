@@ -4,7 +4,7 @@ import { useAuth } from '@clerk/nextjs';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { redirect, useParams } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import ChatBotInput from '../_components/ChatInput';
+import ChatInput from '../_components/ChatInput';
 import ChatMessage from '../_components/ChatMessage';
 
 export const dynamic = 'force-static';
@@ -66,7 +66,8 @@ export default function Page(): React.JSX.Element {
 
   return (
     <main className='relative flex w-full flex-1 flex-col'>
-      <ChatBotInput scrollCallback={scrollToBottom} isAtBottom={isAtBottom} />
+      <ChatInput scrollCallback={scrollToBottom} isAtBottom={isAtBottom} />
+      {/* <NewChatInput scrollCallback={scrollToBottom} isAtBottom={isAtBottom} /> */}
       <div className='relative flex-1 overflow-hidden'>
         <div className='scrollbar-w-2 h-[100dvh] overflow-y-auto pb-36 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-transparent'>
           <div className='mx-auto flex w-full max-w-3xl translate-x-1 flex-col space-y-12 p-4 pb-12 text-sm'>
