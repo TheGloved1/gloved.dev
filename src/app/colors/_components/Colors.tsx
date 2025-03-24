@@ -16,12 +16,12 @@ import {
   SidebarTrigger,
 } from '@/components/ui/sidebar';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { usePersistentState } from '@/hooks/use-persistent-state';
+import { useLocalStorage } from '@/hooks/use-local-storage';
 import { Info } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
-interface ColorButton {
+type ColorButton = {
   id: number;
   color: string;
   level: number;
@@ -29,7 +29,7 @@ interface ColorButton {
   clicks: number;
   trait: ColorTrait;
   unlocked: boolean;
-}
+};
 
 enum ColorTrait {
   None = 'None',
@@ -41,14 +41,14 @@ enum ColorTrait {
   LuckyClicker = 'Lucky Clicker',
 }
 
-interface Skill {
+type Skill = {
   id: Skills;
   name: string;
   description: string;
   level: number;
   cost: number;
   maxLevel: number;
-}
+};
 
 enum Skills {
   ClickPower = 0,
@@ -174,16 +174,16 @@ const effect = (skill: Skill): number => {
 };
 
 export default function Colors(): React.JSX.Element {
-  const [colorButtons, setColorButtons] = usePersistentState<ColorButton[]>('colorButtons', defaultColorButtons, true);
+  const [colorButtons, setColorButtons] = useLocalStorage<ColorButton[]>('colorButtons', defaultColorButtons);
   const [score, setScore] = useState(0);
-  const [prestigeLevel, setPrestigeLevel] = usePersistentState<number>('prestigeLevel', 0, true);
-  const [prestigePoints, setPrestigePoints] = usePersistentState<number>('prestigePoints', 0, true);
+  const [prestigeLevel, setPrestigeLevel] = useLocalStorage<number>('prestigeLevel', 0);
+  const [prestigePoints, setPrestigePoints] = useLocalStorage<number>('prestigePoints', 0);
   const [clickCooldown, setClickCooldown] = useState(false);
   const lastClickTime = useRef(Date.now());
   const clickCount = useRef(0);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [combinationStreak, setCombinationStreak] = useState(0);
-  const [skills, setSkills] = usePersistentState<Skill[]>('skills', defaultSkills, true);
+  const [skills, setSkills] = useLocalStorage<Skill[]>('skills', defaultSkills);
 
   const checkAntiCheat = useCallback(() => {
     const now = Date.now();

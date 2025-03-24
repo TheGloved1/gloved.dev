@@ -1,5 +1,5 @@
 'use client';
-import { usePersistentState } from '@/hooks/use-persistent-state';
+import { useLocalStorage } from '@/hooks/use-local-storage';
 import { apiRoute } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
@@ -14,7 +14,7 @@ const getVisits = async (visitorId: string | null) => {
 };
 
 export function PageVisits(): React.JSX.Element | null {
-  const [visitorId, setVisitorId] = usePersistentState<string | null>('visitorId', null);
+  const [visitorId, setVisitorId] = useLocalStorage<string | null>('visitorId', null);
   if (visitorId === null) {
     setVisitorId(crypto.randomUUID());
   }

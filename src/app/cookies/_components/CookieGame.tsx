@@ -5,7 +5,7 @@ import type React from 'react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useInterval } from '@/hooks/use-interval';
-import { usePersistentState } from '@/hooks/use-persistent-state';
+import { useLocalStorage } from '@/hooks/use-local-storage';
 import { ArrowBigUp, MousePointer, Sparkles, Volume2, VolumeX } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
@@ -135,7 +135,7 @@ const ACHIEVEMENTS = [
 // Sound effects - using simple audio context for sound effects
 const useSoundEffects = () => {
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
-  const [soundEnabled, setSoundEnabled] = usePersistentState('soundEnabled', true);
+  const [soundEnabled, setSoundEnabled] = useLocalStorage('soundEnabled', true);
 
   useEffect(() => {
     // Only create AudioContext when needed (on first interaction)
@@ -207,23 +207,23 @@ const useSoundEffects = () => {
 
 export function CookieGame() {
   // Game state
-  const [cookies, setCookies] = usePersistentState('cookies', 0);
-  const [totalCookies, setTotalCookies] = usePersistentState('totalCookies', 0);
+  const [cookies, setCookies] = useLocalStorage('cookies', 0);
+  const [totalCookies, setTotalCookies] = useLocalStorage('totalCookies', 0);
   const [clickPower, setClickPower] = useState(1);
-  const [baseCpc, setBaseCpc] = usePersistentState('baseCpc', 1); // Base cookies per click
-  const [cps, setCps] = usePersistentState('cps', 0);
-  const [ownedUpgrades, setOwnedUpgrades] = usePersistentState<Record<string, number>>('ownedUpgrades', {});
-  const [ownedCpcUpgrades, setOwnedCpcUpgrades] = usePersistentState<Record<string, number>>('ownedCpcUpgrades', {});
+  const [baseCpc, setBaseCpc] = useLocalStorage('baseCpc', 1); // Base cookies per click
+  const [cps, setCps] = useLocalStorage('cps', 0);
+  const [ownedUpgrades, setOwnedUpgrades] = useLocalStorage<Record<string, number>>('ownedUpgrades', {});
+  const [ownedCpcUpgrades, setOwnedCpcUpgrades] = useLocalStorage<Record<string, number>>('ownedCpcUpgrades', {});
   const [activePowerups, setActivePowerups] = useState<
     Record<string, { startTime: number; duration: number; multiplier: number }>
   >({});
-  const [unlockedAchievements, setUnlockedAchievements] = usePersistentState<string[]>('unlockedAchievements', []);
-  const [prestigeLevel, setPrestigeLevel] = usePersistentState('prestigeLevel', 0);
-  const [prestigeMultiplier, setPrestigeMultiplier] = usePersistentState('prestigeMultiplier', 1);
+  const [unlockedAchievements, setUnlockedAchievements] = useLocalStorage<string[]>('unlockedAchievements', []);
+  const [prestigeLevel, setPrestigeLevel] = useLocalStorage('prestigeLevel', 0);
+  const [prestigeMultiplier, setPrestigeMultiplier] = useLocalStorage('prestigeMultiplier', 1);
   const [floatingTexts, setFloatingTexts] = useState<{ id: number; value: string; x: number; y: number }[]>([]);
   const [nextFloatingId, setNextFloatingId] = useState(0);
   const [activeTab, setActiveTab] = useState('cps');
-  const [lastGameUpdate, setGameLastUpdate] = usePersistentState('lastGameUpdate', Date.now());
+  const [lastGameUpdate, setGameLastUpdate] = useLocalStorage('lastGameUpdate', Date.now());
 
   const { soundEnabled, setSoundEnabled, playSound } = useSoundEffects();
 

@@ -3,7 +3,7 @@ import ErrorAlert from '@/components/ErrorAlert';
 import FileButton from '@/components/FileButton';
 import Loading from '@/components/loading';
 import { env } from '@/env';
-import { usePersistentState } from '@/hooks/use-persistent-state';
+import { useLocalStorage } from '@/hooks/use-local-storage';
 import { apiRoute, tryCatch } from '@/lib/utils';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import axios, { type AxiosProgressEvent } from 'axios';
@@ -55,7 +55,7 @@ export default function FileUploader(): React.JSX.Element {
   const correctPassword = env.NEXT_PUBLIC_FILE_MANAGER_PASSKEY;
   const queryClient = useQueryClient();
 
-  const [passwordEntered, setPasswordEntered] = usePersistentState<boolean>('fileUploaderPasswordEntered', false);
+  const [passwordEntered, setPasswordEntered] = useLocalStorage<boolean>('fileUploaderPasswordEntered', false);
   const [alert, setAlert] = useState<string>('');
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [isTemp, setIsTemp] = useState<boolean>(false);

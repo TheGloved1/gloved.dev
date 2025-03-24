@@ -10,7 +10,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { usePersistentState } from '@/hooks/use-persistent-state';
+import { useLocalStorage } from '@/hooks/use-local-storage';
 import { dxdb } from '@/lib/dexie';
 import { tryCatch } from '@/lib/utils';
 import { useAuth } from '@clerk/nextjs';
@@ -21,7 +21,7 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 
 export default function SettingsPage() {
-  const [systemPrompt, setSystemPrompt] = usePersistentState<string | undefined>('systemPrompt', undefined);
+  const [systemPrompt, setSystemPrompt] = useLocalStorage<string | undefined>('systemPrompt', undefined);
   const auth = useAuth();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const router = useRouter();

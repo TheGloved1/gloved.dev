@@ -8,21 +8,21 @@ import React from 'react';
  *  - A boolean `isSpeaking` value that indicates whether speech is currently
  *    happening.
  *
- * If the Web Speech API is not supported, the `speak` and `stop` functions will
+ * If the Web Speech API is not supported in the current environment, the `speak` and `stop` functions will
  * do nothing, and `isSpeaking` will always be false.
  */
 export function useTextToSpeech(): [speak: (text: string) => void, stop: () => void, isSpeaking: boolean] {
-  const synth = window.speechSynthesis;
+  const speech = window.speechSynthesis;
   const [isSpeaking, setIsSpeaking] = React.useState(false);
   const speak = React.useCallback(
     (text: string) => {
-      if (!synth) {
+      if (!speech) {
         console.warn('Speech synthesis not supported');
         return;
       }
 
       // Cancel any ongoing speech
-      synth.cancel();
+      speech.cancel();
 
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.rate = 1.0;
@@ -45,18 +45,18 @@ export function useTextToSpeech(): [speak: (text: string) => void, stop: () => v
         setIsSpeaking(true);
       };
 
-      synth.speak(utterance);
+      speech.speak(utterance);
     },
-    [synth],
+    [speech],
   );
 
   const stop = React.useCallback(() => {
-    if (!synth) {
+    if (!speech) {
       console.warn('Speech synthesis not supported');
       return;
     }
-    synth.cancel();
-  }, [synth]);
+    speech.cancel();
+  }, [speech]);
 
   return [speak, stop, isSpeaking] as const;
 }

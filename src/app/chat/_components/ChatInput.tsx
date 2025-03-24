@@ -2,8 +2,8 @@
 import { createMessage, dxdb } from '@/lib/dexie';
 import React, { memo, useState } from 'react';
 
+import { useLocalStorage } from '@/hooks/use-local-storage';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { usePersistentState } from '@/hooks/use-persistent-state';
 import Constants from '@/lib/constants';
 import { ChevronDown, Loader2, Paperclip, Send, X } from 'lucide-react';
 import Image from 'next/image';
@@ -25,15 +25,15 @@ const ChatBotInput = memo(
     scrollCallback?: () => void;
     isAtBottom?: boolean;
   }) => {
-    const [input, setInput] = usePersistentState('input', '');
-    const [imagePreview, setImagePreview] = usePersistentState<string | undefined | null>('imagePreview', null);
-    const [rows, setRows] = usePersistentState<number>('rows', 2);
+    const [input, setInput] = useLocalStorage('input', '');
+    const [imagePreview, setImagePreview] = useLocalStorage<string | undefined | null>('imagePreview', null);
+    const [rows, setRows] = useLocalStorage<number>('rows', 2);
     const router = useRouter();
     const isMobile = useIsMobile();
     const { threadId } = useParams<{ threadId: string }>();
     const [loading, setLoading] = useState<boolean>(false);
-    const [, , getSystemPrompt] = usePersistentState<string | undefined>('systemPrompt', undefined);
-    const [model, setModel, getModel] = usePersistentState<string>('model', Constants.ChatModels.default);
+    const [systemPrompt, setSystemPrompt] = useLocalStorage<string | undefined>('systemPrompt', undefined);
+    const [model, setModel] = useLocalStorage<string>('model', Constants.ChatModels.default);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -46,7 +46,7 @@ const ChatBotInput = memo(
         const threadId = await dxdb.createThread();
         router.push('/chat/' + threadId);
         try {
-          await createMessage(threadId, input, getModel(), setInput, scrollCallback, getSystemPrompt()?.trim());
+          await createMessage(threadId, input, model, setInput, scrollCallback, systemPrompt?.trim());
         } catch (e) {
           toast.error('Failed to generate message');
           setLoading(false);
@@ -54,7 +54,7 @@ const ChatBotInput = memo(
         }
         setLoading(false);
       } else {
-        await createMessage(threadId, input, getModel(), setInput, scrollCallback, getSystemPrompt()?.trim());
+        await createMessage(threadId, input, model, setInput, scrollCallback, systemPrompt?.trim());
         setLoading(false);
         setInput('');
         if (fileInputRef.current) {

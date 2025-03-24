@@ -2,7 +2,7 @@
 import ErrorAlert from '@/components/ErrorAlert';
 import Markdown from '@/components/Markdown';
 import { Button } from '@/components/ui/button';
-import { usePersistentState } from '@/hooks/use-persistent-state';
+import { useLocalStorage } from '@/hooks/use-local-storage';
 import { useTextToSpeech } from '@/hooks/use-tts';
 import Constants from '@/lib/constants';
 import { dxdb, Message, updateMessage } from '@/lib/dexie';
@@ -23,8 +23,8 @@ export default memo(function ChatMessage({
   const { threadId } = useParams<{ threadId: string }>();
   const [input, setInput] = useState<string | null>(null);
   const [isHovered, setIsHovered] = useState<boolean>(false);
-  const [, , getSystemPrompt] = usePersistentState<string | undefined>('systemPrompt', undefined);
-  const [, , getModel] = usePersistentState<string>('model', Constants.ChatModels.default);
+  const [systemPrompt] = useLocalStorage<string | undefined>('systemPrompt', undefined);
+  const [model] = useLocalStorage<string>('model', Constants.ChatModels.default);
   const [speak, stopSpeech, isSpeaking] = useTextToSpeech();
 
   const handleEditMessage = useCallback(
@@ -89,12 +89,12 @@ export default memo(function ChatMessage({
                   await updateMessage(
                     message,
                     input,
-                    getModel(),
+                    model,
                     () => {
                       scrollEditCallback();
                       setInput(null);
                     },
-                    getSystemPrompt(),
+                    systemPrompt,
                   );
                 }}
               >
@@ -122,11 +122,11 @@ export default memo(function ChatMessage({
                 await updateMessage(
                   message,
                   message.content,
-                  getModel(),
+                  model,
                   () => {
                     scrollEditCallback();
                   },
-                  getSystemPrompt(),
+                  systemPrompt,
                 );
               }}
               title='Retry'
