@@ -13,8 +13,6 @@ import { toast } from 'sonner';
 import MobileInputDialog from './MobileInputDialog';
 import ModelDropdown from './ModelDropdown';
 
-const models = { ...Constants.ChatModels.google, ...Constants.ChatModels.groq };
-
 const ChatBotInput = memo(
   ({
     createThread,
@@ -187,10 +185,10 @@ const ChatBotInput = memo(
                             </label>
                           </>
                         )}
-                        <ModelDropdown selectedModel={model} onModelChange={onModelChange} />
+                        <ModelDropdown />
                       </>
                     : <>
-                        <ModelDropdown selectedModel={model} onModelChange={onModelChange} />
+                        <ModelDropdown />
                         {canUpload && (
                           <>
                             <input

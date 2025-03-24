@@ -1,20 +1,17 @@
 'use client';
 import { Tooltip, TooltipProvider } from '@/components/TooltipSystem';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useLocalStorage } from '@/hooks/use-local-storage';
 import Constants from '@/lib/constants';
 import { Info } from 'lucide-react';
 
-interface ModelDropdownProps {
-  selectedModel: string;
-  onModelChange: (model: string) => void;
-}
-
-const ModelDropdown = ({ selectedModel, onModelChange }: ModelDropdownProps) => {
+const ModelDropdown = () => {
+  const [model, setModel] = useLocalStorage<string>('model', Constants.ChatModels.default);
   return (
     <TooltipProvider>
-      <Select value={selectedModel} onValueChange={onModelChange}>
+      <Select value={model} onValueChange={setModel}>
         <SelectTrigger className='max-w-[60vw]'>
-          <SelectValue placeholder='Model' />
+          <SelectValue placeholder={'Select a model'} />
         </SelectTrigger>
         <SelectContent className='max-w-[60vw]'>
           {Constants.NewChatModels.map(({ label, value, enabled, description }) => (

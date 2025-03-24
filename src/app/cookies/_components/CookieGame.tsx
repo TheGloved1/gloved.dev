@@ -141,7 +141,6 @@ const useSoundEffects = () => {
     // Only create AudioContext when needed (on first interaction)
     if (typeof window !== 'undefined' && soundEnabled && !audioContext) {
       try {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
         if (AudioContextClass) {
           setAudioContext(new AudioContextClass());
@@ -487,7 +486,7 @@ export function CookieGame() {
     if (cookies < prestigeCost) return;
 
     setPrestigeLevel((prev) => prev + 1);
-    setPrestigeMultiplier(prestigeLevel + 1 + 0.25);
+    setPrestigeMultiplier((prev) => prev + 0.25);
 
     // Reset game state but keep achievements
     setCookies(0);
@@ -498,7 +497,7 @@ export function CookieGame() {
     setActivePowerups({});
 
     toast('Prestige Level Up!', {
-      description: `You've reached prestige level ${prestigeLevel + 1}. All production multiplied by ${(prestigeMultiplier + 0.2).toFixed(1)}x`,
+      description: `You've reached prestige level ${prestigeLevel + 1}. All production multiplied by ${(prestigeMultiplier + 0.25).toFixed(2)}x`,
     });
 
     playSound('achievement');
@@ -729,7 +728,7 @@ export function CookieGame() {
                 Prestige ({formatNumber(prestigeCost)} cookies)
               </Button>
               <p className='mt-1 text-xs text-gray-600 dark:text-amber-200/70'>
-                Current multiplier: {prestigeMultiplier.toFixed(1)}x
+                Current multiplier: {prestigeMultiplier.toFixed(2)}x
               </p>
             </div>
           )}
