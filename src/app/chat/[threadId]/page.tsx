@@ -33,8 +33,7 @@ export default function Page(): React.JSX.Element {
     (noSmooth?: boolean) => {
       entry?.target?.scrollIntoView({ behavior: noSmooth ? 'auto' : 'smooth' });
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [entry, isAtBottom],
+    [entry],
   );
 
   const messages = useLiveQuery(
@@ -51,10 +50,6 @@ export default function Page(): React.JSX.Element {
       checkSync(auth.userId);
     }
   }, [auth.userId, threadId]);
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [ref, scrollToBottom]);
 
   // Initial scroll to bottom (after component mounts and data is available)
   useEffect(() => {

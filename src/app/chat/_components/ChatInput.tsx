@@ -109,7 +109,7 @@ const ChatInput = memo(
             <div className='z-10 flex justify-center pb-4'>
               <button
                 type='button'
-                className='pointer-events-auto flex h-8 items-center justify-center gap-2 whitespace-nowrap rounded-full border border-secondary/40 bg-[#f7dcf3b8] px-3 text-xs font-medium text-secondary-foreground/70 backdrop-blur-xl transition-colors hover:bg-secondary focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 dark:bg-[#29242eb5] [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
+                className='pointer-events-auto flex h-8 items-center justify-center gap-2 whitespace-nowrap rounded-full border border-secondary/40 bg-primary px-3 text-xs font-medium text-secondary-foreground/70 backdrop-blur-xl transition-colors hover:bg-secondary focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 dark:bg-primary/70 dark:text-secondary-foreground/70 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
                 onClick={scrollCallback}
               >
                 Scroll to bottom <ChevronDown />
@@ -180,10 +180,10 @@ const ChatInput = memo(
                       />
                       <button
                         type='submit'
-                        disabled={loading || (!input && !imagePreview)}
+                        disabled={loading || (!input.trim() && !imagePreview)}
                         className='border-reflect button-reflect relative inline-flex h-9 w-9 items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-[rgb(162,59,103)] p-2 text-sm font-semibold text-pink-50 shadow transition-colors hover:bg-[#d56698] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring active:bg-[rgb(162,59,103)] disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
                       >
-                        {input ?
+                        {input.trim() ?
                           loading ?
                             <Loader2 className='size-4 animate-spin' />
                           : <Send className='!size-4' />
