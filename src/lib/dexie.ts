@@ -204,7 +204,7 @@ class Database extends Dexie {
   async export() {
     const threads = await this.getThreads();
     const messages = await this.getMessages();
-    const jsonString = JSON.stringify({ threads, messages });
+    const jsonString = JSON.stringify({ threads, messages }, null, 2);
     const blob = new Blob([jsonString], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -323,6 +323,7 @@ export async function processStream(
         if (messageId) {
           await dxdb.messages.update(messageId, {
             updated_at: createDate(),
+            content: 'An error occurred.',
             status: 'error',
           });
         }
