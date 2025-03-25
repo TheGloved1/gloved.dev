@@ -1,9 +1,10 @@
 'use client';
+import { useIntersectionObserver } from '@/hooks/use-intersection-observer';
 import { checkSync, dxdb } from '@/lib/dexie';
 import { useAuth } from '@clerk/nextjs';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { redirect, useParams } from 'next/navigation';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 import ChatInput from '../_components/ChatInput';
 import ChatMessage from '../_components/ChatMessage';
 
@@ -11,8 +12,15 @@ export const dynamic = 'force-static';
 
 export default function Page(): React.JSX.Element {
   const { threadId } = useParams<{ threadId: string }>();
-  const [isAtBottom, setIsAtBottom] = useState<boolean>(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const {
+    ref,
+    isIntersecting: isAtBottom,
+    entry,
+  } = useIntersectionObserver({
+    root: null,
+    rootMargin: '0px',
+    threshold: 1,
+  });
   const auth = useAuth();
 
   useEffect(() => {
@@ -21,9 +29,13 @@ export default function Page(): React.JSX.Element {
     });
   }, [threadId]);
 
-  const scrollToBottom = useCallback((noSmooth?: boolean) => {
-    messagesEndRef.current?.scrollIntoView({ behavior: noSmooth ? 'auto' : 'smooth' });
-  }, []);
+  const scrollToBottom = useCallback(
+    (noSmooth?: boolean) => {
+      entry?.target?.scrollIntoView({ behavior: noSmooth ? 'auto' : 'smooth' });
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [entry, isAtBottom],
+  );
 
   const messages = useLiveQuery(
     () => {
@@ -42,22 +54,7 @@ export default function Page(): React.JSX.Element {
 
   useEffect(() => {
     scrollToBottom();
-    const msgEndRef = messagesEndRef?.current;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        setIsAtBottom(entries[0].isIntersecting);
-      },
-      { root: null, rootMargin: '0px', threshold: 1 },
-    );
-    if (msgEndRef) {
-      observer.observe(msgEndRef);
-    }
-    return () => {
-      if (msgEndRef) {
-        observer.unobserve(msgEndRef);
-      }
-    };
-  }, [messagesEndRef, scrollToBottom]);
+  }, [ref, scrollToBottom]);
 
   // Initial scroll to bottom (after component mounts and data is available)
   useEffect(() => {
@@ -74,7 +71,7 @@ export default function Page(): React.JSX.Element {
               <ChatMessage scrollEditCallback={() => scrollToBottom(true)} message={message} key={message.id} />
             ))}
           </div>
-          <div ref={messagesEndRef} className='h-0 w-0' />
+          <div ref={ref} className='h-0 w-0' />
         </div>
       </div>
     </main>
