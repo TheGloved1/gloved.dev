@@ -2,6 +2,7 @@
 import { createMessage, dxdb } from '@/lib/dexie';
 import React, { memo, useEffect, useState } from 'react';
 
+import { Textarea } from '@/components/ui/textarea';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import { useIsMobile } from '@/hooks/use-mobile';
 import Constants from '@/lib/constants';
@@ -118,11 +119,6 @@ const ChatInput = memo(
             </div>
           )}
           <div className='pointer-events-none z-10'>
-            <div className='pointer-events-auto mx-auto w-fit'>
-              <p id='radix-:rf:' className='sr-only text-sm text-muted-foreground'>
-                Upgrade to Pro
-              </p>
-            </div>
             <div className='pointer-events-auto'>
               <div
                 className='dark:border-reflect dark:rounded-t-[20px] dark:bg-background/40 dark:p-2 dark:pb-0 dark:backdrop-blur-lg'
@@ -160,7 +156,8 @@ const ChatInput = memo(
                       </div>
                     )}
                     <div className='flex flex-grow flex-row items-start'>
-                      <textarea
+                      <Textarea
+                        wrap='soft'
                         className='w-full resize-none bg-transparent pr-10 text-base leading-6 text-foreground outline-none placeholder:text-secondary-foreground/60 disabled:opacity-0'
                         style={{ height: `${(rows + 1) * 24}px` }}
                         value={input || ''}

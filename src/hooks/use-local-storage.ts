@@ -1,3 +1,4 @@
+import { customLogger } from '@/lib/utils';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 type Serializer<T> = (object: T | undefined) => string;
@@ -7,7 +8,7 @@ type Setter<T> = React.Dispatch<React.SetStateAction<T>>;
 type Options<T> = Partial<{
   serializer: Serializer<T>;
   parser: Parser<T>;
-  logger: (error: any) => void;
+  logger: (error: unknown) => void;
   syncData: boolean;
 }>;
 
@@ -35,7 +36,7 @@ type Options<T> = Partial<{
  * @example
  * const [count, setCount] = useLocalStorage('count', 0);
  * // ...
- * setCount(count + 1);
+ * setCount(count + 1); // This will also update the value in other tabs and components
  */
 function useLocalStorage<T>(key: string, defaultValue: T, options?: Options<T>): [T, Setter<T>];
 function useLocalStorage<T>(key: string, defaultValue?: T, options?: Options<T>) {
@@ -43,7 +44,7 @@ function useLocalStorage<T>(key: string, defaultValue?: T, options?: Options<T>)
     return {
       serializer: JSON.stringify,
       parser: JSON.parse,
-      logger: console.log,
+      logger: customLogger.log,
       syncData: true,
       ...options,
     };
