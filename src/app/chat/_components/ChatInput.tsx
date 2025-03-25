@@ -185,7 +185,7 @@ const ChatInput = memo(
                       >
                         {loading ?
                           <Loader2 className='size-4 animate-spin' />
-                        : <Send className='!size-4' />}
+                        : <Send className='size-4' />}
                         <span className='sr-only'>Send</span>
                       </button>
                     </div>

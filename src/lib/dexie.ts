@@ -1,3 +1,8 @@
+/**
+ * A Dexie database for storing chat data. This database stores threads and messages, and provides
+ * methods for adding, removing, and retrieving data. It also provides methods for synchronizing the
+ * database with remote data.
+ */
 import { deleteUserDataAction, syncAction } from '@/lib/actions';
 import { createDate, populateOnboardingThreads, tryCatch } from '@/lib/utils';
 import Dexie, { type EntityTable } from 'dexie';
@@ -34,7 +39,6 @@ export type Message = z.infer<typeof messageSchema>;
  * database with remote data.
  * @class
  * @extends Dexie
- * @memberof module:dexie
  * @property {EntityTable<Thread, 'id'>} threads - A table for storing threads.
  * @property {EntityTable<Message, 'id'>} messages - A table for storing messages.
  */
@@ -44,9 +48,9 @@ class Database extends Dexie {
 
   constructor() {
     super('chatdb');
-    this.version(2).stores({
-      threads: '++id, title, created_at, updated_at, last_message_at, status',
-      messages: '++id, threadId, content, model, role, [threadId+created_at], updated_at, status',
+    this.version(3).stores({
+      threads: '++id, title, created_at, last_message_at, status',
+      messages: '++id, threadId, content, model, role, updated_at, status, [threadId+created_at], [threadId+status]',
     });
 
     this.on('populate', async () => {
@@ -54,13 +58,11 @@ class Database extends Dexie {
     });
 
     this.threads.hook('creating', (primKey, obj) => {
-      obj.created_at = createDate();
       obj.updated_at = createDate();
       obj.last_message_at = createDate();
     });
 
     this.messages.hook('creating', (primKey, obj) => {
-      obj.created_at = createDate();
       obj.updated_at = createDate();
     });
   }
@@ -91,13 +93,14 @@ class Database extends Dexie {
    * @param message A partial `Message` object without the `id`, `created_at`, `updated_at`, and `removed` fields.
    * @returns The ID of the created message.
    */
-  async addMessage(message: Omit<Message, 'id' | 'updated_at'>) {
+  async addMessage(message: Omit<Message, 'id' | 'updated_at' | 'created_at'>) {
     const id = crypto.randomUUID();
     await this.transaction('rw', [this.messages, this.threads], async () => {
       await this.messages.add({
         ...message,
         id,
         updated_at: createDate(),
+        created_at: createDate(),
       });
       await this.threads.update(message.threadId, {
         last_message_at: createDate(),
@@ -159,7 +162,7 @@ class Database extends Dexie {
    * Deletes all data from the database and clears the remote data.
    * @param userId The user ID to clear remote data for. If `null` or `undefined`, it will not clear remote data.
    */
-  async deleteAllData(userId: string | null | undefined) {
+  async deleteAllData(userId?: string | null) {
     const threads = await this.threads.toArray();
     const messages = await this.messages.toArray();
     await Promise.all(threads.map((thread) => this.threads.delete(thread.id)));
@@ -230,6 +233,9 @@ class Database extends Dexie {
 }
 
 export const dxdb = new Database();
+if (dxdb.hasFailed()) {
+  await dxdb.deleteAllData();
+}
 export type dxdbType = typeof dxdb;
 
 /**
@@ -311,6 +317,15 @@ export async function processStream(
             reasoning: reasoning, // Update with the accumulated reasoning
           });
         }
+      } else if (line.startsWith('3:')) {
+        callback();
+        // This is an error chunk
+        if (messageId) {
+          await dxdb.messages.update(messageId, {
+            updated_at: createDate(),
+            status: 'error',
+          });
+        }
       } else if (line.startsWith('e:')) {
         // This indicates the end of the message
         done = true;
@@ -355,7 +370,6 @@ export async function createMessage(
     role: 'user',
     model,
     status: 'done',
-    created_at: createDate(),
   });
 
   generateTitle(threadId);
@@ -370,7 +384,6 @@ export async function createMessage(
     content: '',
     status: 'streaming',
     model,
-    created_at: createDate(),
   });
 
   callback?.();
@@ -438,7 +451,6 @@ export async function updateMessage(
     content: '',
     status: 'streaming',
     model,
-    created_at: createDate(),
   });
 
   try {

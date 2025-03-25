@@ -91,52 +91,52 @@ export async function dbSync(input: { userId: string; messages: Message[]; threa
   const newMessages: Message[] = [];
 
   // Sync Messages
-  for (const m of dbMessages) {
+  for (const dbMessage of dbMessages) {
     // Check if message exists in local database
-    const localMessage = localMessages.find((dbM) => dbM.id === m.id);
+    const localMessage = localMessages.find((dbM) => dbM.id === dbMessage.id);
     // If message does not exist in local database, add it
     if (!localMessage) {
-      newMessages.push(m);
-    } else if (new Date(m.updated_at) > new Date(localMessage.updated_at)) {
+      newMessages.push(dbMessage);
+    } else if (new Date(dbMessage.updated_at).getTime() > new Date(localMessage.updated_at).getTime()) {
       // If message exists in local database, update it if it is newer
-      newMessages.push(m);
+      newMessages.push(dbMessage);
     }
   }
-  for (const m of localMessages) {
+  for (const localMessage of localMessages) {
     // Check if message exists in KV store
-    const key = messageSyncKey(input.userId, m.id);
-    const dbMessage = dbMessages.find((dbM) => dbM.id === m.id);
+    const key = messageSyncKey(input.userId, localMessage.id);
+    const dbMessage = dbMessages.find((dbM) => dbM.id === localMessage.id);
     // If message does not exist in KV store, add it
     if (!dbMessage) {
-      kvMap[key] = JSON.stringify(m);
-    } else if (new Date(m.updated_at) > new Date(dbMessage.updated_at)) {
+      kvMap[key] = JSON.stringify(localMessage);
+    } else if (new Date(localMessage.updated_at).getTime() > new Date(dbMessage.updated_at).getTime()) {
       // If message exists in KV store, update it if it is newer
-      kvMap[key] = JSON.stringify(m);
+      kvMap[key] = JSON.stringify(localMessage);
     }
   }
 
   // Sync Threads
-  for (const t of dbThreads) {
+  for (const dbThread of dbThreads) {
     // Check if thread exists in local database
-    const localThread = localThreads.find((dbT) => dbT.id === t.id);
+    const localThread = localThreads.find((dbT) => dbT.id === dbThread.id);
     // If thread does not exist in local database, add it
     if (!localThread) {
-      newThreads.push(t);
-    } else if (new Date(t.updated_at) > new Date(localThread.updated_at)) {
+      newThreads.push(dbThread);
+    } else if (new Date(dbThread.updated_at).getTime() > new Date(localThread.updated_at).getTime()) {
       // If thread exists in local database, update it if it is newer
-      newThreads.push(t);
+      newThreads.push(dbThread);
     }
   }
-  for (const t of localThreads) {
+  for (const localThread of localThreads) {
     // Check if thread exists in KV store
-    const key = threadSyncKey(input.userId, t.id);
-    const dbThread = dbThreads.find((dbT) => dbT.id === t.id);
+    const key = threadSyncKey(input.userId, localThread.id);
+    const dbThread = dbThreads.find((dbT) => dbT.id === localThread.id);
     // If thread does not exist in KV store, add it
     if (!dbThread) {
-      kvMap[key] = JSON.stringify(t);
-    } else if (new Date(t.updated_at) > new Date(dbThread.updated_at)) {
+      kvMap[key] = JSON.stringify(localThread);
+    } else if (new Date(localThread.updated_at).getTime() > new Date(dbThread.updated_at).getTime()) {
       // If thread exists in KV store, update it if it is newer
-      kvMap[key] = JSON.stringify(t);
+      kvMap[key] = JSON.stringify(localThread);
     }
   }
 

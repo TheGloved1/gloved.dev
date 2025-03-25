@@ -35,7 +35,7 @@ export async function checkDevMode(): Promise<boolean> {
  * Synchronizes the database with the remote data.
  * @param data An object containing the threads and messages to sync.
  * @param userId The user ID to sync data with.
- * @returns An object containing the new threads and messages.
+ * @returns An object containing any new threads and messages found in the remote data.
  */
 export async function syncAction(data: { threads: Thread[]; messages: Message[] }, userId: string) {
   const { messages: newMessages, threads: newThreads } = await dbSync({

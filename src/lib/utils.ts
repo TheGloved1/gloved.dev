@@ -111,6 +111,10 @@ export async function tryCatch<T, E = Error>(promise: Promise<T>): Promise<Resul
   }
 }
 
+/**
+ * Creates a string representing the current time in ISO format.
+ * @returns A string representing the current time in ISO format.
+ */
 export const createDate = () => new Date().toISOString();
 
 export async function populateOnboardingThreads(db: dxdbType) {
