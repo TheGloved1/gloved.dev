@@ -29,7 +29,7 @@ export default function Page(): React.JSX.Element {
         </h1>
         <div className='grid grid-cols-1 justify-items-center gap-4 sm:grid-cols-2 md:gap-8 lg:grid-cols-3'>
           <Link
-            className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
+            className='group flex h-full w-full max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
             href={Constants.Home.link}
             prefetch
           >
@@ -42,7 +42,7 @@ export default function Page(): React.JSX.Element {
             <div className='text-lg'>{Constants.Home.description}</div>
           </Link>
           <Link
-            className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
+            className='group flex h-full w-full max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
             href={Constants.Chat.link}
             prefetch
           >
@@ -55,7 +55,7 @@ export default function Page(): React.JSX.Element {
             <div className='text-lg'>{Constants.Chat.description}</div>
           </Link>
           <Link
-            className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
+            className='group flex h-full w-full max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
             href={Constants.FileUploader.link}
             prefetch
           >
@@ -68,7 +68,7 @@ export default function Page(): React.JSX.Element {
             <div className='text-lg'>{Constants.FileUploader.description}</div>
           </Link>
           <Link
-            className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
+            className='group flex h-full w-full max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
             href={Constants.Colors.link}
             prefetch
           >
@@ -81,7 +81,7 @@ export default function Page(): React.JSX.Element {
             <div className='text-lg'>{Constants.Colors.description}</div>
           </Link>
           <Link
-            className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
+            className='group flex h-full w-full max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
             href={Constants.Cookies.link}
             prefetch
           >
@@ -94,7 +94,7 @@ export default function Page(): React.JSX.Element {
             <div className='text-lg'>{Constants.Cookies.description}</div>
           </Link>
           <Link
-            className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
+            className='group flex h-full w-full max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
             href={Constants.Todos.link}
             prefetch
           >
@@ -107,7 +107,7 @@ export default function Page(): React.JSX.Element {
             <div className='text-lg'>{Constants.Todos.description}</div>
           </Link>
           <Link
-            className='group flex max-w-xs flex-col gap-4 self-center rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
+            className='group flex h-full w-full max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
             href={Constants.Hangman.link}
             prefetch
           >
@@ -120,7 +120,7 @@ export default function Page(): React.JSX.Element {
             <div className='text-lg'>{Constants.Hangman.description}</div>
           </Link>
           <Link
-            className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
+            className='group flex h-full w-full max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
             href={Constants.Calc.link}
             prefetch
           >
@@ -133,7 +133,7 @@ export default function Page(): React.JSX.Element {
             <div className='text-lg'>{Constants.Calc.description}</div>
           </Link>
           <Link
-            className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
+            className='group flex h-full w-full max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
             href={Constants.Github.link}
             prefetch
           >
@@ -153,7 +153,7 @@ export default function Page(): React.JSX.Element {
           </h2>
           <div className='grid grid-cols-1 gap-4 sm:grid-cols-1 md:gap-8'>
             <Link
-              className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
+              className='group flex h-full w-full max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
               href={'/admin'}
               prefetch
             >
@@ -168,7 +168,7 @@ export default function Page(): React.JSX.Element {
           </div>
           <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8'>
             <Link
-              className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
+              className='group flex h-full w-full max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
               href={Constants.Black.link}
               prefetch
             >
@@ -181,7 +181,7 @@ export default function Page(): React.JSX.Element {
               <div className='text-lg'>{Constants.Black.description}</div>
             </Link>
             <Link
-              className='group flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
+              className='group flex h-full w-full max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
               href={Constants.Discord.link}
               prefetch
             >
