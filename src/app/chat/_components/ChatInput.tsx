@@ -183,11 +183,9 @@ const ChatInput = memo(
                         disabled={loading || (!input.trim() && !imagePreview)}
                         className='border-reflect button-reflect relative inline-flex h-9 w-9 items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-[rgb(162,59,103)] p-2 text-sm font-semibold text-pink-50 shadow transition-colors hover:bg-[#d56698] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring active:bg-[rgb(162,59,103)] disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
                       >
-                        {input.trim() ?
-                          loading ?
-                            <Loader2 className='size-4 animate-spin' />
-                          : <Send className='!size-4' />
-                        : <X className='!size-4 opacity-50' />}
+                        {loading ?
+                          <Loader2 className='size-4 animate-spin' />
+                        : <Send className='!size-4' />}
                         <span className='sr-only'>Send</span>
                       </button>
                     </div>
