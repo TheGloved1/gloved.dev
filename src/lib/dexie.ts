@@ -57,9 +57,13 @@ class Database extends Dexie {
       await populateOnboardingThreads(this);
     });
 
-    this.threads.hook('creating', (primKey, obj) => {});
+    this.threads.hook('creating', (primKey, obj) => {
+      console.log('[DEXIE] Creating thread', obj);
+    });
 
-    this.messages.hook('creating', (primKey, obj) => {});
+    this.messages.hook('creating', (primKey, obj) => {
+      console.log('[DEXIE] Creating message', obj);
+    });
   }
 
   /**
