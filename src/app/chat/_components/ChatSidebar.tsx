@@ -62,16 +62,14 @@ export default function ChatBotSidebar({ children }: { children?: React.ReactNod
             </Link>
           </h1>
           <SidebarGroup>
-            <button className='' title='New chat'>
-              <Link
-                href='/chat'
-                type='button'
-                title='New chat'
-                className='border-reflect button-reflect relative inline-flex h-9 w-full select-none items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-[rgb(162,59,103)] p-2 px-4 py-2 text-sm font-semibold text-primary-foreground shadow transition-colors hover:bg-[#d56698] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring active:bg-[rgb(162,59,103)] disabled:pointer-events-none disabled:opacity-50 dark:bg-primary/20 dark:hover:bg-pink-800/70 dark:active:bg-pink-800/40 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
-              >
-                New Chat
-              </Link>
-            </button>
+            <Link
+              href='/chat'
+              type='button'
+              title='New chat'
+              className='border-reflect button-reflect relative inline-flex h-9 w-full select-none items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-[rgb(162,59,103)] p-2 px-4 py-2 text-sm font-semibold text-primary-foreground shadow transition-colors hover:bg-[#d56698] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring active:bg-[rgb(162,59,103)] disabled:pointer-events-none disabled:opacity-50 dark:bg-primary/20 dark:hover:bg-pink-800/70 dark:active:bg-pink-800/40 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
+            >
+              New Chat
+            </Link>
           </SidebarGroup>
         </SidebarHeader>
         <SidebarGroupLabel>Chats</SidebarGroupLabel>

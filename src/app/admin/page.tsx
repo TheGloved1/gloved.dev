@@ -17,13 +17,26 @@ export default function Page() {
 
   useEffect(() => {
     const currentUserAsync = async () => {
-      const admins = await getAdminsAction();
+      setLoading(true);
+      const { data: admins, error: getAdminsError } = await tryCatch(getAdminsAction());
+      if (getAdminsError) {
+        toast.error('Failed to get admins');
+        setLoading(false);
+        return;
+      }
       setIsAdmin(admins.includes(user?.primaryEmailAddress?.emailAddress || ''));
       setAdmins(admins);
+      setLoading(false);
     };
     currentUserAsync();
   }, [user?.primaryEmailAddress?.emailAddress]);
 
+  if (loading)
+    return (
+      <div className='flex h-screen flex-col items-center justify-center'>
+        <Loader2 className='animate-spin' />
+      </div>
+    );
   if (!user || !user.primaryEmailAddress)
     return <div className='flex h-screen flex-col items-center justify-center'>Unauthorized</div>;
   if (!isAdmin) return <div className='flex h-screen flex-col items-center justify-center'>Unauthorized</div>;

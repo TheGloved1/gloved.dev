@@ -2,7 +2,6 @@
 import { createMessage, dxdb } from '@/lib/dexie';
 import React, { memo, useEffect, useState } from 'react';
 
-import { Textarea } from '@/components/ui/textarea';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import { useIsMobile } from '@/hooks/use-mobile';
 import Constants from '@/lib/constants';
@@ -34,7 +33,6 @@ const ChatInput = memo(
     const [systemPrompt, setSystemPrompt] = useLocalStorage<string | undefined>('systemPrompt', undefined);
     const [model, setModel] = useLocalStorage<string>('model', Constants.ChatModels.default);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const inputRef = useRef<HTMLTextAreaElement>(null);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -156,12 +154,10 @@ const ChatInput = memo(
                       </div>
                     )}
                     <div className='flex flex-grow flex-row items-start'>
-                      <Textarea
-                        wrap='soft'
+                      <textarea
                         className='w-full resize-none bg-transparent pr-10 text-base leading-6 text-foreground outline-none placeholder:text-secondary-foreground/60 disabled:opacity-0'
                         style={{ height: `${(rows + 1) * 24}px` }}
                         value={input || ''}
-                        ref={inputRef}
                         disabled={loading}
                         placeholder='Type message here...'
                         rows={rows}
@@ -187,9 +183,11 @@ const ChatInput = memo(
                         disabled={loading || (!input && !imagePreview)}
                         className='border-reflect button-reflect relative inline-flex h-9 w-9 items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-[rgb(162,59,103)] p-2 text-sm font-semibold text-pink-50 shadow transition-colors hover:bg-[#d56698] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring active:bg-[rgb(162,59,103)] disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
                       >
-                        {loading ?
-                          <Loader2 className='h-4 w-4 animate-spin' />
-                        : <Send className='-mb-0.5 -ml-0.5 !size-5' />}
+                        {input ?
+                          loading ?
+                            <Loader2 className='size-4 animate-spin' />
+                          : <Send className='!size-4' />
+                        : <X className='!size-4 opacity-50' />}
                         <span className='sr-only'>Send</span>
                       </button>
                     </div>
