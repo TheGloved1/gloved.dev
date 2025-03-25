@@ -1,4 +1,3 @@
-import { customLogger } from '@/lib/utils';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 type Serializer<T> = (object: T | undefined) => string;
@@ -44,7 +43,7 @@ function useLocalStorage<T>(key: string, defaultValue?: T, options?: Options<T>)
     return {
       serializer: JSON.stringify,
       parser: JSON.parse,
-      logger: customLogger.log,
+      logger: console.log,
       syncData: true,
       ...options,
     };

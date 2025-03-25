@@ -14,40 +14,6 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export class Logger {
-  private prefix: string;
-  constructor(prefix: string) {
-    this.prefix = prefix;
-  }
-
-  private formatMessage(message: string) {
-    const date = new Date();
-    const hours = `0${date.getHours()}`.slice(-2);
-    const minutes = `0${date.getMinutes()}`.slice(-2);
-    const seconds = `0${date.getSeconds()}`.slice(-2);
-    const timestamp = `${hours}:${minutes}:${seconds}`;
-    return `%c${timestamp} | ${this.prefix} | ${message}`;
-  }
-
-  log(message: unknown, ...args: unknown[]) {
-    console.log(this.formatMessage(JSON.stringify(message || '')), 'color: #999999;', ...args);
-  }
-
-  info(message: unknown, ...args: unknown[]) {
-    console.info(this.formatMessage(JSON.stringify(message || '')), 'color: #00A3A3;', ...args);
-  }
-
-  warn(message: unknown, ...args: unknown[]) {
-    console.warn(this.formatMessage(JSON.stringify(message || '')), 'color: #FFC107;', ...args);
-  }
-
-  error(message: unknown, ...args: unknown[]) {
-    console.error(this.formatMessage(JSON.stringify(message || '')), 'color: #FF5555;', ...args);
-  }
-}
-
-export const customLogger = new Logger(Constants.NAME);
-
 /**
  * Creates a promise that resolves after a specified amount of time.
  * @param ms - The amount of milliseconds to wait.
