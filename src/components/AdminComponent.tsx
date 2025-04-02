@@ -5,7 +5,13 @@ import { tryCatch } from '@/lib/utils';
 import { useUser } from '@clerk/nextjs';
 import React, { useEffect, useState } from 'react';
 
-export default function AdminComponent({ children }: { children: React.ReactNode }): React.JSX.Element {
+export default function AdminComponent({
+  children,
+  fallback,
+}: {
+  children: React.ReactNode;
+  fallback?: React.ReactNode;
+}): React.JSX.Element {
   const { user } = useUser();
   const [isAdmin, setIsAdmin] = useState(false);
   const [isErrored, setIsErrored] = useState(false);
@@ -20,11 +26,17 @@ export default function AdminComponent({ children }: { children: React.ReactNode
         setIsLoading(false);
         return;
       }
-      setIsAdmin(admins.includes(user?.primaryEmailAddress?.emailAddress || ''));
+      if (!user?.primaryEmailAddress?.emailAddress) {
+        setIsAdmin(false);
+        setIsLoading(false);
+        return;
+      }
+      setIsAdmin(admins.includes(user.primaryEmailAddress.emailAddress));
       setIsLoading(false);
     };
     currentUserAsync();
   }, [user?.primaryEmailAddress?.emailAddress]);
+
   if (isErrored) {
     return <></>;
   }
@@ -35,6 +47,10 @@ export default function AdminComponent({ children }: { children: React.ReactNode
 
   if (isAdmin) {
     return <>{children}</>;
+  }
+
+  if (fallback) {
+    return <>{fallback}</>;
   }
 
   return <></>;

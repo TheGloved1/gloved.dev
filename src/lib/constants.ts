@@ -53,7 +53,7 @@ const Constants = {
       label: 'Qwen Coder-32b',
       value: 'qwen-2.5-coder-32b',
       provider: 'groq',
-      enabled: true,
+      enabled: false,
       description:
         'Specialized code generation model with production-quality code output, trained on 5.5 trillion tokens of code and technical content',
     },
@@ -61,7 +61,7 @@ const Constants = {
       label: 'Qwen qwq-32b',
       value: 'qwen-qwq-32b',
       provider: 'groq',
-      enabled: true,
+      enabled: false,
       description:
         'Advanced reasoning model delivering performance comparable to state-of-the-art models 20x larger, excelling in complex reasoning tasks',
     },
@@ -69,7 +69,7 @@ const Constants = {
       label: 'Llama 3.1-8b',
       value: 'llama-3.1-8b-instant',
       provider: 'groq',
-      enabled: true,
+      enabled: false,
       description: 'Lightweight version of Llama 3 optimized for fast responses and efficient inference',
     },
     {
@@ -102,6 +102,11 @@ const Constants = {
     description?: string;
   }[],
   getModelName: (modelKey: string): string | undefined => {
+    for (const model of Constants.NewChatModels) {
+      if (model.value === modelKey) {
+        return model.label;
+      }
+    }
     for (const category in Constants.ChatModels) {
       const models = Constants.ChatModels[category as ChatModelCategory];
       for (const name in models) {
@@ -146,6 +151,11 @@ const Constants = {
     title: 'Black Screen',
     link: '/black',
     description: 'This is just a black screen',
+  } as const,
+  White: {
+    title: 'White Screen',
+    link: '/white',
+    description: 'This is just a white screen',
   } as const,
   Discord: {
     title: 'Discord',

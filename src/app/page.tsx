@@ -27,172 +27,209 @@ export default function Page(): React.JSX.Element {
         <h1 className='text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]'>
           gloved<span className='text-[hsl(280,100%,40%)]'>.</span>dev
         </h1>
-        <div className='grid grid-cols-1 justify-items-center gap-4 sm:grid-cols-2 md:gap-8 lg:grid-cols-3'>
-          <Link
-            className='group flex h-full w-full max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
-            href={Constants.Home.link}
-            prefetch
-          >
-            <h3 className='text-2xl font-bold'>
-              {Constants.Home.title}{' '}
-              <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
-                {'->'}
-              </span>
-            </h3>
-            <div className='text-lg'>{Constants.Home.description}</div>
-          </Link>
-          <Link
-            className='group flex h-full w-full max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
-            href={Constants.Chat.link}
-            prefetch
-          >
-            <h3 className='text-2xl font-bold'>
-              {Constants.Chat.title}{' '}
-              <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
-                {'->'}
-              </span>
-            </h3>
-            <div className='text-lg'>{Constants.Chat.description}</div>
-          </Link>
-          <Link
-            className='group flex h-full w-full max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
-            href={Constants.FileUploader.link}
-            prefetch
-          >
-            <h3 className='text-2xl font-bold'>
-              {Constants.FileUploader.title}{' '}
-              <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
-                {'->'}
-              </span>
-            </h3>
-            <div className='text-lg'>{Constants.FileUploader.description}</div>
-          </Link>
-          <Link
-            className='group flex h-full w-full max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
-            href={Constants.Colors.link}
-            prefetch
-          >
-            <h3 className='text-2xl font-bold'>
-              {Constants.Colors.title}{' '}
-              <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
-                {'->'}
-              </span>
-            </h3>
-            <div className='text-lg'>{Constants.Colors.description}</div>
-          </Link>
-          <Link
-            className='group flex h-full w-full max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
-            href={Constants.Cookies.link}
-            prefetch
-          >
-            <h3 className='text-2xl font-bold'>
-              {Constants.Cookies.title}{' '}
-              <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
-                {'->'}
-              </span>
-            </h3>
-            <div className='text-lg'>{Constants.Cookies.description}</div>
-          </Link>
-          <Link
-            className='group flex h-full w-full max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
-            href={Constants.Todos.link}
-            prefetch
-          >
-            <h3 className='text-2xl font-bold'>
-              {Constants.Todos.title}{' '}
-              <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
-                {'->'}
-              </span>
-            </h3>
-            <div className='text-lg'>{Constants.Todos.description}</div>
-          </Link>
-          <Link
-            className='group flex h-full w-full max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
-            href={Constants.Hangman.link}
-            prefetch
-          >
-            <h3 className='text-2xl font-bold'>
-              {Constants.Hangman.title}{' '}
-              <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
-                {'->'}
-              </span>
-            </h3>
-            <div className='text-lg'>{Constants.Hangman.description}</div>
-          </Link>
-          <Link
-            className='group flex h-full w-full max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
-            href={Constants.Calc.link}
-            prefetch
-          >
-            <h3 className='text-2xl font-bold'>
-              {Constants.Calc.title}{' '}
-              <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
-                {'->'}
-              </span>
-            </h3>
-            <div className='text-lg'>{Constants.Calc.description}</div>
-          </Link>
-          <Link
-            className='group flex h-full w-full max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
-            href={Constants.Github.link}
-            prefetch
-          >
-            <h3 className='text-2xl font-bold'>
-              {Constants.Github.title}{' '}
-              <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
-                {'->'}
-              </span>
-            </h3>
-            <div className='text-lg'>{Constants.Github.description}</div>
-          </Link>
+        <div className='flex max-w-[1200px] flex-shrink-0 flex-grow flex-wrap justify-center gap-4'>
+          <div className='flex-shrink-0 flex-grow basis-[300px]'>
+            <Link
+              className='group flex h-full w-full flex-col justify-center gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
+              href={Constants.Home.link}
+              prefetch
+            >
+              <h3 className='text-2xl font-bold'>
+                {Constants.Home.title}{' '}
+                <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
+                  {'->'}
+                </span>
+              </h3>
+              <div className='text-lg'>{Constants.Home.description}</div>
+            </Link>
+          </div>
+          <div className='flex-shrink-0 flex-grow basis-[300px]'>
+            <Link
+              className='group flex h-full w-full flex-col justify-center gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
+              href={Constants.Chat.link}
+              prefetch
+            >
+              <h3 className='text-2xl font-bold'>
+                {Constants.Chat.title}{' '}
+                <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
+                  {'->'}
+                </span>
+              </h3>
+              <div className='text-lg'>{Constants.Chat.description}</div>
+            </Link>
+          </div>
+          <div className='flex-shrink-0 flex-grow basis-[300px]'>
+            <Link
+              className='group flex h-full w-full flex-col justify-center gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
+              href={Constants.FileUploader.link}
+              prefetch
+            >
+              <h3 className='text-2xl font-bold'>
+                {Constants.FileUploader.title}{' '}
+                <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
+                  {'->'}
+                </span>
+              </h3>
+              <div className='text-lg'>{Constants.FileUploader.description}</div>
+            </Link>
+          </div>
+          <div className='flex-shrink-0 flex-grow basis-[300px]'>
+            <Link
+              className='group flex h-full w-full flex-col justify-center gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
+              href={Constants.Colors.link}
+              prefetch
+            >
+              <h3 className='text-2xl font-bold'>
+                {Constants.Colors.title}{' '}
+                <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
+                  {'->'}
+                </span>
+              </h3>
+              <div className='text-lg'>{Constants.Colors.description}</div>
+            </Link>
+          </div>
+          <div className='flex-shrink-0 flex-grow basis-[300px]'>
+            <Link
+              className='group flex h-full w-full flex-col justify-center gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
+              href={Constants.Cookies.link}
+              prefetch
+            >
+              <h3 className='text-2xl font-bold'>
+                {Constants.Cookies.title}{' '}
+                <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
+                  {'->'}
+                </span>
+              </h3>
+              <div className='text-lg'>{Constants.Cookies.description}</div>
+            </Link>
+          </div>
+          <div className='flex-shrink-0 flex-grow basis-[300px]'>
+            <Link
+              className='group flex h-full w-full flex-col justify-center gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
+              href={Constants.Todos.link}
+              prefetch
+            >
+              <h3 className='text-2xl font-bold'>
+                {Constants.Todos.title}{' '}
+                <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
+                  {'->'}
+                </span>
+              </h3>
+              <div className='text-lg'>{Constants.Todos.description}</div>
+            </Link>
+          </div>
+          <div className='flex-shrink-0 flex-grow basis-[300px]'>
+            <Link
+              className='group flex h-full w-full flex-col justify-center gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
+              href={Constants.Hangman.link}
+              prefetch
+            >
+              <h3 className='text-2xl font-bold'>
+                {Constants.Hangman.title}{' '}
+                <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
+                  {'->'}
+                </span>
+              </h3>
+              <div className='text-lg'>{Constants.Hangman.description}</div>
+            </Link>
+          </div>
+          <div className='flex-shrink-0 flex-grow basis-[300px]'>
+            <Link
+              className='group flex h-full w-full flex-col justify-center gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
+              href={Constants.Calc.link}
+              prefetch
+            >
+              <h3 className='text-2xl font-bold'>
+                {Constants.Calc.title}{' '}
+                <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
+                  {'->'}
+                </span>
+              </h3>
+              <div className='text-lg'>{Constants.Calc.description}</div>
+            </Link>
+          </div>
+          <div className='flex-shrink-0 flex-grow basis-[300px]'>
+            <Link
+              className='group flex h-full w-full flex-col justify-center gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
+              href={Constants.Github.link}
+              prefetch
+            >
+              <h3 className='text-2xl font-bold'>
+                {Constants.Github.title}{' '}
+                <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
+                  {'->'}
+                </span>
+              </h3>
+              <div className='text-lg'>{Constants.Github.description}</div>
+            </Link>
+          </div>
         </div>
         <AdminComponent>
           <div className='divider mx-auto w-[75vw] max-w-[1000px] items-center self-center' />
           <h2 className='text-3xl font-bold'>
             <u>{'Admin Stuff'}</u>
           </h2>
-          <div className='grid grid-cols-1 gap-4 sm:grid-cols-1 md:gap-8'>
-            <Link
-              className='group flex h-full w-full max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
-              href={'/admin'}
-              prefetch
-            >
-              <h3 className='text-2xl font-bold'>
-                {'Admin Panel'}{' '}
-                <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
-                  {'->'}
-                </span>
-              </h3>
-              <div className='text-lg'>{'Admin page for admin stuff'}</div>
-            </Link>
-          </div>
-          <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8'>
-            <Link
-              className='group flex h-full w-full max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
-              href={Constants.Black.link}
-              prefetch
-            >
-              <h3 className='text-2xl font-bold'>
-                {Constants.Black.title}{' '}
-                <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
-                  {'->'}
-                </span>
-              </h3>
-              <div className='text-lg'>{Constants.Black.description}</div>
-            </Link>
-            <Link
-              className='group flex h-full w-full max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
-              href={Constants.Discord.link}
-              prefetch
-            >
-              <h3 className='text-2xl font-bold'>
-                {Constants.Discord.title}{' '}
-                <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
-                  {'->'}
-                </span>
-              </h3>
-              <div className='text-lg'>{Constants.Discord.description}</div>
-            </Link>
+          <div className='flex max-w-[1200px] flex-shrink-0 flex-grow flex-wrap justify-center gap-4'>
+            <div className='flex-shrink-0 flex-grow basis-[300px]'>
+              <Link
+                className='group flex h-full w-full flex-col justify-center gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
+                href={'/admin'}
+                prefetch
+              >
+                <h3 className='text-2xl font-bold'>
+                  {'Admin Panel'}{' '}
+                  <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
+                    {'->'}
+                  </span>
+                </h3>
+                <div className='text-lg'>{'Admin page for admin stuff'}</div>
+              </Link>
+            </div>
+            <div className='flex-shrink-0 flex-grow basis-[300px]'>
+              <Link
+                className='group flex h-full w-full flex-col justify-center gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
+                href={Constants.Black.link}
+                prefetch
+              >
+                <h3 className='text-2xl font-bold'>
+                  {Constants.Black.title}{' '}
+                  <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
+                    {'->'}
+                  </span>
+                </h3>
+                <div className='text-lg'>{Constants.Black.description}</div>
+              </Link>
+            </div>
+            <div className='flex-shrink-0 flex-grow basis-[300px]'>
+              <Link
+                className='group flex h-full w-full flex-col justify-center gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
+                href={Constants.White.link}
+                prefetch
+              >
+                <h3 className='text-2xl font-bold'>
+                  {Constants.White.title}{' '}
+                  <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
+                    {'->'}
+                  </span>
+                </h3>
+                <div className='text-lg'>{Constants.White.description}</div>
+              </Link>
+            </div>
+            <div className='flex-shrink-0 flex-grow basis-[300px]'>
+              <Link
+                className='group flex h-full w-full flex-col justify-center gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
+                href={Constants.Discord.link}
+                prefetch
+              >
+                <h3 className='text-2xl font-bold'>
+                  {Constants.Discord.title}{' '}
+                  <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
+                    {'->'}
+                  </span>
+                </h3>
+                <div className='text-lg'>{Constants.Discord.description}</div>
+              </Link>
+            </div>
           </div>
           <Counter />
         </AdminComponent>
