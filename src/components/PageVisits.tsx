@@ -6,10 +6,9 @@ import axios from 'axios';
 import React from 'react';
 
 const getVisits = async (visitorId: string | null) => {
-  const encodedIp = encodeURIComponent(visitorId || '');
-  const pageVisits = await axios.get<{ visitorIds: string[]; visits: number }>(apiRoute(`/page-visits/${encodedIp}`));
+  const encodedId = encodeURIComponent(visitorId || '');
+  const pageVisits = await axios.get<{ visitorIds: string[]; visits: number }>(apiRoute(`/page-visits/${encodedId}`));
   if (!pageVisits.data) throw new Error('Failed to get page visits');
-  console.log(pageVisits.data);
   return pageVisits.data;
 };
 
