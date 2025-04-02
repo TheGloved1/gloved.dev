@@ -27,7 +27,7 @@ export default function Page(): React.JSX.Element {
         <h1 className='text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]'>
           gloved<span className='text-[hsl(280,100%,40%)]'>.</span>dev
         </h1>
-        <div className='flex max-w-[1200px] flex-shrink-0 flex-grow flex-wrap justify-center gap-4'>
+        <div className='flex max-w-[1000px] flex-shrink-0 flex-grow flex-wrap justify-center gap-4'>
           <div className='flex-shrink-0 flex-grow basis-[300px]'>
             <Link
               className='group flex h-full w-full flex-col justify-center gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
@@ -169,7 +169,7 @@ export default function Page(): React.JSX.Element {
           <h2 className='text-3xl font-bold'>
             <u>{'Admin Stuff'}</u>
           </h2>
-          <div className='flex max-w-[1200px] flex-shrink-0 flex-grow flex-wrap justify-center gap-4'>
+          <div className='flex max-w-[1000px] flex-shrink-0 flex-grow flex-wrap justify-center gap-4'>
             <div className='flex-shrink-0 flex-grow basis-[300px]'>
               <Link
                 className='group flex h-full w-full flex-col justify-center gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
