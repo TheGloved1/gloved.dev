@@ -5,7 +5,7 @@ import { useLocalStorage } from '@/hooks/use-local-storage';
 import Constants from '@/lib/constants';
 import { Info } from 'lucide-react';
 
-const ModelDropdown = () => {
+export default function ModelDropdown() {
   const [model, setModel] = useLocalStorage<string>('model', Constants.ChatModels.default);
   return (
     <TooltipProvider>
@@ -28,6 +28,4 @@ const ModelDropdown = () => {
       </Select>
     </TooltipProvider>
   );
-};
-
-export default ModelDropdown;
+}
