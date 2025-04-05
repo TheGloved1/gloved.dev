@@ -49,7 +49,7 @@ class Database extends Dexie {
 
   constructor() {
     super('chatdb');
-    this.version(3).stores({
+    this.version(4).stores({
       threads: '++id, title, created_at, last_message_at, status',
       messages:
         '++id, threadId, content, model, role, attachments, reasoning, updated_at, status, [threadId+created_at], [threadId+status]',
