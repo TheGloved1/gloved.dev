@@ -53,7 +53,6 @@ const ChatInput = memo(
       const temp: string[] = [];
       if (canUpload && fileInputRef.current?.files?.length) {
         const files = Array.from(fileInputRef.current.files);
-        console.log('Uploading images...', JSON.stringify(files));
         for (const file of files) {
           const { data, error: uploadError } = await tryCatch(uploadImage(file, auth.userId!));
           if (uploadError) {
@@ -67,7 +66,7 @@ const ChatInput = memo(
             return;
           }
           temp.push(data);
-          fileInputRef.current.value = '';
+          fileInputRef.current.files = null;
           setImagePreview([]);
         }
         attachments = temp;
