@@ -67,12 +67,10 @@ const ChatInput = memo(
             return;
           }
           temp.push(data);
-          console.log('Temp attachments:', temp);
           fileInputRef.current.value = '';
           setImagePreview([]);
         }
         attachments = temp;
-        console.log('Attachments:', attachments);
       }
       if (createThread) {
         const threadId = await dxdb.createThread();
