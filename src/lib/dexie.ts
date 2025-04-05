@@ -22,6 +22,7 @@ export const messageSchema = z.object({
   id: z.string(),
   threadId: z.string(),
   content: z.string(),
+  attachments: z.array(z.string()).optional(),
   reasoning: z.string().optional(),
   model: z.string(),
   role: z.enum(['user', 'assistant']),
@@ -50,7 +51,8 @@ class Database extends Dexie {
     super('chatdb');
     this.version(3).stores({
       threads: '++id, title, created_at, last_message_at, status',
-      messages: '++id, threadId, content, model, role, updated_at, status, [threadId+created_at], [threadId+status]',
+      messages:
+        '++id, threadId, content, model, role, attachments, reasoning, updated_at, status, [threadId+created_at], [threadId+status]',
     });
 
     this.on('populate', async () => {
@@ -58,11 +60,11 @@ class Database extends Dexie {
     });
 
     this.threads.hook('creating', (primKey, obj) => {
-      console.log('[DEXIE] Creating thread', obj);
+      // console.log('[DEXIE] Creating thread', obj);
     });
 
     this.messages.hook('creating', (primKey, obj) => {
-      console.log('[DEXIE] Creating message', obj);
+      // console.log('[DEXIE] Creating message', obj);
     });
   }
 
@@ -150,11 +152,30 @@ class Database extends Dexie {
    * @param threadId The ID of the thread to delete.
    */
   async deleteThread(threadId: string) {
+    // Get all messages in the thread
+    const messages = await this.messages.where('threadId').equals(threadId).toArray();
+
+    // Collect all attachments from messages
+    const attachments = messages
+      .filter((msg) => msg.attachments && msg.attachments.length > 0)
+      .flatMap((msg) => msg.attachments || []);
+
+    const mockDelete = (urls: string[]) => {
+      return Promise.resolve({ success: true });
+    };
+    // Delete attachments if any exist
+    if (attachments.length > 0) {
+      await mockDelete(attachments);
+    }
+
+    // Mark thread as deleted
     await this.threads.update(threadId, { status: 'deleted', updated_at: createDate() });
+
+    // Mark messages as deleted
     await this.messages
       .where('threadId')
       .equals(threadId)
-      .modify({ status: 'deleted', content: '', updated_at: createDate() });
+      .modify({ status: 'deleted', content: '', updated_at: createDate(), attachments: undefined });
   }
 
   /**
@@ -362,6 +383,7 @@ export async function createMessage(
   setInput: (input: string) => void,
   callback?: () => void,
   systemPrompt?: string,
+  attachments?: string[],
 ) {
   setInput('');
   await dxdb.addMessage({
@@ -370,14 +392,11 @@ export async function createMessage(
     role: 'user',
     model,
     status: 'done',
+    attachments,
   });
-
   generateTitle(threadId);
+
   const allMessages = await dxdb.getThreadMessages(threadId);
-  const contextMessages = allMessages.map((m) => ({
-    role: m.role,
-    content: m.content,
-  }));
   const assistantMessageId = await dxdb.addMessage({
     threadId,
     role: 'assistant',
@@ -397,7 +416,7 @@ export async function createMessage(
         },
         body: JSON.stringify({
           system: systemPrompt,
-          messages: contextMessages,
+          messages: allMessages,
           model,
         }),
       }),
@@ -438,13 +457,9 @@ export async function updateMessage(
   callback();
   const messageContent: string = newContent || '';
   await dxdb.messages.update(message.id, { content: messageContent, updated_at: createDate(), model: model });
-
   generateTitle(message.threadId);
+
   const allMessages = await dxdb.getThreadMessages(message.threadId);
-  const contextMessages = allMessages.map((m) => ({
-    role: m.role,
-    content: m.content,
-  }));
   const assistantMessageId = await dxdb.addMessage({
     threadId: message.threadId,
     role: 'assistant',
@@ -462,7 +477,7 @@ export async function updateMessage(
         },
         body: JSON.stringify({
           system: systemPrompt,
-          messages: contextMessages,
+          messages: allMessages,
           model,
         }),
       }),
@@ -471,9 +486,11 @@ export async function updateMessage(
     const reader = data.body as ReadableStream<Uint8Array>;
     if (!reader) return;
 
-    // Call the helper function to process the stream
     await dxdb.threads.update(assistantMessageId, { status: 'streaming' });
+
+    // Call the helper function to process the stream
     await processStream(reader, assistantMessageId, callback);
+
     await dxdb.threads.update(assistantMessageId, { status: 'done' });
   } catch (e) {
     console.log('Uncaught error', e);
@@ -494,19 +511,11 @@ export async function updateMessage(
  */
 export async function generateTitle(threadId: string) {
   const allMessages = await dxdb.getThreadMessages(threadId);
-  const contextMessages = allMessages.map((m) => ({
-    role: m.role,
-    content: m.content,
-  }));
-  const messages = [
-    {
-      role: 'user',
-      content:
-        'Messages: [' +
-        contextMessages.map((m) => m.content).join('\n ') +
-        ']\n Generate a short, concise title for this thread so far.',
-    },
-  ];
+  const newMessage = {
+    role: 'user',
+    content: 'Generate a short, concise title for this thread so far.',
+  };
+  const messages = [...allMessages, newMessage];
   try {
     const { data, error } = await tryCatch(
       fetch('/api/chat', {

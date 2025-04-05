@@ -2,9 +2,12 @@
 import { createMessage, dxdb } from '@/lib/dexie';
 import React, { memo, useEffect, useState } from 'react';
 
+import { Tooltip } from '@/components/TooltipSystem';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import { useIsMobile } from '@/hooks/use-mobile';
 import Constants from '@/lib/constants';
+import { tryCatch, uploadImage } from '@/lib/utils';
+import { useAuth } from '@clerk/nextjs';
 import { ChevronDown, Loader2, Paperclip, Send, X } from 'lucide-react';
 import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
@@ -24,7 +27,7 @@ const ChatInput = memo(
     isAtBottom?: boolean;
   }) => {
     const [input, setInput] = useLocalStorage('input', '');
-    const [imagePreview, setImagePreview] = useLocalStorage<string | undefined | null>('imagePreview', null);
+    const [imagePreview, setImagePreview] = useLocalStorage<string[]>('imagePreview', []);
     const [rows, setRows] = useLocalStorage<number>('rows', 2);
     const router = useRouter();
     const isMobile = useIsMobile();
@@ -33,19 +36,49 @@ const ChatInput = memo(
     const [systemPrompt, setSystemPrompt] = useLocalStorage<string | undefined>('systemPrompt', undefined);
     const [model, setModel] = useLocalStorage<string>('model', Constants.ChatModels.default);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [canUpload, setCanUpload] = useState(false);
+    const [progress, setProgress] = useState<number>(0);
+    const auth = useAuth();
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const canUpload = false;
+    useEffect(() => {
+      setCanUpload(!!auth.userId);
+    }, [auth.userId]);
 
     const handleSubmit = async (e?: React.FormEvent<HTMLFormElement> | React.KeyboardEvent<HTMLTextAreaElement>) => {
       e?.preventDefault();
       setLoading(true);
+      let attachments: string[] | undefined;
+      const temp: string[] = [];
+      if (canUpload && fileInputRef.current?.files?.length) {
+        const files = Array.from(fileInputRef.current.files);
+        console.log('Uploading images...', JSON.stringify(files));
+        for (const file of files) {
+          const { data, error: uploadError } = await tryCatch(uploadImage(file, auth.userId!));
+          if (uploadError) {
+            toast.error('Failed to upload images');
+            setLoading(false);
+            return;
+          }
+          if (!data) {
+            toast.error('Failed to upload images');
+            setLoading(false);
+            return;
+          }
+          temp.push(data);
+          console.log('Temp attachments:', temp);
+          fileInputRef.current.value = '';
+          setImagePreview([]);
+        }
+        attachments = temp;
+        console.log('Attachments:', attachments);
+      }
       if (createThread) {
         const threadId = await dxdb.createThread();
         router.push('/chat/' + threadId);
         try {
-          await createMessage(threadId, input, model, setInput, scrollCallback, systemPrompt?.trim());
+          await createMessage(threadId, input, model, setInput, scrollCallback, systemPrompt?.trim(), attachments);
         } catch (e) {
           toast.error('Failed to generate message');
           setLoading(false);
@@ -53,12 +86,8 @@ const ChatInput = memo(
         }
         setLoading(false);
       } else {
-        await createMessage(threadId, input, model, setInput, scrollCallback, systemPrompt?.trim());
+        await createMessage(threadId, input, model, setInput, scrollCallback, systemPrompt?.trim(), attachments);
         setLoading(false);
-        setInput('');
-        if (fileInputRef.current) {
-          fileInputRef.current.value = '';
-        }
         setRows(2);
       }
     };
@@ -71,28 +100,43 @@ const ChatInput = memo(
     }, [input, setRows]);
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0];
-      if (file) {
-        if (!file.type.startsWith('image/')) {
-          toast.error('Only image files are allowed.');
-          return;
+      const files = e.target.files;
+      if (files?.length) {
+        const validImages: string[] = [];
+        for (const file of Array.from(files)) {
+          if (!file.type.startsWith('image/')) {
+            toast.error('Only image files are allowed.');
+            continue;
+          }
+          if (file.size > Constants.MAX_FILE_SIZE) {
+            toast.error(`File size exceeds the ${Constants.FILE_SIZE_LIMIT_MB}MB limit.`);
+            continue;
+          }
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            if (reader.result) {
+              validImages.push(reader.result as string);
+              setImagePreview((prev) => [...(prev || []), ...validImages]);
+            }
+          };
+          reader.readAsDataURL(file);
         }
-        if (file.size > Constants.MAX_FILE_SIZE) {
-          toast.error(`File size exceeds the ${Constants.FILE_SIZE_LIMIT_MB}MB limit.`);
-          return;
-        }
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setImagePreview(reader.result as string);
-        };
-        reader.readAsDataURL(file);
       }
     };
 
-    const removeImage = () => {
-      setImagePreview(null);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
+    const removeImage = (index: number) => {
+      setImagePreview((prev) => prev?.filter((_, i) => i !== index));
+      const fileInput = fileInputRef.current;
+      if (fileInput && fileInput.files) {
+        const dataTransfer = new DataTransfer();
+        const { files } = fileInput;
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+          if (i !== index) {
+            dataTransfer.items.add(file);
+          }
+        }
+        fileInput.files = dataTransfer.files;
       }
     };
 
@@ -136,26 +180,30 @@ const ChatInput = memo(
                   }}
                 >
                   <div className='flex flex-grow flex-col'>
-                    {imagePreview && (
-                      <div className='relative mb-2 h-20 w-20'>
-                        <Image
-                          src={imagePreview}
-                          fill
-                          alt='Image preview'
-                          className='h-full w-full rounded-md object-cover'
-                        />
-                        <button
-                          onClick={removeImage}
-                          type='button'
-                          className='absolute -right-2 -top-2 rounded-full bg-neutral-800 p-1 text-neutral-200 hover:bg-neutral-700'
-                        >
-                          <X className='h-4 w-4' />
-                        </button>
+                    {imagePreview.length > 0 && (
+                      <div className='flex flex-row gap-2 pb-2'>
+                        {imagePreview.slice(0, 2).map((image, index) => (
+                          <div key={index} className='relative h-20 w-20'>
+                            <Image src={image} fill alt='Image preview' className='h-full w-full rounded-md object-cover' />
+                            <button
+                              onClick={() => removeImage(index)}
+                              type='button'
+                              className='absolute -right-2 -top-2 rounded-full bg-neutral-800 p-1 text-neutral-200 hover:bg-neutral-700'
+                            >
+                              <X className='h-4 w-4' />
+                            </button>
+                          </div>
+                        ))}
+                        {imagePreview.length > 2 && (
+                          <div className='pl-2 text-xs text-secondary-foreground/60 opacity-50'>
+                            + {imagePreview.length - 2} more
+                          </div>
+                        )}
                       </div>
                     )}
                     <div className='flex flex-grow flex-row items-start'>
                       <textarea
-                        className='w-full resize-none bg-transparent pr-10 text-base leading-6 text-foreground outline-none placeholder:text-secondary-foreground/60 disabled:opacity-0'
+                        className='w-full resize-none bg-transparent pr-10 text-base leading-6 text-foreground outline-none scrollbar-thin scrollbar-track-transparent scrollbar-thumb-inherit placeholder:text-secondary-foreground/60'
                         style={{ height: `${(rows + 1) * 24}px` }}
                         value={input || ''}
                         disabled={loading}
@@ -178,9 +226,47 @@ const ChatInput = memo(
                           }
                         }}
                       />
+                      {canUpload ?
+                        <div className='px-1'>
+                          <input
+                            type='file'
+                            ref={fileInputRef}
+                            disabled={loading}
+                            onChange={handleImageChange}
+                            accept='image/jpeg, image/png, image/webp'
+                            className='hidden'
+                            id='image-upload'
+                          />
+                          <Tooltip content='Upload image' size='sm' unselectable='on' radius='lg' animationDuration={100}>
+                            <label
+                              htmlFor='image-upload'
+                              className='-mb-2 inline-flex h-auto cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md px-1 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-neutral-800/40 hover:text-neutral-300 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
+                            >
+                              <Paperclip className='!size-5' />
+                            </label>
+                          </Tooltip>
+                        </div>
+                      : <div className='px-1'>
+                          <input className='hidden' id='image-upload' />
+                          <Tooltip
+                            content='Sign in to upload images (Note: May have bugs)'
+                            size='sm'
+                            unselectable='on'
+                            radius='lg'
+                            animationDuration={100}
+                          >
+                            <label
+                              htmlFor='image-upload'
+                              className='-mb-2 inline-flex h-auto cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md px-1 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-neutral-800/40 hover:text-neutral-300 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
+                            >
+                              <Paperclip className='!size-5' />
+                            </label>
+                          </Tooltip>
+                        </div>
+                      }
                       <button
                         type='submit'
-                        disabled={loading || (!input.trim() && !imagePreview)}
+                        disabled={loading || (!!!input.trim() && !!!imagePreview?.length)}
                         className='border-reflect button-reflect relative inline-flex h-9 w-9 items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-[rgb(162,59,103)] p-2 text-sm font-semibold text-pink-50 shadow transition-colors hover:bg-[#d56698] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring active:bg-[rgb(162,59,103)] disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
                       >
                         {loading ?
@@ -191,50 +277,7 @@ const ChatInput = memo(
                     </div>
                     <div className='flex flex-col gap-2 md:flex-row md:items-center'>
                       <div className='flex items-center gap-1'>
-                        {isMobile ?
-                          <>
-                            {canUpload && (
-                              <>
-                                <input
-                                  type='file'
-                                  ref={fileInputRef}
-                                  onChange={handleImageChange}
-                                  accept='image/jpeg, image/png, image/webp'
-                                  className='hidden'
-                                  id='image-upload'
-                                />
-                                <label
-                                  htmlFor='image-upload'
-                                  className='-mb-2 inline-flex h-auto -translate-y-1.5 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md px-2 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-neutral-800/40 hover:text-neutral-300 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
-                                >
-                                  <Paperclip className='!size-5' />
-                                </label>
-                              </>
-                            )}
-                            <ModelDropdown />
-                          </>
-                        : <>
-                            <ModelDropdown />
-                            {canUpload && (
-                              <>
-                                <input
-                                  type='file'
-                                  ref={fileInputRef}
-                                  onChange={handleImageChange}
-                                  accept='image/jpeg, image/png, image/webp'
-                                  className='hidden'
-                                  id='image-upload'
-                                />
-                                <label
-                                  htmlFor='image-upload'
-                                  className='-mb-2 inline-flex h-auto -translate-y-1.5 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md px-2 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-neutral-800/40 hover:text-neutral-300 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
-                                >
-                                  <Paperclip className='!size-5' />
-                                </label>
-                              </>
-                            )}
-                          </>
-                        }
+                        <ModelDropdown />
                       </div>
                     </div>
                   </div>

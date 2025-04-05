@@ -300,3 +300,45 @@ export async function populateOnboardingThreads(db: dxdbType) {
     status: 'done',
   });
 }
+
+/**
+ * Formats the message content.
+ * @param content The content of the message.
+ * @param attachments Optional attachments to be included in the message.
+ * @returns The formatted message content.
+ */
+export function formatMessageContent(content: string, attachments?: string[]) {
+  if (attachments) {
+    if (!content.trim()) {
+      return [...attachments.map((url) => ({ type: 'image', image: url }))];
+    }
+    return [{ type: 'text', text: content }, ...attachments.map((url) => ({ type: 'image', image: url }))];
+  }
+  return content;
+}
+
+export async function uploadImage(file: File, userId?: string) {
+  try {
+    if (!userId) {
+      throw new Error('User ID is required');
+    }
+
+    const formData = new FormData();
+    formData.append('userId', userId);
+    formData.append('file', file);
+
+    const response = await fetch(apiRoute('/images/upload'), {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error('Upload failed');
+    }
+
+    const data = (await response.json()) as { url: string };
+    return data.url;
+  } catch (err) {
+    throw err;
+  }
+}

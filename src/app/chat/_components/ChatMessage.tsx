@@ -8,10 +8,23 @@ import Constants from '@/lib/constants';
 import { dxdb, Message, updateMessage } from '@/lib/dexie';
 import { tryCatch } from '@/lib/utils';
 import { Copy, RefreshCcw, Send, SquarePen, Volume2Icon, VolumeXIcon } from 'lucide-react';
+import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import { memo, useCallback, useState } from 'react';
 import { toast } from 'sonner';
 import Timestamp from './Timestamp';
+
+const renderImages = (attachments: string[] | undefined) => {
+  if (!attachments || attachments.length === 0) return null;
+
+  return (
+    <div className='flex flex-row gap-1'>
+      {attachments.map((attachment, index) => {
+        return <Image width={150} height={150} className='my-4 rounded-lg' key={index} src={attachment} alt='Attachment' />;
+      })}
+    </div>
+  );
+};
 
 export default memo(function ChatMessage({
   message,
@@ -43,7 +56,7 @@ export default memo(function ChatMessage({
   );
 
   if (message.status === 'error') return <ErrorAlert>Error: Something went wrong, please try again.</ErrorAlert>;
-  if (message.content.trim() === '') return <div>...</div>;
+  if (message.content.trim() === '' && !message.attachments) return <div key={message.id} id={message.id}></div>;
 
   return (
     <div
@@ -62,6 +75,7 @@ export default memo(function ChatMessage({
           : `group relative w-full max-w-full break-words`
         }
       >
+        {renderImages(message.attachments)}
         {message.role === 'user' && input !== null ?
           <>
             <textarea
