@@ -45,7 +45,6 @@ export async function getAllMessagesForUser(userId: string) {
   const keys = await redis.keys(`sync:msg:${userId}:*`);
   if (keys.length === 0) return [];
   const kvMessages = await redis.mget(keys);
-  console.log('[SYNC] Messages from KV:', kvMessages);
   const messages = kvMessages.map((message) => message);
   if (messages.length === 0) return [];
 
