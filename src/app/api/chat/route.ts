@@ -15,8 +15,6 @@ import {
   wrapLanguageModel,
 } from 'ai';
 
-export const maxDuration = 120;
-
 const google = createGoogleGenerativeAI({ apiKey: env.GEMINI });
 const groq = createGroq({ apiKey: env.GROQ });
 
