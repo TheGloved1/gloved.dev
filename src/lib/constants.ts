@@ -163,7 +163,7 @@ const Constants = {
     description: 'Join my Discord to chat!',
   } as const,
   Chat: {
-    title: 'Chat',
+    title: 'GlovedChat',
     link: '/chat',
     description: 'A VERY fast, local-first, AI chat web app using a local IndexedDB database, WARNING: HE IS EVIL',
   } as const,

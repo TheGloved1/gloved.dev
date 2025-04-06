@@ -4,13 +4,13 @@ import ChatBotSidebar from './_components/ChatSidebar';
 import './_components/chatbot.css';
 
 export const metadata: Metadata = {
-  title: Constants.NAME + ' | ' + Constants.Chat.title,
+  title: Constants.Chat.title,
   description: Constants.Chat.description,
   icons: '/bot.webp',
   openGraph: {
-    title: Constants.NAME + ' | ' + Constants.Chat.title,
+    title: Constants.Chat.title,
     description: Constants.Chat.description,
-    url: `https://${Constants.NAME}`,
+    url: `https://${Constants.NAME}/chat`,
     type: 'website',
     siteName: Constants.NAME,
     locale: 'en_US',
