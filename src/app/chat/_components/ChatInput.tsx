@@ -94,11 +94,11 @@ const ChatInput = memo(
     };
 
     useEffect(() => {
-      if (query) {
+      if (query && createThread) {
         handleSubmit(undefined);
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [query]);
+    }, [query, createThread]);
 
     useEffect(() => {
       const minRows = 2;
