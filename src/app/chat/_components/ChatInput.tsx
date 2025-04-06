@@ -27,7 +27,7 @@ const ChatInput = memo(
     isAtBottom?: boolean;
   }) => {
     const [input, setInput] = useLocalStorage('input', '');
-    const [imagePreview, setImagePreview] = useLocalStorage<string[]>('imagePreview', []);
+    const [imagePreview, setImagePreview] = useState<string[]>([]);
     const [rows, setRows] = useLocalStorage<number>('rows', 2);
     const router = useRouter();
     const isMobile = useIsMobile();
