@@ -10,7 +10,7 @@ import { tryCatch, uploadImage } from '@/lib/utils';
 import { useAuth } from '@clerk/nextjs';
 import { ChevronDown, Loader2, Paperclip, Send, X } from 'lucide-react';
 import Image from 'next/image';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useRef } from 'react';
 import { toast } from 'sonner';
 import MobileInputDialog from './MobileInputDialog';
@@ -32,6 +32,8 @@ const ChatInput = memo(
     const router = useRouter();
     const isMobile = useIsMobile();
     const { threadId } = useParams<{ threadId: string }>();
+    const searchParams = useSearchParams();
+    const query = searchParams.get('q');
     const [loading, setLoading] = useState<boolean>(false);
     const [systemPrompt, setSystemPrompt] = useLocalStorage<string | undefined>('systemPrompt', undefined);
     const [model, setModel] = useLocalStorage<string>('model', Constants.ChatModels.default);
@@ -46,7 +48,9 @@ const ChatInput = memo(
       setCanUpload(!!auth.userId);
     }, [auth.userId]);
 
-    const handleSubmit = async (e?: React.FormEvent<HTMLFormElement> | React.KeyboardEvent<HTMLTextAreaElement>) => {
+    const handleSubmit = async (
+      e?: React.FormEvent<HTMLFormElement> | React.KeyboardEvent<HTMLTextAreaElement> | undefined,
+    ) => {
       e?.preventDefault();
       setLoading(true);
       let attachments: string[] | undefined;
@@ -75,7 +79,7 @@ const ChatInput = memo(
         const threadId = await dxdb.createThread();
         router.push('/chat/' + threadId);
         try {
-          await createMessage(threadId, input, model, setInput, scrollCallback, systemPrompt?.trim(), attachments);
+          await createMessage(threadId, query || input, model, setInput, scrollCallback, systemPrompt?.trim(), attachments);
         } catch (e) {
           toast.error('Failed to generate message');
           setLoading(false);
@@ -83,11 +87,18 @@ const ChatInput = memo(
         }
         setLoading(false);
       } else {
-        await createMessage(threadId, input, model, setInput, scrollCallback, systemPrompt?.trim(), attachments);
+        await createMessage(threadId, query || input, model, setInput, scrollCallback, systemPrompt?.trim(), attachments);
         setLoading(false);
         setRows(2);
       }
     };
+
+    useEffect(() => {
+      if (query) {
+        handleSubmit(undefined);
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [query]);
 
     useEffect(() => {
       const minRows = 2;
