@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import Constants from '@/lib/constants';
 import { ChevronLeft } from 'lucide-react';
 import { Metadata } from 'next';
-import { Link } from 'next-view-transitions';
+import Link from 'next/link';
 import React from 'react';
 import Dropdown from './_components/Dropdown';
 

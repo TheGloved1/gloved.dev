@@ -253,9 +253,13 @@ class Database extends Dexie {
 }
 
 export const dxdb = new Database();
-if (dxdb.hasFailed()) {
-  await dxdb.deleteAllData();
+async function checkDb() {
+  if (typeof window === 'undefined') return;
+  if (dxdb.hasFailed()) {
+    return await dxdb.deleteAllData();
+  }
 }
+checkDb();
 export type dxdbType = typeof dxdb;
 
 /**

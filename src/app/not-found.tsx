@@ -1,6 +1,6 @@
 'use client';
 import { motion } from 'framer-motion';
-import { Link } from 'next-view-transitions';
+import Link from 'next/link';
 
 export default function NotFound() {
   return (

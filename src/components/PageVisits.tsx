@@ -17,16 +17,16 @@ export function PageVisits(): React.JSX.Element | null {
   if (visitorId === null) {
     setVisitorId(crypto.randomUUID());
   }
-  const ipQuery = useQuery({
+  const visitsQuery = useQuery({
     queryKey: ['pageVisits'],
     queryFn: () => getVisits(visitorId || null),
     initialData: { visitorIds: [], visits: 0 },
   });
-  if (ipQuery.isError) return null;
-  if (ipQuery.isFetching) return null;
+  if (visitsQuery.isError) return null;
+  if (visitsQuery.isFetching) return null;
   return (
     <div className='fixed bottom-0 left-0 right-0 items-center justify-center gap-4'>
-      <div className='text-center text-[0.5rem] sm:text-[0.6rem] md:text-[0.7rem] lg:text-[0.8rem]'>{`This page has been loaded ${ipQuery.data.visits} times by ${ipQuery.data.visitorIds.length} visitors`}</div>
+      <div className='text-center text-[0.5rem] sm:text-[0.6rem] md:text-[0.7rem] lg:text-[0.8rem]'>{`This page has been loaded ${visitsQuery.data.visits} times by ${visitsQuery.data.visitorIds.length} visitors`}</div>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import Constants from '@/lib/constants';
 import { Metadata } from 'next';
-import { Link } from 'next-view-transitions';
+import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: Constants.NAME + ' | ' + Constants.Discord.title,

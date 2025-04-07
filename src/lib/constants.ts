@@ -165,7 +165,7 @@ const Constants = {
   Chat: {
     title: 'GlovedChat',
     link: '/chat',
-    description: 'A VERY fast, local-first, AI chat web app using a local IndexedDB database, WARNING: HE IS EVIL',
+    description: 'A VERY fast, local-first, AI chat web app using local IndexedDB database, WARNING: HE IS EVIL',
   } as const,
   Colors: {
     title: 'Stupid Game',

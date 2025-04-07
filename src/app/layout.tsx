@@ -9,7 +9,6 @@ import { dark } from '@clerk/themes';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Metadata } from 'next';
-import { ViewTransitions } from 'next-view-transitions';
 import { JetBrains_Mono } from 'next/font/google';
 import React from 'react';
 import './globals.css';
@@ -45,25 +44,23 @@ const jetbrains = JetBrains_Mono({
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <ClerkProvider afterSignOutUrl='/chat' appearance={{ variables: { colorPrimary: '#333' }, baseTheme: dark }}>
-      <ViewTransitions>
-        <html lang='en' suppressHydrationWarning>
-          {env.NODE_ENV === 'development' && (
-            <>
-              {/* Dev Only Scripts Here */}
-              {/* <Script defer crossOrigin='anonymous' src='//unpkg.com/react-scan/dist/auto.global.js' /> */}
-            </>
-          )}
-          <body className={`dark bg-background antialiased ${jetbrains.className}`}>
-            <Toaster toastOptions={{ style: { background: '#333' } }} />
-            <Providers>
-              <Analytics />
-              <SpeedInsights />
-              <SourceCodeButton />
-              <TooltipProvider>{children}</TooltipProvider>
-            </Providers>
-          </body>
-        </html>
-      </ViewTransitions>
+      <html lang='en' suppressHydrationWarning>
+        {env.NODE_ENV === 'development' && (
+          <>
+            {/* Dev Only Scripts Here */}
+            {/* <Script defer crossOrigin='anonymous' src='//unpkg.com/react-scan/dist/auto.global.js' /> */}
+          </>
+        )}
+        <body className={`dark bg-background antialiased ${jetbrains.className}`}>
+          <Toaster toastOptions={{ style: { background: '#333' } }} />
+          <Providers>
+            <Analytics />
+            <SpeedInsights />
+            <SourceCodeButton />
+            <TooltipProvider>{children}</TooltipProvider>
+          </Providers>
+        </body>
+      </html>
     </ClerkProvider>
   );
 }
