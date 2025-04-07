@@ -11,7 +11,7 @@ import { addAdmin, dbSync, deleteSync, deleteUserData, getAdmins, removeAdmin } 
 export async function fetchSystemPrompt() {
   const { data, error } = await tryCatch(fetch(apiRoute('/system-prompt')));
   if (error) {
-    return '';
+    return null;
   }
   return await data.text();
 }

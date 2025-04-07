@@ -57,9 +57,6 @@ const safetySettings: SafetySettings = [
   },
 ];
 
-const GoogleModels = Constants.ChatModels.google;
-const GroqModels = Constants.ChatModels.groq;
-
 const modelProvider = customProvider({
   languageModels: {
     'gemini-2.0-flash': google.languageModel('gemini-2.0-flash', { safetySettings }),
@@ -67,6 +64,7 @@ const modelProvider = customProvider({
     'gemini-2.0-pro-exp-02-05': google.languageModel('gemini-2.0-pro-exp-02-05', { safetySettings }),
     'qwen-2.5-coder-32b': groq.languageModel('qwen-2.5-coder-32b'),
     'qwen-qwq-32b': groq.languageModel('qwen-qwq-32b'),
+    'meta-llama/llama-4-scout-17b-16e-instruct': groq.languageModel('meta-llama/llama-4-scout-17b-16e-instruct'),
     'llama-3.1-8b-instant': groq.languageModel('llama-3.1-8b-instant'),
     'llama-3.3-70b-versatile': groq.languageModel('llama-3.3-70b-versatile'),
     'deepseek-r1-distill-qwen-32b': groq.languageModel('deepseek-r1-distill-qwen-32b'),
@@ -103,7 +101,7 @@ export type modelID = Parameters<(typeof modelProvider)['languageModel']>['0'];
 export async function POST(req: Request) {
   const parsed: { model?: modelID; system?: string; messages: Omit<Message, 'id'>[] } = await req.json();
   const { messages } = parsed;
-  const system = !!parsed.system?.trim() ? parsed.system?.trim() : ((await tryCatch(fetchSystemPrompt())).data ?? '');
+  const system = !!parsed.system?.trim() ? parsed.system.trim() : ((await tryCatch(fetchSystemPrompt())).data ?? '');
 
   const coreMessages = messages.map((msg) => ({
     role: msg.role,
