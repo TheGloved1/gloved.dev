@@ -317,6 +317,13 @@ export function formatMessageContent(content: string, attachments?: string[]) {
   return content;
 }
 
+/**
+ * Uploads an image to the server and returns the URL of the uploaded image.
+ * @param file The image file to be uploaded.
+ * @param userId The ID of the user who is uploading the image.
+ * @returns The URL of the uploaded image.
+ * @throws If the user ID is not provided or if the upload fails.
+ */
 export async function uploadImage(file: File, userId?: string) {
   try {
     if (!userId) {

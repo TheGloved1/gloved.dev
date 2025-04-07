@@ -2,8 +2,7 @@
 import { env } from '@/env';
 import { Message, Thread } from '@/lib/dexie';
 import { apiRoute, tryCatch } from '@/lib/utils';
-import { IgDownloader } from 'ig-downloader';
-import { addAdmin, dbSync, deleteSync, deleteUserData, getAdmins, removeAdmin } from './db';
+import { addAdmin, dbSync, deleteSync, deleteUserData, getAdmins, removeAdmin } from './redis';
 
 /**
  * Fetches the system prompt from the server.
@@ -60,47 +59,6 @@ export async function deleteUserDataAction(userId: string) {
  */
 export async function deleteSyncAction() {
   await deleteSync();
-}
-
-/**
- * Posts a file to Discord.
- * @param url The URL of the file to post.
- * @param type The type of the file (video or image).
- * @returns An object containing the post and success status.
- */
-async function postToDiscord(url: string, type: 'video' | 'image') {
-  const response = await fetch(url);
-  const blob = await response.blob();
-
-  const formData = new FormData();
-  formData.append('file', blob, type === 'video' ? 'video.mp4' : 'image.jpg');
-
-  const webhookUrl =
-    'https://discord.com/api/webhooks/1348939145942405161/Yw1uZCyWalvDtYTTj-h499v0shalBvfhSx1rkptnlM7TTldnwecKioXr_Uh7iZawQgmc';
-  await fetch(webhookUrl, {
-    method: 'POST',
-    body: formData,
-  });
-  return { url, type };
-}
-
-/**
- * Uploads a reel to Discord.
- * @param link The link to the reel to upload.
- * @returns An object containing the post and success status.
- */
-export async function uploadReelAction(link: string) {
-  const { data, error } = await tryCatch(IgDownloader(link));
-  if (error) {
-    return { post: null, success: false, error };
-  }
-  const { data: post, error: postError } = await tryCatch(
-    postToDiscord(data.is_video ? data.video_url : data.display_url, data.is_video ? 'video' : 'image'),
-  );
-  if (postError) {
-    return { post: null, success: false, error: postError };
-  }
-  return { post, success: true };
 }
 
 export async function addAdminAction(email: string) {
