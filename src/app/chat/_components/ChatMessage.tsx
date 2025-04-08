@@ -58,7 +58,12 @@ export default memo(function ChatMessage({
   );
 
   if (message.status === 'error') return <ErrorAlert>Error: Something went wrong, please try again.</ErrorAlert>;
-  if (message.content.trim() === '' && !message.attachments && !message.reasoning && message.status === 'streaming')
+  if (
+    message.content.trim() === '' &&
+    !message.attachments &&
+    (!message.reasoning || message.reasoning.trim() === '') &&
+    message.status === 'streaming'
+  )
     return (
       <div key={message.id} id={message.id}>
         <LoadingSvg />
@@ -125,7 +130,7 @@ export default memo(function ChatMessage({
             </div>
           </>
         : <>
-            {message.reasoning && (
+            {message.reasoning?.trim() !== '' && (
               <div className='mb-2 flex items-center gap-2'>
                 <button
                   onClick={() => setShowReasoning(!showReasoning)}
@@ -138,7 +143,7 @@ export default memo(function ChatMessage({
                 </button>
               </div>
             )}
-            {message.reasoning && showReasoning && (
+            {message.reasoning?.trim() !== '' && showReasoning && (
               <div className='mb-4 rounded-lg bg-neutral-800/20 p-3'>
                 <Markdown className='prose prose-sm prose-neutral prose-invert max-w-none text-white prose-pre:m-0 prose-pre:bg-transparent prose-pre:p-0'>
                   {message.reasoning}
