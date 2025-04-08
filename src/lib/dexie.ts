@@ -322,7 +322,7 @@ export async function processStream(
       if (line.startsWith('0:')) {
         callback();
         // This is a message chunk
-        const json = JSON.parse(line.slice(2)); // Remove the prefix
+        const json: string = JSON.parse(line.slice(2)); // Remove the prefix
         messageContent += json; // Append the new content
         if (messageId) {
           await dxdb.messages.update(messageId, {
@@ -333,8 +333,8 @@ export async function processStream(
       } else if (line.startsWith('g:')) {
         callback();
         // This is a reasoning chunk
-        const json = JSON.parse(line.slice(2)); // Remove the prefix
-        reasoning += json; // Append the new content
+        const json: string = JSON.parse(line.slice(2)); // Remove the prefix
+        reasoning += json.replace(/<think>|<\/think>/g, '');
         if (messageId) {
           await dxdb.messages.update(messageId, {
             updated_at: createDate(),
@@ -528,7 +528,8 @@ export async function generateTitle(threadId: string) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          system: 'You are a short title generator, do not generate any text except for the title.',
+          system:
+            'You are a short title generator, do not generate any text except for the title. Do not include any special characters. Only include alphanumeric characters and spaces.',
           messages: messages,
         }),
       }),

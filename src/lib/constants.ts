@@ -34,6 +34,7 @@ const Constants = {
       enabled: true,
       description:
         "Google's flagship AI model, optimized for speed and efficiency while maintaining high performance in various tasks",
+      reasoning: false,
     },
     {
       label: 'Gemini 2.0 Flash Lite',
@@ -41,13 +42,24 @@ const Constants = {
       provider: 'google',
       enabled: true,
       description: 'A lightweight version of Gemini 2.0 Flash, designed for faster responses and lower resource usage',
+      reasoning: false,
     },
     {
       label: 'Gemini 2.0 Pro Experimental',
       value: 'gemini-2.0-pro-exp-02-05',
       provider: 'google',
-      enabled: true,
+      enabled: false,
       description: 'An experimental version of Gemini with enhanced capabilities for advanced reasoning and complex tasks',
+      reasoning: false,
+    },
+    {
+      label: 'Gemini 2.5 Pro Experimental',
+      value: 'gemini-2.5-pro-exp-03-25',
+      provider: 'google',
+      enabled: true,
+      description:
+        "Google's state-of-the-art thinking model, capable of reasoning over complex problems in code, math, and STEM, as well as analyzing large datasets, codebases, and documents using long context.",
+      reasoning: false,
     },
     {
       label: 'Qwen Coder-32b',
@@ -56,6 +68,7 @@ const Constants = {
       enabled: false,
       description:
         'Specialized code generation model with production-quality code output, trained on 5.5 trillion tokens of code and technical content',
+      reasoning: false,
     },
     {
       label: 'Qwen qwq-32b',
@@ -64,6 +77,15 @@ const Constants = {
       enabled: false,
       description:
         'Advanced reasoning model delivering performance comparable to state-of-the-art models 20x larger, excelling in complex reasoning tasks',
+      reasoning: false,
+    },
+    {
+      label: 'Llama 4 Scout',
+      value: 'meta-llama/llama-4-scout-17b-16e-instruct',
+      provider: 'groq',
+      enabled: false,
+      description: 'A specialized model for reasoning tasks, optimized for speed and accuracy',
+      reasoning: false,
     },
     {
       label: 'Llama 3.1-8b',
@@ -71,13 +93,15 @@ const Constants = {
       provider: 'groq',
       enabled: false,
       description: 'Lightweight version of Llama 3 optimized for fast responses and efficient inference',
+      reasoning: false,
     },
     {
       label: 'Llama 3.3-70b',
       value: 'llama-3.3-70b-versatile',
       provider: 'groq',
-      enabled: true,
+      enabled: false,
       description: 'Large-scale Llama model with versatile capabilities across various AI tasks',
+      reasoning: false,
     },
     {
       label: 'Deepseek R1 (Qwen Distill)',
@@ -86,6 +110,7 @@ const Constants = {
       enabled: true,
       description:
         'Distilled version of DeepSeek R1, optimized for high performance reasoning tasks using Qwen architecture',
+      reasoning: false,
     },
     {
       label: 'Deepseek R1 (Llama Distill)',
@@ -93,14 +118,9 @@ const Constants = {
       provider: 'groq',
       enabled: true,
       description: 'Distilled version of DeepSeek R1, fine-tuned from Llama-3.3-70B for robust reasoning capabilities',
+      reasoning: true,
     },
-  ] as {
-    label: string;
-    value: string;
-    provider: ChatModelCategory;
-    enabled: boolean;
-    description?: string;
-  }[],
+  ] as const,
   getModelName: (modelKey: string): string | undefined => {
     for (const model of Constants.NewChatModels) {
       if (model.value === modelKey) {

@@ -10,6 +10,7 @@ import {
   createDataStreamResponse,
   customProvider,
   extractReasoningMiddleware,
+  LanguageModelV1,
   smoothStream,
   streamText,
   wrapLanguageModel,
@@ -57,22 +58,27 @@ const safetySettings: SafetySettings = [
   },
 ];
 
-const modelProvider = customProvider({
-  languageModels: {
-    'gemini-2.0-flash': google.languageModel('gemini-2.0-flash', { safetySettings }),
-    'gemini-2.0-flash-lite': google.languageModel('gemini-2.0-flash-lite', { safetySettings }),
-    'gemini-2.0-pro-exp-02-05': google.languageModel('gemini-2.0-pro-exp-02-05', { safetySettings }),
-    'qwen-2.5-coder-32b': groq.languageModel('qwen-2.5-coder-32b'),
-    'qwen-qwq-32b': groq.languageModel('qwen-qwq-32b'),
-    'meta-llama/llama-4-scout-17b-16e-instruct': groq.languageModel('meta-llama/llama-4-scout-17b-16e-instruct'),
-    'llama-3.1-8b-instant': groq.languageModel('llama-3.1-8b-instant'),
-    'llama-3.3-70b-versatile': groq.languageModel('llama-3.3-70b-versatile'),
-    'deepseek-r1-distill-qwen-32b': groq.languageModel('deepseek-r1-distill-qwen-32b'),
-    'deepseek-r1-distill-llama-70b': wrapLanguageModel({
-      model: groq.languageModel('deepseek-r1-distill-llama-70b'),
-      middleware: [extractReasoningMiddleware({ tagName: 'think' })],
-    }),
+const LanguageModels = Constants.NewChatModels.reduce(
+  (acc, { value, provider, reasoning }) => {
+    if (provider === 'google') {
+      acc[value] = google.languageModel(value, { safetySettings });
+    } else if (provider === 'groq') {
+      if (reasoning) {
+        acc[value] = wrapLanguageModel({
+          model: groq.languageModel(value),
+          middleware: extractReasoningMiddleware({ tagName: 'think', startWithReasoning: true }),
+        });
+      } else {
+        acc[value] = groq.languageModel(value);
+      }
+    }
+    return acc;
   },
+  {} as Record<(typeof Constants.NewChatModels)[number]['value'], LanguageModelV1>,
+);
+
+const modelProvider = customProvider({
+  languageModels: LanguageModels,
 });
 
 export type modelID = Parameters<(typeof modelProvider)['languageModel']>['0'];
@@ -110,6 +116,10 @@ export async function POST(req: Request) {
 
   const model = modelProvider.languageModel(parsed.model ?? Constants.ChatModels.default);
 
+  // Don't send penalties if the model is gemini-2.5-pro-exp-03-25
+  const freqPenalty = parsed.model !== 'gemini-2.5-pro-exp-03-25' ? frequencyPenalty : undefined;
+  const presPenalty = parsed.model !== 'gemini-2.5-pro-exp-03-25' ? presencePenalty : undefined;
+
   return createDataStreamResponse({
     execute: (dataStream) => {
       const result = streamText({
@@ -118,8 +128,8 @@ export async function POST(req: Request) {
         messages: coreMessages,
         temperature,
         maxTokens,
-        frequencyPenalty,
-        presencePenalty,
+        frequencyPenalty: freqPenalty,
+        presencePenalty: presPenalty,
         experimental_transform: smoothStream({ delayInMs: null }),
       });
       result.mergeIntoDataStream(dataStream, { sendReasoning: true, sendSources: true, sendUsage: true });

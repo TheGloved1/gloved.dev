@@ -1,5 +1,6 @@
 'use client';
 import ErrorAlert from '@/components/ErrorAlert';
+import LoadingSvg from '@/components/LoadingSvg';
 import Markdown from '@/components/Markdown';
 import { Button } from '@/components/ui/button';
 import { useLocalStorage } from '@/hooks/use-local-storage';
@@ -7,7 +8,7 @@ import { useTextToSpeech } from '@/hooks/use-tts';
 import Constants from '@/lib/constants';
 import { dxdb, Message, updateMessage } from '@/lib/dexie';
 import { tryCatch } from '@/lib/utils';
-import { Copy, RefreshCcw, Send, SquarePen, Volume2Icon, VolumeXIcon } from 'lucide-react';
+import { ChevronDown, ChevronUp, Copy, RefreshCcw, Send, SquarePen, Volume2Icon, VolumeXIcon } from 'lucide-react';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import { memo, useCallback, useState } from 'react';
@@ -38,6 +39,7 @@ export default memo(function ChatMessage({
   const [isHovered, setIsHovered] = useState<boolean>(false);
   const [systemPrompt] = useLocalStorage<string | undefined>('systemPrompt', undefined);
   const [model] = useLocalStorage<string>('model', Constants.ChatModels.default);
+  const [showReasoning, setShowReasoning] = useState<boolean>(false);
   const [speak, stopSpeech, isSpeaking] = useTextToSpeech();
 
   const handleEditMessage = useCallback(
@@ -56,7 +58,12 @@ export default memo(function ChatMessage({
   );
 
   if (message.status === 'error') return <ErrorAlert>Error: Something went wrong, please try again.</ErrorAlert>;
-  if (message.content.trim() === '' && !message.attachments) return <div key={message.id} id={message.id}></div>;
+  if (message.content.trim() === '' && !message.attachments && !message.reasoning && message.status === 'streaming')
+    return (
+      <div key={message.id} id={message.id}>
+        <LoadingSvg />
+      </div>
+    );
 
   return (
     <div
@@ -118,6 +125,26 @@ export default memo(function ChatMessage({
             </div>
           </>
         : <>
+            {message.reasoning && (
+              <div className='mb-2 flex items-center gap-2'>
+                <button
+                  onClick={() => setShowReasoning(!showReasoning)}
+                  className='inline-flex items-center gap-2 rounded-md bg-secondary/0 px-3 py-1 text-sm font-medium text-secondary-foreground hover:bg-secondary/80'
+                >
+                  <span>Reasoning</span>
+                  {showReasoning ?
+                    <ChevronUp className='-mb-0.5 -ml-0.5 !size-4' />
+                  : <ChevronDown className='-mb-0.5 -ml-0.5 !size-4' />}
+                </button>
+              </div>
+            )}
+            {message.reasoning && showReasoning && (
+              <div className='mb-4 rounded-lg bg-neutral-800/20 p-3'>
+                <Markdown className='prose prose-sm prose-neutral prose-invert max-w-none text-white prose-pre:m-0 prose-pre:bg-transparent prose-pre:p-0'>
+                  {message.reasoning}
+                </Markdown>
+              </div>
+            )}
             <Markdown
               className={
                 'prose prose-sm prose-neutral prose-invert max-w-none text-white prose-pre:m-0 prose-pre:bg-transparent prose-pre:p-0'
