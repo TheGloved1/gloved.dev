@@ -4,7 +4,7 @@
  * database with remote data.
  */
 import { deleteUserDataAction, syncAction } from '@/lib/actions';
-import { createDate, populateOnboardingThreads, tryCatch } from '@/lib/utils';
+import { createDate, populateOnboardingThreads, sleep, tryCatch } from '@/lib/utils';
 import Dexie, { type EntityTable } from 'dexie';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -185,6 +185,7 @@ class Database extends Dexie {
         console.log('[SYNC] Deleted user data for', userId);
       }
     }
+    await sleep(1000);
     await populateOnboardingThreads(this);
   }
 

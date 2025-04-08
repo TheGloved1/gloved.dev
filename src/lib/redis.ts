@@ -175,6 +175,8 @@ export async function deleteUserData(userId: string) {
     kvMap[key] = JSON.stringify({
       ...m,
       content: '',
+      attachments: undefined,
+      reasoning: undefined,
       updated_at: new Date().toISOString(),
       status: 'deleted',
     } as Message);
