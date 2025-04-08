@@ -116,7 +116,13 @@ class Database extends Dexie {
    * @param id The ID of the message to remove.
    */
   async removeMessage(id: string) {
-    await this.messages.update(id, { status: 'deleted', updated_at: createDate(), content: '' });
+    await this.messages.update(id, {
+      status: 'deleted',
+      updated_at: createDate(),
+      content: '',
+      attachments: undefined,
+      reasoning: undefined,
+    });
   }
 
   /**
@@ -152,22 +158,6 @@ class Database extends Dexie {
    * @param threadId The ID of the thread to delete.
    */
   async deleteThread(threadId: string) {
-    // Get all messages in the thread
-    const messages = await this.messages.where('threadId').equals(threadId).toArray();
-
-    // Collect all attachments from messages
-    const attachments = messages
-      .filter((msg) => msg.attachments && msg.attachments.length > 0)
-      .flatMap((msg) => msg.attachments || []);
-
-    const mockDelete = (urls: string[]) => {
-      return Promise.resolve({ success: true });
-    };
-    // Delete attachments if any exist
-    if (attachments.length > 0) {
-      await mockDelete(attachments);
-    }
-
     // Mark thread as deleted
     await this.threads.update(threadId, { status: 'deleted', updated_at: createDate() });
 
@@ -175,7 +165,7 @@ class Database extends Dexie {
     await this.messages
       .where('threadId')
       .equals(threadId)
-      .modify({ status: 'deleted', content: '', updated_at: createDate(), attachments: undefined });
+      .modify({ status: 'deleted', content: '', updated_at: createDate(), attachments: undefined, reasoning: undefined });
   }
 
   /**
