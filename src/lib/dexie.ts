@@ -335,7 +335,7 @@ export async function processStream(
         // This is a reasoning chunk
         const json: string = JSON.parse(line.slice(2)); // Remove the prefix
         reasoning += json.replace(/<think>|<\/think>/g, '');
-        if (messageId) {
+        if (messageId && reasoning.trim() !== '') {
           await dxdb.messages.update(messageId, {
             updated_at: createDate(),
             reasoning: reasoning, // Update with the accumulated reasoning
