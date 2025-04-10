@@ -33,10 +33,6 @@ const nextConfig: NextConfig = {
         hostname: 'api.gloved.dev',
         port: '',
       },
-      {
-        protocol: 'https',
-        hostname: 'instagram.ffod1-1.fna.fbcdn.net',
-      },
     ],
   },
 };

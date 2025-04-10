@@ -14,7 +14,6 @@ export const env = createEnv({
     KV_REST_API_URL: z.string(),
     KV_REST_API_TOKEN: z.string(),
     KV_REST_API_READ_ONLY_TOKEN: z.string(),
-    UPLOADTHING_TOKEN: z.string(),
     NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   },
 
@@ -40,7 +39,6 @@ export const env = createEnv({
     NEXT_PUBLIC_FILE_MANAGER_PASSKEY: process.env.NEXT_PUBLIC_FILE_MANAGER_PASSKEY,
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
     CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
-    UPLOADTHING_TOKEN: process.env.UPLOADTHING_TOKEN,
   },
 
   emptyStringAsUndefined: true,

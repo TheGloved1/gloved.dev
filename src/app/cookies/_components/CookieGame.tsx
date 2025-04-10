@@ -208,7 +208,6 @@ export function CookieGame() {
   // Game state
   const [cookies, setCookies] = useLocalStorage('cookies', 0);
   const [totalCookies, setTotalCookies] = useLocalStorage('totalCookies', 0);
-  const [clickPower, setClickPower] = useState(1);
   const [baseCpc, setBaseCpc] = useLocalStorage('baseCpc', 1); // Base cookies per click
   const [cps, setCps] = useLocalStorage('cps', 0);
   const [ownedUpgrades, setOwnedUpgrades] = useLocalStorage<Record<string, number>>('ownedUpgrades', {});
@@ -223,7 +222,6 @@ export function CookieGame() {
   const [nextFloatingId, setNextFloatingId] = useState(0);
   const [activeTab, setActiveTab] = useState('cps');
   const [lastGameUpdate, setGameLastUpdate] = useLocalStorage('lastGameUpdate', Date.now());
-
   const { soundEnabled, setSoundEnabled, playSound } = useSoundEffects();
 
   // Calculate prestige cost
