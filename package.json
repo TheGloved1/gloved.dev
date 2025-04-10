@@ -5,6 +5,7 @@
   "license": "MIT",
   "author": "TheGloved1",
   "homepage": "https://gloved.dev",
+  "packageManager": "pnpm@10.8.0",
   "bugs": {
     "url": "https://github.com/gloved.dev/issues"
   },
