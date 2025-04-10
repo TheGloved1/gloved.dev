@@ -5,6 +5,7 @@ import React, { memo, useEffect, useState } from 'react';
 import { Tooltip } from '@/components/TooltipSystem';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { defaultModel } from '@/lib/ai';
 import Constants from '@/lib/constants';
 import { tryCatch, uploadImage } from '@/lib/utils';
 import { useAuth } from '@clerk/nextjs';
@@ -26,21 +27,20 @@ const ChatInput = memo(
     scrollCallback?: () => void;
     isAtBottom?: boolean;
   }) => {
-    const [input, setInput] = useLocalStorage('input', '');
+    const [canUpload, setCanUpload] = useState(false);
     const [imagePreview, setImagePreview] = useState<string[]>([]);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [input, setInput] = useLocalStorage('input', '');
+    const [model, setModel] = useLocalStorage<string>('model', defaultModel);
     const [rows, setRows] = useLocalStorage<number>('rows', 2);
-    const router = useRouter();
+    const [systemPrompt, setSystemPrompt] = useLocalStorage<string | undefined>('systemPrompt', undefined);
+    const auth = useAuth();
     const isMobile = useIsMobile();
+    const router = useRouter();
     const { threadId } = useParams<{ threadId: string }>();
     const searchParams = useSearchParams();
     const query = searchParams.get('q');
-    const [loading, setLoading] = useState<boolean>(false);
-    const [systemPrompt, setSystemPrompt] = useLocalStorage<string | undefined>('systemPrompt', undefined);
-    const [model, setModel] = useLocalStorage<string>('model', Constants.ChatModels.default);
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [canUpload, setCanUpload] = useState(false);
-    const [progress, setProgress] = useState<number>(0);
-    const auth = useAuth();
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 

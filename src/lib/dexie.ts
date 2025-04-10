@@ -8,6 +8,7 @@ import { createDate, populateOnboardingThreads, sleep, tryCatch } from '@/lib/ut
 import Dexie, { type EntityTable } from 'dexie';
 import { toast } from 'sonner';
 import { z } from 'zod';
+import { ModelID } from './ai';
 
 export const threadSchema = z.object({
   id: z.string(),
@@ -276,18 +277,17 @@ export async function checkSync(userId: string) {
 }
 
 /**
- * Process a readable stream of message chunks and update the message content.
- * @param response The readable stream of message chunks.
- * @param messageId The ID of the message to update with the new content.
- * @param callback A function to call each time a message chunk is processed.
- * @returns A promise that resolves with the accumulated message content.
+ * Process a stream of data from the chat server, updating the local database as new content is received.
+ * @param response The stream of data to process.
+ * @param messageId The ID of the message to update in the database, if applicable.
+ * @param callback A function to call when the response has been processed. Default is an empty function.
+ * @returns A Promise that resolves with the accumulated message content.
  */
 export async function processStream(
   response: ReadableStream<Uint8Array>,
   messageId?: string,
-  callback?: () => void,
+  callback: () => void = () => {},
 ): Promise<string> {
-  if (!callback) callback = () => {};
   const reader = response.getReader();
   const decoder = new TextDecoder();
   let done = false;
@@ -356,6 +356,15 @@ export async function processStream(
       }
     }
   }
+  if (messageId && messageContent.trim() === '') {
+    await dxdb.messages.update(messageId, {
+      updated_at: createDate(),
+      content: 'An error occurred.',
+      status: 'error',
+    });
+  }
+
+  if (messageContent.trim() === '') return 'Error: No content received';
 
   return messageContent; // Return the accumulated message content
 }
@@ -510,7 +519,11 @@ export async function generateTitle(threadId: string) {
     role: 'user',
     content: 'Generate a short, concise title for this thread so far.',
   };
-  const messages = [...allMessages, newMessage];
+  const messages: { role: string; content: string }[] = [
+    ...allMessages.map((m) => ({ role: m.role, content: m.content })),
+    newMessage,
+  ];
+  const model: ModelID = 'gemini-2.0-flash-lite';
   try {
     const { data, error } = await tryCatch(
       fetch('/api/chat', {
@@ -522,6 +535,7 @@ export async function generateTitle(threadId: string) {
           system:
             'You are a short title generator, do not generate any text except for the title. Do not include any special characters. Only include alphanumeric characters and spaces.',
           messages: messages,
+          model: model,
         }),
       }),
     );

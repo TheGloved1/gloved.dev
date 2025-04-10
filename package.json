@@ -111,7 +111,8 @@
   "pnpm": {
     "onlyBuiltDependencies": [
       "@clerk/shared",
-      "@vercel/speed-insights"
+      "@vercel/speed-insights",
+      "sharp"
     ]
   }
 }

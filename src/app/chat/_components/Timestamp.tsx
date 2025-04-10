@@ -1,5 +1,9 @@
-import Constants from '@/lib/constants';
+import { Models } from '@/lib/ai';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+
+function getModelName(model: string) {
+  return Models.find((m) => m.value === model)?.label ?? model;
+}
 
 /**
  * A component that displays a relative timestamp of a given date and updates it at
@@ -32,7 +36,7 @@ const Timestamp = React.memo(({ date, model }: { date: Date; model: string }) =>
 
   return (
     <span className='text-xs text-neutral-500 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 group-focus:opacity-100'>
-      Generated with {Constants.getModelName(model)} {timestamp}
+      Generated with {getModelName(model)} {timestamp}
     </span>
   );
 });

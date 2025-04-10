@@ -5,7 +5,7 @@ import Markdown from '@/components/Markdown';
 import { Button } from '@/components/ui/button';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import { useTextToSpeech } from '@/hooks/use-tts';
-import Constants from '@/lib/constants';
+import { defaultModel } from '@/lib/ai';
 import { dxdb, Message, updateMessage } from '@/lib/dexie';
 import { tryCatch } from '@/lib/utils';
 import { ChevronDown, ChevronUp, Copy, RefreshCcw, Send, SquarePen, Volume2Icon, VolumeXIcon } from 'lucide-react';
@@ -34,12 +34,12 @@ export default memo(function ChatMessage({
   message: Message;
   scrollEditCallback: () => void;
 }) {
-  const { threadId } = useParams<{ threadId: string }>();
   const [input, setInput] = useState<string | null>(null);
   const [isHovered, setIsHovered] = useState<boolean>(false);
-  const [systemPrompt] = useLocalStorage<string | undefined>('systemPrompt', undefined);
-  const [model] = useLocalStorage<string>('model', Constants.ChatModels.default);
   const [showReasoning, setShowReasoning] = useState<boolean>(false);
+  const { threadId } = useParams<{ threadId: string }>();
+  const [systemPrompt] = useLocalStorage<string | undefined>('systemPrompt', undefined);
+  const [model] = useLocalStorage<string>('model', defaultModel);
   const [speak, stopSpeech, isSpeaking] = useTextToSpeech();
 
   const handleEditMessage = useCallback(
