@@ -138,8 +138,8 @@ importers:
         specifier: ^2.0.1
         version: 2.0.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       tailwind-merge:
-        specifier: ^2.6.0
-        version: 2.6.0
+        specifier: ^3.2.0
+        version: 3.2.0
       tailwindcss-animate:
         specifier: ^1.0.7
         version: 1.0.7(tailwindcss@3.4.17)
@@ -3814,8 +3814,8 @@ packages:
     engines: {node: '>=18.12'}
     hasBin: true
 
-  tailwind-merge@2.6.0:
-    resolution: {integrity: sha512-P+Vu1qXfzediirmHOC3xKGAYeZtPcV9g76X+xg2FD4tYgR71ewMA35Y3sCz3zhiN/dwefRpJX0yBcgwi1fXNQA==}
+  tailwind-merge@3.2.0:
+    resolution: {integrity: sha512-FQT/OVqCD+7edmmJpsgCsY820RTD5AkBryuG5IUqR5YQZSdj5xlH5nLgH7YPths7WsLPSpSBNneJdM8aS8aeFA==}
 
   tailwind-scrollbar@4.0.2:
     resolution: {integrity: sha512-wAQiIxAPqk0MNTPptVe/xoyWi27y+NRGnTwvn4PQnbvB9kp8QUBiGl/wsfoVBHnQxTmhXJSNt9NHTmcz9EivFA==}
@@ -8459,7 +8459,7 @@ snapshots:
       better-path-resolve: 1.0.0
       rename-overwrite: 6.0.2
 
-  tailwind-merge@2.6.0: {}
+  tailwind-merge@3.2.0: {}
 
   tailwind-scrollbar@4.0.2(react@19.1.0)(tailwindcss@3.4.17):
     dependencies:
