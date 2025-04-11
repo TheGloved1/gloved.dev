@@ -190,7 +190,7 @@ const ChatInput = memo(
                   <div className='flex flex-grow flex-col'>
                     {imagePreview.length > 0 && (
                       <div className='flex flex-row gap-2 pb-2'>
-                        {imagePreview.slice(0, 2).map((image, index) => (
+                        {imagePreview.map((image, index) => (
                           <div key={index} className='relative h-20 w-20'>
                             <Image src={image} fill alt='Image preview' className='h-full w-full rounded-md object-cover' />
                             <button
@@ -202,11 +202,6 @@ const ChatInput = memo(
                             </button>
                           </div>
                         ))}
-                        {imagePreview.length > 2 && (
-                          <div className='pl-2 text-xs text-secondary-foreground/60 opacity-50'>
-                            + {imagePreview.length - 2} more
-                          </div>
-                        )}
                       </div>
                     )}
                     <div className='flex flex-grow flex-row items-start'>
