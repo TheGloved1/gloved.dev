@@ -27,7 +27,7 @@ type Options<T> = Partial<{
  *     Default is console.error.
  *   - syncData: If set to true, the hook will use the storage event to
  *     synchronize the value across tabs.
- *     Default is false.
+ *     Default is true.
  *
  * @returns An array with the stored value and a setter function to update
  * the stored value.
@@ -37,8 +37,7 @@ type Options<T> = Partial<{
  * // ...
  * setCount(count + 1); // This will also update the value in other tabs and components
  */
-function useLocalStorage<T>(key: string, defaultValue: T, options?: Options<T>): [T, Setter<T>];
-function useLocalStorage<T>(key: string, defaultValue?: T, options?: Options<T>) {
+function useLocalStorage<T>(key: string, defaultValue: T, options?: Options<T>): [T, Setter<T>] {
   const opts = useMemo(() => {
     return {
       serializer: JSON.stringify,
@@ -72,7 +71,7 @@ function useLocalStorage<T>(key: string, defaultValue?: T, options?: Options<T>)
     const updateLocalStorage = () => {
       // Browser ONLY dispatch storage events to other tabs, NOT current tab.
       // We need to manually dispatch storage event for current tab
-      if (value !== undefined) {
+      if (value) {
         const newValue = serializer(value);
         const oldValue = rawValueRef.current;
         rawValueRef.current = newValue;
@@ -127,7 +126,7 @@ function useLocalStorage<T>(key: string, defaultValue?: T, options?: Options<T>)
     return () => window.removeEventListener('storage', handleStorageChange);
   }, [key, logger, parser, syncData]);
 
-  return [value, setValue];
+  return [value ?? defaultValue, setValue];
 }
 
 export { useLocalStorage };

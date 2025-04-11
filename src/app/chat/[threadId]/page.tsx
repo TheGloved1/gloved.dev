@@ -31,9 +31,9 @@ export default function Page(): React.JSX.Element {
 
   const scrollToBottom = useCallback(
     (noSmooth?: boolean) => {
-      entry?.target?.scrollIntoView({ behavior: noSmooth ? 'auto' : 'smooth' });
+      entry?.target?.scrollIntoView({ behavior: noSmooth ? 'instant' : 'smooth' });
     },
-    [entry],
+    [entry?.target],
   );
 
   const messages = useLiveQuery(
@@ -50,11 +50,13 @@ export default function Page(): React.JSX.Element {
       checkSync(auth.userId);
     }
   }, [auth.userId, threadId]);
-
-  // Initial scroll to bottom (after component mounts and data is available)
-  useEffect(() => {
-    if (messages) scrollToBottom();
-  }, [messages, scrollToBottom]);
+  
+  const scrollEditCallback = useCallback(
+    () => {
+      entry?.target?.scrollIntoView({ behavior: 'instant' });
+    },
+    [entry?.target],
+  );
 
   return (
     <main className='relative flex w-full flex-1 flex-col'>
@@ -63,7 +65,7 @@ export default function Page(): React.JSX.Element {
         <div className='scrollbar-w-2 h-[100dvh] overflow-y-auto pb-36 scrollbar-thin scrollbar-track-transparent overflow-x-clip'>
           <div className='mx-auto flex w-full max-w-3xl translate-x-1 flex-col space-y-12 p-4 pb-12 text-sm'>
             {messages.map((message) => (
-              <ChatMessage scrollEditCallback={() => scrollToBottom(true)} message={message} key={message.id} />
+              <ChatMessage scrollEditCallback={scrollEditCallback} message={message} key={message.id} />
             ))}
           </div>
           <div ref={ref} className='h-0 w-0' />

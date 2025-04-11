@@ -1,6 +1,6 @@
 import Constants from '@/lib/constants';
 import { Metadata } from 'next';
-import ChatBotSidebar from './_components/ChatSidebar';
+import ChatSidebar from './_components/ChatSidebar';
 import './_components/chatbot.css';
 
 export const metadata: Metadata = {
@@ -28,5 +28,5 @@ export const metadata: Metadata = {
 export const dynamic = 'force-static';
 
 export default function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <ChatBotSidebar>{children}</ChatBotSidebar>;
+  return <ChatSidebar>{children}</ChatSidebar>;
 }

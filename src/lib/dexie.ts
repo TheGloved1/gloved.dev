@@ -271,8 +271,6 @@ export async function checkSync(userId: string) {
 
     // Update the last run time in local storage
     localStorage.setItem('lastSync', now.toString());
-  } else {
-    console.log('[SYNC] Function has run recently. Skipping...');
   }
 }
 

@@ -11,9 +11,10 @@ import { tryCatch } from '@/lib/utils';
 import { ChevronDown, ChevronUp, Copy, RefreshCcw, Send, SquarePen, Volume2Icon, VolumeXIcon } from 'lucide-react';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
-import { memo, useCallback, useState } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import Timestamp from './Timestamp';
+import equal from 'fast-deep-equal';
 
 const renderImages = (attachments: string[] | undefined) => {
   if (!attachments || attachments.length === 0) return null;
@@ -27,7 +28,7 @@ const renderImages = (attachments: string[] | undefined) => {
   );
 };
 
-export default memo(function ChatMessage({
+function ChatMessage({
   message,
   scrollEditCallback,
 }: {
@@ -56,6 +57,10 @@ export default memo(function ChatMessage({
     },
     [threadId],
   );
+
+  useEffect(() => {
+    scrollEditCallback();
+  }, [scrollEditCallback]);
 
   if (message.status === 'error') return <ErrorAlert>Error: Something went wrong, please try again.</ErrorAlert>;
   if (
@@ -247,4 +252,9 @@ export default memo(function ChatMessage({
       </div>
     </div>
   );
+}
+
+export default memo(ChatMessage, (prevProps, nextProps) => {
+  if (!equal(prevProps.message, nextProps.message)) return false;
+  return true;
 });

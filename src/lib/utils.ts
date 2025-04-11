@@ -39,6 +39,12 @@ export async function apiFetch(route: string, options?: RequestInit) {
  * Generates the API route by concatenating the base API URL with the provided route.
  * @param route - The API route to be appended to the base API URL.
  * @returns The complete API route.
+ * 
+ * @example
+ * ```typescript
+ * const route = apiRoute('/users');
+ * console.log(route); // 'https://api.example.com/users'
+ * ```
  */
 export function apiRoute(route: string) {
   return `${Constants.API}${route}`;
@@ -319,7 +325,7 @@ export function formatMessageContent(content: string, attachments?: string[]) {
 }
 
 /**
- * Uploads an image to the server and returns the URL of the uploaded image.
+ * Uploads an image to the {@link Constants.API} server and returns the URL of the uploaded image.
  * @param file The image file to be uploaded.
  * @param userId The ID of the user who is uploading the image.
  * @returns The URL of the uploaded image.
