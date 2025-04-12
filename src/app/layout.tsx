@@ -1,4 +1,4 @@
-import Providers from '@/components/Providers';
+import QueryProvider from '@/components/QueryProvider';
 import SourceCodeButton from '@/components/SourceCodeButton';
 import { TooltipProvider } from '@/components/TooltipSystem';
 import { Toaster } from '@/components/ui/sonner';
@@ -51,14 +51,14 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             {/* <Script defer crossOrigin='anonymous' src='//unpkg.com/react-scan/dist/auto.global.js' /> */}
           </>
         )}
-        <body className={`dark bg-background antialiased ${jetbrains.className}`}>
+        <body className={`dark min-h-screen bg-background antialiased ${jetbrains.className}`}>
           <Toaster toastOptions={{ style: { background: '#333' } }} />
-          <Providers>
+          <QueryProvider>
             <Analytics />
             <SpeedInsights />
             <SourceCodeButton />
             <TooltipProvider>{children}</TooltipProvider>
-          </Providers>
+          </QueryProvider>
         </body>
       </html>
     </ClerkProvider>

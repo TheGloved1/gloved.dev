@@ -61,7 +61,7 @@ export default function Page(): React.JSX.Element {
             <p>{"I'm Kaden Hood."}</p>
             <p>{'a self taught software engineer.'}</p>
           </ObserverSection>
-          <div className='divider w-[75vw] max-w-[1000px]' />
+          <div className='divider mx-auto w-[75vw] max-w-[1000px] justify-center' />
           {/* <ObserverSection id={sections[1]}>
             <p className='font-extrabold'>{'About Me'}</p>
             <p className='p-3 text-xl'></p>
@@ -70,7 +70,7 @@ export default function Page(): React.JSX.Element {
             <p className='p-3 text-xl'></p>
             <p>{'I started programming in my 2nd year of high school.'}</p>
           </ObserverSection> */}
-          {/* <div className='divider w-[75vw] max-w-[1000px]' /> */}
+          {/* <div className='divider w-[75vw] max-w-[1000px] mx-auto justify-center' /> */}
           <ObserverSection id={sections[1]}>
             <p>
               <strong>
@@ -95,13 +95,13 @@ export default function Page(): React.JSX.Element {
               {'Java'}
             </p>
           </ObserverSection>
-          <div className='divider w-[75vw] max-w-[1000px]' />
+          <div className='divider mx-auto w-[75vw] max-w-[1000px] justify-center' />
           <ObserverSection id={sections[2]}>
             <p className='font-extrabold'>{'My Github Profile'}</p>
             <p className='p-3 text-xl'></p>
             <GitUser name='TheGloved1' />
           </ObserverSection>
-          <div className='divider w-[75vw] max-w-[1000px]' />
+          <div className='divider mx-auto w-[75vw] max-w-[1000px] justify-center' />
           <ObserverSection id={sections[3]}>
             <FileUploader />
             <Link href={'/file-uploader'} className='group btn m-4 text-xl'>
