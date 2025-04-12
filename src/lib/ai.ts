@@ -1,3 +1,4 @@
+import { Message } from '@/lib/dexie';
 const temperature = 0.95;
 const maxTokens = 4096;
 const frequencyPenalty = 0.95;
@@ -144,3 +145,5 @@ export type ModelID = (typeof Models)[number]['value'];
 export const ModelList = Models.map((m) => m.value);
 
 export const defaultModel = 'gemini-2.0-flash' as const;
+
+export type ChatFetchOptions = { model?: ModelID; system?: string; messages: Message[] };

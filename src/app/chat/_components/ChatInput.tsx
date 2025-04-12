@@ -5,7 +5,7 @@ import React, { memo, useEffect, useState } from 'react';
 import { Tooltip } from '@/components/TooltipSystem';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { defaultModel } from '@/lib/ai';
+import { defaultModel, ModelID } from '@/lib/ai';
 import Constants from '@/lib/constants';
 import { tryCatch, uploadImage } from '@/lib/utils';
 import { useAuth } from '@clerk/nextjs';
@@ -32,7 +32,7 @@ const ChatInput = memo(
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [loading, setLoading] = useState<boolean>(false);
     const [input, setInput] = useLocalStorage('input', '');
-    const [model, setModel] = useLocalStorage<string>('model', defaultModel);
+    const [model, setModel] = useLocalStorage<ModelID>('model', defaultModel);
     const [rows, setRows] = useLocalStorage<number>('rows', 2);
     const [systemPrompt, setSystemPrompt] = useLocalStorage<string | undefined>('systemPrompt', undefined);
     const auth = useAuth();

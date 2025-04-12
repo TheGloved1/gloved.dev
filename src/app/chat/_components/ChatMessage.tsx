@@ -8,15 +8,15 @@ import { useTextToSpeech } from '@/hooks/use-tts';
 import { defaultModel } from '@/lib/ai';
 import { dxdb, Message, updateMessage } from '@/lib/dexie';
 import { tryCatch } from '@/lib/utils';
+import equal from 'fast-deep-equal';
 import { ChevronDown, ChevronUp, Copy, RefreshCcw, Send, SquarePen, Volume2Icon, VolumeXIcon } from 'lucide-react';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import { memo, useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import Timestamp from './Timestamp';
-import equal from 'fast-deep-equal';
 
-const renderImages = (attachments: string[] | undefined) => {
+const renderImages = (attachments?: string[]) => {
   if (!attachments || attachments.length === 0) return null;
 
   return (
@@ -28,13 +28,7 @@ const renderImages = (attachments: string[] | undefined) => {
   );
 };
 
-function ChatMessage({
-  message,
-  scrollEditCallback,
-}: {
-  message: Message;
-  scrollEditCallback: () => void;
-}) {
+function ChatMessage({ message, scrollEditCallback }: { message: Message; scrollEditCallback: () => void }) {
   const [input, setInput] = useState<string | null>(null);
   const [isHovered, setIsHovered] = useState<boolean>(false);
   const [showReasoning, setShowReasoning] = useState<boolean>(false);

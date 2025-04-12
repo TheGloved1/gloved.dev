@@ -50,22 +50,15 @@ export default function Page(): React.JSX.Element {
       checkSync(auth.userId);
     }
   }, [auth.userId, threadId]);
-  
-  const scrollEditCallback = useCallback(
-    () => {
-      entry?.target?.scrollIntoView({ behavior: 'instant' });
-    },
-    [entry?.target],
-  );
 
   return (
     <main className='relative flex w-full flex-1 flex-col'>
       <ChatInput scrollCallback={scrollToBottom} isAtBottom={isAtBottom} />
       <div className='relative flex-1 overflow-hidden'>
-        <div className='scrollbar-w-2 h-[100dvh] overflow-y-auto pb-36 scrollbar-thin scrollbar-track-transparent overflow-x-clip'>
+        <div className='scrollbar-w-2 h-[100dvh] overflow-y-auto overflow-x-clip pb-36 scrollbar-thin scrollbar-track-transparent'>
           <div className='mx-auto flex w-full max-w-3xl translate-x-1 flex-col space-y-12 p-4 pb-12 text-sm'>
             {messages.map((message) => (
-              <ChatMessage scrollEditCallback={scrollEditCallback} message={message} key={message.id} />
+              <ChatMessage scrollEditCallback={scrollToBottom} message={message} key={message.id} />
             ))}
           </div>
           <div ref={ref} className='h-0 w-0' />

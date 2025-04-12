@@ -2,13 +2,13 @@
 import { Tooltip } from '@/components/TooltipSystem';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useLocalStorage } from '@/hooks/use-local-storage';
-import { defaultModel, Models } from '@/lib/ai';
+import { defaultModel, ModelID, Models } from '@/lib/ai';
 import { Info } from 'lucide-react';
 
 export default function ModelDropdown() {
-  const [model, setModel] = useLocalStorage<string>('model', defaultModel);
+  const [model, setModel] = useLocalStorage<ModelID>('model', defaultModel);
   return (
-    <Select value={model} onValueChange={setModel}>
+    <Select value={model} onValueChange={setModel as (value: string) => void}>
       <SelectTrigger className='max-w-[60vw]' defaultValue={model}>
         <SelectValue placeholder={'Select a model'} />
       </SelectTrigger>

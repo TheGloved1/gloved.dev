@@ -1,7 +1,6 @@
 import { env } from '@/env';
 import { fetchSystemPrompt } from '@/lib/actions';
-import { defaultModel, modelConfig, ModelID, Models, safetySettings } from '@/lib/ai';
-import { Message } from '@/lib/dexie';
+import { ChatFetchOptions, defaultModel, modelConfig, ModelID, Models, safetySettings } from '@/lib/ai';
 import { formatMessageContent, tryCatch } from '@/lib/utils';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { createGroq } from '@ai-sdk/groq';
@@ -43,7 +42,7 @@ const modelProvider = customProvider({
 });
 
 export async function POST(req: Request) {
-  const parsed: { model?: ModelID; system?: string; messages: Omit<Message, 'id'>[] } = await req.json();
+  const parsed: ChatFetchOptions = await req.json();
   const { messages } = parsed;
   const system = !!parsed.system?.trim() ? parsed.system.trim() : ((await tryCatch(fetchSystemPrompt())).data ?? '');
 

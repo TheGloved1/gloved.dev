@@ -8,7 +8,7 @@ import { createDate, populateOnboardingThreads, sleep, tryCatch } from '@/lib/ut
 import Dexie, { type EntityTable } from 'dexie';
 import { toast } from 'sonner';
 import { z } from 'zod';
-import { ModelID } from './ai';
+import { ChatFetchOptions, ModelID } from './ai';
 
 export const threadSchema = z.object({
   id: z.string(),
@@ -381,7 +381,7 @@ export async function processStream(
 export async function createMessage(
   threadId: string,
   userContent: string,
-  model: string,
+  model: ModelID,
   setInput: (input: string) => void,
   callback?: () => void,
   systemPrompt?: string,
@@ -409,6 +409,12 @@ export async function createMessage(
 
   callback?.();
 
+  const chatFetchOptions: ChatFetchOptions = {
+    model,
+    system: systemPrompt,
+    messages: allMessages,
+  };
+
   try {
     const { data, error } = await tryCatch(
       fetch('/api/chat', {
@@ -416,11 +422,7 @@ export async function createMessage(
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          system: systemPrompt,
-          messages: allMessages,
-          model,
-        }),
+        body: JSON.stringify(chatFetchOptions),
       }),
     );
     if (error) return;
