@@ -28,13 +28,12 @@ const fetchData = async (name: string): Promise<UserData> => {
 };
 
 export default function GitUser({ name }: { name: string }): React.JSX.Element | undefined {
-  const user = useQuery({
+  const userQuery = useQuery({
     queryKey: ['userData', name],
     queryFn: () => fetchData(name),
-    initialData: null,
   });
 
-  if (user.isLoading) {
+  if (userQuery.isLoading) {
     return (
       <div className='rounded-lx container flex flex-col items-center justify-center gap-4 border-4 border-dashed border-white p-4'>
         <Loading />
@@ -42,7 +41,7 @@ export default function GitUser({ name }: { name: string }): React.JSX.Element |
     );
   }
 
-  if (user.isError || (user.data && user.data.message)) {
+  if (userQuery.isError || (userQuery.data && userQuery.data.message)) {
     return (
       <div className='rounded-lx container flex flex-col items-center justify-center gap-4 p-4'>
         <div role='alert' className='alert alert-error'>
@@ -63,21 +62,21 @@ export default function GitUser({ name }: { name: string }): React.JSX.Element |
         </div>
       </div>
     );
-  } else if (user.data) {
+  } else if (userQuery.data) {
     return (
       <div className='container flex flex-col items-center justify-center gap-4 rounded-3xl border-4 border-dashed border-white bg-gray-600/50 p-4'>
         <div>
-          <Link href={user.data.html_url} target='_blank' rel='noopener noreferrer'>
-            <Image className='rounded-full' width={200} height={200} src={user.data.avatar_url} alt='' loading='lazy' />
+          <Link href={userQuery.data.html_url} target='_blank' rel='noopener noreferrer'>
+            <Image className='rounded-full' width={200} height={200} src={userQuery.data.avatar_url} alt='' loading='lazy' />
           </Link>
         </div>
         <div className='flex flex-col gap-1'>
-          <strong>{user.data.login}</strong>
-          <span>{user.data.name}</span>
+          <strong>{userQuery.data.login}</strong>
+          <span>{userQuery.data.name}</span>
         </div>
-        <p className='flex flex-col rounded-xl bg-gray-600 p-1'>{user.data.bio}</p>
-        <Link className='fancy-link' href={user.data.html_url} target='_blank' rel='noopener noreferrer'>
-          {user.data.html_url}
+        <p className='flex flex-col rounded-xl bg-gray-600 p-1'>{userQuery.data.bio}</p>
+        <Link className='fancy-link' href={userQuery.data.html_url} target='_blank' rel='noopener noreferrer'>
+          {userQuery.data.html_url}
         </Link>
       </div>
     );

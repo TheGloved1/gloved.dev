@@ -1,4 +1,4 @@
-import QueryProvider from '@/components/QueryProvider';
+import ReactQueryProvider from '@/components/ReactQueryProvider';
 import SourceCodeButton from '@/components/SourceCodeButton';
 import { TooltipProvider } from '@/components/TooltipSystem';
 import { Toaster } from '@/components/ui/sonner';
@@ -10,6 +10,7 @@ import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Metadata } from 'next';
 import { JetBrains_Mono } from 'next/font/google';
+import Script from 'next/script';
 import React from 'react';
 import './globals.css';
 
@@ -48,17 +49,17 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         {env.NODE_ENV === 'development' && (
           <>
             {/* Dev Only Scripts Here */}
-            {/* <Script defer crossOrigin='anonymous' src='//unpkg.com/react-scan/dist/auto.global.js' /> */}
+            <Script defer async crossOrigin='anonymous' src='//unpkg.com/react-scan/dist/auto.global.js' />
           </>
         )}
         <body className={`dark min-h-screen bg-background antialiased ${jetbrains.className}`}>
-          <Toaster toastOptions={{ style: { background: '#333' } }} />
-          <QueryProvider>
+          <ReactQueryProvider>
             <Analytics />
             <SpeedInsights />
+            <Toaster toastOptions={{ style: { background: '#333' } }} />
             <SourceCodeButton />
             <TooltipProvider>{children}</TooltipProvider>
-          </QueryProvider>
+          </ReactQueryProvider>
         </body>
       </html>
     </ClerkProvider>

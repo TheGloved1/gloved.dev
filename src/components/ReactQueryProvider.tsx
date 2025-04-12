@@ -5,7 +5,6 @@ function makeQueryClient() {
   return new QueryClient({
     defaultOptions: {
       queries: {
-        staleTime: 60 * 1000,
         refetchOnWindowFocus: true,
         experimental_prefetchInRender: true,
       },
@@ -33,7 +32,7 @@ export function getQueryClient() {
   }
 }
 
-export default function Providers({ children }: { children: React.ReactNode }) {
+export default function ReactQueryProvider({ children }: { children: React.ReactNode }) {
   const queryClient = getQueryClient();
   return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
 }
