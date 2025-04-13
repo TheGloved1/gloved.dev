@@ -81,8 +81,8 @@ function ChatMessage({ message, scrollEditCallback }: { message: Message; scroll
         className={
           message.role === 'user' ?
             input !== null ?
-              `group relative w-full max-w-[80%] rounded-2xl bg-[#2D2D2D] p-4 text-left`
-            : `group relative inline-block max-w-[80%] break-words rounded-2xl bg-[#2D2D2D] p-4 text-left`
+              `group relative w-full max-w-[80%] rounded-2xl bg-background p-4 text-left`
+            : `group relative inline-block max-w-[80%] break-words rounded-2xl bg-background p-4 text-left`
           : `group relative w-full max-w-full break-words`
         }
       >
@@ -145,7 +145,7 @@ function ChatMessage({ message, scrollEditCallback }: { message: Message; scroll
             {message.reasoning && message.reasoning?.trim() !== '' ?
               showReasoning ?
                 <div className='mb-4 rounded-lg bg-neutral-800/20 p-3'>
-                  <Markdown className='prose prose-sm prose-neutral prose-invert max-w-none text-white prose-pre:m-0 prose-pre:bg-transparent prose-pre:p-0'>
+                  <Markdown className='prose prose-sm prose-neutral prose-invert max-w-none text-foreground prose-pre:m-0 prose-pre:bg-transparent prose-pre:p-0'>
                     {message.reasoning}
                   </Markdown>
                 </div>
@@ -153,7 +153,7 @@ function ChatMessage({ message, scrollEditCallback }: { message: Message; scroll
             : null}
             <Markdown
               className={
-                'prose prose-sm prose-neutral prose-invert max-w-none text-white prose-pre:m-0 prose-pre:bg-transparent prose-pre:p-0'
+                'prose prose-sm prose-neutral prose-invert max-w-none text-foreground prose-pre:m-0 prose-pre:bg-transparent prose-pre:p-0'
               }
             >
               {message.content}

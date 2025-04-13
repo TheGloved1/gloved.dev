@@ -1,3 +1,4 @@
+import ThemeChanger from '@/components/ThemeChanger';
 import Constants from '@/lib/constants';
 import { Metadata } from 'next';
 import ChatSidebar from './_components/ChatSidebar';
@@ -28,8 +29,8 @@ export const dynamic = 'force-static';
 
 export default function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <div className='cool-dark'>
+    <ThemeChanger>
       <ChatSidebar>{children}</ChatSidebar>
-    </div>
+    </ThemeChanger>
   );
 }
