@@ -161,7 +161,7 @@ const ChatInput = memo(
             <div className='z-10 flex justify-center pb-4'>
               <button
                 type='button'
-                className='pointer-events-auto flex h-8 items-center justify-center gap-2 whitespace-nowrap rounded-full border border-secondary/40 bg-primary px-3 text-xs font-medium text-secondary-foreground/70 backdrop-blur-xl transition-colors hover:bg-secondary focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 dark:bg-primary/70 dark:text-secondary-foreground/70 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
+                className='pointer-events-auto flex h-8 items-center justify-center gap-2 whitespace-nowrap rounded-full border border-secondary/40 bg-[--chat-overlay] px-3 text-xs font-medium text-secondary-foreground/70 backdrop-blur-xl transition-colors hover:bg-secondary focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-secondary/50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
                 onClick={scrollCallback}
               >
                 Scroll to bottom <ChevronDown />
