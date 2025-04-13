@@ -5,11 +5,11 @@ import { useState } from 'react';
 import { Button } from './ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 
-const themes = [
-  { name: 'Cool Dark', className: 'cool-dark' },
-  { name: 'Classic Dark', className: 'dark' },
-  { name: 'Light', className: 'light' },
-] as const;
+const themes = {
+  cooldark: { name: 'Cool Dark', className: 'cool-dark' },
+  dark: { name: 'Classic Dark', className: 'dark' },
+  light: { name: 'Light', className: 'light' },
+} as const;
 
 const renderIcon = (theme: Theme) => {
   switch (theme.className) {
@@ -22,11 +22,11 @@ const renderIcon = (theme: Theme) => {
   }
 };
 
-type Theme = (typeof themes)[number];
+type Theme = (typeof themes)[keyof typeof themes];
 
 export default function ThemeChanger({ children }: { children: React.ReactNode }) {
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [theme, setTheme] = useLocalStorage<Theme>('theme', themes[0]);
+  const [theme, setTheme] = useLocalStorage<Theme>('theme', themes.cooldark);
   return (
     <div className={theme.className}>
       <Button className='fixed right-1 top-1 z-10' onClick={() => setDialogOpen(true)}>
@@ -38,7 +38,7 @@ export default function ThemeChanger({ children }: { children: React.ReactNode }
             <DialogTitle>Choose Theme</DialogTitle>
           </DialogHeader>
           <div className='flex flex-col gap-2'>
-            {themes.map((t) => (
+            {Object.values(themes).map((t) => (
               <Button
                 key={t.name}
                 className='flex items-center justify-between'
