@@ -1,7 +1,7 @@
 'use client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { addAdminAction, checkIfAdminAction, deleteSyncAction, getAdminsAction, removeAdminAction } from '@/lib/actions';
+import { addAdminAction, checkIsAdminAction, deleteSyncAction, getAdminsAction, removeAdminAction } from '@/lib/actions';
 import { tryCatch } from '@/lib/utils';
 import { useUser } from '@clerk/nextjs';
 import { Loader2 } from 'lucide-react';
@@ -19,7 +19,7 @@ export default function Page() {
     const currentUserAsync = async () => {
       if (!user?.primaryEmailAddress?.emailAddress) return;
       setLoading(true);
-      const isAdmin = await tryCatch(checkIfAdminAction(user.primaryEmailAddress.emailAddress));
+      const isAdmin = await tryCatch(checkIsAdminAction(user.primaryEmailAddress.emailAddress));
       setLoading(false);
       if (isAdmin.error) {
         toast.error('Failed to check admin status');
@@ -45,7 +45,7 @@ export default function Page() {
       </div>
     );
   if (!user || !user.primaryEmailAddress)
-    return <div className='flex h-screen flex-col items-center justify-center'>Unauthorized</div>;
+    return <div className='flex h-screen flex-col items-center justify-center'>Not logged in</div>;
   if (!isAdmin) return <div className='flex h-screen flex-col items-center justify-center'>Unauthorized</div>;
 
   return (
@@ -57,12 +57,6 @@ export default function Page() {
           onSubmit={async (e) => {
             e.preventDefault();
             setLoading(true);
-            const { data: admins, error: getAdminsError } = await tryCatch(getAdminsAction());
-            if (getAdminsError) {
-              toast.error('Failed to get admins');
-              setLoading(false);
-              return;
-            }
             if (admins.includes(newAdmin)) {
               toast.error('User is already an admin');
               setLoading(false);

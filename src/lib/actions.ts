@@ -73,7 +73,7 @@ export async function getAdminsAction() {
   return await getAdmins();
 }
 
-export async function checkIfAdminAction(email: string) {
+export async function checkIsAdminAction(email: string) {
   const admins = await getAdmins();
   return admins.includes(email);
 }
