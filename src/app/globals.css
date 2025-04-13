@@ -1,7 +1,6 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@config '../../tailwind.config.ts';
 
 /* @font-face {
   font-family: 'Geist Mono';
@@ -153,6 +152,49 @@
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
+  }
+  .cool-dark {
+    --background: 313.8 24.5% 10.4%;
+    --foreground: 270 20% 97.8%;
+    --card: 300 15.8% 3.7%;
+    --card-foreground: 240 4.8% 95.9%;
+    --popover: 320 23.08% 5.1%;
+    --popover-foreground: 326 33% 96%;
+    --primary: 332 100% 32%;
+    --primary-foreground: 326 85% 90%;
+    --secondary: 273.8 15.1% 20.8%;
+    --secondary-foreground: 270 30% 83%;
+    --muted: 283 9% 25%;
+    --muted-foreground: 326 33% 86%;
+    --accent: 272 20% 27%;
+    --accent-foreground: 326 33% 96%;
+    --destructive: 335.82 74.44% 35.29%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 262.5 10% 15.7%;
+    --input: 326.3 20% 15.7%;
+    --ring: 333.3, 71.4%, 50.6%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+    --sidebar-background: 240 2.6% 7.6%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 318.5 20.6% 12.4%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 0 0% 0%;
+    --sidebar-ring: 333.3, 71.4%, 50.6%;
+    --gradient-noise-top: 309 15% 9%;
+    --color-heading: 328.2 45.9% 57.3%;
+    --chat-border: 333.3 22% 16.1%;
+    --chat-background: 270 16.13% 12.16%;
+    --chat-accent: rgba(25, 21, 30, 0.86);
+    --chat-input-gradient: 289 23% 23%;
+    --chat-input-background: hsla(270, 10%, 20%, var(--blur-fallback, 0.4));
+    --chat-overlay: hsla(270, 12%, 16%, var(--blur-fallback, 0.71));
+    --wordmark-color: #e3bad1;
   }
 }
 

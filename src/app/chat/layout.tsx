@@ -27,5 +27,9 @@ export const metadata: Metadata = {
 export const dynamic = 'force-static';
 
 export default function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <ChatSidebar>{children}</ChatSidebar>;
+  return (
+    <div className='cool-dark'>
+      <ChatSidebar>{children}</ChatSidebar>
+    </div>
+  );
 }
