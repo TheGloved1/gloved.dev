@@ -33,7 +33,7 @@ import React from 'react';
 import { toast } from 'sonner';
 import ChatSidebarTrigger from './ChatSidebarTrigger';
 
-export default function ChatBotSidebar({ children }: { children?: React.ReactNode }) {
+export default function ChatSidebar({ children }: { children?: React.ReactNode }) {
   const { threadId } = useParams<{ threadId: string }>();
   const router = useRouter();
   const threads = useLiveQuery(() => dxdb.getThreads());
@@ -52,14 +52,16 @@ export default function ChatBotSidebar({ children }: { children?: React.ReactNod
       <Sidebar variant='inset' className='border border-border'>
         <SidebarHeader>
           <h1 className='flex h-8 shrink-0 items-center justify-center text-lg text-muted-foreground transition-opacity delay-75 duration-75'>
-            [<Link
+            [
+            <Link
               href={'/'}
               className={
                 'relative flex h-8 w-24 items-center justify-center rounded border border-border/10 text-sm font-semibold text-foreground hover:border-border/90'
               }
             >
               gloved<span className='text-[hsl(280,93%,72%)]'>.</span>dev
-            </Link>]
+            </Link>
+            ]
           </h1>
           <Link
             href='/chat'

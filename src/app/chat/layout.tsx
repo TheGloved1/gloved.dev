@@ -1,7 +1,6 @@
 import Constants from '@/lib/constants';
 import { Metadata } from 'next';
 import ChatSidebar from './_components/ChatSidebar';
-import './_components/chatbot.css';
 
 export const metadata: Metadata = {
   title: Constants.Chat.title,
