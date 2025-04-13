@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { Button } from './ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 
-const themes = {
+export const themes = {
   cooldark: { name: 'Cool Dark', className: 'cool-dark' },
   dark: { name: 'Classic Dark', className: 'dark' },
   light: { name: 'Light', className: 'light' },
@@ -22,7 +22,7 @@ const renderIcon = (theme: Theme) => {
   }
 };
 
-type Theme = (typeof themes)[keyof typeof themes];
+export type Theme = (typeof themes)[keyof typeof themes];
 
 export default function ThemeChanger({ children }: { children: React.ReactNode }) {
   const [dialogOpen, setDialogOpen] = useState(false);

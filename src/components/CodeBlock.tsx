@@ -1,8 +1,10 @@
+import { useLocalStorage } from '@/hooks/use-local-storage';
 import React, { ClassAttributes, HTMLAttributes } from 'react';
 import { ExtraProps } from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vscDarkPlus as styles } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { materialOceanic, synthwave84, vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import CopyButton from './CopyButton';
+import { Theme, themes } from './ThemeChanger';
 
 type CodeBlockProps = {
   children?: React.ReactNode;
@@ -13,9 +15,20 @@ type CodeBlockProps = {
   ExtraProps;
 
 const CodeBlock = ({ children = '', language = 'plaintext', props }: CodeBlockProps) => {
+  const [theme] = useLocalStorage<Theme>('theme', themes.cooldark);
+  const getSyntaxTheme = () => {
+    switch (theme.className) {
+      case 'cool-dark':
+        return synthwave84;
+      case 'dark':
+        return vscDarkPlus;
+      case 'light':
+        return materialOceanic;
+    }
+  };
   return (
-    <div className='relative flex w-full flex-col py-9'>
-      <div className='flex w-full items-center justify-between rounded-t-sm bg-neutral-800 px-4 py-2 text-sm text-neutral-300'>
+    <div className='relative flex w-full flex-col py-2'>
+      <div className='flex w-full items-center justify-between rounded-t-sm bg-background px-4 py-2 text-sm text-foreground'>
         <span className='font-mono'>{language}</span>
         <CopyButton btnClassName={'transition-colors hover:text-white z-50'} className='!size-4' text={String(children)} />
       </div>
@@ -52,11 +65,10 @@ const CodeBlock = ({ children = '', language = 'plaintext', props }: CodeBlockPr
             hyphens: 'none',
             margin: '0.0rem 0px',
             overflow: 'auto',
-            background: 'rgb(30, 30, 30)',
           }}
           className='scroll-smooth !rounded-t-none rounded-b-sm scrollbar scrollbar-track-transparent scrollbar-thumb-neutral-500'
           language={language}
-          style={styles}
+          style={getSyntaxTheme()}
           {...props}
         >
           {String(children)}
