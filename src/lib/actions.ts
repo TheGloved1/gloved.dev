@@ -72,3 +72,8 @@ export async function removeAdminAction(email: string) {
 export async function getAdminsAction() {
   return await getAdmins();
 }
+
+export async function checkIfAdminAction(email: string) {
+  const admins = await getAdmins();
+  return admins.includes(email);
+}

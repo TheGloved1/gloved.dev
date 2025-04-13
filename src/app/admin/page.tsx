@@ -1,7 +1,7 @@
 'use client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { addAdminAction, deleteSyncAction, getAdminsAction, removeAdminAction } from '@/lib/actions';
+import { addAdminAction, checkIfAdminAction, deleteSyncAction, getAdminsAction, removeAdminAction } from '@/lib/actions';
 import { tryCatch } from '@/lib/utils';
 import { useUser } from '@clerk/nextjs';
 import { Loader2 } from 'lucide-react';
@@ -13,20 +13,26 @@ export default function Page() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [admins, setAdmins] = useState<string[]>([]);
   const [newAdmin, setNewAdmin] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const currentUserAsync = async () => {
-      setLoading(true);
-      const { data: admins, error: getAdminsError } = await tryCatch(getAdminsAction());
-      if (getAdminsError) {
-        toast.error('Failed to get admins');
-        setLoading(false);
+      if (!user?.primaryEmailAddress?.emailAddress) return;
+      const isAdmin = await tryCatch(checkIfAdminAction(user.primaryEmailAddress.emailAddress));
+      setLoading(false);
+      if (isAdmin.error) {
+        toast.error('Failed to check admin status');
         return;
       }
-      setIsAdmin(admins.includes(user?.primaryEmailAddress?.emailAddress || ''));
-      setAdmins(admins);
-      setLoading(false);
+      if (isAdmin.data) {
+        setIsAdmin(true);
+        const getAdmins = await tryCatch(getAdminsAction());
+        if (getAdmins.error) {
+          toast.error('Failed to get admins');
+          return;
+        }
+        setAdmins(getAdmins.data);
+      }
     };
     currentUserAsync();
   }, [user?.primaryEmailAddress?.emailAddress]);
