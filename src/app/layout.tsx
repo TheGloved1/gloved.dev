@@ -44,7 +44,7 @@ const jetbrains = JetBrains_Mono({
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <ClerkProvider afterSignOutUrl='/chat' appearance={{ variables: { colorPrimary: '#333' }, baseTheme: dark }}>
+    <ClerkProvider appearance={{ variables: { colorPrimary: '#333' }, baseTheme: dark }}>
       <html lang='en' suppressHydrationWarning>
         {env.NODE_ENV === 'development' && (
           <>
