@@ -1,8 +1,10 @@
 'use client';
 import { useLocalStorage } from '@/hooks/use-local-storage';
+import { tryCatch } from '@/lib/utils';
 import React, { ClassAttributes, HTMLAttributes, useEffect, useState } from 'react';
 import { ExtraProps } from 'react-markdown';
 import { codeToHtml } from 'shiki';
+import { toast } from 'sonner';
 import CopyButton from './CopyButton';
 import { Theme, themes } from './ThemeChanger';
 
@@ -33,8 +35,12 @@ const CodeBlock = ({ children = '', language = 'plaintext' }: CodeBlockProps) =>
         theme: getTheme(),
       });
     const promise = async () => {
-      const highlighted = await syntaxHighlighted();
-      setCode(highlighted);
+      const highlighted = await tryCatch(syntaxHighlighted());
+      if (highlighted.error) {
+        toast.error('Failed to highlight code');
+        return;
+      }
+      setCode(highlighted.data);
     };
     promise();
   }, [children, language, theme]);
