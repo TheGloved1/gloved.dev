@@ -11,7 +11,7 @@ import React from 'react';
 export default function Page(): React.JSX.Element {
   return (
     <>
-      <div className='absolute left-0 top-0 flex items-center gap-2 border border-border p-2'>
+      <div className='absolute left-0 top-0 flex items-center gap-2 rounded-br-lg border-b-2 border-r-2 border-border p-2'>
         <SignedOut>
           <SignInButton mode={'modal'}>
             <Button className='btn gap-1'>Sign in</Button>
