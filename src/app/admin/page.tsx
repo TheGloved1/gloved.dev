@@ -13,11 +13,12 @@ export default function Page() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [admins, setAdmins] = useState<string[]>([]);
   const [newAdmin, setNewAdmin] = useState('');
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const currentUserAsync = async () => {
       if (!user?.primaryEmailAddress?.emailAddress) return;
+      setLoading(true);
       const isAdmin = await tryCatch(checkIfAdminAction(user.primaryEmailAddress.emailAddress));
       setLoading(false);
       if (isAdmin.error) {
