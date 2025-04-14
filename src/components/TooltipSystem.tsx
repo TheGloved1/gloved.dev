@@ -44,7 +44,7 @@ export interface TooltipProviderProps {
  */
 export function TooltipProvider({
   children,
-  delayDuration = 700,
+  delayDuration,
   disableHoverableContent = false,
   skipDelayDuration,
 }: TooltipProviderProps) {
@@ -174,6 +174,11 @@ export interface TooltipProps
    * ARIA label for the tooltip
    */
   ariaLabel?: string;
+  /**
+   * The duration from when the mouse enters a tooltip trigger until the tooltip opens
+   * @default 700
+   */
+  delayDuration?: number;
 }
 
 /**
@@ -199,6 +204,7 @@ export const Tooltip = React.forwardRef<HTMLDivElement, TooltipProps>(
       disabled = false,
       contentClassName,
       ariaLabel,
+      delayDuration = 700,
       ...props
     },
     ref,
@@ -209,7 +215,7 @@ export const Tooltip = React.forwardRef<HTMLDivElement, TooltipProps>(
     }
 
     return (
-      <ShadcnTooltip>
+      <ShadcnTooltip delayDuration={delayDuration}>
         <ShadcnTooltipTrigger asChild>{children}</ShadcnTooltipTrigger>
         <AnimatePresence>
           <ShadcnTooltipContent
