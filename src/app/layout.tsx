@@ -56,7 +56,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <ReactQueryProvider>
             <Analytics />
             <SpeedInsights />
-            <Toaster toastOptions={{ style: { background: '#333' } }} />
+            <Toaster toastOptions={{ style: { background: 'hsl(var(--background))' } }} />
             <SourceCodeButton />
             <TooltipProvider>{children}</TooltipProvider>
           </ReactQueryProvider>

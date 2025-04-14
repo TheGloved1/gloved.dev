@@ -1,17 +1,30 @@
 'use client';
 
-import { useTheme } from 'next-themes';
+import { useLocalStorage } from '@/hooks/use-local-storage';
+import { usePathname } from 'next/navigation';
 import { Toaster as Sonner } from 'sonner';
+import { Theme, themes } from '../ThemeChanger';
 
 type ToasterProps = React.ComponentProps<typeof Sonner>;
 
 const Toaster = ({ ...props }: ToasterProps) => {
-  const { theme = 'system' } = useTheme();
+  const pathname = usePathname();
+  const [theme] = useLocalStorage<Theme>('theme', themes.cooldark);
+  const getLightOrDarkTheme = () => {
+    switch (theme.className) {
+      case 'light':
+        return 'light';
+      case 'dark':
+        return 'dark';
+      case 'cool-dark':
+        return 'dark';
+    }
+  };
 
   return (
     <Sonner
-      theme={theme as ToasterProps['theme']}
-      className='toaster group'
+      theme={getLightOrDarkTheme()}
+      className={`toaster group ${pathname.includes('/chat') ? theme.className : ''}`}
       toastOptions={{
         classNames: {
           toast:

@@ -163,7 +163,7 @@ function ChatMessage({ message, scrollEditCallback }: { message: Message; scroll
         {message.role === 'user' && input === null && (
           <div className='absolute right-0 mt-5 flex items-center gap-2 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 group-focus:opacity-100'>
             <button
-              className='inline-flex h-8 w-8 items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-neutral-800/0 p-0 text-xs font-medium transition-colors hover:bg-neutral-700 hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
+              className='inline-flex h-8 w-8 items-center justify-center gap-2 whitespace-nowrap rounded-lg p-0 text-xs font-medium transition-colors hover:bg-muted/40 hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-foreground/50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
               onClick={async () => {
                 await handleEditMessage(message);
                 await updateMessage(
@@ -185,14 +185,14 @@ function ChatMessage({ message, scrollEditCallback }: { message: Message; scroll
               onClick={() => {
                 setInput(message.content);
               }}
-              className='inline-flex h-8 w-8 items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-neutral-800/0 p-0 text-xs font-medium transition-colors hover:bg-neutral-700 hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
+              className='inline-flex h-8 w-8 items-center justify-center gap-2 whitespace-nowrap rounded-lg p-0 text-xs font-medium transition-colors hover:bg-muted/40 hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-foreground/50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
               title='Edit'
             >
               <SquarePen className='-mb-0.5 -ml-0.5 !size-5' />
               <span className='sr-only'>Edit</span>
             </button>
             <button
-              className='inline-flex h-8 w-8 items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-neutral-800/0 p-0 text-xs font-medium transition-colors hover:bg-neutral-700 hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
+              className='inline-flex h-8 w-8 items-center justify-center gap-2 whitespace-nowrap rounded-lg p-0 text-xs font-medium transition-colors hover:bg-muted/40 hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-foreground/50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
               onClick={() => {
                 navigator.clipboard.writeText(message.content);
                 toast.success('Copied response to clipboard!');
