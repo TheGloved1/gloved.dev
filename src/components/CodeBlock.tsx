@@ -47,7 +47,7 @@ const CodeBlock = ({ children = '', language = 'plaintext' }: CodeBlockProps) =>
 
   return (
     <div className='relative flex w-full flex-col py-1'>
-      <div className='flex w-full items-center justify-between rounded-t-md bg-background px-4 py-2 text-sm text-foreground'>
+      <div className='flex w-full items-center justify-between rounded-t-md bg-secondary px-4 py-2 text-sm text-foreground'>
         <span className='font-mono'>{language}</span>
         <CopyButton btnClassName={'transition-colors hover:text-white z-50'} className='!size-4' text={String(children)} />
       </div>

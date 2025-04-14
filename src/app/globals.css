@@ -241,6 +241,21 @@
     --chat-overlay: hsla(270, 12%, 16%, var(--blur-fallback, 0.71));
     --wordmark-color: #e3bad1;
   }
+  .cool-dark .border-reflect,
+  .dark .border-reflect {
+    --gradientBorder-gradient:
+      linear-gradient(180deg, #93335b00, #93335bbd, #93335b17), linear-gradient(15deg, #93335b1f 50%, #93335bbd);
+    --start: rgba(0, 0, 0, 0.92);
+  }
+  .border-reflect {
+    --c: 320 100% 75%;
+    --min: hsl(var(--c) / 0.2);
+    --max: hsl(var(--c) / 1);
+    --gradientBorder-gradient:
+      linear-gradient(180deg, var(--min), var(--max), var(--min)), linear-gradient(15deg, var(--min) 50%, var(--max));
+    --opacity: 1;
+    --start: rgba(0, 0, 0, 0.85);
+  }
 }
 
 @layer base {

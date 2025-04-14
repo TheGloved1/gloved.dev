@@ -81,8 +81,9 @@ function ChatMessage({ message, scrollEditCallback }: { message: Message; scroll
         className={
           message.role === 'user' ?
             input !== null ?
-              `group relative w-full max-w-[80%] rounded-2xl bg-background p-4 text-left`
-            : `group relative inline-block max-w-[80%] break-words rounded-2xl bg-background p-4 text-left`
+              `group relative w-full max-w-[80%] rounded-xl border border-secondary/50 bg-secondary/50 p-4 text-left`
+            : `group relative inline-block max-w-[80%] break-words rounded-xl border border-secondary/50 bg-secondary/50 px-4 py-3 text-left`
+
           : `group relative w-full max-w-full break-words`
         }
       >

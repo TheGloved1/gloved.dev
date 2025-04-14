@@ -171,17 +171,17 @@ const ChatInput = memo(
           <div className='pointer-events-none z-10'>
             <div className='pointer-events-auto'>
               <div
-                className='dark:border-reflect dark:rounded-t-[20px] dark:bg-background/40 dark:p-2 dark:pb-0 dark:backdrop-blur-lg'
-                /* style={{
+                className='dark:border-reflect dark:rounded-t-[20px] dark:bg-background/40 dark:p-1 dark:pb-0 dark:backdrop-blur-lg'
+                style={{
                   '--gradientBorder-gradient':
                     'linear-gradient(180deg, var(--min), var(--max), var(--min)), linear-gradient(15deg, var(--min) 50%, var(--max))',
                   '--start': '#2a2a2ae0',
                   '--opacity': '1',
-                }} */
+                }}
               >
                 <form
                   onSubmit={handleSubmit}
-                  className='dark:outline-chat-background/90 relative flex w-full flex-col items-stretch gap-2 rounded-t-xl border border-b-0 border-white/30 bg-[#3030309c] px-3 py-3 text-secondary-foreground outline outline-4 outline-[hsl(0,0%,63%)]/5 dark:border-[hsl(0,0%,83%)]/[0.04] dark:bg-background/40 sm:max-w-3xl'
+                  className='dark:outline-chat-background/90 relative flex w-full flex-col items-stretch gap-2 rounded-t-xl border border-b-0 border-white/30 bg-[#3030309c] p-3 text-secondary-foreground outline outline-4 outline-[hsl(0,0%,63%)]/5 dark:border-[hsl(0,0%,83%)]/[0.04] dark:bg-background/40 sm:max-w-3xl'
                   style={{
                     boxShadow:
                       'rgba(0, 0, 0, 0.1) 0px 80px 50px 0px, rgba(0, 0, 0, 0.07) 0px 50px 30px 0px, rgba(0, 0, 0, 0.06) 0px 30px 15px 0px, rgba(0, 0, 0, 0.04) 0px 15px 8px, rgba(0, 0, 0, 0.04) 0px 6px 4px, rgba(0, 0, 0, 0.02) 0px 2px 2px',

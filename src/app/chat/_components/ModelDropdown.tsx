@@ -32,7 +32,7 @@ export default function ModelDropdown() {
       <SelectTrigger className='max-w-[60vw]' defaultValue={model}>
         <SelectValue placeholder={'Select a model'} />
       </SelectTrigger>
-      <SelectContent className='max-w-[60vw]'>
+      <SelectContent className='max-w-[60vw] bg-background/90'>
         {Models.map(({ label, value, enabled, description, requirements }) => {
           if (!enabled) return null;
           if (requirements.loggedin && !isSignedIn) return null;
