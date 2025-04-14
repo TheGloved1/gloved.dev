@@ -4,6 +4,7 @@ import { ChatFetchOptions, defaultModel, modelConfig, ModelID, Models, safetySet
 import { formatMessageContent, tryCatch } from '@/lib/utils';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { createGroq } from '@ai-sdk/groq';
+import { createOpenRouter } from '@openrouter/ai-sdk-provider';
 import {
   CoreMessage,
   createDataStreamResponse,
@@ -17,6 +18,7 @@ import {
 
 const google = createGoogleGenerativeAI({ apiKey: env.GEMINI });
 const groq = createGroq({ apiKey: env.GROQ });
+const openrouter = createOpenRouter({ apiKey: env.OPENROUTER });
 
 const languageModels = Models.reduce(
   (acc, { value, provider, reasoning }) => {
@@ -31,6 +33,13 @@ const languageModels = Models.reduce(
       } else {
         acc[value] = groq.languageModel(value);
       }
+    } else if (provider === 'openrouter') {
+      acc[value] = openrouter.languageModel(value, {
+        reasoning: {
+          effort: 'high',
+          exclude: false,
+        },
+      });
     }
     return acc;
   },

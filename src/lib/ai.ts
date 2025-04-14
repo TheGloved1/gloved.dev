@@ -55,6 +55,10 @@ export const Models = [
     description:
       "Google's flagship AI model, optimized for speed and efficiency while maintaining high performance in various tasks",
     reasoning: false,
+    requirements: {
+      loggedin: false,
+      admin: false,
+    },
   } as const,
   {
     label: 'Gemini 2.0 Flash Lite',
@@ -63,6 +67,10 @@ export const Models = [
     enabled: true,
     description: 'A lightweight version of Gemini 2.0 Flash, designed for faster responses and lower resource usage',
     reasoning: false,
+    requirements: {
+      loggedin: false,
+      admin: false,
+    },
   } as const,
   {
     label: 'Gemini 2.0 Pro Experimental',
@@ -71,6 +79,10 @@ export const Models = [
     enabled: false,
     description: 'An experimental version of Gemini with enhanced capabilities for advanced reasoning and complex tasks',
     reasoning: false,
+    requirements: {
+      loggedin: false,
+      admin: false,
+    },
   } as const,
   {
     label: 'Gemini 2.5 Pro Experimental',
@@ -80,6 +92,10 @@ export const Models = [
     description:
       "Google's state-of-the-art thinking model, capable of reasoning over complex problems in code, math, and STEM, as well as analyzing large datasets, codebases, and documents using long context.",
     reasoning: false,
+    requirements: {
+      loggedin: false,
+      admin: false,
+    },
   } as const,
   {
     label: 'Qwen Coder-32b',
@@ -89,6 +105,10 @@ export const Models = [
     description:
       'Specialized code generation model with production-quality code output, trained on 5.5 trillion tokens of code and technical content',
     reasoning: false,
+    requirements: {
+      loggedin: false,
+      admin: false,
+    },
   } as const,
   {
     label: 'Qwen qwq-32b',
@@ -98,6 +118,10 @@ export const Models = [
     description:
       'Advanced reasoning model delivering performance comparable to state-of-the-art models 20x larger, excelling in complex reasoning tasks',
     reasoning: false,
+    requirements: {
+      loggedin: false,
+      admin: false,
+    },
   } as const,
   {
     label: 'Llama 4 Scout',
@@ -106,6 +130,10 @@ export const Models = [
     enabled: false,
     description: 'A specialized model for reasoning tasks, optimized for speed and accuracy',
     reasoning: false,
+    requirements: {
+      loggedin: false,
+      admin: false,
+    },
   } as const,
   {
     label: 'Llama 3.1-8b',
@@ -114,6 +142,10 @@ export const Models = [
     enabled: false,
     description: 'Lightweight version of Llama 3 optimized for fast responses and efficient inference',
     reasoning: false,
+    requirements: {
+      loggedin: false,
+      admin: false,
+    },
   } as const,
   {
     label: 'Llama 3.3-70b',
@@ -122,6 +154,10 @@ export const Models = [
     enabled: false,
     description: 'Large-scale Llama model with versatile capabilities across various AI tasks',
     reasoning: false,
+    requirements: {
+      loggedin: false,
+      admin: false,
+    },
   } as const,
   {
     label: 'Deepseek R1 (Qwen Distill)',
@@ -130,6 +166,10 @@ export const Models = [
     enabled: true,
     description: 'Distilled version of DeepSeek R1, optimized for high performance reasoning tasks using Qwen architecture',
     reasoning: false,
+    requirements: {
+      loggedin: false,
+      admin: false,
+    },
   } as const,
   {
     label: 'Deepseek R1 (Llama Distill)',
@@ -138,6 +178,22 @@ export const Models = [
     enabled: true,
     description: 'Distilled version of DeepSeek R1, fine-tuned from Llama-3.3-70B for robust reasoning capabilities',
     reasoning: true,
+    requirements: {
+      loggedin: false,
+      admin: false,
+    },
+  } as const,
+  {
+    label: 'OpenRouter Auto',
+    value: 'openrouter/auto',
+    provider: 'openrouter',
+    enabled: true,
+    description: 'A model will be selected based on your prompt',
+    reasoning: false,
+    requirements: {
+      loggedin: true,
+      admin: true,
+    },
   } as const,
 ] as const;
 

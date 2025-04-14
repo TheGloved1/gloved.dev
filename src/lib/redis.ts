@@ -9,8 +9,31 @@ import { Redis } from '@upstash/redis';
 export const redis = new Redis({
   url: env.KV_REST_API_URL,
   token: env.KV_REST_API_TOKEN,
+  enableAutoPipelining: true,
   enableTelemetry: true,
+  latencyLogging: true,
 });
+
+/**
+ * Retrieves all keys from the key-value store that match a given glob pattern.
+ * This function uses the SCAN command to iterate through the keys in batches
+ * of 100, and returns an array of all matching keys.
+ * @param pattern A glob pattern to match keys against.
+ * @returns An array of matching keys.
+ */
+const getKeys = async (pattern: string) => {
+  let cursor = '0';
+  const keys: string[] = [];
+  do {
+    const [nextCursor, keys] = await redis.scan(cursor, {
+      match: pattern,
+      count: 100,
+    });
+    cursor = nextCursor;
+    keys.push(...keys);
+  } while (cursor !== '0');
+  return keys;
+};
 
 /**
  * Generates a key for storing a Message object in the key-value store.
@@ -42,7 +65,7 @@ function threadSyncKey(userId: string, threadId: string) {
  * @returns An array of Message objects stored in the key-value store.
  */
 export async function getAllMessagesForUser(userId: string) {
-  const keys = await redis.keys(`sync:msg:${userId}:*`);
+  const keys = await getKeys(`sync:msg:${userId}:*`);
   if (keys.length === 0) return [];
   const kvMessages = await redis.mget(keys);
   const messages = kvMessages.map((message) => message);
@@ -58,7 +81,7 @@ export async function getAllMessagesForUser(userId: string) {
  * @returns An array of Thread objects stored in the key-value store.
  */
 export async function getAllThreadsForUser(userId: string) {
-  const keys = await redis.keys(`sync:thread:${userId}:*`);
+  const keys = await getKeys(`sync:thread:${userId}:*`);
   if (keys.length === 0) return [];
   const kvThreads = await redis.mget(keys);
   const threads = kvThreads.map((thread) => thread);
@@ -144,6 +167,10 @@ export async function dbSync(input: { userId: string; messages: Message[]; threa
     // Sync new messages and threads to KV store
     console.log('[SYNC] Syncing', Object.keys(kvMap).length, 'keys to KV');
     await redis.mset(kvMap);
+
+    Object.keys(kvMap).forEach((key) => {
+      redis.expire(key, 259200); // expire in 3 days
+    });
   }
 
   console.log('[SYNC] Found', newMessages.length, 'newer messages for', input.userId);
@@ -156,37 +183,47 @@ export async function dbSync(input: { userId: string; messages: Message[]; threa
   };
 }
 
+/**
+ * Deletes all user data associated with the given user ID from the Redis key-value store.
+ * @param userId The user ID for which data should be deleted.
+ */
 export async function deleteUserData(userId: string) {
-  const dbThreads = await getAllThreadsForUser(userId);
-  const dbMessages = await getAllMessagesForUser(userId);
+  const threadsKeyPattern = `sync:thread:${userId}:*`;
+  const messagesKeyPattern = `sync:msg:${userId}:*`;
 
-  const kvMap: Record<string, string> = {};
+  // Delete threads
+  let cursor = '0';
+  do {
+    const [nextCursor, keys] = await redis.scan(cursor, {
+      match: threadsKeyPattern,
+      count: 100,
+    });
+    cursor = nextCursor;
+    if (keys.length > 0) {
+      await redis.del(...keys);
+    }
+  } while (cursor !== '0');
 
-  dbThreads.forEach((t) => {
-    const key = threadSyncKey(userId, t.id);
-    kvMap[key] = JSON.stringify({
-      ...t,
-      updated_at: new Date().toISOString(),
-      status: 'deleted',
-    } as Thread);
-  });
-  dbMessages.forEach((m) => {
-    const key = messageSyncKey(userId, m.id);
-    kvMap[key] = JSON.stringify({
-      ...m,
-      content: '',
-      attachments: undefined,
-      reasoning: undefined,
-      updated_at: new Date().toISOString(),
-      status: 'deleted',
-    } as Message);
-  });
-
-  if (Object.keys(kvMap).length > 0) {
-    await redis.mset(kvMap);
-  }
+  // Delete messages
+  cursor = '0';
+  do {
+    const [nextCursor, keys] = await redis.scan(cursor, {
+      match: messagesKeyPattern,
+      count: 100,
+    });
+    cursor = nextCursor;
+    if (keys.length > 0) {
+      await redis.del(...keys);
+    }
+  } while (cursor !== '0');
 }
 
+/**
+ * Adds an email to the list of admin emails stored in the Redis database.
+ * The email is only added if it does not already exist in the list.
+ *
+ * @param email The email address to be added to the list of admins.
+ */
 export async function addAdmin(email: string) {
   const admins = ((await redis.get('admins')) as { admins: string[] })?.admins || [];
   if (!admins.includes(email)) {
@@ -194,6 +231,11 @@ export async function addAdmin(email: string) {
   }
 }
 
+/**
+ * Removes an email from the list of admin emails stored in the Redis database.
+ * The email is only removed if it already exists in the list.
+ * @param email The email address to be removed from the list of admins.
+ */
 export async function removeAdmin(email: string) {
   const admins = ((await redis.get('admins')) as string[]) || [];
   if (admins.includes(email)) {
@@ -204,11 +246,29 @@ export async function removeAdmin(email: string) {
   }
 }
 
+/**
+ * Retrieves the list of admin emails stored in the Redis database.
+ * If the list does not exist, an empty array is returned.
+ * @returns An array of admin emails.
+ */
 export async function getAdmins() {
   return ((await redis.get('admins')) as string[]) || [];
 }
 
+/**
+ * Deletes all sync data from the key-value store.
+ * @returns A promise that resolves when the sync data has been deleted.
+ */
 export async function deleteSync() {
-  const keys = await redis.keys('sync*');
-  await redis.del(...keys);
+  let cursor = '0';
+  do {
+    const [nextCursor, keys] = await redis.scan(cursor, {
+      match: 'sync*',
+      count: 100,
+    });
+    cursor = nextCursor;
+    if (keys.length > 0) {
+      redis.del(...keys);
+    }
+  } while (cursor !== '0');
 }

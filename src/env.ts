@@ -9,6 +9,7 @@ export const env = createEnv({
   server: {
     GEMINI: z.string(),
     GROQ: z.string(),
+    OPENROUTER: z.string(),
     CLERK_SECRET_KEY: z.string(),
     KV_URL: z.string(),
     KV_REST_API_URL: z.string(),
@@ -32,6 +33,7 @@ export const env = createEnv({
     NODE_ENV: process.env.NODE_ENV,
     GEMINI: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
     GROQ: process.env.GROQ_API_KEY,
+    OPENROUTER: process.env.OPENROUTER,
     KV_URL: process.env.KV_URL,
     KV_REST_API_URL: process.env.KV_REST_API_URL,
     KV_REST_API_TOKEN: process.env.KV_REST_API_TOKEN,

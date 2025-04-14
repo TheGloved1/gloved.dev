@@ -15,8 +15,8 @@ export default function ChatSidebarTrigger() {
       <div
         className={
           isOpen ?
-            'duration-250 pointer-events-none absolute inset-0 right-auto -z-10 w-8 rounded-md bg-transparent backdrop-blur-sm transition-[background-color,width] delay-0'
-          : 'pointer-events-none absolute inset-0 right-auto -z-10 w-[4.75rem] rounded-md bg-primary/25 backdrop-blur-sm transition-[background-color,width] delay-150 duration-150'
+            'max-sm:delay-100 max-sm:duration-100 max-sm:w-[4.75rem] max-sm:bg-sidebar/50 pointer-events-none absolute inset-0 right-auto -z-10 w-10 rounded-md bg-transparent backdrop-blur-sm transition-[background-color,width] delay-0 duration-200'
+          : 'blur-fallback:bg-sidebar max-sm:delay-100 max-sm:duration-100 max-sm:w-[4.75rem] max-sm:bg-sidebar/50 pointer-events-none absolute inset-0 right-auto -z-10 w-[4.75rem] rounded-md bg-sidebar/50 backdrop-blur-sm transition-[background-color,width] delay-100 duration-100'
         }
       ></div>
       <SidebarTrigger
