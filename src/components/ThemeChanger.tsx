@@ -29,7 +29,7 @@ export default function ThemeChanger({ children }: { children: React.ReactNode }
   const [theme, setTheme] = useLocalStorage<Theme>('theme', themes.cooldark);
   return (
     <div className={theme.className}>
-      <Button className='fixed right-0 top-0 z-10' onClick={() => setDialogOpen(true)}>
+      <Button className='fixed right-1 top-1 z-10' onClick={() => setDialogOpen(true)}>
         {renderIcon(theme)}
       </Button>
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
