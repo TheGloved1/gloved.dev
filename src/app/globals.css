@@ -256,6 +256,28 @@
     --opacity: 1;
     --start: rgba(0, 0, 0, 0.85);
   }
+  .border-reflect:before {
+    content: '';
+    pointer-events: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: var(--gradientBorder-size, 1px);
+    background: var(--gradientBorder-gradient);
+    -webkit-mask:
+      linear-gradient(var(--start), #000) content-box,
+      linear-gradient(var(--start), #000);
+    mask:
+      linear-gradient(var(--start), #000) content-box,
+      linear-gradient(var(--start), #000);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: var(--opacity, 1);
+  }
 }
 
 @layer base {
