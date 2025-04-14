@@ -100,7 +100,7 @@ export default function ChatSidebar({ children }: { children?: React.ReactNode }
 
   // Render a thread item
   const renderThreadItem = (thread: Thread) => (
-    <SidebarMenuItem key={thread.id} className='mb-4'>
+    <SidebarMenuItem key={thread.id} className='mb-3'>
       <Tooltip delayDuration={1000} disableHoverableContent>
         <TooltipContent side='bottom' className='rounded-md bg-accent px-2 py-1 text-xs text-primary-foreground'>
           {thread.title}
