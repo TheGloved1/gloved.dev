@@ -65,7 +65,7 @@ function threadSyncKey(userId: string, threadId: string) {
  * @returns An array of Message objects stored in the key-value store.
  */
 export async function getAllMessagesForUser(userId: string) {
-  const keys = await getKeys(`sync:msg:${userId}:*`);
+  const keys = await redis.keys(`sync:msg:${userId}:*`);
   if (keys.length === 0) return [];
   const kvMessages = await redis.mget(keys);
   const messages = kvMessages.map((message) => message);
@@ -81,7 +81,7 @@ export async function getAllMessagesForUser(userId: string) {
  * @returns An array of Thread objects stored in the key-value store.
  */
 export async function getAllThreadsForUser(userId: string) {
-  const keys = await getKeys(`sync:thread:${userId}:*`);
+  const keys = await redis.keys(`sync:thread:${userId}:*`);
   if (keys.length === 0) return [];
   const kvThreads = await redis.mget(keys);
   const threads = kvThreads.map((thread) => thread);

@@ -1,4 +1,5 @@
 'use client';
+import { ThemeChangerButton } from '@/components/ThemeChanger';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -51,6 +52,9 @@ export default function ChatSidebar({ children }: { children?: React.ReactNode }
     <SidebarProvider className='flex min-h-svh w-full'>
       <Sidebar variant='sidebar' className='border border-border'>
         <SidebarHeader>
+          <div className='absolute right-1 top-1 text-muted-foreground md:hidden'>
+            <ThemeChangerButton />
+          </div>
           <h1 className='flex h-8 shrink-0 items-center justify-center text-lg text-muted-foreground transition-opacity delay-75 duration-75'>
             [
             <Link

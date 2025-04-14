@@ -61,7 +61,7 @@ export default function Page(): React.JSX.Element {
               <ChatMessage scrollEditCallback={scrollToBottom} message={message} key={message.id} />
             ))}
           </div>
-          <div ref={ref} className='h-0 w-0' />
+          <div ref={ref} className='mt-6 h-0 w-0' />
         </div>
       </div>
     </main>
