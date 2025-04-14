@@ -24,7 +24,7 @@ import {
   SidebarProvider,
 } from '@/components/ui/sidebar';
 import { Tooltip, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { dxdb } from '@/lib/dexie';
+import { dxdb, Thread } from '@/lib/dexie';
 import { tryCatch } from '@/lib/utils';
 import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs';
 import { TooltipContent } from '@radix-ui/react-tooltip';
@@ -36,10 +36,58 @@ import React from 'react';
 import { toast } from 'sonner';
 import ChatSidebarTrigger from './ChatSidebarTrigger';
 
+// Helper function to categorize threads by date
+const categorizeThreads = (threads?: Thread[]) => {
+  if (!threads || threads.length === 0) return {};
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  const lastWeek = new Date(today);
+  lastWeek.setDate(lastWeek.getDate() - 7);
+
+  const categories: { [key: string]: Thread[] } = {
+    Today: [],
+    Yesterday: [],
+    'Last 7 days': [],
+    Older: [],
+  };
+
+  threads.forEach((thread) => {
+    const lastMessageDate = new Date(thread.last_message_at);
+
+    if (lastMessageDate >= today) {
+      categories['Today'].push(thread);
+    } else if (lastMessageDate >= yesterday) {
+      categories['Yesterday'].push(thread);
+    } else if (lastMessageDate >= lastWeek) {
+      categories['Last 7 days'].push(thread);
+    } else {
+      categories['Older'].push(thread);
+    }
+  });
+
+  // Sort threads within each category by date (newest first)
+  Object.keys(categories).forEach((category) => {
+    categories[category].sort((a, b) => {
+      const dateA = new Date(a.last_message_at || a.created_at || 0);
+      const dateB = new Date(b.last_message_at || b.created_at || 0);
+      return dateB.getTime() - dateA.getTime();
+    });
+  });
+
+  return categories;
+};
+
 export default function ChatSidebar({ children }: { children?: React.ReactNode }) {
   const { threadId } = useParams<{ threadId: string }>();
   const router = useRouter();
   const threads = useLiveQuery(() => dxdb.getThreads());
+
+  const categorizedThreads = React.useMemo(() => categorizeThreads(threads), [threads]);
 
   const isCurrentThread = (id: string) => threadId === id;
 
@@ -49,6 +97,65 @@ export default function ChatSidebar({ children }: { children?: React.ReactNode }
     toast.success('Thread deleted');
     if (isCurrentThread(id)) router.replace('/chat');
   };
+
+  // Render a thread item
+  const renderThreadItem = (thread: Thread) => (
+    <SidebarMenuItem key={thread.id} className='mb-4'>
+      <Tooltip delayDuration={1000} disableHoverableContent>
+        <TooltipContent side='bottom' className='rounded-md bg-accent px-2 py-1 text-xs text-primary-foreground'>
+          {thread.title}
+        </TooltipContent>
+        <TooltipTrigger asChild>
+          <Link
+            className={
+              'group/link relative flex h-9 w-full items-center overflow-hidden rounded-lg px-2 py-1 text-sm outline-none hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:text-sidebar-accent-foreground focus-visible:ring-2 focus-visible:ring-sidebar-ring hover:focus-visible:bg-sidebar-accent' +
+              (isCurrentThread(thread.id) ? ' bg-sidebar-accent text-sidebar-accent-foreground' : '')
+            }
+            href={`/chat/${thread.id}`}
+          >
+            <div className='relative flex w-full items-center'>
+              <div className='relative w-full'>
+                <div className='hover:truncate-none pointer-events-none h-full w-full cursor-pointer overflow-hidden truncate rounded bg-transparent px-1 py-1 text-sm text-muted-foreground outline-none'>
+                  {thread.title}
+                </div>
+              </div>
+              <div className='pointer-events-auto absolute -right-1 bottom-0 top-0 z-50 flex translate-x-full items-center justify-end text-muted-foreground transition-transform group-hover/link:translate-x-0 group-hover/link:bg-sidebar-accent'>
+                <div className='pointer-events-none absolute bottom-0 right-[100%] top-0 h-12 w-8 bg-gradient-to-l from-sidebar-accent to-transparent opacity-0 group-hover/link:opacity-100'></div>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <button
+                      className='rounded-md p-1.5 hover:bg-destructive/50 hover:text-destructive-foreground'
+                      title='Delete Chat'
+                    >
+                      <X width={24} height={24} className='!size-4' />
+                    </button>
+                  </DialogTrigger>
+                  <DialogContent className='sm:max-w-md'>
+                    <DialogHeader>
+                      <DialogTitle>Are you absolutely sure?</DialogTitle>
+                      <DialogDescription>
+                        This action cannot be undone. This will permanently delete this thread.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter className='pt-4'>
+                      <DialogClose asChild>
+                        <Button variant='ghost'>Cancel</Button>
+                      </DialogClose>
+                      <DialogClose asChild>
+                        <Button variant='destructive' onClick={() => handleDelete(thread.id)}>
+                          Delete
+                        </Button>
+                      </DialogClose>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              </div>
+            </div>
+          </Link>
+        </TooltipTrigger>
+      </Tooltip>
+    </SidebarMenuItem>
+  );
 
   return (
     <TooltipProvider skipDelayDuration={0} disableHoverableContent>
@@ -79,80 +186,28 @@ export default function ChatSidebar({ children }: { children?: React.ReactNode }
               New Chat
             </Link>
           </SidebarHeader>
-          <SidebarGroupLabel>Chats</SidebarGroupLabel>
           <SidebarContent className='rounded bg-gradient-to-bl from-[--background] to-[--background-secondary] text-white'>
             {threads?.length ?
-              threads.map((thread) => (
-                <SidebarGroup key={thread.id}>
-                  <SidebarGroupContent>
-                    <SidebarMenu>
-                      <span data-state='closed'>
-                        <SidebarMenuItem>
-                          <Tooltip delayDuration={1000} disableHoverableContent>
-                            <TooltipContent
-                              side='bottom'
-                              className='rounded-md bg-accent px-2 py-1 text-xs text-primary-foreground'
-                            >
-                              {thread.title}
-                            </TooltipContent>
-                            <TooltipTrigger asChild>
-                              <Link
-                                className={
-                                  'group/link relative flex h-9 w-full items-center overflow-hidden rounded-lg px-2 py-1 text-sm outline-none hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:text-sidebar-accent-foreground focus-visible:ring-2 focus-visible:ring-sidebar-ring hover:focus-visible:bg-sidebar-accent' +
-                                  (isCurrentThread(thread.id) ? ' bg-sidebar-accent text-sidebar-accent-foreground' : '')
-                                }
-                                href={`/chat/${thread.id}`}
-                              >
-                                <div className='relative flex w-full items-center'>
-                                  <div className='relative w-full'>
-                                    <div className='hover:truncate-none pointer-events-none h-full w-full cursor-pointer overflow-hidden truncate rounded bg-transparent px-1 py-1 text-sm text-muted-foreground outline-none'>
-                                      {thread.title}
-                                    </div>
-                                  </div>
-                                  <div className='pointer-events-auto absolute -right-1 bottom-0 top-0 z-50 flex translate-x-full items-center justify-end text-muted-foreground transition-transform group-hover/link:translate-x-0 group-hover/link:bg-sidebar-accent'>
-                                    <div className='pointer-events-none absolute bottom-0 right-[100%] top-0 h-12 w-8 bg-gradient-to-l from-sidebar-accent to-transparent opacity-0 group-hover/link:opacity-100'></div>
-                                    <Dialog>
-                                      <DialogTrigger asChild>
-                                        <button
-                                          className='rounded-md p-1.5 hover:bg-destructive/50 hover:text-destructive-foreground'
-                                          title='Delete Chat'
-                                        >
-                                          <X width={24} height={24} className='!size-4' />
-                                        </button>
-                                      </DialogTrigger>
-                                      <DialogContent className='sm:max-w-md'>
-                                        <DialogHeader>
-                                          <DialogTitle>Are you absolutely sure?</DialogTitle>
-                                          <DialogDescription>
-                                            This action cannot be undone. This will permanently delete this thread.
-                                          </DialogDescription>
-                                        </DialogHeader>
-                                        <DialogFooter className='pt-4'>
-                                          <DialogClose asChild>
-                                            <Button variant='ghost'>Cancel</Button>
-                                          </DialogClose>
-                                          <DialogClose asChild>
-                                            <Button variant='destructive' onClick={() => handleDelete(thread.id)}>
-                                              Delete
-                                            </Button>
-                                          </DialogClose>
-                                        </DialogFooter>
-                                      </DialogContent>
-                                    </Dialog>
-                                  </div>
-                                </div>
-                              </Link>
-                            </TooltipTrigger>
-                          </Tooltip>
-                        </SidebarMenuItem>
-                      </span>
-                    </SidebarMenu>
-                  </SidebarGroupContent>
-                </SidebarGroup>
-              ))
+              Object.entries(categorizedThreads).map(
+                ([category, categoryThreads]) =>
+                  categoryThreads.length > 0 && (
+                    <SidebarGroup key={category}>
+                      <SidebarGroupLabel>{category}</SidebarGroupLabel>
+                      <SidebarGroupContent>
+                        <SidebarMenu>
+                          {categoryThreads.map((thread) => (
+                            <span key={thread.id} data-state='closed'>
+                              {renderThreadItem(thread)}
+                            </span>
+                          ))}
+                        </SidebarMenu>
+                      </SidebarGroupContent>
+                    </SidebarGroup>
+                  ),
+              )
             : null}
           </SidebarContent>
-          <SidebarFooter className='p-2'>
+          <SidebarFooter className='mb-1 p-2'>
             <SignedOut>
               <div className='flex items-center gap-2'>
                 <SignInButton mode={'modal'}>
