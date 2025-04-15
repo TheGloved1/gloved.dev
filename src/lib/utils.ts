@@ -16,6 +16,24 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 /**
+ * A boolean indicating whether the code is running on the server (true) or in the browser (false).
+ *
+ * @remarks
+ * This variable is set to `true` on the server and `false` in the browser. It can be used to conditionally
+ * render components or execute code that is specific to one of the two environments.
+ *
+ * @example
+ * ```typescript
+ * if (isServer) {
+ *   // Server-side code
+ * } else {
+ *   // Client-side code
+ * }
+ * ```
+ */
+export const isServer = typeof window === 'undefined';
+
+/**
  * Creates a promise that resolves after a specified amount of time.
  * @param ms - The amount of milliseconds to wait.
  * @returns A promise that resolves after the specified amount of time.
@@ -39,7 +57,7 @@ export async function apiFetch(route: string, options?: RequestInit) {
  * Generates the API route by concatenating the base API URL with the provided route.
  * @param route - The API route to be appended to the base API URL.
  * @returns The complete API route.
- * 
+ *
  * @example
  * ```typescript
  * const route = apiRoute('/users');

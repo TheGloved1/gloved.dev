@@ -64,11 +64,15 @@ const randomWelcomeMessages: string[] = [
   'Do you like sushi?',
 ];
 
+const getRandomWelcomeMessage = () => {
+  return randomWelcomeMessages[Math.floor(Math.random() * randomWelcomeMessages.length)];
+};
+
 export default function Page(): React.JSX.Element {
   const auth = useAuth();
   const [currentTab, setCurrentTab] = React.useState<Tab>('default');
   const [input, setInput] = useLocalStorage('input', '');
-  const [welcomeMessage] = React.useState(randomWelcomeMessages[Math.floor(Math.random() * randomWelcomeMessages.length)]);
+  const [welcomeMessage] = React.useState(getRandomWelcomeMessage());
 
   const isActiveTab = (tab: Tab) => tab === currentTab;
 
@@ -98,7 +102,9 @@ export default function Page(): React.JSX.Element {
           <div className='pt-safe-offset-10 mx-auto flex w-full max-w-3xl flex-col space-y-12 px-4 pb-10'>
             <div className='flex h-[calc(100vh-20rem)] items-start justify-center'>
               <div className='w-full space-y-6 px-2 pt-32 duration-300 animate-in fade-in-50 zoom-in-95 sm:px-8 sm:pt-48 md:pt-60'>
-                <h2 className='text-3xl font-semibold'>{welcomeMessage}</h2>
+                <h2 className='text-3xl font-semibold' suppressHydrationWarning>
+                  {welcomeMessage}
+                </h2>
                 <div
                   id='suggestions'
                   className='max-sm:justify-evenly flex flex-row flex-wrap gap-2.5 sm:text-xs md:text-sm'
