@@ -12,7 +12,7 @@ const components: Components = {
     const language = className?.split('-').pop() || 'plaintext';
     if (language === 'plaintext') {
       return (
-        <strong className='rounded border border-border bg-gray-600/50 px-1 font-bold' {...props}>
+        <strong className='rounded border border-border bg-gray-600/25 px-1 font-bold' {...props}>
           {children}
         </strong>
       );
