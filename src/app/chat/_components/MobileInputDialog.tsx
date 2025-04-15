@@ -24,7 +24,7 @@ export default function MobileInputDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className='sm:max-w-[425px] md:max-w-[650px]'>
+      <DialogContent className='-translate-y-full sm:max-w-[425px] md:max-w-[650px]'>
         <DialogHeader>
           <DialogTitle className='text-base font-semibold'>Type your message</DialogTitle>
         </DialogHeader>

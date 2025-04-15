@@ -15,27 +15,6 @@ export const redis = new Redis({
 });
 
 /**
- * Retrieves all keys from the key-value store that match a given glob pattern.
- * This function uses the SCAN command to iterate through the keys in batches
- * of 100, and returns an array of all matching keys.
- * @param pattern A glob pattern to match keys against.
- * @returns An array of matching keys.
- */
-const getKeys = async (pattern: string) => {
-  let cursor = '0';
-  const keys: string[] = [];
-  do {
-    const [nextCursor, keys] = await redis.scan(cursor, {
-      match: pattern,
-      count: 100,
-    });
-    cursor = nextCursor;
-    keys.push(...keys);
-  } while (cursor !== '0');
-  return keys;
-};
-
-/**
  * Generates a key for storing a Message object in the key-value store.
  * The key format is "sync:msg:<userId>:<sanitizedMessageId>".
  * @param userId The user ID that owns the message.
@@ -89,6 +68,33 @@ export async function getAllThreadsForUser(userId: string) {
 
   console.log('[SYNC] Fetched', threads.length, 'threads from KV');
   return threads as Thread[];
+}
+
+export async function pushThreadsToDb(threads: Thread[], userId: string) {
+  const kvMap: Record<string, string> = {};
+  for (const thread of threads) {
+    kvMap[threadSyncKey(userId, thread.id)] = JSON.stringify(thread);
+  }
+  redis.mset(kvMap);
+  Object.keys(kvMap).forEach((key) => {
+    redis.expire(key, 259200); // expire in 3 days
+  });
+}
+
+export async function pushMessagesToDb(messages: Message[], userId: string) {
+  const kvMap: Record<string, string> = {};
+  for (const message of messages) {
+    kvMap[messageSyncKey(userId, message.id)] = JSON.stringify(message);
+  }
+  redis.mset(kvMap);
+  Object.keys(kvMap).forEach((key) => {
+    redis.expire(key, 259200); // expire in 3 days
+  });
+}
+
+export async function exportThreadToDb(userId: string, data: { messages: Message[]; thread: Thread }) {
+  await pushThreadsToDb([data.thread], userId);
+  await pushMessagesToDb(data.messages, userId);
 }
 
 /**

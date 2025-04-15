@@ -1,9 +1,7 @@
 'use client';
 import { useLocalStorage } from '@/hooks/use-local-storage';
-import { checkSync } from '@/lib/dexie';
-import { useAuth } from '@clerk/nextjs';
 import { Code, GraduationCap, Newspaper, Sparkles } from 'lucide-react';
-import React, { useEffect } from 'react';
+import React from 'react';
 import ChatInput from './_components/ChatInput';
 
 export const dynamic = 'force-static';
@@ -69,18 +67,11 @@ const getRandomWelcomeMessage = () => {
 };
 
 export default function Page(): React.JSX.Element {
-  const auth = useAuth();
   const [currentTab, setCurrentTab] = React.useState<Tab>('default');
   const [input, setInput] = useLocalStorage('input', '');
   const [welcomeMessage] = React.useState(getRandomWelcomeMessage());
 
   const isActiveTab = (tab: Tab) => tab === currentTab;
-
-  useEffect(() => {
-    if (auth.userId) {
-      checkSync(auth.userId);
-    }
-  }, [auth.userId]);
 
   const handleTabClick = (tab: Tab) => {
     if (tab !== currentTab) {

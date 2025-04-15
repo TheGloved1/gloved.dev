@@ -2,7 +2,7 @@
 import { env } from '@/env';
 import { Message, Thread } from '@/lib/dexie';
 import { apiRoute, tryCatch } from '@/lib/utils';
-import { addAdmin, dbSync, deleteSync, deleteUserData, getAdmins, removeAdmin } from './redis';
+import { addAdmin, dbSync, deleteSync, deleteUserData, exportThreadToDb, getAdmins, removeAdmin } from './redis';
 
 /**
  * Fetches the system prompt from the server.
@@ -76,4 +76,8 @@ export async function getAdminsAction() {
 export async function checkIsAdminAction(email: string) {
   const admins = await getAdmins();
   return admins.includes(email);
+}
+
+export async function exportThreadAction(userId: string, data: { messages: Message[]; thread: Thread }) {
+  await exportThreadToDb(userId, data);
 }

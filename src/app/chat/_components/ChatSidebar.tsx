@@ -31,7 +31,7 @@ import { TooltipContent } from '@radix-ui/react-tooltip';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { Settings, X } from 'lucide-react';
 import Link from 'next/link';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, usePathname, useRouter } from 'next/navigation';
 import React from 'react';
 import { toast } from 'sonner';
 import ChatSidebarTrigger from './ChatSidebarTrigger';
@@ -85,6 +85,7 @@ const categorizeThreads = (threads?: Thread[]) => {
 export default function ChatSidebar({ children }: { children?: React.ReactNode }) {
   const { threadId } = useParams<{ threadId: string }>();
   const router = useRouter();
+  const pathname = usePathname();
   const threads = useLiveQuery(() => dxdb.getThreads());
 
   const categorizedThreads = React.useMemo(() => categorizeThreads(threads), [threads]);
@@ -98,11 +99,13 @@ export default function ChatSidebar({ children }: { children?: React.ReactNode }
     if (isCurrentThread(id)) router.replace('/chat');
   };
 
+  if (pathname.includes('/settings')) return <>{children}</>;
+
   // Render a thread item
   const renderThreadItem = (thread: Thread) => (
-    <SidebarMenuItem key={thread.id} className='mx-2 mb-3'>
+    <SidebarMenuItem key={thread.id}>
       <Tooltip delayDuration={1000} disableHoverableContent>
-        <TooltipContent side='bottom' className='rounded-md bg-accent px-2 py-1 text-xs text-primary-foreground'>
+        <TooltipContent side='bottom' className='rounded-md bg-accent px-2 text-[0.60rem] text-primary-foreground'>
           {thread.title}
         </TooltipContent>
         <TooltipTrigger asChild>
@@ -160,7 +163,7 @@ export default function ChatSidebar({ children }: { children?: React.ReactNode }
   return (
     <TooltipProvider skipDelayDuration={0} disableHoverableContent>
       <SidebarProvider className='flex min-h-svh w-full'>
-        <Sidebar variant='sidebar' className='border border-border'>
+        <Sidebar variant='floating' className='m-0 border border-border p-0'>
           <SidebarHeader>
             <div className='absolute right-1 top-1 text-muted-foreground md:hidden'>
               <ThemeChangerButton />
@@ -191,9 +194,11 @@ export default function ChatSidebar({ children }: { children?: React.ReactNode }
               Object.entries(categorizedThreads).map(
                 ([category, categoryThreads]) =>
                   categoryThreads.length > 0 && (
-                    <SidebarGroup key={category}>
-                      <SidebarGroupLabel>{category}</SidebarGroupLabel>
-                      <SidebarGroupContent>
+                    <SidebarGroup key={category} className='relative flex w-full min-w-0 flex-col p-2'>
+                      <SidebarGroupLabel className='ease-snappy text-color-heading flex h-8 shrink-0 select-none items-center rounded-md px-1.5 text-xs font-medium outline-none ring-sidebar-ring transition-[margin,opa] duration-200 focus-visible:ring-2 group-data-[collapsible=icon]:-mt-8 group-data-[collapsible=icon]:opacity-0 [&>svg]:size-4 [&>svg]:shrink-0'>
+                        {category}
+                      </SidebarGroupLabel>
+                      <SidebarGroupContent className='w-full text-sm'>
                         <SidebarMenu>
                           {categoryThreads.map((thread) => (
                             <span key={thread.id} data-state='closed'>

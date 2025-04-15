@@ -1,7 +1,6 @@
 'use client';
 import { useIntersectionObserver } from '@/hooks/use-intersection-observer';
-import { checkSync, dxdb } from '@/lib/dexie';
-import { useAuth } from '@clerk/nextjs';
+import { dxdb } from '@/lib/dexie';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { redirect, useParams } from 'next/navigation';
 import { useCallback, useEffect } from 'react';
@@ -21,7 +20,6 @@ export default function Page(): React.JSX.Element {
     rootMargin: '0px',
     threshold: 1,
   });
-  const auth = useAuth();
 
   useEffect(() => {
     dxdb.getThread(threadId).then((thread) => {
@@ -44,12 +42,6 @@ export default function Page(): React.JSX.Element {
     [threadId, dxdb.messages],
     [],
   );
-
-  useEffect(() => {
-    if (auth.userId) {
-      checkSync(auth.userId);
-    }
-  }, [auth.userId, threadId]);
 
   return (
     <main className='relative flex w-full flex-1 flex-col'>

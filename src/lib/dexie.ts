@@ -3,7 +3,7 @@
  * methods for adding, removing, and retrieving data. It also provides methods for synchronizing the
  * database with remote data.
  */
-import { deleteUserDataAction, syncAction } from '@/lib/actions';
+import { deleteUserDataAction, exportThreadAction, syncAction } from '@/lib/actions';
 import { createDate, populateOnboardingThreads, sleep, tryCatch } from '@/lib/utils';
 import Dexie, { type EntityTable } from 'dexie';
 import { toast } from 'sonner';
@@ -143,6 +143,18 @@ class Database extends Dexie {
     return id;
   }
 
+  async exportThread(threadId: string, userId: string) {
+    const thread = await this.threads.get(threadId);
+    if (!thread) return;
+    const messages = await this.messages.where('threadId').equals(threadId).toArray();
+    const { error: exportError } = await tryCatch(exportThreadAction(userId, { thread, messages }));
+    if (exportError) {
+      console.log('[SYNC] Failed to export thread to server');
+    } else {
+      console.log('[SYNC] Successfully exported thread to server');
+    }
+  }
+
   /**
    * Fetches all messages for a given thread, sorted by creation date.
    * @param threadId The ID of the thread to fetch messages for.
@@ -158,7 +170,7 @@ class Database extends Dexie {
    * Marks a thread as removed and all its messages as removed.
    * @param threadId The ID of the thread to delete.
    */
-  async deleteThread(threadId: string) {
+  async deleteThread(threadId: string, userId?: string) {
     // Mark thread as deleted
     await this.threads.update(threadId, { status: 'deleted', updated_at: createDate() });
 
@@ -167,6 +179,18 @@ class Database extends Dexie {
       .where('threadId')
       .equals(threadId)
       .modify({ status: 'deleted', content: '', updated_at: createDate(), attachments: undefined, reasoning: undefined });
+
+    if (userId) {
+      const thread = await this.threads.get(threadId);
+      if (!thread) return;
+      const messages = await this.messages.where('threadId').equals(threadId).toArray();
+      const { error: exportError } = await tryCatch(exportThreadAction(userId, { messages, thread }));
+      if (exportError) {
+        console.log('[SYNC] Failed to export thread to server');
+      } else {
+        console.log('[SYNC] Successfully exported thread to server');
+      }
+    }
   }
 
   /**
@@ -186,7 +210,7 @@ class Database extends Dexie {
         console.log('[SYNC] Deleted user data for', userId);
       }
     }
-    await sleep(1000);
+    await sleep(500);
     await populateOnboardingThreads(this);
   }
 
@@ -206,7 +230,6 @@ class Database extends Dexie {
     await Promise.all([this.threads.bulkPut(newThreads), this.messages.bulkPut(newMessages)]);
     const endTime = performance.now();
     console.log(`[SYNC] Import took ${(endTime - startTime).toFixed(2)}ms`);
-    toast.success(`Imported data in ${(endTime - startTime).toFixed(2)}ms`);
   }
 
   /**
@@ -261,11 +284,12 @@ export type dxdbType = typeof dxdb;
  * @param userId The user ID to sync data with.
  */
 export async function checkSync(userId: string) {
+  if (typeof window === 'undefined') return;
   const lastSync = localStorage.getItem('lastSync');
   const now = new Date().getTime();
 
-  // If lastRun is null or more than 30 seconds (30000 milliseconds) has passed
-  if (!lastSync || now - Number(lastSync) > 30000) {
+  // If lastRun is null or more than 5 minutes (300000 milliseconds) has passed
+  if (!lastSync || now - Number(lastSync) > 300000) {
     // Your function logic here
     await dxdb.syncDexie(userId);
 
@@ -285,6 +309,7 @@ export async function processStream(
   response: ReadableStream<Uint8Array>,
   messageId?: string,
   callback: () => void = () => {},
+  userId?: string,
 ): Promise<string> {
   const reader = response.getReader();
   const decoder = new TextDecoder();
@@ -343,12 +368,15 @@ export async function processStream(
       } else if (line.startsWith('e:')) {
         // This indicates the end of the message
         done = true;
-        if (messageId)
+        if (messageId) {
           await dxdb.messages.update(messageId, {
             created_at: createDate(),
             updated_at: createDate(),
             status: 'done', // Mark as finished
           });
+          if (userId) {
+          }
+        }
         callback();
         break; // Exit the loop since we are done processing
       }
@@ -376,6 +404,8 @@ export async function processStream(
  * @param image An optional image to send with the message.
  * @param callback A function to call when the response has been processed.
  * @param systemPrompt An optional system prompt to send with the message.
+ * @param attachments An optional array of attachments to send with the message.
+ * @param userId The ID of the user to use for syncing to db.
  * @returns The ID of the message that was sent.
  */
 export async function createMessage(
@@ -386,6 +416,7 @@ export async function createMessage(
   callback?: () => void,
   systemPrompt?: string,
   attachments?: string[],
+  userId?: string,
 ) {
   setInput('');
   await dxdb.addMessage({
@@ -397,7 +428,6 @@ export async function createMessage(
     attachments,
   });
   generateTitle(threadId);
-
   const allMessages = await dxdb.getThreadMessages(threadId);
   const assistantMessageId = await dxdb.addMessage({
     threadId,
@@ -430,14 +460,17 @@ export async function createMessage(
     if (!reader) return;
 
     // Call the helper function to process the stream
-    await dxdb.threads.update(assistantMessageId, { status: 'streaming' });
+    await dxdb.messages.update(assistantMessageId, { status: 'streaming' });
     await processStream(reader, assistantMessageId, callback);
-    await dxdb.threads.update(assistantMessageId, { status: 'done' });
+    await dxdb.messages.update(assistantMessageId, { status: 'done' });
   } catch (e) {
     console.log('Uncaught error', e);
   }
 
-  generateTitle(threadId);
+  await generateTitle(threadId);
+  if (userId) {
+    await dxdb.exportThread(threadId, userId);
+  }
 
   return assistantMessageId;
 }
@@ -457,12 +490,12 @@ export async function updateMessage(
   model: string,
   callback: () => void,
   systemPrompt?: string,
+  userId?: string,
 ) {
   callback();
   const messageContent: string = newContent || '';
   await dxdb.messages.update(message.id, { content: messageContent, updated_at: createDate(), model: model });
   generateTitle(message.threadId);
-
   const allMessages = await dxdb.getThreadMessages(message.threadId);
   const assistantMessageId = await dxdb.addMessage({
     threadId: message.threadId,
@@ -490,18 +523,17 @@ export async function updateMessage(
     const reader = data.body as ReadableStream<Uint8Array>;
     if (!reader) return;
 
-    await dxdb.threads.update(assistantMessageId, { status: 'streaming' });
-
-    // Call the helper function to process the stream
     await processStream(reader, assistantMessageId, callback);
-
-    await dxdb.threads.update(assistantMessageId, { status: 'done' });
   } catch (e) {
     console.log('Uncaught error', e);
     toast.error('Uh Oh! Something went wrong.');
   }
 
-  generateTitle(message.threadId);
+  await generateTitle(message.threadId);
+
+  if (userId) {
+    dxdb.exportThread(message.threadId, userId);
+  }
 
   return assistantMessageId;
 }
@@ -511,9 +543,10 @@ export async function updateMessage(
  * conversation to the chat API. The title is then updated in the database.
  *
  * @param threadId The thread ID to generate a title for
+ * @param userId The user ID to sync data with
  * @returns A promise that resolves when the title is updated
  */
-export async function generateTitle(threadId: string) {
+export async function generateTitle(threadId: string, userId?: string) {
   const allMessages = await dxdb.getThreadMessages(threadId);
   const newMessage = {
     role: 'user',
