@@ -61,13 +61,16 @@ const randomWelcomeMessages: string[] = [
   'Do you have a favorite animal?',
   "What's your favorite type of music?",
   "What's your favorite type of movie?",
+  'Do you like sushi?',
 ];
 
 export default function Page(): React.JSX.Element {
   const auth = useAuth();
-  const [tab, setTab] = React.useState<Tab>('default');
+  const [currentTab, setCurrentTab] = React.useState<Tab>('default');
   const [input, setInput] = useLocalStorage('input', '');
   const [welcomeMessage] = React.useState(randomWelcomeMessages[Math.floor(Math.random() * randomWelcomeMessages.length)]);
+
+  const isActiveTab = (tab: Tab) => tab === currentTab;
 
   useEffect(() => {
     if (auth.userId) {
@@ -75,12 +78,16 @@ export default function Page(): React.JSX.Element {
     }
   }, [auth.userId]);
 
-  const changeTab = (t: Tab) => {
-    if (t !== tab) {
-      setTab(t);
+  const handleTabClick = (tab: Tab) => {
+    if (tab !== currentTab) {
+      setCurrentTab(tab);
     } else {
-      setTab('default');
+      setCurrentTab('default');
     }
+  };
+
+  const getTabStyles = (tab: Tab) => {
+    return isActiveTab(tab) ? activeTabStyle : inactiveTabStyle;
   };
 
   return (
@@ -90,44 +97,47 @@ export default function Page(): React.JSX.Element {
         <div className='scrollbar-w-2 h-[100dvh] overflow-y-auto pb-36 scrollbar scrollbar-track-transparent scrollbar-thumb-gray-700 hover:scrollbar-thumb-gray-600'>
           <div className='pt-safe-offset-10 mx-auto flex w-full max-w-3xl flex-col space-y-12 px-4 pb-10'>
             <div className='flex h-[calc(100vh-20rem)] items-start justify-center'>
-              <div className='w-full space-y-6 px-2 pt-32 duration-300 animate-in fade-in-50 zoom-in-95 sm:px-8 sm:pt-48'>
+              <div className='w-full space-y-6 px-2 pt-32 duration-300 animate-in fade-in-50 zoom-in-95 sm:px-8 sm:pt-48 md:pt-60'>
                 <h2 className='text-3xl font-semibold'>{welcomeMessage}</h2>
-                <div id='suggestions' className='max-sm:justify-evenly flex flex-row flex-wrap gap-2.5 text-sm'>
+                <div
+                  id='suggestions'
+                  className='max-sm:justify-evenly flex flex-row flex-wrap gap-2.5 sm:text-xs md:text-sm'
+                >
                   <button
-                    className={tab === 'create' ? activeTabStyle : inactiveTabStyle}
-                    data-selected={tab === 'create'}
-                    onClick={() => changeTab('create')}
+                    className={getTabStyles('create')}
+                    data-selected={isActiveTab('create')}
+                    onClick={() => handleTabClick('create')}
                   >
                     <Sparkles className='size-4' />
                     <div>Create</div>
                   </button>
                   <button
-                    className={tab === 'explore' ? activeTabStyle : inactiveTabStyle}
-                    data-selected={tab === 'explore'}
-                    onClick={() => changeTab('explore')}
+                    className={getTabStyles('explore')}
+                    data-selected={isActiveTab('explore')}
+                    onClick={() => handleTabClick('explore')}
                   >
                     <Newspaper className='size-4' />
                     <div>Explore</div>
                   </button>
                   <button
-                    className={tab === 'code' ? activeTabStyle : inactiveTabStyle}
-                    data-selected={tab === 'code'}
-                    onClick={() => changeTab('code')}
+                    className={getTabStyles('code')}
+                    data-selected={isActiveTab('code')}
+                    onClick={() => handleTabClick('code')}
                   >
                     <Code className='size-4' />
                     <div>Code</div>
                   </button>
                   <button
-                    className={tab === 'learn' ? activeTabStyle : inactiveTabStyle}
-                    data-selected={tab === 'learn'}
-                    onClick={() => changeTab('learn')}
+                    className={getTabStyles('learn')}
+                    data-selected={isActiveTab('learn')}
+                    onClick={() => handleTabClick('learn')}
                   >
                     <GraduationCap className='size-4' />
                     <div>Learn</div>
                   </button>
                 </div>
                 <div className='flex flex-col text-foreground'>
-                  {tabs[tab].map((item, index) => (
+                  {tabs[currentTab].map((item, index) => (
                     <div key={index} className='flex items-start gap-2 border-t border-secondary/40 py-1 first:border-none'>
                       <button
                         className='w-full rounded-md py-2 text-left text-secondary-foreground hover:bg-secondary/50 sm:px-3'
