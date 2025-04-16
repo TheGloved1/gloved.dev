@@ -219,7 +219,14 @@ export default function ChatSidebar({ children }: { children?: React.ReactNode }
                 <SignInButton mode={'modal'}>
                   <Button className='w-full gap-1'>Sign in</Button>
                 </SignInButton>
-                <Link href='/chat/settings' type='button'>
+                <Link
+                  href='/chat/settings'
+                  onClick={async (e) => {
+                    e.preventDefault();
+                    return router.push('/sign-in');
+                  }}
+                  type='button'
+                >
                   <Button variant='ghost' className='h-8 w-8 rounded-full p-0 text-2xl'>
                     <Settings className='h-5 w-5' />
                   </Button>
@@ -228,16 +235,8 @@ export default function ChatSidebar({ children }: { children?: React.ReactNode }
             </SignedOut>
             <SignedIn>
               <div className='flex items-center gap-2'>
-                <UserButton showName />
-                <Link
-                  href='/chat/settings'
-                  onClick={async (e) => {
-                    e.preventDefault();
-                    if (!auth.userId) return router.push('/sign-in');
-                    return router.push('/chat/settings');
-                  }}
-                  className='ml-auto'
-                >
+                <UserButton showName userProfileUrl='/profile' />
+                <Link href='/chat/settings' className='ml-auto'>
                   <Button variant='ghost' className='h-8 w-8 rounded-full p-0 text-2xl'>
                     <Settings className='h-5 w-5' />
                   </Button>
