@@ -498,7 +498,7 @@ export async function updateMessage(
   userId?: string,
 ) {
   callback();
-  const messageContent: string = newContent || '';
+  const messageContent: string = newContent;
   await dxdb.messages.update(message.id, { content: messageContent, updated_at: createDate(), model: model });
   generateTitle(message.threadId);
   const allMessages = await dxdb.getThreadMessages(message.threadId);
@@ -551,7 +551,7 @@ export async function updateMessage(
  * @param userId The user ID to sync data with
  * @returns A promise that resolves when the title is updated
  */
-export async function generateTitle(threadId: string, userId?: string) {
+export async function generateTitle(threadId: string) {
   const allMessages = await dxdb.getThreadMessages(threadId);
   const newMessage = {
     role: 'user',
