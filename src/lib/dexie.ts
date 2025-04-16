@@ -571,7 +571,7 @@ export async function generateTitle(threadId: string, userId?: string) {
         },
         body: JSON.stringify({
           system:
-            'You are a short title generator, do not generate any text except for the title. Do not include any special characters. Only include alphanumeric characters and spaces.',
+            'You are a short title generator, do not generate any text except for the title. Only include alphanumeric characters and spaces. You can not output any markdown formatting or special characters. You can only output characters from the english alphabet.',
           messages: messages,
           model: model,
         }),
