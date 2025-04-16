@@ -521,7 +521,7 @@ export default function Colors(): React.JSX.Element {
                         style={{ backgroundColor: button.color }}
                         disabled={clickCooldown}
                       >
-                        <div className='scale-25 sm:scale-75 md:scale-100 xs:scale-50'>Level {button.level}</div>
+                        <div className='scale-25 sm:scale-75 md:scale-100'>Level {button.level}</div>
                       </Button>
                       <Progress value={button.progress} className='mt-2 lg:w-24' />
                       <div className='mt-1 lg:text-sm'>Clicks: {button.clicks}</div>

@@ -70,9 +70,6 @@ export default {
           ring: 'hsl(var(--sidebar-ring))',
         },
       },
-      screens: {
-        xs: '20rem',
-      },
       keyframes: {
         fadeOut: {
           '0%': {
