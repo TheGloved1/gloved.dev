@@ -13,7 +13,7 @@ import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
-export default function SettingsPage() {
+export default function Page() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'customization' | 'sync'>('customization');
   const [syncEnabled, setSyncEnabled] = useLocalStorage<boolean>('syncEnabled', false);
