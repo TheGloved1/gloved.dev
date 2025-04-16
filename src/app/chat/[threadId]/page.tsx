@@ -17,6 +17,7 @@ export default function Page(): React.JSX.Element {
   const scrollContainer = useRef<HTMLDivElement>(null);
   const lastScrollTop = useRef<number>(100000);
   const [autoScroll, setAutoScroll] = useState(true);
+  const distanceFromBottom = useRef<number>(0);
   const {
     ref,
     isIntersecting: isAtBottom,
@@ -44,16 +45,27 @@ export default function Page(): React.JSX.Element {
   const scrollToBottom = useCallback(
     (noSmooth?: boolean) => {
       if (!autoScroll) return;
+      /* console.log(
+        'Scrolling to bottom',
+        scrollContainer.current?.scrollTop,
+        lastScrollTop.current,
+        distanceFromBottom.current,
+      ); */
       entry?.target.scrollIntoView({
         behavior: noSmooth ? 'instant' : 'smooth',
       });
     },
-    [entry?.target, autoScroll],
+    [autoScroll, entry?.target],
   );
 
   const handleScrollButton = () => {
     if (!autoScroll) {
-      // console.log('Auto scroll enabled');
+      /* console.log(
+        'Auto scroll enabled',
+        scrollContainer.current?.scrollTop,
+        lastScrollTop.current,
+        distanceFromBottom.current,
+      ); */
       setAutoScroll(true);
       entry?.target.scrollIntoView({
         behavior: 'instant',
@@ -63,11 +75,11 @@ export default function Page(): React.JSX.Element {
 
   useEffect(() => {
     scrollToBottom();
-    lastScrollTop.current = 1000000;
     sleep(500).then(() => {
       scrollToBottom();
     });
-  }, [scrollToBottom]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useInterval(() => {
     scrollToBottom();
@@ -79,21 +91,30 @@ export default function Page(): React.JSX.Element {
       <div className='relative flex-1 overflow-clip'>
         <div
           onScroll={(e) => {
-            // If user scrolls up, disable auto scroll
-            const offset = 25;
-            const scrollTop = scrollContainer.current?.scrollTop || e.currentTarget.scrollTop;
-            if (autoScroll && lastScrollTop.current !== null && lastScrollTop.current > scrollTop + offset) {
-              // console.log('Auto scroll disabled', scrollContainer.current?.scrollTop, lastScrollTop.current);
+            // If user scrolls up, disable auto scroll. If user scrolls to bottom, enable auto scroll
+            if (!scrollContainer.current) return;
+            distanceFromBottom.current =
+              scrollContainer.current.scrollHeight - (scrollContainer.current.scrollTop || e.currentTarget.scrollTop) - 988;
+            // NOTE: Could sometimes trigger when generating messages, stopping auto-scroll mid-generation, if generation is too fast
+            if (distanceFromBottom.current > 200) {
+              /* console.log(
+                'Auto scroll disabled',
+                scrollContainer.current?.scrollTop,
+                lastScrollTop.current,
+                distanceFromBottom.current,
+              ); */
               setAutoScroll(false);
             }
 
             // if the user scrolls to the bottom of this element, enable auto scroll
-            if (scrollContainer.current) {
-              const isAtBottom = scrollContainer.current.scrollHeight - scrollTop <= scrollContainer.current.clientHeight;
-              if (!autoScroll && isAtBottom) {
-                // console.log('Auto scroll enabled', scrollContainer.current?.scrollTop, lastScrollTop.current);
-                setAutoScroll(true);
-              }
+            if (!autoScroll && distanceFromBottom.current < 200) {
+              /* console.log(
+                'Auto scroll enabled',
+                scrollContainer.current?.scrollTop,
+                lastScrollTop.current,
+                distanceFromBottom.current,
+              ); */
+              setAutoScroll(true);
             }
             lastScrollTop.current = scrollContainer.current?.scrollTop || e.currentTarget.scrollTop;
           }}

@@ -246,6 +246,6 @@ function ChatMessage({ message, scrollEditCallback }: { message: Message; scroll
 }
 
 export default memo(ChatMessage, (prevProps, nextProps) => {
-  if (!equal(prevProps.message, nextProps.message)) return false;
+  if (!equal(prevProps, nextProps)) return false;
   return true;
 });
