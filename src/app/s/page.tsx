@@ -118,7 +118,7 @@ export default function Page() {
           </ul>
         </>
       : <p className='mt-4 text-center text-lg font-bold'>
-          You must be logged in to shorten URLs. Go to the home page and log in.
+          You must be signed in to shorten URLs. Go to the home page and sign in.
         </p>
       }
     </main>
