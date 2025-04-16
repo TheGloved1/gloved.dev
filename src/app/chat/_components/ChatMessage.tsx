@@ -12,7 +12,7 @@ import equal from 'fast-deep-equal';
 import { ChevronDown, ChevronUp, Copy, RefreshCcw, Send, SquarePen, Volume2Icon, VolumeXIcon } from 'lucide-react';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
-import { memo, useCallback, useEffect, useState } from 'react';
+import { memo, useCallback, useState } from 'react';
 import { toast } from 'sonner';
 import Timestamp from './Timestamp';
 
@@ -51,10 +51,6 @@ function ChatMessage({ message, scrollEditCallback }: { message: Message; scroll
     },
     [threadId],
   );
-
-  useEffect(() => {
-    scrollEditCallback();
-  }, [scrollEditCallback]);
 
   if (message.status === 'error') return <ErrorAlert>Error: Something went wrong, please try again.</ErrorAlert>;
   if (
