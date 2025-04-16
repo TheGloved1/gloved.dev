@@ -83,7 +83,7 @@ export default function Page(): React.JSX.Element {
 
   useInterval(() => {
     scrollToBottom();
-  }, 500);
+  }, 250);
 
   return (
     <main className='relative flex w-full flex-1 flex-col'>
