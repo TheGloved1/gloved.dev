@@ -124,15 +124,15 @@ export const Models = [
     },
   } as const,
   {
-    label: 'Llama 4 Scout',
-    value: 'meta-llama/llama-4-scout-17b-16e-instruct',
+    label: 'Llama 4 Maverick',
+    value: 'meta-llama/llama-4-maverick-17b-128e-instruct',
     provider: 'groq',
-    enabled: false,
+    enabled: true,
     description: 'A specialized model for reasoning tasks, optimized for speed and accuracy',
-    reasoning: false,
+    reasoning: true,
     requirements: {
-      loggedin: false,
-      admin: false,
+      loggedin: true,
+      admin: true,
     },
   } as const,
   {
