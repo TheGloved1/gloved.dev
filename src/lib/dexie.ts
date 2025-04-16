@@ -57,7 +57,12 @@ class Database extends Dexie {
     });
 
     this.on('populate', async () => {
-      await populateOnboardingThreads(this);
+      const populate = await tryCatch(populateOnboardingThreads(this));
+      if (populate.error) {
+        console.log('[DEXIE] Failed to populate onboarding threads');
+        this.close();
+        await tryCatch(this.open());
+      }
     });
 
     this.threads.hook('creating', (primKey, obj) => {

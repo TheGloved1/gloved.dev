@@ -1,5 +1,6 @@
 'use client';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useLocalStorage } from '@/hooks/use-local-storage';
@@ -155,10 +156,28 @@ export default function SettingsPage() {
                       Permanently delete your history from both your local device and our servers.
                     </p>
                     <div className='flex flex-row gap-2'>
-                      <Button variant='destructive' onClick={handleDelete}>
-                        <Trash className='mr-2 h-5 w-5' />
-                        Delete Chat History
-                      </Button>
+                      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+                        <DialogTrigger asChild>
+                          <Button variant='destructive'>
+                            <Trash className='mr-2 h-5 w-5' />
+                            Delete Chat History
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogTitle>Delete Chat History</DialogTitle>
+                          <p className='text-sm text-muted-foreground/80'>
+                            Are you sure you want to delete your chat history? This action cannot be undone.
+                          </p>
+                          <div className='mt-4 flex flex-row gap-2'>
+                            <Button variant='destructive' onClick={handleDelete}>
+                              Delete
+                            </Button>
+                            <Button variant='secondary' onClick={() => setDeleteDialogOpen(false)}>
+                              Cancel
+                            </Button>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
                     </div>
                   </div>
                 </section>
