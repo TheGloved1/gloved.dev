@@ -261,6 +261,44 @@ export async function getAdmins() {
   return ((await redis.get('admins')) as string[]) || [];
 }
 
+type ShortenedUrls = {
+  [userId: string]: {
+    [id: string]: string;
+  };
+};
+
+/**
+ * Retrieves a shortened URL from the Redis database using the specified ID.
+ * If the ID does not exist, null is returned.
+ *
+ * @param id The unique identifier for the shortened URL.
+ * @returns The full URL associated with the given ID, or null if not found.
+ */
+export async function getShortenedUrl(id: string) {
+  const urls = (await redis.get('shortenedUrls')) as ShortenedUrls;
+  const foundUrl = Object.values(urls || {}).find((userUrls) => userUrls?.[id]);
+  return foundUrl?.[id] || null;
+}
+
+/**
+ * Stores a shortened URL in the Redis database with a specified ID.
+ * If the ID already exists, the URL is updated.
+ *
+ * @param userId The user ID associated with the shortened URL.
+ * @param id The unique identifier for the shortened URL.
+ * @param url The full URL to be associated with the given ID.
+ */
+export async function setShortenedUrl(userId: string, id: string, url: string) {
+  const urls = ((await redis.get('shortenedUrls')) as ShortenedUrls) || {};
+  urls[userId] = urls?.[userId] || {};
+  urls[userId][id] = url;
+  await redis.set('shortenedUrls', urls);
+}
+
+export async function getAllUserShortenedUrls(userId: string) {
+  return ((await redis.get('shortenedUrls')) as ShortenedUrls)?.[userId] || {};
+}
+
 /**
  * Deletes all sync data from the key-value store.
  * @returns A promise that resolves when the sync data has been deleted.

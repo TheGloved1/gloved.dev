@@ -66,6 +66,11 @@ const Constants = {
     link: '/cookies',
     description: 'Cookie Clicker Clone',
   } as const,
+  Shortener: {
+    title: 'Shortener',
+    link: '/s',
+    description: 'A simple URL shortener web app. (Must be logged in)',
+  } as const,
 } as const;
 
 export default Constants;

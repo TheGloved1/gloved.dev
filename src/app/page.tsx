@@ -151,6 +151,21 @@ export default function Page(): React.JSX.Element {
           <div className='flex-shrink-0 flex-grow basis-[300px]'>
             <Link
               className='group flex h-full w-full flex-col justify-center gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
+              href={Constants.Shortener.link}
+              prefetch
+            >
+              <h3 className='text-2xl font-bold'>
+                {Constants.Shortener.title}{' '}
+                <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
+                  {'->'}
+                </span>
+              </h3>
+              <div className='text-lg'>{Constants.Shortener.description}</div>
+            </Link>
+          </div>
+          <div className='flex-shrink-0 flex-grow basis-[300px]'>
+            <Link
+              className='group flex h-full w-full flex-col justify-center gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
               href={Constants.Github.link}
               prefetch
             >

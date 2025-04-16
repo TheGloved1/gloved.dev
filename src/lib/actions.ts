@@ -2,7 +2,18 @@
 import { env } from '@/env';
 import { Message, Thread } from '@/lib/dexie';
 import { apiRoute, tryCatch } from '@/lib/utils';
-import { addAdmin, dbSync, deleteSync, deleteUserData, exportThreadToDb, getAdmins, removeAdmin } from './redis';
+import {
+  addAdmin,
+  dbSync,
+  deleteSync,
+  deleteUserData,
+  exportThreadToDb,
+  getAdmins,
+  getAllUserShortenedUrls,
+  getShortenedUrl,
+  removeAdmin,
+  setShortenedUrl,
+} from './redis';
 
 /**
  * Fetches the system prompt from the server.
@@ -80,4 +91,16 @@ export async function checkIsAdminAction(email: string) {
 
 export async function exportThreadAction(userId: string, data: { messages: Message[]; thread: Thread }) {
   await exportThreadToDb(userId, data);
+}
+
+export async function setShortenedUrlAction(userId: string, id: string, url: string) {
+  await setShortenedUrl(userId, id, url);
+}
+
+export async function getShortenedUrlAction(id: string) {
+  return await getShortenedUrl(id);
+}
+
+export async function getAllUserShortenedUrlsAction(userId: string) {
+  return await getAllUserShortenedUrls(userId);
 }

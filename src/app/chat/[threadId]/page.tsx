@@ -16,7 +16,7 @@ export default function Page(): React.JSX.Element {
   const { threadId } = useParams<{ threadId: string }>();
   const scrollContainer = useRef<HTMLDivElement>(null);
   const lastScrollTop = useRef<number>(100000);
-  const [autoScroll, setAutoScroll] = useState(true);
+  const [autoScroll, setAutoScroll] = useState<boolean>(true);
   const distanceFromBottom = useRef<number>(0);
   const {
     ref,
@@ -81,9 +81,12 @@ export default function Page(): React.JSX.Element {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useInterval(() => {
-    scrollToBottom();
-  }, 250);
+  useInterval(
+    () => {
+      scrollToBottom();
+    },
+    autoScroll ? 500 : null,
+  );
 
   return (
     <main className='relative flex w-full flex-1 flex-col'>
