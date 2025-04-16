@@ -10,7 +10,7 @@ import { useAuth } from '@clerk/nextjs';
 import { ChevronLeft, Download, RefreshCw, Trash, Upload } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 export default function SettingsPage() {
@@ -20,7 +20,7 @@ export default function SettingsPage() {
   const [systemPrompt, setSystemPrompt] = useLocalStorage<string | undefined>('systemPrompt', undefined);
   const router = useRouter();
   const auth = useAuth();
-  if (auth.isLoaded && !auth.isSignedIn) return router.replace('/chat');
+
   const handleDelete = async () => {
     await dxdb.deleteAllData(auth.userId);
     toast.success('Data deleted');
@@ -58,11 +58,20 @@ export default function SettingsPage() {
     toast.success('Data exported');
   };
 
-  const handleSyncNow = async () => {
+  const handleSyncNow = useCallback(async () => {
     if (!auth.userId) return;
     await dxdb.syncDexie(auth.userId);
     toast.success('Data synced');
-  };
+  }, [auth.userId]);
+
+  useEffect(() => {
+    if (syncEnabled) {
+      handleSyncNow();
+    } else {
+    }
+  }, [handleSyncNow, syncEnabled]);
+
+  if (auth.isLoaded && !auth.isSignedIn) return router.replace('/sign-in');
 
   return (
     <div className='h-screen w-full overflow-y-auto'>
