@@ -561,7 +561,7 @@ export async function generateTitle(threadId: string, userId?: string) {
     ...allMessages.map((m) => ({ role: m.role, content: m.content })),
     newMessage,
   ];
-  const model: ModelID = 'gemini-2.0-flash-lite';
+  const model: ModelID = 'gemini-2.0-flash';
   try {
     const { data, error } = await tryCatch(
       fetch('/api/chat', {
@@ -571,7 +571,7 @@ export async function generateTitle(threadId: string, userId?: string) {
         },
         body: JSON.stringify({
           system:
-            'You are a short title generator, do not generate any text except for the title. Only include alphanumeric characters and spaces. You can not output any markdown formatting or special characters. You can only output characters from the english alphabet.',
+            'You are a short title generator, do not generate any text except for the title. Only include alphanumeric characters and spaces. You can not output any markdown formatting or special characters. You can only output characters from the english alphabet. For example, "Hello World" is a valid title, but "**Hello World!**" is not.',
           messages: messages,
           model: model,
         }),
