@@ -32,7 +32,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { Settings, X } from 'lucide-react';
 import Link from 'next/link';
 import { useParams, usePathname, useRouter } from 'next/navigation';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { toast } from 'sonner';
 import ChatSidebarTrigger from './ChatSidebarTrigger';
 
@@ -88,7 +88,7 @@ export default function ChatSidebar({ children }: { children?: React.ReactNode }
   const pathname = usePathname();
   const threads = useLiveQuery(() => dxdb.getThreads());
 
-  const categorizedThreads = React.useMemo(() => categorizeThreads(threads), [threads]);
+  const categorizedThreads = useMemo(() => categorizeThreads(threads), [threads]);
 
   const isCurrentThread = (id: string) => threadId === id;
 
