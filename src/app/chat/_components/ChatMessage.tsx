@@ -52,7 +52,8 @@ function ChatMessage({ message, scrollEditCallback }: { message: Message; scroll
     [threadId],
   );
 
-  if (message.status === 'error') return <ErrorAlert>Error: Something went wrong, please try again.</ErrorAlert>;
+  if (message.status === 'error')
+    return <ErrorAlert>{`Error: Something went wrong, please try again. ${message.content}`}</ErrorAlert>;
   if (
     message.content.trim() === '' &&
     !message.attachments &&
@@ -97,6 +98,7 @@ function ChatMessage({ message, scrollEditCallback }: { message: Message; scroll
               <Button
                 variant='ghost'
                 className='inline-flex h-8 items-center justify-center gap-2 whitespace-nowrap rounded-md px-3 text-xs font-medium transition-colors hover:bg-neutral-800/40 hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
+                title='Cancel'
                 onClick={() => {
                   setInput(null);
                 }}
@@ -106,6 +108,7 @@ function ChatMessage({ message, scrollEditCallback }: { message: Message; scroll
               <Button
                 className='inline-flex h-8 w-8 items-center justify-center gap-2 whitespace-nowrap rounded-full bg-pink-600/70 p-2 text-sm font-medium text-neutral-100 shadow transition-colors hover:bg-pink-500/70 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
                 disabled={!input}
+                title='Send'
                 onClick={async () => {
                   await handleEditMessage(message);
                   await updateMessage(
@@ -159,8 +162,11 @@ function ChatMessage({ message, scrollEditCallback }: { message: Message; scroll
         }
         {message.role === 'user' && input === null && (
           <div className='absolute right-0 mt-5 flex items-center gap-2 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 group-focus:opacity-100'>
-            <button
+            <Button
               className='inline-flex h-8 w-8 items-center justify-center gap-2 whitespace-nowrap rounded-lg p-0 text-xs font-medium transition-colors hover:bg-muted/40 hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-foreground/50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
+              variant='ghost'
+              tooltipSide='bottom'
+              title='Retry'
               onClick={async () => {
                 await handleEditMessage(message);
                 await updateMessage(
@@ -173,57 +179,64 @@ function ChatMessage({ message, scrollEditCallback }: { message: Message; scroll
                   systemPrompt,
                 );
               }}
-              title='Retry'
             >
               <RefreshCcw className='-mb-0.5 -ml-0.5 !size-5' />
               <span className='sr-only'>Retry</span>
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => {
                 setInput(message.content);
               }}
               className='inline-flex h-8 w-8 items-center justify-center gap-2 whitespace-nowrap rounded-lg p-0 text-xs font-medium transition-colors hover:bg-muted/40 hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-foreground/50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
+              variant='ghost'
+              tooltipSide='bottom'
               title='Edit'
             >
               <SquarePen className='-mb-0.5 -ml-0.5 !size-5' />
               <span className='sr-only'>Edit</span>
-            </button>
-            <button
+            </Button>
+            <Button
               className='inline-flex h-8 w-8 items-center justify-center gap-2 whitespace-nowrap rounded-lg p-0 text-xs font-medium transition-colors hover:bg-muted/40 hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-foreground/50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
+              variant='ghost'
               onClick={() => {
                 navigator.clipboard.writeText(message.content);
                 toast.success('Copied response to clipboard!');
               }}
               title='Copy'
+              tooltipSide='bottom'
             >
               <Copy className='-mb-0.5 -ml-0.5 !size-5' />
               <span className='sr-only'>Copy</span>
-            </button>
+            </Button>
           </div>
         )}
         {message.role === 'assistant' && (
           <div className='absolute left-0 mt-2 flex items-center gap-2'>
             {!isSpeaking ?
-              <button
+              <Button
                 className='inline-flex h-8 items-center justify-center gap-2 whitespace-nowrap rounded-md bg-secondary px-3 text-xs font-medium text-secondary-foreground opacity-0 shadow-sm transition-opacity hover:bg-secondary/80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 group-focus-within:opacity-100 group-hover:opacity-100 group-focus:opacity-100 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
                 title='Speak message'
+                tooltipSide='bottom'
                 onClick={() => {
                   speak(message.content);
                 }}
               >
                 <Volume2Icon className='-ml-0.5!size-5 -mb-0.5' />
-              </button>
-            : <button
+              </Button>
+            : <Button
                 className='inline-flex h-8 items-center justify-center gap-2 whitespace-nowrap rounded-md bg-destructive/80 px-3 text-xs font-medium text-destructive-foreground opacity-0 shadow-sm transition-opacity hover:bg-destructive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 group-focus-within:opacity-100 group-hover:opacity-100 group-focus:opacity-100 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
                 title='Stop speaking'
+                tooltipSide='bottom'
                 onClick={() => {
                   stopSpeech();
                 }}
               >
                 <VolumeXIcon className='-ml-0.5!size-5 -mb-0.5' />
-              </button>
+              </Button>
             }
-            <button
+            <Button
+              title='Copy response'
+              tooltipSide='bottom'
               onClick={() => {
                 navigator.clipboard.writeText(message.content);
                 toast.success('Copied response to clipboard!');
@@ -231,8 +244,8 @@ function ChatMessage({ message, scrollEditCallback }: { message: Message; scroll
               className='inline-flex h-8 items-center justify-center gap-2 whitespace-nowrap rounded-md bg-secondary px-3 text-xs font-medium text-secondary-foreground opacity-0 shadow-sm transition-opacity hover:bg-secondary/80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 group-focus-within:opacity-100 group-hover:opacity-100 group-focus:opacity-100 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
             >
               <Copy className='-mb-0.5 -ml-0.5 !size-5' />
-              Copy Response
-            </button>
+              Copy
+            </Button>
             <div className='opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 group-focus:opacity-100'>
               {isHovered ?
                 <Timestamp date={new Date(message.created_at)} model={message.model} />

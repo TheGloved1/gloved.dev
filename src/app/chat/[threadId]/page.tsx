@@ -18,11 +18,7 @@ export default function Page(): React.JSX.Element {
   const lastScrollTop = useRef<number>(100000);
   const [autoScroll, setAutoScroll] = useState<boolean>(true);
   const distanceFromBottom = useRef<number>(0);
-  const {
-    ref,
-    isIntersecting: isAtBottom,
-    entry,
-  } = useIntersectionObserver({
+  const scrollBottom = useIntersectionObserver({
     root: null,
     rootMargin: '0px',
     threshold: 1,
@@ -42,21 +38,18 @@ export default function Page(): React.JSX.Element {
     [],
   );
 
-  const scrollToBottom = useCallback(
-    (noSmooth?: boolean) => {
-      if (!autoScroll) return;
-      /* console.log(
+  const scrollToBottom = useCallback(() => {
+    if (!autoScroll) return;
+    /* console.log(
         'Scrolling to bottom',
         scrollContainer.current?.scrollTop,
         lastScrollTop.current,
         distanceFromBottom.current,
       ); */
-      entry?.target.scrollIntoView({
-        behavior: noSmooth ? 'instant' : 'smooth',
-      });
-    },
-    [autoScroll, entry?.target],
-  );
+    scrollBottom.entry?.target.scrollIntoView({
+      behavior: 'instant',
+    });
+  }, [autoScroll, scrollBottom.entry?.target]);
 
   const handleScrollButton = () => {
     if (!autoScroll) {
@@ -67,7 +60,7 @@ export default function Page(): React.JSX.Element {
         distanceFromBottom.current,
       ); */
       setAutoScroll(true);
-      entry?.target.scrollIntoView({
+      scrollBottom.entry?.target.scrollIntoView({
         behavior: 'instant',
       });
     }
@@ -90,7 +83,11 @@ export default function Page(): React.JSX.Element {
 
   return (
     <main className='relative flex w-full flex-1 flex-col'>
-      <ChatInput scrollButtonCallback={handleScrollButton} scrollCallback={scrollToBottom} isAtBottom={isAtBottom} />
+      <ChatInput
+        scrollButtonCallback={handleScrollButton}
+        scrollCallback={scrollToBottom}
+        isAtBottom={scrollBottom.isIntersecting}
+      />
       <div className='relative flex-1 overflow-clip'>
         <div
           onScroll={(e) => {
@@ -129,7 +126,7 @@ export default function Page(): React.JSX.Element {
               return <ChatMessage scrollEditCallback={scrollToBottom} message={message} key={message.id} />;
             })}
           </div>
-          <div id='scroll-bottom' ref={ref} className='mt-6 h-0 w-0' />
+          <div id='scroll-bottom' ref={scrollBottom.ref} className='mt-6 h-0 w-0' />
         </div>
       </div>
     </main>

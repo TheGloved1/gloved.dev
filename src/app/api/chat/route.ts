@@ -36,7 +36,7 @@ const languageModels = Models.reduce(
     } else if (provider === 'openrouter') {
       acc[value] = openrouter.languageModel(value, {
         reasoning: {
-          effort: 'high',
+          effort: 'low',
           exclude: false,
         },
       });

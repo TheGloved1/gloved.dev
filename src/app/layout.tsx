@@ -1,7 +1,7 @@
 import ReactQueryProvider from '@/components/ReactQueryProvider';
 import SourceCodeButton from '@/components/SourceCodeButton';
-import { TooltipProvider } from '@/components/TooltipSystem';
 import { Toaster } from '@/components/ui/sonner';
+import { TooltipProvider } from '@/components/ui/tooltip';
 import { env } from '@/env';
 import Constants from '@/lib/constants';
 import { ClerkProvider } from '@clerk/nextjs';
