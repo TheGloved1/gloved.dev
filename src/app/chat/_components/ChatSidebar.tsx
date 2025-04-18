@@ -26,7 +26,7 @@ import {
 import { Tooltip, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { dxdb, Thread } from '@/lib/dexie';
 import { tryCatch } from '@/lib/utils';
-import { SignedIn, SignedOut, SignInButton, useAuth, UserButton } from '@clerk/nextjs';
+import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs';
 import { TooltipContent } from '@radix-ui/react-tooltip';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { Settings, X } from 'lucide-react';
@@ -87,7 +87,6 @@ export default function ChatSidebar({ children }: { children?: React.ReactNode }
   const router = useRouter();
   const pathname = usePathname();
   const threads = useLiveQuery(() => dxdb.getThreads());
-  const auth = useAuth();
 
   const categorizedThreads = useMemo(() => categorizeThreads(threads), [threads]);
 
@@ -201,9 +200,7 @@ export default function ChatSidebar({ children }: { children?: React.ReactNode }
                       <SidebarGroupContent className='w-full text-sm'>
                         <SidebarMenu>
                           {categoryThreads.map((thread) => (
-                            <span key={thread.id} data-state='closed'>
-                              {renderThreadItem(thread)}
-                            </span>
+                            <span key={thread.id}>{renderThreadItem(thread)}</span>
                           ))}
                         </SidebarMenu>
                       </SidebarGroupContent>

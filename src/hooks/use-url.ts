@@ -1,10 +1,10 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-interface UseUrlConfig<T> {
+type UseUrlConfig<T> = {
   serialize?: (value: T) => string;
   deserialize?: (value: string) => T;
-}
+};
 
 /**
  * Hook to manage state in the URL search parameters.
@@ -20,8 +20,8 @@ interface UseUrlConfig<T> {
  * @returns An array with the stored value and a setter function to update
  * the stored value.
  */
-export function useUrl<T>(key: string, defaultValue: T, config: UseUrlConfig<T>): [T | null, (value: T) => void] {
-  const { serialize, deserialize } = config;
+export function useUrl<T>(key: string, defaultValue: T, config?: UseUrlConfig<T>): [T | null, (value: T) => void] {
+  const { serialize, deserialize } = config || {};
   const router = useRouter();
   const searchParams = useSearchParams();
 

@@ -34,18 +34,19 @@ const buttonVariants = cva(
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
   asChild?: boolean;
   tooltipSide?: 'top' | 'right' | 'bottom' | 'left';
+  enableTooltip?: boolean;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, title, tooltipSide, ...props }, ref) => {
+  ({ className, variant, size, asChild = false, title, enableTooltip = true, tooltipSide, ...props }, ref) => {
     const Comp = asChild ? Slot : 'button';
-    if (title) {
+    if (title && enableTooltip) {
       return (
         <Tooltip>
-          <TooltipTrigger>
+          <TooltipTrigger asChild>
             <Comp className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...props} />
           </TooltipTrigger>
-          <TooltipContent side={tooltipSide} align='center'>
+          <TooltipContent side={tooltipSide} align='center' className='bg-background text-foreground'>
             {title}
           </TooltipContent>
         </Tooltip>
