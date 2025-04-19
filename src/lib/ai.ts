@@ -77,7 +77,7 @@ export const Models = [
     },
   } as const,
   {
-    label: 'Gemini 2.5 Flash',
+    label: 'Gemini 2.5 Flash (Preview)',
     value: 'gemini-2.5-flash-preview-04-17',
     provider: 'google',
     type: 'gemini' as ModelType,
@@ -90,7 +90,7 @@ export const Models = [
     },
   } as const,
   {
-    label: 'Gemini 2.5 Pro',
+    label: 'Gemini 2.5 Pro (Experimental)',
     value: 'gemini-2.5-pro-exp-03-25',
     provider: 'google',
     type: 'gemini' as ModelType,
@@ -185,7 +185,7 @@ export const Models = [
     value: 'deepseek-r1-distill-qwen-32b',
     provider: 'groq',
     type: 'qwen' as ModelType,
-    enabled: false,
+    enabled: true,
     description: 'DeepSeek R1, distilled on Qwen 32b',
     reasoning: false,
     requirements: {
@@ -207,7 +207,7 @@ export const Models = [
     },
   } as const,
   {
-    label: 'Groq Compound Beta',
+    label: 'Groq Compound (Beta)',
     value: 'compound-beta',
     provider: 'groq',
     type: 'compound' as ModelType,

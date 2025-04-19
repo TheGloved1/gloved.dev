@@ -41,7 +41,7 @@ export default function Page(): React.JSX.Element {
   );
 
   const scrollToBottom = useCallback(() => {
-    if (!autoScroll || !isMobile) return;
+    if (!autoScroll || isMobile) return;
     /* console.log(
         'Scrolling to bottom',
         scrollContainer.current?.scrollTop,
@@ -69,11 +69,14 @@ export default function Page(): React.JSX.Element {
   };
 
   useEffect(() => {
+    const scrollToBottom = () => {
+      if (!scrollContainer.current) return;
+      scrollContainer.current.scrollTop = scrollContainer.current.scrollHeight;
+    };
     scrollToBottom();
     sleep(500).then(() => {
       scrollToBottom();
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useInterval(

@@ -85,7 +85,9 @@ export default function ModelDropdown() {
             variant='ghost'
             className='-mb-2 inline-flex h-auto items-center justify-center gap-2 whitespace-nowrap rounded-md px-2 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted/40 hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-foreground/50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
           >
-            <span className='truncate'>{selectedModel?.label || 'Select a model'}</span>
+            <span className='truncate' suppressHydrationWarning>
+              {selectedModel?.label || 'Select a model'}
+            </span>
             {isOpen ?
               <ChevronUp className='size-4 opacity-50' />
             : <ChevronDown className='size-4 opacity-50' />}
@@ -134,10 +136,14 @@ export default function ModelDropdown() {
                           <div className='w-full text-center'>
                             <div className='text-base font-semibold'>{modelItem.label.split(' ')[0]}</div>
                             <div className='-mt-0.5 text-sm font-semibold'>
-                              {modelItem.label.split(' ').slice(1, 2).join(' ')}
+                              {modelItem.label
+                                .replace(/\s*\([^)]*\)/g, '')
+                                .split(' ')
+                                .slice(1)
+                                .join(' ')}
                             </div>
-                            <div className='-mt-0.5 text-[10px] text-[--model-muted] dark:text-[--model-muted]'>
-                              {modelItem.label.split(' ').slice(2).join(' ')}
+                            <div className='-mt-0.5 text-[10px] text-primary/75'>
+                              {(modelItem.label.match(/\([^)]*\)/g) || []).join(' ')}
                             </div>
                           </div>
                         </div>
