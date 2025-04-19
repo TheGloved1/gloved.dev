@@ -6,30 +6,30 @@ import { Button } from './ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 
 export const themes = {
-  cooldark: { name: 'Cool Dark', className: 'cool-dark' },
-  dark: { name: 'Classic Dark', className: 'dark' },
+  cooldark: { name: 'Cool Dark', className: 'dark' },
+  dark: { name: 'Classic Dark', className: 'classic-dark' },
   light: { name: 'Light', className: 'light' },
 } as const;
 
+export type Theme = (typeof themes)[keyof typeof themes];
+
 const renderIcon = (theme: Theme) => {
   switch (theme.className) {
-    case 'cool-dark':
-      return <MoonStarIcon />;
     case 'dark':
+      return <MoonStarIcon />;
+    case 'classic-dark':
       return <MoonIcon />;
     case 'light':
       return <SunIcon />;
   }
 };
 
-export type Theme = (typeof themes)[keyof typeof themes];
-
 export default function ThemeChanger({ children }: { children: React.ReactNode }) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [theme, setTheme] = useLocalStorage<Theme>('theme', themes.cooldark);
   return (
     <div
-      className={`${theme.className}`}
+      className={theme.className}
       style={{
         background: 'hsl(var(--background))',
         color: 'hsl(var(--foreground))',
