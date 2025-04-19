@@ -78,10 +78,10 @@ export const Models = [
   } as const,
   {
     label: 'Gemini 2.5 Flash',
-    value: 'gemini-2.5-flash',
+    value: 'unknown',
     provider: 'google',
     type: 'gemini' as ModelType,
-    enabled: true,
+    enabled: false,
     description: "Google's latest fast model",
     reasoning: false,
     requirements: {

@@ -12,7 +12,10 @@ const components: Components = {
     const language = className?.split('-').pop() || 'plaintext';
     if (language === 'plaintext' && !/\n/.test(String(children))) {
       return (
-        <span className='break-words rounded bg-[#2f3136] px-1 py-[0.2em] text-[#dcddde]' {...props}>
+        <span
+          className='break-words rounded bg-[#2f3136] px-1 py-[0.2em] font-jetbrains font-light text-[#dcddde]'
+          {...props}
+        >
           {children}
         </span>
       );
