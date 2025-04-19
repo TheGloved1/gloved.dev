@@ -10,11 +10,11 @@ const components: Components = {
     ...props
   }: ClassAttributes<HTMLElement> & HTMLAttributes<HTMLElement> & ExtraProps): React.JSX.Element => {
     const language = className?.split('-').pop() || 'plaintext';
-    if (language === 'plaintext') {
+    if (language === 'plaintext' && !/\n/.test(String(children))) {
       return (
-        <strong className='rounded border border-border bg-gray-500/25 px-1 font-bold' {...props}>
+        <span className='break-words rounded bg-[#2f3136] px-1 py-[0.2em] text-[#dcddde]' {...props}>
           {children}
-        </strong>
+        </span>
       );
     }
     return (

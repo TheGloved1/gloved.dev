@@ -158,7 +158,7 @@ const ChatInput = memo(
     };
 
     return (
-      <div className='pointer-events-none absolute bottom-0 z-10 w-full px-2'>
+      <div className='pointer-events-none fixed bottom-0 z-10 w-full px-2 md:absolute'>
         <div className='relative mx-auto flex w-full max-w-3xl flex-col text-center'>
           {!isAtBottom && (
             <div className='z-10 flex justify-center pb-4'>
