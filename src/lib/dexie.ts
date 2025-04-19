@@ -56,6 +56,10 @@ class Database extends Dexie {
         '++id, threadId, content, model, role, attachments, reasoning, updated_at, status, [threadId+created_at], [threadId+status]',
     });
 
+    this.on('ready', async (obj) => {
+      console.log('[DEXIE] Ready');
+    });
+
     this.on('populate', async () => {
       const populate = await tryCatch(populateOnboardingThreads(this));
       if (populate.error) {
@@ -148,6 +152,12 @@ class Database extends Dexie {
     return id;
   }
 
+  /**
+   * Exports a thread to the server. This function is idempotent; if the export fails, it will not
+   * modify the local database.
+   * @param threadId The ID of the thread to export.
+   * @param userId The user ID to associate with the exported thread.
+   */
   async exportThread(threadId: string, userId: string) {
     const thread = await this.threads.get(threadId);
     if (!thread) return;
@@ -166,9 +176,11 @@ class Database extends Dexie {
    * @returns An array of all messages in the thread, excluding deleted messages.
    */
   async getThreadMessages(threadId: string) {
-    return (await this.messages.where('threadId').equals(threadId).sortBy('created_at')).filter(
-      (m) => m.status !== 'deleted',
-    );
+    return await this.messages
+      .where('threadId')
+      .equals(threadId)
+      .and((msg) => msg.status !== 'deleted')
+      .sortBy('created_at');
   }
 
   /**
@@ -186,15 +198,7 @@ class Database extends Dexie {
       .modify({ status: 'deleted', content: '', updated_at: createDate(), attachments: undefined, reasoning: undefined });
 
     if (userId) {
-      const thread = await this.threads.get(threadId);
-      if (!thread) return;
-      const messages = await this.messages.where('threadId').equals(threadId).toArray();
-      const { error: exportError } = await tryCatch(exportThreadAction(userId, { messages, thread }));
-      if (exportError) {
-        console.log('[SYNC] Failed to export thread to server');
-      } else {
-        console.log('[SYNC] Successfully exported thread to server');
-      }
+      await this.exportThread(threadId, userId);
     }
   }
 

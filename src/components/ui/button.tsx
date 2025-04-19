@@ -44,7 +44,12 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       return (
         <Tooltip>
           <TooltipTrigger asChild>
-            <Comp className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...props} />
+            <Comp
+              suppressHydrationWarning
+              className={cn(buttonVariants({ variant, size, className }))}
+              ref={ref}
+              {...props}
+            />
           </TooltipTrigger>
           <TooltipContent side={tooltipSide} align='center' className='bg-background text-foreground'>
             {title}
@@ -52,7 +57,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         </Tooltip>
       );
     }
-    return <Comp className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...props} />;
+    return (
+      <Comp suppressHydrationWarning className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...props} />
+    );
   },
 );
 Button.displayName = 'Button';

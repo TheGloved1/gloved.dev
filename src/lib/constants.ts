@@ -68,7 +68,7 @@ const Constants = {
   } as const,
   Shortener: {
     title: 'Shortener',
-    link: '/s',
+    link: '/shortener',
     description: 'A simple URL shortener web app. (Must be signed in)',
   } as const,
 } as const;
