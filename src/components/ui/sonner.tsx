@@ -12,11 +12,11 @@ const Toaster = ({ ...props }: ToasterProps) => {
   const [theme] = useLocalStorage<Theme>('theme', themes.cooldark);
   const getLightOrDarkTheme = () => {
     switch (theme.className) {
-      case 'light':
+      case themes.light.className:
         return 'light';
-      case 'dark':
+      case themes.dark.className:
         return 'dark';
-      case 'cool-dark':
+      case themes.cooldark.className:
         return 'dark';
     }
   };

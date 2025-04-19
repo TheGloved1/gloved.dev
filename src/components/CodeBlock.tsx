@@ -21,11 +21,11 @@ const CodeBlock = ({ children = '', language = 'plaintext' }: CodeBlockProps) =>
   useEffect(() => {
     const getTheme = () => {
       switch (theme.className) {
-        case 'cool-dark':
+        case themes.cooldark.className:
           return 'laserwave';
-        case 'dark':
+        case themes.dark.className:
           return 'dark-plus';
-        case 'light':
+        case themes.light.className:
           return 'catppuccin-latte';
       }
     };
