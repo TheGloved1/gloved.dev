@@ -4,6 +4,7 @@ import { useLocalStorage } from '@/hooks/use-local-storage';
 import { type Theme, themes } from '@/components/ThemeChanger';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { checkIsAdminAction } from '@/lib/actions';
 import { defaultModel, type ModelID, Models } from '@/lib/ai';
 import { tryCatch } from '@/lib/utils';
@@ -110,25 +111,32 @@ export default function ModelDropdown() {
               {filteredModels.map((modelItem) => (
                 <div className='group relative' key={modelItem.value}>
                   <div className='absolute -left-1.5 -top-1.5 z-10 rounded-full bg-popover p-0.5'></div>
-                  <button
-                    onClick={() => {
-                      setModel(modelItem.value);
-                      setIsOpen(false);
-                    }}
-                    className={`border-chat-border/50 text-color-heading hover:text-color-heading border-chat-border group relative flex h-[148px] w-[108px] cursor-pointer flex-col items-start gap-0.5 overflow-hidden rounded-xl border bg-[hsl(320,20%,2.9%)] bg-sidebar/20 px-1 py-3 [--model-muted:hsl(var(--color-heading))] [--model-muted:hsl(var(--muted-foreground)/0.9)] [--model-primary:hsl(var(--color-heading))] [--model-primary:hsl(var(--muted-foreground)/0.9)] hover:bg-accent/30 ${
-                      model === modelItem.value ?
-                        'border-amber-500/40 shadow-[0_0_15px_rgba(245,158,11,0.15)] ring-2 ring-amber-500/30'
-                      : ''
-                    }`}
-                  >
-                    <div className='flex w-full flex-col items-center justify-center gap-1 font-medium opacity-50 transition-colors'>
-                      {getModelIcon(modelItem.label, 'lg')}
-                      <div className='w-full text-center'>
-                        <div className='text-base font-semibold'>{modelItem.label.split(' ')[0]}</div>
-                        <div className='-mt-0.5 text-sm font-semibold'>{modelItem.label.split(' ').slice(1).join(' ')}</div>
-                      </div>
-                    </div>
-                  </button>
+                  <Tooltip delayDuration={600} disableHoverableContent>
+                    <TooltipTrigger asChild>
+                      <button
+                        onClick={() => {
+                          setModel(modelItem.value);
+                          setIsOpen(false);
+                        }}
+                        className={`border-chat-border/50 text-color-heading hover:text-color-heading border-chat-border group relative flex h-[148px] w-[108px] cursor-pointer flex-col items-start gap-0.5 overflow-hidden rounded-xl border bg-[hsl(320,20%,2.9%)] bg-sidebar/20 px-1 py-3 [--model-muted:hsl(var(--color-heading))] [--model-muted:hsl(var(--muted-foreground)/0.9)] [--model-primary:hsl(var(--color-heading))] [--model-primary:hsl(var(--muted-foreground)/0.9)] hover:bg-accent/30 ${
+                          model === modelItem.value ?
+                            'border-amber-500/40 shadow-[0_0_15px_rgba(245,158,11,0.15)] ring-2 ring-amber-500/30'
+                          : ''
+                        }`}
+                      >
+                        <div className='flex w-full flex-col items-center justify-center gap-1 font-medium opacity-50 transition-colors'>
+                          {getModelIcon(modelItem.label, 'lg')}
+                          <div className='w-full text-center'>
+                            <div className='text-base font-semibold'>{modelItem.label.split(' ')[0]}</div>
+                            <div className='-mt-0.5 text-sm font-semibold'>
+                              {modelItem.label.split(' ').slice(1).join(' ')}
+                            </div>
+                          </div>
+                        </div>
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent className='w-48'>{modelItem.description}</TooltipContent>
+                  </Tooltip>
                 </div>
               ))}
             </div>
