@@ -78,11 +78,11 @@ export const Models = [
   } as const,
   {
     label: 'Gemini 2.5 Flash',
-    value: 'unknown',
+    value: 'gemini-2.5-flash-preview-04-17',
     provider: 'google',
     type: 'gemini' as ModelType,
     enabled: false,
-    description: "Google's latest fast model",
+    description: "Google's latest experimental fast model",
     reasoning: false,
     requirements: {
       loggedin: true,
@@ -95,7 +95,7 @@ export const Models = [
     provider: 'google',
     type: 'gemini' as ModelType,
     enabled: true,
-    description: "Google's latest experimental model",
+    description: "Google's latest experimental thinking model",
     reasoning: false,
     requirements: {
       loggedin: false,
