@@ -18,6 +18,15 @@ export default {
       },
     },
     extend: {
+      textColor: {
+        'model-primary': 'hsl(var(--color-heading))',
+      },
+      backgroundColor: {
+        'model-primary': 'hsl(var(--color-heading))',
+      },
+      borderColor: {
+        'model-primary': 'hsl(var(--color-heading))',
+      },
       colors: {
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',

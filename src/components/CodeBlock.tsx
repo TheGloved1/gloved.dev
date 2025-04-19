@@ -38,6 +38,7 @@ const CodeBlock = ({ children = '', language = 'plaintext' }: CodeBlockProps) =>
       const highlighted = await tryCatch(syntaxHighlighted());
       if (highlighted.error) {
         toast.error('Failed to highlight code');
+        setCode(String(children));
         return;
       }
       setCode(highlighted.data);

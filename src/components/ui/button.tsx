@@ -51,7 +51,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
               {...props}
             />
           </TooltipTrigger>
-          <TooltipContent side={tooltipSide} align='center' className='bg-background text-foreground'>
+          <TooltipContent side={tooltipSide} align='center' className='bg-accent text-accent-foreground'>
             {title}
           </TooltipContent>
         </Tooltip>

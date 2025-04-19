@@ -134,7 +134,10 @@ export default function ModelDropdown() {
                           <div className='w-full text-center'>
                             <div className='text-base font-semibold'>{modelItem.label.split(' ')[0]}</div>
                             <div className='-mt-0.5 text-sm font-semibold'>
-                              {modelItem.label.split(' ').slice(1).join(' ')}
+                              {modelItem.label.split(' ').slice(1, 2).join(' ')}
+                            </div>
+                            <div className='-mt-0.5 text-[10px] text-[--model-muted] dark:text-[--model-muted]'>
+                              {modelItem.label.split(' ').slice(2).join(' ')}
                             </div>
                           </div>
                         </div>

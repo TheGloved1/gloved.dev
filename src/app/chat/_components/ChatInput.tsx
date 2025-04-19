@@ -158,7 +158,7 @@ const ChatInput = memo(
     };
 
     return (
-      <div className='fixed bottom-0 z-10 w-full px-2 md:absolute md:z-auto'>
+      <div className='pointer-events-none absolute bottom-0 z-10 w-full px-2'>
         <div className='relative mx-auto flex w-full max-w-3xl flex-col text-center'>
           {!isAtBottom && (
             <div className='z-10 flex justify-center pb-4'>
@@ -174,7 +174,7 @@ const ChatInput = memo(
           <div className='pointer-events-none z-10'>
             <div className='pointer-events-auto'>
               <div
-                className='dark:border-reflect dark:rounded-t-[20px] dark:bg-background/40 dark:p-2 dark:pb-0 dark:backdrop-blur-lg'
+                className='border-reflect relative rounded-t-[20px] bg-[--chat-input-background] p-2 pb-0 backdrop-blur-lg ![--c:--chat-input-gradient]'
                 style={{
                   '--gradientBorder-gradient':
                     'linear-gradient(180deg, var(--min), var(--max), var(--min)), linear-gradient(15deg, var(--min) 50%, var(--max))',
@@ -184,7 +184,7 @@ const ChatInput = memo(
               >
                 <form
                   onSubmit={handleSubmit}
-                  className='dark:outline-chat-background/90 relative flex w-full flex-col items-stretch gap-2 rounded-t-xl border border-b-0 border-white/30 bg-[#3030309c] p-3 text-secondary-foreground outline outline-8 outline-[hsl(0,0%,63%)]/5 dark:border-[hsl(0,0%,83%)]/[0.04] dark:bg-background/40 sm:max-w-3xl'
+                  className='dark:outline-chat-background/40 relative flex w-full flex-col items-stretch gap-2 rounded-t-xl border border-b-0 border-white/70 bg-[--chat-input-background] px-3 py-3 text-secondary-foreground outline outline-8 outline-[hsl(var(--chat-input-gradient)/0.5)] dark:border-[hsl(0,0%,83%)]/[0.04] dark:bg-secondary/[0.045] max-sm:pb-6 sm:max-w-3xl'
                   style={{
                     boxShadow:
                       'rgba(0, 0, 0, 0.1) 0px 80px 50px 0px, rgba(0, 0, 0, 0.07) 0px 50px 30px 0px, rgba(0, 0, 0, 0.06) 0px 30px 15px 0px, rgba(0, 0, 0, 0.04) 0px 15px 8px, rgba(0, 0, 0, 0.04) 0px 6px 4px, rgba(0, 0, 0, 0.02) 0px 2px 2px',
@@ -209,7 +209,7 @@ const ChatInput = memo(
                     )}
                     <div className='flex flex-grow flex-row items-start'>
                       <textarea
-                        className='w-full resize-none bg-transparent pr-10 text-base leading-6 text-foreground outline-none scrollbar-thin scrollbar-track-transparent scrollbar-thumb-inherit placeholder:text-secondary-foreground/60'
+                        className='w-full resize-none bg-transparent text-base leading-6 text-foreground outline-none placeholder:text-secondary-foreground/60 disabled:opacity-0'
                         style={{ height: `${(rows + 1) * 24}px` }}
                         value={input || ''}
                         disabled={loading}
@@ -232,55 +232,57 @@ const ChatInput = memo(
                           }
                         }}
                       />
-                      {canUpload ?
-                        <div className='px-1'>
-                          <input
-                            type='file'
-                            ref={fileInputRef}
-                            disabled={loading}
-                            onChange={handleImageChange}
-                            accept='image/jpeg, image/png, image/webp'
-                            className='hidden'
-                            id='image-upload'
-                          />
-                          <Tooltip content='Upload image' size='sm' unselectable='on' radius='lg' animationDuration={100}>
-                            <label
-                              htmlFor='image-upload'
-                              className='-mb-2 inline-flex h-auto cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md px-1 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-neutral-800/40 hover:text-neutral-300 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
+                      <div className='-mr-0.5 -mt-0.5 flex items-center justify-center gap-2'>
+                        {canUpload ?
+                          <div className='px-1'>
+                            <input
+                              type='file'
+                              ref={fileInputRef}
+                              disabled={loading}
+                              onChange={handleImageChange}
+                              accept='image/jpeg, image/png, image/webp'
+                              className='hidden'
+                              id='image-upload'
+                            />
+                            <Tooltip content='Upload image' size='sm' unselectable='on' radius='lg' animationDuration={100}>
+                              <label
+                                htmlFor='image-upload'
+                                className='inline-flex size-9 items-center justify-center gap-2 whitespace-nowrap rounded-md px-2 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted/40 hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-foreground/50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
+                              >
+                                <Paperclip className='!size-5' />
+                              </label>
+                            </Tooltip>
+                          </div>
+                        : <div className='px-1'>
+                            <input className='hidden' id='image-upload' />
+                            <Tooltip
+                              content='Sign in to upload images (Note: May have bugs)'
+                              size='sm'
+                              unselectable='on'
+                              radius='lg'
+                              animationDuration={100}
                             >
-                              <Paperclip className='!size-5' />
-                            </label>
-                          </Tooltip>
-                        </div>
-                      : <div className='px-1'>
-                          <input className='hidden' id='image-upload' />
-                          <Tooltip
-                            content='Sign in to upload images (Note: May have bugs)'
-                            size='sm'
-                            unselectable='on'
-                            radius='lg'
-                            animationDuration={100}
-                          >
-                            <label
-                              htmlFor='image-upload'
-                              className='-mb-2 inline-flex h-auto cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md px-1 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-neutral-800/40 hover:text-neutral-300 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
-                            >
-                              <Paperclip className='!size-5' />
-                            </label>
-                          </Tooltip>
-                        </div>
-                      }
-                      <Button
-                        title='Send Message'
-                        type='submit'
-                        disabled={loading || (!!!input.trim() && !!!imagePreview?.length)}
-                        className='border-reflect button-reflect relative inline-flex h-9 w-9 items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-[rgb(162,59,103)] p-2 text-sm font-semibold text-pink-50 shadow transition-colors hover:bg-[#d56698] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring active:bg-[rgb(162,59,103)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-[rgb(162,59,103)] disabled:active:bg-[rgb(162,59,103)] dark:bg-primary/20 dark:hover:bg-pink-800/70 dark:active:bg-pink-800/40 disabled:dark:hover:bg-primary/20 disabled:dark:active:bg-primary/20 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
-                      >
-                        {loading ?
-                          <Loader2 className='size-4 animate-spin' />
-                        : <Send className='size-4' />}
-                        <span className='sr-only'>Send</span>
-                      </Button>
+                              <label
+                                htmlFor='image-upload'
+                                className='-mb-2 inline-flex h-auto cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md px-1 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-neutral-800/40 hover:text-neutral-300 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
+                              >
+                                <Paperclip className='!size-5' />
+                              </label>
+                            </Tooltip>
+                          </div>
+                        }
+                        <Button
+                          title='Send Message'
+                          type='submit'
+                          disabled={loading || (!!!input.trim() && !!!imagePreview?.length)}
+                          className='border-reflect button-reflect relative inline-flex h-9 w-9 items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-[rgb(162,59,103)] p-2 text-sm font-semibold text-pink-50 shadow transition-colors hover:bg-[#d56698] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring active:bg-[rgb(162,59,103)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-[rgb(162,59,103)] disabled:active:bg-[rgb(162,59,103)] dark:bg-primary/20 dark:hover:bg-pink-800/70 dark:active:bg-pink-800/40 disabled:dark:hover:bg-primary/20 disabled:dark:active:bg-primary/20 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
+                        >
+                          {loading ?
+                            <Loader2 className='size-4 animate-spin' />
+                          : <Send className='size-4' />}
+                          <span className='sr-only'>Send</span>
+                        </Button>
+                      </div>
                     </div>
                     <div className='flex flex-col gap-2 md:flex-row md:items-center'>
                       <div className='flex items-center gap-1'>
