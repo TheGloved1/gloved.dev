@@ -62,9 +62,15 @@ export async function POST(req: Request) {
 
   const model = modelProvider.languageModel(parsed.model ?? defaultModel);
 
-  // Don't send penalties if the model is gemini-2.5-pro-exp-03-25
-  const freqPenalty = parsed.model !== 'gemini-2.5-pro-exp-03-25' ? modelConfig.frequencyPenalty : undefined;
-  const presPenalty = parsed.model !== 'gemini-2.5-pro-exp-03-25' ? modelConfig.presencePenalty : undefined;
+  // Don't send penalties if the model is gemini-2.5-pro-exp-03-25 or gemini-2.5-flash-preview-04-17
+  const freqPenalty =
+    parsed.model !== 'gemini-2.5-pro-exp-03-25' && parsed.model !== 'gemini-2.5-flash-preview-04-17' ?
+      modelConfig.frequencyPenalty
+    : undefined;
+  const presPenalty =
+    parsed.model !== 'gemini-2.5-pro-exp-03-25' && parsed.model !== 'gemini-2.5-flash-preview-04-17' ?
+      modelConfig.presencePenalty
+    : undefined;
 
   return createDataStreamResponse({
     execute: (dataStream) => {
