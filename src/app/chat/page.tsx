@@ -98,7 +98,7 @@ export default function Page(): React.JSX.Element {
                 </h2>
                 <div
                   id='suggestions'
-                  className='max-sm:justify-evenly flex flex-row flex-wrap gap-2.5 sm:text-xs md:text-sm'
+                  className='flex flex-row flex-wrap gap-2.5 max-sm:justify-evenly sm:text-xs md:text-sm'
                 >
                   <button
                     className={getTabStyles('create')}
