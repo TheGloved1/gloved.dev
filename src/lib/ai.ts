@@ -56,8 +56,7 @@ export const Models = [
     provider: 'google',
     type: 'gemini' as ModelType,
     enabled: true,
-    description:
-      "Google's flagship AI model, optimized for speed and efficiency while maintaining high performance in various tasks",
+    description: "Google's latest stable model",
     reasoning: false,
     requirements: {
       loggedin: false,
@@ -70,7 +69,7 @@ export const Models = [
     provider: 'google',
     type: 'gemini' as ModelType,
     enabled: true,
-    description: 'A lightweight version of Gemini 2.0 Flash, designed for faster responses and lower resource usage',
+    description: 'Faster, less precise Gemini model',
     reasoning: false,
     requirements: {
       loggedin: false,
@@ -78,12 +77,12 @@ export const Models = [
     },
   } as const,
   {
-    label: 'Gemini 2.0 Pro Experimental',
-    value: 'gemini-2.0-pro-exp-02-05',
+    label: 'Gemini 2.5 Flash',
+    value: 'gemini-2.5-flash',
     provider: 'google',
     type: 'gemini' as ModelType,
     enabled: true,
-    description: 'An experimental version of Gemini with enhanced capabilities for advanced reasoning and complex tasks',
+    description: "Google's latest fast model",
     reasoning: false,
     requirements: {
       loggedin: true,
@@ -91,13 +90,12 @@ export const Models = [
     },
   } as const,
   {
-    label: 'Gemini 2.5 Pro Experimental',
+    label: 'Gemini 2.5 Pro',
     value: 'gemini-2.5-pro-exp-03-25',
     provider: 'google',
     type: 'gemini' as ModelType,
     enabled: true,
-    description:
-      "Google's state-of-the-art thinking model, capable of reasoning over complex problems in code, math, and STEM, as well as analyzing large datasets, codebases, and documents using long context.",
+    description: "Google's latest experimental model",
     reasoning: false,
     requirements: {
       loggedin: false,
@@ -110,8 +108,7 @@ export const Models = [
     provider: 'groq',
     type: 'qwen' as ModelType,
     enabled: true,
-    description:
-      'Specialized code generation model with production-quality code output, trained on 5.5 trillion tokens of code and technical content',
+    description: 'Specialized code generation model with production-quality code output',
     reasoning: false,
     requirements: {
       loggedin: true,
@@ -124,8 +121,20 @@ export const Models = [
     provider: 'groq',
     type: 'qwen' as ModelType,
     enabled: true,
-    description:
-      'Advanced reasoning model delivering performance comparable to state-of-the-art models 20x larger, excelling in complex reasoning tasks',
+    description: 'Small but mighty reasoning model',
+    reasoning: false,
+    requirements: {
+      loggedin: true,
+      admin: true,
+    },
+  } as const,
+  {
+    label: 'Llama 4 Scout',
+    value: 'meta-llama/llama-4-scout-17b-16e-instruct',
+    provider: 'groq',
+    type: 'llama' as ModelType,
+    enabled: true,
+    description: 'Latest open-source model from Meta',
     reasoning: false,
     requirements: {
       loggedin: true,
@@ -138,7 +147,7 @@ export const Models = [
     provider: 'groq',
     type: 'llama' as ModelType,
     enabled: true,
-    description: 'A specialized model for reasoning tasks, optimized for speed and accuracy',
+    description: 'Latest open-source model from Meta',
     reasoning: true,
     requirements: {
       loggedin: true,
@@ -150,7 +159,7 @@ export const Models = [
     value: 'llama-3.1-8b-instant',
     provider: 'groq',
     type: 'llama' as ModelType,
-    enabled: true,
+    enabled: false,
     description: 'Lightweight version of Llama 3 optimized for fast responses and efficient inference',
     reasoning: false,
     requirements: {
@@ -164,7 +173,7 @@ export const Models = [
     provider: 'groq',
     type: 'llama' as ModelType,
     enabled: true,
-    description: 'Large-scale Llama model with versatile capabilities across various AI tasks',
+    description: 'Fast, but not the smartest',
     reasoning: false,
     requirements: {
       loggedin: true,
@@ -176,8 +185,8 @@ export const Models = [
     value: 'deepseek-r1-distill-qwen-32b',
     provider: 'groq',
     type: 'qwen' as ModelType,
-    enabled: true,
-    description: 'Distilled version of DeepSeek R1, optimized for high performance reasoning tasks using Qwen architecture',
+    enabled: false,
+    description: 'DeepSeek R1, distilled on Qwen 32b',
     reasoning: false,
     requirements: {
       loggedin: false,
@@ -190,10 +199,23 @@ export const Models = [
     provider: 'groq',
     type: 'llama' as ModelType,
     enabled: true,
-    description: 'Distilled version of DeepSeek R1, fine-tuned from Llama-3.3-70B for robust reasoning capabilities',
+    description: 'DeepSeek R1, distilled on Llama 3.3 70b',
     reasoning: true,
     requirements: {
       loggedin: false,
+      admin: false,
+    },
+  } as const,
+  {
+    label: 'Groq Compound Beta',
+    value: 'compound-beta',
+    provider: 'groq',
+    type: 'compound' as ModelType,
+    enabled: true,
+    description: 'Compound-beta is a compound AI system powered by multiple openly available models',
+    reasoning: true,
+    requirements: {
+      loggedin: true,
       admin: false,
     },
   } as const,
@@ -202,7 +224,7 @@ export const Models = [
     value: 'openrouter/auto',
     provider: 'openrouter',
     type: 'openrouter' as ModelType,
-    enabled: true,
+    enabled: false,
     description: 'A model will be selected based on your prompt',
     reasoning: false,
     requirements: {

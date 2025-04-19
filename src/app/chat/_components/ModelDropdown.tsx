@@ -40,26 +40,27 @@ export default function ModelDropdown() {
   // Filter models based on search query
   const filteredModels = Models.filter((m) => {
     if (!m.enabled) return false;
-    if (m.requirements.loggedin && !isSignedIn) return false;
     if (m.requirements.admin && !isAdmin) return false;
 
-    return m.label.toLowerCase().includes(searchQuery.toLowerCase());
+    return (
+      m.label.toLowerCase().includes(searchQuery.toLowerCase()) || m.value.toLowerCase().includes(searchQuery.toLowerCase())
+    );
   });
 
   // Function to get the appropriate icon based on model name
-  const getModelIcon = (modelName: string, size: 'sm' | 'md' | 'lg' = 'md') => {
+  const getModelIcon = (model: string, size: 'sm' | 'md' | 'lg' = 'md') => {
     const className =
       size === 'sm' ? 'size-5'
       : size === 'lg' ? 'size-7'
       : 'size-6';
 
-    if (modelName.toLowerCase().includes('gemini')) {
+    if (model.toLowerCase().includes('gemini')) {
       return <GeminiIcon className={className} />;
-    } else if (modelName.toLowerCase().includes('deepseek')) {
+    } else if (model.toLowerCase().includes('deepseek')) {
       return <DeepSeekIcon className={className} />;
-    } else if (modelName.toLowerCase().includes('gpt')) {
+    } else if (model.toLowerCase().includes('gpt')) {
       return <GPTIcon className={className} />;
-    } else if (modelName.toLowerCase().includes('llama')) {
+    } else if (model.toLowerCase().includes('llama')) {
       return <LlamaIcon className={className} />;
     }
 
@@ -116,7 +117,9 @@ export default function ModelDropdown() {
                   <Tooltip delayDuration={600} disableHoverableContent>
                     <TooltipTrigger asChild>
                       <button
+                        disabled={modelItem.requirements?.loggedin && !isSignedIn}
                         onClick={() => {
+                          if (modelItem.requirements?.loggedin && !isSignedIn) return;
                           setModel(modelItem.value);
                           setIsOpen(false);
                         }}
@@ -124,9 +127,9 @@ export default function ModelDropdown() {
                           model === modelItem.value ?
                             'border-amber-500/40 shadow-[inset_0_0_15px_rgba(245,158,11,0.15)] ring-2 ring-amber-500/30'
                           : ''
-                        }`}
+                        } ${modelItem.requirements?.loggedin && !isSignedIn ? 'opacity-50 grayscale filter' : ''}`}
                       >
-                        <div className='flex w-full flex-col items-center justify-center gap-1 font-medium opacity-50 transition-colors'>
+                        <div className='flex w-full flex-col items-center justify-center gap-1 font-medium transition-colors'>
                           {getModelIcon(modelItem.label, 'lg')}
                           <div className='w-full text-center'>
                             <div className='text-base font-semibold'>{modelItem.label.split(' ')[0]}</div>
@@ -137,7 +140,11 @@ export default function ModelDropdown() {
                         </div>
                       </button>
                     </TooltipTrigger>
-                    <TooltipContent className='w-48'>{modelItem.description}</TooltipContent>
+                    <TooltipContent className='w-48'>
+                      {modelItem.requirements?.loggedin && !isSignedIn ?
+                        'You must be signed in to use this model'
+                      : modelItem.description}
+                    </TooltipContent>
                   </Tooltip>
                 </div>
               ))}
