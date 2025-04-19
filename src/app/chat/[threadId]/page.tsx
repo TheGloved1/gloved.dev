@@ -1,6 +1,7 @@
 'use client';
 import { useIntersectionObserver } from '@/hooks/use-intersection-observer';
 import { useInterval } from '@/hooks/use-interval';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { dxdb } from '@/lib/dexie';
 import { sleep } from '@/lib/utils';
 import { useLiveQuery } from 'dexie-react-hooks';
@@ -18,6 +19,7 @@ export default function Page(): React.JSX.Element {
   const lastScrollTop = useRef<number>(100000);
   const [autoScroll, setAutoScroll] = useState<boolean>(true);
   const distanceFromBottom = useRef<number>(0);
+  const isMobile = useIsMobile();
   const scrollBottom = useIntersectionObserver({
     root: null,
     rootMargin: '0px',
@@ -39,7 +41,7 @@ export default function Page(): React.JSX.Element {
   );
 
   const scrollToBottom = useCallback(() => {
-    if (!autoScroll) return;
+    if (!autoScroll || !isMobile) return;
     /* console.log(
         'Scrolling to bottom',
         scrollContainer.current?.scrollTop,
@@ -49,7 +51,7 @@ export default function Page(): React.JSX.Element {
     scrollBottom.entry?.target.scrollIntoView({
       behavior: 'instant',
     });
-  }, [autoScroll, scrollBottom.entry?.target]);
+  }, [autoScroll, isMobile, scrollBottom.entry?.target]);
 
   const handleScrollButton = () => {
     if (!autoScroll) {
@@ -78,7 +80,7 @@ export default function Page(): React.JSX.Element {
     () => {
       scrollToBottom();
     },
-    autoScroll ? 500 : null,
+    autoScroll && !isMobile ? 500 : null,
   );
 
   return (
