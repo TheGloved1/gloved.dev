@@ -22,7 +22,7 @@ export default function ModelDropdown() {
   const [theme] = useLocalStorage<Theme>('theme', themes.cooldark);
 
   // Get the selected model details
-  const selectedModel = Models.find((m) => m.value === model);
+  const selectedModel = Models.find((m) => m.value === model) ?? null;
 
   useEffect(() => {
     const email = user?.primaryEmailAddress?.emailAddress;
@@ -85,9 +85,7 @@ export default function ModelDropdown() {
             variant='ghost'
             className='-mb-2 inline-flex h-auto items-center justify-center gap-2 whitespace-nowrap rounded-md px-2 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted/40 hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-foreground/50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
           >
-            <span className='truncate' suppressHydrationWarning>
-              {selectedModel?.label || 'Select a model'}
-            </span>
+            <span suppressHydrationWarning>{selectedModel?.label || 'No model selected'}</span>
             {isOpen ?
               <ChevronUp className='size-4 opacity-50' />
             : <ChevronDown className='size-4 opacity-50' />}

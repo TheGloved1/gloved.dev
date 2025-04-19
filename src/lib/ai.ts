@@ -137,8 +137,8 @@ export const Models = [
     description: 'Latest open-source model from Meta',
     reasoning: false,
     requirements: {
-      loggedin: true,
-      admin: true,
+      loggedin: false,
+      admin: false,
     },
   } as const,
   {
@@ -147,7 +147,7 @@ export const Models = [
     provider: 'groq',
     type: 'llama' as ModelType,
     enabled: true,
-    description: 'Latest open-source model from Meta',
+    description: 'Latest open-source model from Meta. Limited to small conversations',
     reasoning: true,
     requirements: {
       loggedin: true,
@@ -159,7 +159,7 @@ export const Models = [
     value: 'llama-3.1-8b-instant',
     provider: 'groq',
     type: 'llama' as ModelType,
-    enabled: false,
+    enabled: true,
     description: 'Lightweight version of Llama 3 optimized for fast responses and efficient inference',
     reasoning: false,
     requirements: {
@@ -189,8 +189,8 @@ export const Models = [
     description: 'DeepSeek R1, distilled on Qwen 32b',
     reasoning: false,
     requirements: {
-      loggedin: false,
-      admin: false,
+      loggedin: true,
+      admin: true,
     },
   } as const,
   {
@@ -216,7 +216,7 @@ export const Models = [
     reasoning: true,
     requirements: {
       loggedin: true,
-      admin: false,
+      admin: true,
     },
   } as const,
   {

@@ -367,10 +367,11 @@ export async function processStream(
       } else if (line.startsWith('3:')) {
         callback();
         // This is an error chunk
+        const json: string = JSON.parse(line.slice(2)); // Remove the prefix
         if (messageId) {
           await dxdb.messages.update(messageId, {
             updated_at: createDate(),
-            content: 'An error occurred.',
+            content: json,
             status: 'error',
           });
         }
@@ -394,7 +395,6 @@ export async function processStream(
   if (messageId && messageContent.trim() === '') {
     await dxdb.messages.update(messageId, {
       updated_at: createDate(),
-      content: 'An error occurred.',
       status: 'error',
     });
   }
