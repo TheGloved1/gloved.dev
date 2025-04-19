@@ -63,7 +63,7 @@
     "@upstash/redis": "^1.34.7",
     "@vercel/analytics": "^1.5.0",
     "@vercel/speed-insights": "^1.2.0",
-    "ai": "^4.3.5",
+    "ai": "^4.3.9",
     "axios": "^1.8.4",
     "babel-plugin-react-compiler": "19.0.0-beta-3229e95-20250315",
     "class-variance-authority": "^0.7.1",
