@@ -15,6 +15,7 @@ import {
   streamText,
   wrapLanguageModel,
 } from 'ai';
+import { NextRequest } from 'next/server';
 
 const google = createGoogleGenerativeAI({ apiKey: env.GEMINI });
 const groq = createGroq({ apiKey: env.GROQ });
@@ -28,7 +29,7 @@ const languageModels = Models.reduce(
       if (reasoning) {
         acc[value] = wrapLanguageModel({
           model: groq.languageModel(value),
-          middleware: extractReasoningMiddleware({ tagName: 'think', startWithReasoning: true }),
+          middleware: extractReasoningMiddleware({ tagName: 'think' }),
         });
       } else {
         acc[value] = groq.languageModel(value);
@@ -50,7 +51,7 @@ const modelProvider = customProvider({
   languageModels,
 });
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   const parsed: ChatFetchOptions = await req.json();
   const { messages } = parsed;
   const system = !!parsed.system?.trim() ? parsed.system.trim() : ((await tryCatch(fetchSystemPrompt())).data ?? '');
@@ -82,7 +83,13 @@ export async function POST(req: Request) {
         maxTokens: modelConfig.maxTokens,
         frequencyPenalty: freqPenalty,
         presencePenalty: presPenalty,
+        abortSignal: req.signal,
         experimental_transform: smoothStream({ delayInMs: null }),
+        onFinish: (step) => {
+          console.log('Prompt tokens:', step.usage.promptTokens);
+          console.log('Completion tokens:', step.usage.completionTokens);
+          console.log('Total tokens:', step.usage.totalTokens);
+        },
       });
       result.mergeIntoDataStream(dataStream, { sendReasoning: true, sendSources: true, sendUsage: true });
     },

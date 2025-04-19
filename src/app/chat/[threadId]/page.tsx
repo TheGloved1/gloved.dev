@@ -1,12 +1,11 @@
 'use client';
 import { useIntersectionObserver } from '@/hooks/use-intersection-observer';
-import { useInterval } from '@/hooks/use-interval';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { dxdb } from '@/lib/dexie';
 import { sleep } from '@/lib/utils';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useParams, useRouter } from 'next/navigation';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import ChatInput from '../_components/ChatInput';
 import ChatMessage from '../_components/ChatMessage';
 
@@ -15,7 +14,7 @@ export const dynamic = 'force-static';
 export default function Page(): React.JSX.Element {
   const router = useRouter();
   const { threadId } = useParams<{ threadId: string }>();
-  const scrollContainer = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const lastScrollTop = useRef<number>(100000);
   const [autoScroll, setAutoScroll] = useState<boolean>(true);
   const distanceFromBottom = useRef<number>(0);
@@ -42,36 +41,22 @@ export default function Page(): React.JSX.Element {
 
   const scrollToBottom = useCallback(() => {
     if (!autoScroll || isMobile) return;
-    /* console.log(
-        'Scrolling to bottom',
-        scrollContainer.current?.scrollTop,
-        lastScrollTop.current,
-        distanceFromBottom.current,
-      ); */
     scrollBottom.entry?.target.scrollIntoView({
       behavior: 'instant',
     });
   }, [autoScroll, isMobile, scrollBottom.entry?.target]);
 
   const handleScrollButton = () => {
-    if (!autoScroll) {
-      /* console.log(
-        'Auto scroll enabled',
-        scrollContainer.current?.scrollTop,
-        lastScrollTop.current,
-        distanceFromBottom.current,
-      ); */
-      setAutoScroll(true);
-      scrollBottom.entry?.target.scrollIntoView({
-        behavior: 'instant',
-      });
-    }
+    setAutoScroll(true);
+    scrollBottom.entry?.target.scrollIntoView({
+      behavior: 'instant',
+    });
   };
 
   useEffect(() => {
     const scrollToBottom = () => {
-      if (!scrollContainer.current) return;
-      scrollContainer.current.scrollTop = scrollContainer.current.scrollHeight;
+      if (!scrollContainerRef.current) return;
+      scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
     };
     scrollToBottom();
     sleep(500).then(() => {
@@ -79,11 +64,31 @@ export default function Page(): React.JSX.Element {
     });
   }, []);
 
-  useInterval(
-    () => {
-      scrollToBottom();
+  useLayoutEffect(() => {
+    if (!scrollContainerRef.current) return;
+    if (autoScroll) {
+      scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
+    }
+  }, [messages, scrollToBottom, autoScroll]);
+
+  const handleScroll = useCallback(
+    (e?: React.UIEvent<HTMLDivElement>) => {
+      if (!scrollContainerRef.current) return;
+      distanceFromBottom.current =
+        scrollContainerRef.current.scrollHeight -
+        (scrollContainerRef.current.scrollTop || e?.currentTarget.scrollTop || 0) -
+        988;
+      // NOTE: Could sometimes trigger when generating messages, stopping auto-scroll mid-generation, if generation is too fast
+      if (distanceFromBottom.current > 200) {
+        setAutoScroll(false);
+      }
+
+      // if the user scrolls to the bottom of this element, enable auto scroll
+      if (!autoScroll && distanceFromBottom.current < 200) {
+        setAutoScroll(true);
+      }
     },
-    autoScroll && !isMobile ? 500 : null,
+    [scrollContainerRef, autoScroll],
   );
 
   return (
@@ -95,35 +100,8 @@ export default function Page(): React.JSX.Element {
       />
       <div className='relative flex-1 overflow-clip'>
         <div
-          onScroll={(e) => {
-            // If user scrolls up, disable auto scroll. If user scrolls to bottom, enable auto scroll
-            if (!scrollContainer.current) return;
-            distanceFromBottom.current =
-              scrollContainer.current.scrollHeight - (scrollContainer.current.scrollTop || e.currentTarget.scrollTop) - 988;
-            // NOTE: Could sometimes trigger when generating messages, stopping auto-scroll mid-generation, if generation is too fast
-            if (distanceFromBottom.current > 200) {
-              /* console.log(
-                'Auto scroll disabled',
-                scrollContainer.current?.scrollTop,
-                lastScrollTop.current,
-                distanceFromBottom.current,
-              ); */
-              setAutoScroll(false);
-            }
-
-            // if the user scrolls to the bottom of this element, enable auto scroll
-            if (!autoScroll && distanceFromBottom.current < 200) {
-              /* console.log(
-                'Auto scroll enabled',
-                scrollContainer.current?.scrollTop,
-                lastScrollTop.current,
-                distanceFromBottom.current,
-              ); */
-              setAutoScroll(true);
-            }
-            lastScrollTop.current = scrollContainer.current?.scrollTop || e.currentTarget.scrollTop;
-          }}
-          ref={scrollContainer}
+          onScroll={handleScroll}
+          ref={scrollContainerRef}
           className='scrollbar-w-2 h-[100dvh] overflow-y-auto overflow-x-clip pb-32 scrollbar-thin scrollbar-track-transparent'
         >
           <div className='mx-auto flex w-full max-w-3xl translate-x-1 flex-col space-y-12 p-4 pb-16 text-sm'>

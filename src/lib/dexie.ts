@@ -404,6 +404,12 @@ export async function processStream(
   return messageContent; // Return the accumulated message content
 }
 
+let chatAbortController = new AbortController();
+export function stopGeneration() {
+  chatAbortController.abort('Generation cancelled!');
+  chatAbortController = new AbortController();
+}
+
 /**
  * Sends a message to the chat server and updates the UI with the response.
  * @param threadId The ID of the thread to send the message to.
@@ -454,6 +460,8 @@ export async function createMessage(
     messages: allMessages,
   };
 
+  const signal = chatAbortController.signal;
+
   try {
     const { data, error } = await tryCatch(
       fetch('/api/chat', {
@@ -462,6 +470,7 @@ export async function createMessage(
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(chatFetchOptions),
+        signal,
       }),
     );
     if (error) return;
@@ -514,6 +523,8 @@ export async function updateMessage(
     model,
   });
 
+  const signal = chatAbortController.signal;
+
   try {
     const { data, error } = await tryCatch(
       fetch('/api/chat', {
@@ -526,6 +537,7 @@ export async function updateMessage(
           messages: allMessages,
           model,
         }),
+        signal,
       }),
     );
     if (error) return;

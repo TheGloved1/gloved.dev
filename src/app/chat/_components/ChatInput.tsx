@@ -1,5 +1,5 @@
 'use client';
-import { createMessage, dxdb } from '@/lib/dexie';
+import { createMessage, dxdb, stopGeneration } from '@/lib/dexie';
 import React, { memo, useEffect, useState } from 'react';
 
 import { Tooltip } from '@/components/TooltipSystem';
@@ -10,7 +10,7 @@ import { defaultModel, ModelID } from '@/lib/ai';
 import Constants from '@/lib/constants';
 import { tryCatch, uploadImage } from '@/lib/utils';
 import { useAuth } from '@clerk/nextjs';
-import { ChevronDown, Loader2, Paperclip, Send, X } from 'lucide-react';
+import { ChevronDown, Paperclip, Send, Square, X } from 'lucide-react';
 import Image from 'next/image';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useRef } from 'react';
@@ -35,9 +35,9 @@ const ChatInput = memo(
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [loading, setLoading] = useState<boolean>(false);
     const [input, setInput] = useLocalStorage('input', '');
-    const [model, setModel] = useLocalStorage<ModelID>('model', defaultModel);
+    const [model] = useLocalStorage<ModelID>('model', defaultModel);
     const [rows, setRows] = useLocalStorage<number>('rows', 2);
-    const [systemPrompt, setSystemPrompt] = useLocalStorage<string | undefined>('systemPrompt', undefined);
+    const [systemPrompt] = useLocalStorage<string | undefined>('systemPrompt', undefined);
     const auth = useAuth();
     const isMobile = useIsMobile();
     const router = useRouter();
@@ -90,7 +90,7 @@ const ChatInput = memo(
         }
         setLoading(false);
       } else {
-        await createMessage(threadId, query || input, model, setInput, scrollCallback, systemPrompt?.trim(), attachments);
+        await createMessage(threadId, input, model, setInput, scrollCallback, systemPrompt?.trim(), attachments);
         setLoading(false);
         setRows(2);
       }
@@ -271,17 +271,31 @@ const ChatInput = memo(
                             </Tooltip>
                           </div>
                         }
-                        <Button
-                          title='Send Message'
-                          type='submit'
-                          disabled={loading || (!!!input.trim() && !!!imagePreview?.length)}
-                          className='border-reflect button-reflect relative inline-flex h-9 w-9 items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-[rgb(162,59,103)] p-2 text-sm font-semibold text-pink-50 shadow transition-colors hover:bg-[#d56698] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring active:bg-[rgb(162,59,103)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-[rgb(162,59,103)] disabled:active:bg-[rgb(162,59,103)] dark:bg-primary/20 dark:hover:bg-pink-800/70 dark:active:bg-pink-800/40 disabled:dark:hover:bg-primary/20 disabled:dark:active:bg-primary/20 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
-                        >
-                          {loading ?
-                            <Loader2 className='size-4 animate-spin' />
-                          : <Send className='size-4' />}
-                          <span className='sr-only'>Send</span>
-                        </Button>
+                        {!loading && (
+                          <Button
+                            title='Send Message'
+                            type='submit'
+                            disabled={!!!input.trim() && !!!imagePreview?.length}
+                            className='border-reflect button-reflect relative inline-flex h-9 w-9 items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-[rgb(162,59,103)] p-2 text-sm font-semibold text-pink-50 shadow transition-colors hover:bg-[#d56698] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring active:bg-[rgb(162,59,103)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-[rgb(162,59,103)] disabled:active:bg-[rgb(162,59,103)] dark:bg-primary/20 dark:hover:bg-pink-800/70 dark:active:bg-pink-800/40 disabled:dark:hover:bg-primary/20 disabled:dark:active:bg-primary/20 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
+                          >
+                            <Send className='size-4' />
+                            <span className='sr-only'>Send</span>
+                          </Button>
+                        )}
+                        {loading && (
+                          <Button
+                            title='Stop'
+                            onClick={(e) => {
+                              e.preventDefault();
+                              stopGeneration();
+                              setLoading(false);
+                            }}
+                            className='border-reflect button-reflect relative inline-flex h-9 w-9 items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-[rgb(162,59,103)] p-2 text-sm font-semibold text-pink-50 shadow transition-colors hover:bg-[#d56698] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring active:bg-[rgb(162,59,103)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-[rgb(162,59,103)] disabled:active:bg-[rgb(162,59,103)] dark:bg-primary/20 dark:hover:bg-pink-800/70 dark:active:bg-pink-800/40 disabled:dark:hover:bg-primary/20 disabled:dark:active:bg-primary/20 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
+                          >
+                            <Square className='size-4 rounded bg-current' />
+                            <span className='sr-only'>Stop Generation</span>
+                          </Button>
+                        )}
                       </div>
                     </div>
                     <div className='flex flex-col gap-2 md:flex-row md:items-center'>

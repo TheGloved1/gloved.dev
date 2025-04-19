@@ -1,4 +1,5 @@
-import { ClassAttributes, HTMLAttributes } from 'react';
+import equal from 'fast-deep-equal';
+import { ClassAttributes, HTMLAttributes, memo } from 'react';
 import Markdown, { Components, ExtraProps, Options } from 'react-markdown';
 import CodeBlock from './CodeBlock';
 
@@ -37,11 +38,7 @@ const components: Components = {
  * @param {string} props.className - Optional className for the container div.
  * @returns {React.JSX.Element} The rendered Markdown content as a React element.
  */
-export default function CustomMarkdown({
-  children,
-  className,
-  ...props
-}: Options & { className?: string }): React.JSX.Element {
+function CustomMarkdown({ children, className, ...props }: Options & { className?: string }): React.JSX.Element {
   return (
     <div className={className || undefined}>
       <Markdown components={components} {...props}>
@@ -50,3 +47,5 @@ export default function CustomMarkdown({
     </div>
   );
 }
+
+export default memo(CustomMarkdown, (prev, next) => equal(prev, next));
