@@ -3,6 +3,7 @@ import { createMessage, dxdb } from '@/lib/dexie';
 import React, { memo, useEffect, useState } from 'react';
 
 import { Tooltip } from '@/components/TooltipSystem';
+import { Button } from '@/components/ui/button';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { defaultModel, ModelID } from '@/lib/ai';
@@ -269,16 +270,17 @@ const ChatInput = memo(
                           </Tooltip>
                         </div>
                       }
-                      <button
+                      <Button
+                        title='Send Message'
                         type='submit'
                         disabled={loading || (!!!input.trim() && !!!imagePreview?.length)}
-                        className='border-reflect button-reflect relative inline-flex h-9 w-9 items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-[rgb(162,59,103)] p-2 text-sm font-semibold text-pink-50 shadow transition-colors hover:bg-[#d56698] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring active:bg-[rgb(162,59,103)] disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
+                        className='border-reflect button-reflect relative inline-flex h-9 w-9 items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-[rgb(162,59,103)] p-2 text-sm font-semibold text-pink-50 shadow transition-colors hover:bg-[#d56698] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring active:bg-[rgb(162,59,103)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-[rgb(162,59,103)] disabled:active:bg-[rgb(162,59,103)] dark:bg-primary/20 dark:hover:bg-pink-800/70 dark:active:bg-pink-800/40 disabled:dark:hover:bg-primary/20 disabled:dark:active:bg-primary/20 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
                       >
                         {loading ?
                           <Loader2 className='size-4 animate-spin' />
                         : <Send className='size-4' />}
                         <span className='sr-only'>Send</span>
-                      </button>
+                      </Button>
                     </div>
                     <div className='flex flex-col gap-2 md:flex-row md:items-center'>
                       <div className='flex items-center gap-1'>

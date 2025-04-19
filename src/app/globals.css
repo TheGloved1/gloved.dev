@@ -278,6 +278,11 @@
     mask-composite: exclude;
     opacity: var(--opacity, 1);
   }
+  .button-reflect {
+    --min: #2e001f40 !important;
+    --max: #ffa6e2b0 !important;
+    --start: #000000d9 !important;
+  }
 }
 
 @layer base {
