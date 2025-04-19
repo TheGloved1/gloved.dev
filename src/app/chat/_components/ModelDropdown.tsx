@@ -9,7 +9,7 @@ import { checkIsAdminAction } from '@/lib/actions';
 import { defaultModel, type ModelID, Models } from '@/lib/ai';
 import { tryCatch } from '@/lib/utils';
 import { useUser } from '@clerk/nextjs';
-import { Bot, ChevronDown, Search } from 'lucide-react';
+import { Bot, ChevronDown, ChevronUp, Search } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { DeepSeekIcon, GeminiIcon, GPTIcon, LlamaIcon } from './ModelIcons';
 
@@ -81,11 +81,13 @@ export default function ModelDropdown() {
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
           <Button
-            variant='outline'
-            className='flex w-full max-w-[60vw] items-center justify-between gap-2 border-gray-800 bg-background/5 text-left'
+            variant='ghost'
+            className='-mb-2 inline-flex h-auto items-center justify-center gap-2 whitespace-nowrap rounded-md px-2 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted/40 hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-foreground/50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
           >
             <span className='truncate'>{selectedModel?.label || 'Select a model'}</span>
-            <ChevronDown className='h-4 w-4 opacity-50' />
+            {isOpen ?
+              <ChevronUp className='size-4 opacity-50' />
+            : <ChevronDown className='size-4 opacity-50' />}
           </Button>
         </PopoverTrigger>
         <PopoverContent
@@ -118,9 +120,9 @@ export default function ModelDropdown() {
                           setModel(modelItem.value);
                           setIsOpen(false);
                         }}
-                        className={`border-chat-border/50 text-color-heading hover:text-color-heading border-chat-border group relative flex h-[148px] w-[108px] cursor-pointer flex-col items-start gap-0.5 overflow-hidden rounded-xl border bg-[hsl(320,20%,2.9%)] bg-sidebar/20 px-1 py-3 [--model-muted:hsl(var(--color-heading))] [--model-muted:hsl(var(--muted-foreground)/0.9)] [--model-primary:hsl(var(--color-heading))] [--model-primary:hsl(var(--muted-foreground)/0.9)] hover:bg-accent/30 ${
+                        className={`border-chat-border/50 text-color-heading hover:text-color-heading border-chat-border group relative flex h-[148px] w-[108px] cursor-pointer flex-col items-start gap-0.5 overflow-hidden rounded-xl border bg-[hsl(320,20%,2.9%)] bg-sidebar/20 px-1 py-3 [--model-muted:hsl(var(--muted-foreground)/0.9)] [--model-primary:hsl(var(--color-heading))] hover:bg-accent/30 ${
                           model === modelItem.value ?
-                            'border-amber-500/40 shadow-[0_0_15px_rgba(245,158,11,0.15)] ring-2 ring-amber-500/30'
+                            'border-amber-500/40 shadow-[inset_0_0_15px_rgba(245,158,11,0.15)] ring-2 ring-amber-500/30'
                           : ''
                         }`}
                       >
