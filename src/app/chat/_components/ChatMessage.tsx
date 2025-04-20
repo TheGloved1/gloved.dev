@@ -8,6 +8,7 @@ import { useTextToSpeech } from '@/hooks/use-tts';
 import { defaultModel } from '@/lib/ai';
 import { dxdb, Message, updateMessage } from '@/lib/dexie';
 import { tryCatch } from '@/lib/utils';
+import { useAuth } from '@clerk/nextjs';
 import equal from 'fast-deep-equal';
 import { ChevronDown, ChevronUp, Copy, RefreshCcw, Send, SquarePen, Volume2Icon, VolumeXIcon } from 'lucide-react';
 import Image from 'next/image';
@@ -36,6 +37,9 @@ function ChatMessage({ message, scrollEditCallback }: { message: Message; scroll
   const [systemPrompt] = useLocalStorage<string | undefined>('systemPrompt', undefined);
   const [model] = useLocalStorage<string>('model', defaultModel);
   const [speak, stopSpeech, isSpeaking] = useTextToSpeech();
+  const [syncEnabled, setSyncEnabled] = useLocalStorage<boolean>('syncEnabled', false);
+  const auth = useAuth();
+  const syncUserIdIfEnabled = syncEnabled && auth.userId ? auth.userId : undefined;
 
   const handleEditMessage = useCallback(
     async (m: Message) => {
@@ -120,6 +124,7 @@ function ChatMessage({ message, scrollEditCallback }: { message: Message; scroll
                       setInput(null);
                     },
                     systemPrompt,
+                    syncUserIdIfEnabled,
                   );
                 }}
               >
@@ -177,6 +182,7 @@ function ChatMessage({ message, scrollEditCallback }: { message: Message; scroll
                     scrollEditCallback();
                   },
                   systemPrompt,
+                  syncUserIdIfEnabled,
                 );
               }}
             >

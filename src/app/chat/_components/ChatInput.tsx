@@ -44,6 +44,9 @@ const ChatInput = memo(
     const { threadId } = useParams<{ threadId: string }>();
     const searchParams = useSearchParams();
     const query = searchParams.get('q');
+    const [syncEnabled, setSyncEnabled] = useLocalStorage<boolean>('syncEnabled', false);
+
+    const syncUserIdIfEnabled = syncEnabled && auth.userId ? auth.userId : undefined;
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -82,7 +85,16 @@ const ChatInput = memo(
         const threadId = await dxdb.createThread();
         router.push('/chat/' + threadId);
         try {
-          await createMessage(threadId, query || input, model, setInput, scrollCallback, systemPrompt?.trim(), attachments);
+          await createMessage(
+            threadId,
+            query || input,
+            model,
+            setInput,
+            scrollCallback,
+            systemPrompt?.trim(),
+            attachments,
+            syncUserIdIfEnabled,
+          );
         } catch (e) {
           toast.error('Failed to generate message');
           setLoading(false);
@@ -90,7 +102,16 @@ const ChatInput = memo(
         }
         setLoading(false);
       } else {
-        await createMessage(threadId, input, model, setInput, scrollCallback, systemPrompt?.trim(), attachments);
+        await createMessage(
+          threadId,
+          input,
+          model,
+          setInput,
+          scrollCallback,
+          systemPrompt?.trim(),
+          attachments,
+          syncUserIdIfEnabled,
+        );
         setLoading(false);
         setRows(2);
       }
