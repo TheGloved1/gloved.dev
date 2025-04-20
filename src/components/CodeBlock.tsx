@@ -53,7 +53,7 @@ const CodeBlock = ({ children = '', language = 'plaintext' }: CodeBlockProps) =>
       <CopyButton text={String(children)} />
       <div className='-mb-1.5'></div>
       <div
-        className='shiki not-prose bg-chat-accent relative text-sm font-[450] text-secondary-foreground [&_pre]:overflow-auto [&_pre]:!bg-transparent [&_pre]:px-[1em] [&_pre]:py-[1em]'
+        className='shiki not-prose relative bg-chat-accent text-sm font-[450] text-secondary-foreground [&_pre]:overflow-auto [&_pre]:!bg-transparent [&_pre]:px-[1em] [&_pre]:py-[1em]'
         dangerouslySetInnerHTML={{ __html: code }}
       ></div>
     </div>

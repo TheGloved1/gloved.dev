@@ -195,7 +195,7 @@ const ChatInput = memo(
           <div className='pointer-events-none z-10'>
             <div className='pointer-events-auto'>
               <div
-                className='border-reflect bg-chat-input-background relative rounded-t-[20px] p-2 pb-0 backdrop-blur-lg ![--c:--chat-input-gradient]'
+                className='border-reflect relative rounded-t-[20px] bg-chat-input-background p-2 pb-0 backdrop-blur-lg ![--c:--chat-input-gradient]'
                 style={{
                   '--gradientBorder-gradient':
                     'linear-gradient(180deg, var(--min), var(--max), var(--min)), linear-gradient(15deg, var(--min) 50%, var(--max))',

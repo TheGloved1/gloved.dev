@@ -13,7 +13,7 @@ const components: Components = {
     if (language === 'plaintext' && !/\n/.test(String(children))) {
       return (
         <code
-          className='bg-chat-accent mx-0.5 overflow-auto break-words rounded bg-[#2f3136] p-1 font-jetbrains font-light text-[#dcddde] group-[:is(pre)]:flex group-[:is(pre)]:w-full'
+          className='mx-0.5 overflow-auto break-words rounded bg-[#2f3136] bg-chat-accent p-1 font-jetbrains font-light text-[#dcddde] group-[:is(pre)]:flex group-[:is(pre)]:w-full'
           {...props}
         >
           {children}
