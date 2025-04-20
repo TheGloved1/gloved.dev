@@ -17,6 +17,7 @@ type CodeBlockProps = {
 const CodeBlock = ({ children = '', language = 'plaintext' }: CodeBlockProps) => {
   const [theme] = useLocalStorage<Theme>('theme', themes.cooldark);
   const [code, setCode] = useState(String(children));
+
   useEffect(() => {
     const getTheme = () => {
       switch (theme.className) {

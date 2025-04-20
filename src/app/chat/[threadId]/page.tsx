@@ -59,7 +59,7 @@ export default function Page(): React.JSX.Element {
       scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
     };
     scrollToBottom();
-    sleep(500).then(() => {
+    sleep(100).then(() => {
       scrollToBottom();
     });
   }, []);
