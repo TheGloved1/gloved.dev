@@ -37,7 +37,6 @@ const CodeBlock = ({ children = '', language = 'plaintext' }: CodeBlockProps) =>
       );
       if (highlighted.error) {
         console.error('Failed to highlight code', highlighted.error);
-        setCode(String(children));
         return;
       }
       setCode(highlighted.data);
