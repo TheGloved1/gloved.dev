@@ -405,8 +405,12 @@ export async function processStream(
 }
 
 let chatAbortController = new AbortController();
-export function stopGeneration() {
-  chatAbortController.abort('Generation cancelled!');
+/**
+ * Stop any existing streams and cancel any ongoing chat generation.
+ * @param reason An optional reason to pass to the AbortController.
+ */
+export function stopGeneration(reason?: string) {
+  chatAbortController.abort(reason || 'Cancelling any existing streams...');
   chatAbortController = new AbortController();
 }
 
@@ -433,6 +437,9 @@ export async function createMessage(
   attachments?: string[],
   userId?: string,
 ) {
+  // Stop any existing streams
+  stopGeneration('Creating message, canceling any existing streams');
+
   setInput('');
   await dxdb.addMessage({
     threadId,
@@ -510,6 +517,9 @@ export async function updateMessage(
   systemPrompt?: string,
   userId?: string,
 ) {
+  // Stop any existing streams
+  stopGeneration('Updating message, canceling any existing streams');
+
   callback();
   const messageContent: string = newContent;
   await dxdb.messages.update(message.id, { content: messageContent, updated_at: createDate(), model: model });
@@ -564,7 +574,6 @@ export async function updateMessage(
  * conversation to the chat API. The title is then updated in the database.
  *
  * @param threadId The thread ID to generate a title for
- * @param userId The user ID to sync data with
  * @returns A promise that resolves when the title is updated
  */
 export async function generateTitle(threadId: string) {

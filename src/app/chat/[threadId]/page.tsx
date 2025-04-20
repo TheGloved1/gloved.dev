@@ -15,7 +15,6 @@ export default function Page(): React.JSX.Element {
   const router = useRouter();
   const { threadId } = useParams<{ threadId: string }>();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const lastScrollTop = useRef<number>(100000);
   const [autoScroll, setAutoScroll] = useState<boolean>(true);
   const distanceFromBottom = useRef<number>(0);
   const isMobile = useIsMobile();

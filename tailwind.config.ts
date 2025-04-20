@@ -19,13 +19,23 @@ export default {
     },
     extend: {
       textColor: {
-        'model-primary': 'hsl(var(--color-heading))',
+        'model-primary': 'var(--color-heading)',
       },
       backgroundColor: {
-        'model-primary': 'hsl(var(--color-heading))',
+        'model-primary': 'var(--color-heading)',
+        'chat-accent': 'var(--chat-accent)',
+        'chat-input-background': 'var(--chat-input-background)',
       },
       borderColor: {
-        'model-primary': 'hsl(var(--color-heading))',
+        'model-primary': 'var(--color-heading)',
+        'chat-accent': 'var(--chat-accent)',
+        'chat-input-background': 'var(--chat-input-background)',
+      },
+      outlineColor: {
+        'model-primary': 'var(--color-heading)',
+        'chat-background': 'var(--chat-background)',
+        'chat-accent': 'var(--chat-accent)',
+        'chat-input-background': 'var(--chat-input-background)',
       },
       colors: {
         border: 'hsl(var(--border))',

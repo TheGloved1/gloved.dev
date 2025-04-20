@@ -46,13 +46,14 @@ const CodeBlock = ({ children = '', language = 'plaintext' }: CodeBlockProps) =>
   }, [children, language, theme]);
 
   return (
-    <div className='relative flex w-full flex-col py-1'>
-      <div className='flex w-full items-center justify-between rounded-t-md bg-secondary px-4 py-2 text-sm text-foreground'>
+    <div className='relative mt-2 flex w-full flex-col pt-9'>
+      <div className='absolute inset-x-0 top-0 flex h-9 items-center rounded-t bg-secondary px-4 py-2 text-sm text-secondary-foreground'>
         <span className='font-mono'>{language}</span>
-        <CopyButton btnClassName={'transition-colors hover:text-white z-50'} className='!size-4' text={String(children)} />
       </div>
+      <CopyButton text={String(children)} />
+      <div className='-mb-1.5'></div>
       <div
-        className='not-prose relative rounded-b-md bg-accent text-sm text-secondary-foreground [&_pre]:overflow-auto [&_pre]:rounded-b-md [&_pre]:px-[1em] [&_pre]:py-[1em] [&_pre]:font-mono'
+        className='shiki not-prose bg-chat-accent relative text-sm font-[450] text-secondary-foreground [&_pre]:overflow-auto [&_pre]:!bg-transparent [&_pre]:px-[1em] [&_pre]:py-[1em]'
         dangerouslySetInnerHTML={{ __html: code }}
       ></div>
     </div>
