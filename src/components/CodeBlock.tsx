@@ -28,13 +28,13 @@ const CodeBlock = ({ children = '', language = 'plaintext' }: CodeBlockProps) =>
           return 'catppuccin-latte';
       }
     };
-    const syntaxHighlighted = async () =>
-      await codeToHtml(String(children), {
-        lang: language,
-        theme: getTheme(),
-      });
     const promise = async () => {
-      const highlighted = await tryCatch(syntaxHighlighted());
+      const highlighted = await tryCatch(
+        codeToHtml(String(children), {
+          lang: language,
+          theme: getTheme(),
+        }),
+      );
       if (highlighted.error) {
         console.error('Failed to highlight code', highlighted.error);
         setCode(String(children));
