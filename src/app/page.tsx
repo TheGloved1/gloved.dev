@@ -2,6 +2,7 @@
 import AdminComponent from '@/components/AdminComponent';
 import Counter from '@/components/Counter';
 import { PageVisits } from '@/components/PageVisits';
+import ParticleText from '@/components/ParticleText';
 import { Button } from '@/components/ui/button';
 import Constants from '@/lib/constants';
 import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs';
@@ -24,9 +25,14 @@ export default function Page(): React.JSX.Element {
         </SignedIn>
       </div>
       <div className='container flex flex-col items-center justify-center gap-8 px-1 py-16 md:px-4'>
-        <h1 className='text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]'>
+        {/* Old Heading */}
+        {/* <h1 className='text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]'>
           gloved<span className='text-[hsl(280,100%,40%)]'>.</span>dev
-        </h1>
+        </h1> */}
+
+        {/* New Heading */}
+        <ParticleText text='gloved.dev' size={100} hoverColor='#8B00FF' particleCount={4000} />
+
         <div className='flex max-w-[1000px] flex-shrink-0 flex-grow flex-wrap justify-center gap-4'>
           <div className='flex-shrink-0 flex-grow basis-[300px]'>
             <Link
