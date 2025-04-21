@@ -64,8 +64,6 @@ class Database extends Dexie {
       const populate = await tryCatch(populateOnboardingThreads(this));
       if (populate.error) {
         console.log('[DEXIE] Failed to populate onboarding threads');
-        this.close();
-        await tryCatch(this.open());
       }
     });
 
@@ -280,6 +278,7 @@ export const dxdb = new Database();
 async function checkDb() {
   if (typeof window === 'undefined') return;
   if (dxdb.hasFailed()) {
+    console.log('[DEXIE] Database failed, deleting all data...');
     return await dxdb.deleteAllData();
   }
 }

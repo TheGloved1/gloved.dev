@@ -53,7 +53,7 @@ export default function Page(): React.JSX.Element {
       setIsAtBottom(true);
     };
     scrollToBottom();
-    sleep(100).then(() => {
+    sleep(250).then(() => {
       scrollToBottom();
     });
   }, []);
@@ -89,7 +89,7 @@ export default function Page(): React.JSX.Element {
 
   return (
     <main className='relative flex w-full flex-1 flex-col'>
-      <ChatInput scrollButtonCallback={handleScrollButton} scrollCallback={scrollToBottom} isAtBottom={isAtBottom} />
+      <ChatInput scrollButtonCallback={handleScrollButton} scrollCallback={() => {}} isAtBottom={isAtBottom} />
       <div className='relative flex-1 overflow-clip'>
         <div
           onScroll={handleScroll}
@@ -97,9 +97,9 @@ export default function Page(): React.JSX.Element {
           className='scrollbar-w-2 h-[100dvh] overflow-y-auto overflow-x-clip pb-32 scrollbar-thin scrollbar-track-transparent'
         >
           <div className='mx-auto flex w-full max-w-3xl translate-x-1 flex-col space-y-12 p-4 pb-16 text-sm'>
-            {messages.map((message) => {
-              return <ChatMessage scrollEditCallback={scrollToBottom} message={message} key={message.id} />;
-            })}
+            {messages.map((message) => (
+              <ChatMessage scrollEditCallback={() => {}} message={message} key={message.id} />
+            ))}
           </div>
         </div>
       </div>

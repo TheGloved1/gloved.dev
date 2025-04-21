@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '*',
       disallow: '',
     },
-    sitemap: 'https://acme.com/sitemap.xml',
+    sitemap: 'https://gloved.dev/sitemap.xml',
   };
 }

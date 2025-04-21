@@ -37,15 +37,15 @@ function ChatMessage({ message, scrollEditCallback }: { message: Message; scroll
   const [systemPrompt] = useLocalStorage<string | undefined>('systemPrompt', undefined);
   const [model] = useLocalStorage<string>('model', defaultModel);
   const [speak, stopSpeech, isSpeaking] = useTextToSpeech();
-  const [syncEnabled, setSyncEnabled] = useLocalStorage<boolean>('syncEnabled', false);
+  const [syncEnabled] = useLocalStorage<boolean>('syncEnabled', false);
   const auth = useAuth();
   const syncUserIdIfEnabled = syncEnabled && auth.userId ? auth.userId : undefined;
 
   const handleEditMessage = useCallback(
     async (m: Message) => {
-      const { data, error } = await tryCatch(dxdb.getThreadMessages(threadId)); // Get all messages in the thread
-      if (error) return;
-      const allMessages = data;
+      const getThreadMessages = await tryCatch(dxdb.getThreadMessages(threadId)); // Get all messages in the thread
+      if (getThreadMessages.error) return;
+      const allMessages = getThreadMessages.data;
       const index = allMessages.findIndex((msg) => msg.id === m.id); // Find the index of the deleted message
 
       // Delete all subsequent messages

@@ -85,11 +85,6 @@ export async function POST(req: NextRequest) {
         presencePenalty: presPenalty,
         abortSignal: req.signal,
         experimental_transform: smoothStream({ delayInMs: null }),
-        onFinish: (step) => {
-          console.log('Prompt tokens:', step.usage.promptTokens);
-          console.log('Completion tokens:', step.usage.completionTokens);
-          console.log('Total tokens:', step.usage.totalTokens);
-        },
       });
       result.mergeIntoDataStream(dataStream, { sendReasoning: true, sendSources: true, sendUsage: true });
     },
