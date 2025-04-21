@@ -4,7 +4,9 @@ import { globby } from 'globby';
 
 const addPage = (page) => {
   // remove unneeded segments of the page file path - for example: 'src/app/home/page.tsx' becomes '/home'
-  const pathname = page.replace('src/app', '').replace('/page.tsx', '');
+  let pathname = page.replace('src/app', '').replace('/page.tsx', '');
+  // remove folder names that have parenthesis, so its just the nested routes
+  pathname = pathname.replace(/\(.*?\)\//g, '');
   // ignore dynamic nextjs routes and other special dynamic stuff
   const ignore = [/\/\[\[.*\]\]/, /\[[a-zA-Z_][a-zA-Z_0-9]*\]/];
 
