@@ -4,12 +4,14 @@ import Counter from '@/components/Counter';
 import { PageVisits } from '@/components/PageVisits';
 import ParticleText from '@/components/ParticleText';
 import { Button } from '@/components/ui/button';
+import { useIsMobile } from '@/hooks/use-mobile';
 import Constants from '@/lib/constants';
 import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs';
 import Link from 'next/link';
 import React from 'react';
 
 export default function Page(): React.JSX.Element {
+  const isMobile = useIsMobile();
   return (
     <>
       <div className='absolute left-0 top-0 flex items-center gap-2 rounded-br-lg border-b-2 border-r-2 border-border p-2'>
@@ -26,12 +28,14 @@ export default function Page(): React.JSX.Element {
       </div>
       <div className='container flex flex-col items-center justify-center gap-8 px-1 py-16 md:px-4'>
         {/* Old Heading */}
-        {/* <h1 className='text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]'>
-          gloved<span className='text-[hsl(280,100%,40%)]'>.</span>dev
-        </h1> */}
+        {isMobile && (
+          <h1 className='text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]'>
+            gloved<span className='text-[hsl(280,100%,40%)]'>.</span>dev
+          </h1>
+        )}
 
         {/* New Heading */}
-        <ParticleText text='gloved.dev' size={100} hoverColor='#8B00FF' particleCount={4000} />
+        {!isMobile && <ParticleText text='gloved.dev' size={100} hoverColor='#8B00FF' particleCount={4000} />}
 
         <div className='flex max-w-[1000px] flex-shrink-0 flex-grow flex-wrap justify-center gap-4'>
           <div className='flex-shrink-0 flex-grow basis-[300px]'>
