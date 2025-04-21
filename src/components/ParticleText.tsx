@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 interface ParticleTextProps {
   text: string;
@@ -17,6 +18,8 @@ interface ParticleTextProps {
   edgeComplexity?: number;
   animationSpeed?: number;
   animationIntensity?: number;
+  blurRadius?: number;
+  performanceMode?: boolean;
   className?: string;
 }
 
@@ -31,17 +34,133 @@ export default function ParticleText({
   hoverColor = '#00DCFF',
   backgroundColor = 'transparent',
   backgroundOpacity = 1,
-  hoverRadius = 240,
+  hoverRadius = 40,
   edgeComplexity = 5,
   animationSpeed = 0.003,
   animationIntensity = 0.3,
+  blurRadius = 240,
+  performanceMode = false,
   className = '',
 }: ParticleTextProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const mousePositionRef = useRef({ x: 0, y: 0 });
+  const mousePositionRef = useRef({ x: -1000, y: -1000 });
   const isTouchingRef = useRef(false);
   const animationTimeRef = useRef(0);
-  const [isMobile, setIsMobile] = useState(false);
+  const lastFrameTimeRef = useRef(0);
+  const fpsLimitRef = useRef(60); // Target FPS
+  const isMobile = useIsMobile();
+
+  // Pre-parse colors to avoid doing it every frame
+  const parsedColors = useMemo(() => {
+    return {
+      base: parseColor(baseColor),
+      hover: parseColor(hoverColor),
+      background: backgroundColor !== 'transparent' ? parseColor(backgroundColor) : null,
+    };
+  }, [baseColor, hoverColor, backgroundColor]);
+
+  // Parse a color string into RGB components
+  function parseColor(color: string): { r: number; g: number; b: number } {
+    // For hex colors
+    if (color.startsWith('#')) {
+      return {
+        r: Number.parseInt(color.slice(1, 3), 16),
+        g: Number.parseInt(color.slice(3, 5), 16),
+        b: Number.parseInt(color.slice(5, 7), 16),
+      };
+    }
+
+    // For rgb/rgba colors
+    const rgbMatch = color.match(/\d+/g);
+    if (color.startsWith('rgb') && rgbMatch && rgbMatch.length >= 3) {
+      return {
+        r: Number(rgbMatch[0]),
+        g: Number(rgbMatch[1]),
+        b: Number(rgbMatch[2]),
+      };
+    }
+
+    // For named colors, use a canvas to parse
+    const canvas = document.createElement('canvas');
+    canvas.width = 1;
+    canvas.height = 1;
+    const ctx = canvas.getContext('2d');
+    if (ctx) {
+      ctx.fillStyle = color;
+      ctx.fillRect(0, 0, 1, 1);
+      const data = ctx.getImageData(0, 0, 1, 1).data;
+      return {
+        r: data[0],
+        g: data[1],
+        b: data[2],
+      };
+    }
+
+    // Default to white if parsing fails
+    return { r: 255, g: 255, b: 255 };
+  }
+
+  // Blend two colors efficiently
+  function blendColors(
+    color1: { r: number; g: number; b: number },
+    color2: { r: number; g: number; b: number },
+    ratio: number,
+  ): string {
+    const r = Math.round(color1.r + (color2.r - color1.r) * ratio);
+    const g = Math.round(color1.g + (color2.g - color1.g) * ratio);
+    const b = Math.round(color1.b + (color2.b - color1.b) * ratio);
+    return `rgb(${r},${g},${b})`;
+  }
+
+  // Cache for dynamic radius calculations
+  const radiusCache = useRef<Map<string, number>>(new Map());
+
+  // Optimized dynamic radius calculation with caching
+  const calculateDynamicRadius = useCallback(
+    (angle: number, time: number): number => {
+      // Round values to reduce cache size while maintaining visual quality
+      const roundedAngle = Math.round(angle * 100) / 100;
+      const roundedTime = Math.round(time * 100) / 100;
+
+      const cacheKey = `${roundedAngle}-${roundedTime}-${edgeComplexity}-${animationIntensity}`;
+
+      if (radiusCache.current.has(cacheKey)) {
+        return radiusCache.current.get(cacheKey)!;
+      }
+
+      let radius = hoverRadius;
+
+      // Optimize sine wave calculations
+      if (edgeComplexity > 0 && animationIntensity > 0) {
+        // Limit complexity for performance mode
+        const actualComplexity = performanceMode ? Math.min(3, edgeComplexity) : edgeComplexity;
+
+        for (let i = 1; i <= actualComplexity; i++) {
+          const frequency = i * 2;
+          const amplitude = (hoverRadius * animationIntensity) / i;
+          radius += Math.sin(roundedAngle * frequency + roundedTime * i) * amplitude;
+        }
+      }
+
+      // Limit cache size to prevent memory issues
+      if (radiusCache.current.size > 1000) {
+        // Clear half the cache when it gets too large
+        const keys = Array.from(radiusCache.current.keys());
+        for (let i = 0; i < 500; i++) {
+          radiusCache.current.delete(keys[i]);
+        }
+      }
+
+      radiusCache.current.set(cacheKey, radius);
+      return radius;
+    },
+    [hoverRadius, edgeComplexity, animationIntensity, performanceMode],
+  );
+
+  // Easing function for smoother transitions
+  function easeOutCubic(x: number): number {
+    return 1 - Math.pow(1 - x, 3);
+  }
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -50,59 +169,63 @@ export default function ParticleText({
     const ctx = canvas.getContext('2d', { alpha: true });
     if (!ctx) return;
 
+    // Set appropriate FPS limit based on device performance
+    if (performanceMode || isMobile) {
+      fpsLimitRef.current = 30;
+    } else {
+      fpsLimitRef.current = 60;
+    }
+
     const updateCanvasSize = () => {
-      // Ensure the canvas has a parent with dimensions before setting width/height
       if (canvas.clientWidth > 0 && canvas.clientHeight > 0) {
-        canvas.width = canvas.clientWidth;
-        canvas.height = canvas.clientHeight;
-        setIsMobile(window.innerWidth < 768);
+        // Use device pixel ratio for high-DPI displays, but limit it for performance
+        const dpr = performanceMode ? 1 : Math.min(window.devicePixelRatio || 1, 2);
+
+        canvas.width = canvas.clientWidth * dpr;
+        canvas.height = canvas.clientHeight * dpr;
+
+        // Scale the context to account for the device pixel ratio
+        ctx.scale(dpr, dpr);
       } else {
-        // Set minimum dimensions to prevent errors
         canvas.width = 1;
         canvas.height = 1;
       }
     };
 
-    let particles: {
+    // Particle type with optimized properties
+    type Particle = {
       x: number;
       y: number;
       baseX: number;
       baseY: number;
       size: number;
-      color: string;
-      scatteredColor: string;
       life: number;
-      angle?: number;
-    }[] = [];
+      angle: number;
+      // Remove color strings and use indices to parsedColors instead
+    };
 
+    let particles: Particle[] = [];
     let textImageData: ImageData | null = null;
+    let activeParticleCount = 0;
 
     function createTextImage() {
       if (!ctx || !canvas) return 0;
 
-      // Check for valid canvas dimensions
       if (canvas.width <= 0 || canvas.height <= 0) {
         console.warn('Invalid canvas dimensions, skipping text rendering');
         return 0;
       }
 
-      // Clear the canvas to transparency
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Calculate font size based on provided size and mobile status
       const fontSize = isMobile ? size * 0.6 : size;
-
-      // Set font properties
       ctx.font = `${fontWeight} ${fontSize}px ${fontFamily}`;
       ctx.fillStyle = baseColor;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-
-      // Draw text in the center of the canvas
       ctx.fillText(text, canvas.width / 2, canvas.height / 2);
 
       try {
-        // Wrap in try/catch to handle potential errors
         textImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         ctx.clearRect(0, 0, canvas.width, canvas.height);
       } catch (error) {
@@ -113,33 +236,38 @@ export default function ParticleText({
       return fontSize;
     }
 
-    function createParticle() {
+    function createParticle(): Particle | null {
       if (!ctx || !canvas || !textImageData) return null;
 
-      // Verify dimensions again
       if (textImageData.width <= 0 || textImageData.height <= 0) {
         return null;
       }
 
       const data = textImageData.data;
+      const canvasWidth = canvas.width / (window.devicePixelRatio || 1);
+      const canvasHeight = canvas.height / (window.devicePixelRatio || 1);
 
-      // Try to find a pixel that's part of the text
-      for (let attempt = 0; attempt < 100; attempt++) {
-        const x = Math.floor(Math.random() * canvas.width);
-        const y = Math.floor(Math.random() * canvas.height);
+      // Optimize particle creation with fewer attempts
+      const maxAttempts = performanceMode ? 50 : 100;
 
-        // Ensure coordinates are within bounds
-        if (x < 0 || x >= canvas.width || y < 0 || y >= canvas.height) {
+      for (let attempt = 0; attempt < maxAttempts; attempt++) {
+        const x = Math.floor(Math.random() * canvasWidth);
+        const y = Math.floor(Math.random() * canvasHeight);
+
+        if (x < 0 || x >= canvasWidth || y < 0 || y >= canvasHeight) {
           continue;
         }
 
-        // Calculate index with bounds checking
-        const index = (y * canvas.width + x) * 4;
+        // Scale coordinates for high-DPI
+        const scaledX = Math.floor(x * (window.devicePixelRatio || 1));
+        const scaledY = Math.floor(y * (window.devicePixelRatio || 1));
+
+        const index = (scaledY * textImageData.width + scaledX) * 4;
+
         if (index < 0 || index >= data.length - 3) {
           continue;
         }
 
-        // Check if this pixel has alpha > 128 (part of the text)
         if (data[index + 3] > 128) {
           return {
             x: x,
@@ -147,10 +275,8 @@ export default function ParticleText({
             baseX: x,
             baseY: y,
             size: Math.random() * particleSize + 0.5,
-            color: baseColor,
-            scatteredColor: hoverColor,
             life: Math.random() * 100 + 50,
-            angle: Math.random() * Math.PI * 2, // Random angle for each particle
+            angle: Math.random() * Math.PI * 2,
           };
         }
       }
@@ -159,124 +285,145 @@ export default function ParticleText({
     }
 
     function createInitialParticles() {
-      // Scale particle count based on canvas size
       if (!canvas) return;
-      const scaledParticleCount = Math.floor(particleCount * Math.sqrt((canvas.width * canvas.height) / (1920 * 1080)));
-      for (let i = 0; i < scaledParticleCount; i++) {
-        const particle = createParticle();
-        if (particle) particles.push(particle);
+
+      // Scale particle count based on performance mode and device
+      let scaleFactor = Math.sqrt((canvas.clientWidth * canvas.clientHeight) / (1920 * 1080));
+
+      if (performanceMode) {
+        scaleFactor *= 0.5; // Reduce particles by 50% in performance mode
+      } else if (isMobile) {
+        scaleFactor *= 0.7; // Reduce particles by 30% on mobile
       }
+
+      const scaledParticleCount = Math.floor(particleCount * scaleFactor);
+
+      // Create particles in batches to avoid blocking the main thread
+      const batchSize = 500;
+      let created = 0;
+
+      function createBatch() {
+        const batchEnd = Math.min(created + batchSize, scaledParticleCount);
+
+        for (let i = created; i < batchEnd; i++) {
+          const particle = createParticle();
+          if (particle) {
+            particles.push(particle);
+            activeParticleCount++;
+          }
+        }
+
+        created = batchEnd;
+
+        if (created < scaledParticleCount) {
+          // Schedule next batch
+          setTimeout(createBatch, 0);
+        }
+      }
+
+      createBatch();
     }
 
     let animationFrameId: number;
 
     function animate(timestamp: number) {
-      if (!ctx || !canvas) return;
+      // Frame rate limiting
+      const elapsed = timestamp - lastFrameTimeRef.current;
+      const fpsInterval = 1000 / fpsLimitRef.current;
 
-      // Update animation time
+      if (elapsed < fpsInterval) {
+        animationFrameId = requestAnimationFrame(animate);
+        return;
+      }
+
+      lastFrameTimeRef.current = timestamp - (elapsed % fpsInterval);
       animationTimeRef.current = timestamp * animationSpeed;
 
-      // Clear the canvas to transparency
+      if (!ctx || !canvas) return;
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Apply background if not transparent
-      if (backgroundColor !== 'transparent') {
-        // Parse the background color to apply opacity
-        if (backgroundColor.startsWith('#')) {
-          // Handle hex color
-          const r = Number.parseInt(backgroundColor.slice(1, 3), 16);
-          const g = Number.parseInt(backgroundColor.slice(3, 5), 16);
-          const b = Number.parseInt(backgroundColor.slice(5, 7), 16);
-          ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${backgroundOpacity})`;
-        } else if (backgroundColor.startsWith('rgb')) {
-          // Handle rgb/rgba color
-          const rgbMatch = backgroundColor.match(/\d+/g);
-          if (rgbMatch && rgbMatch.length >= 3) {
-            const [r, g, b] = rgbMatch.map(Number);
-            ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${backgroundOpacity})`;
-          } else {
-            ctx.fillStyle = backgroundColor;
-          }
-        } else {
-          // Handle named colors
-          ctx.fillStyle = backgroundColor;
-          if (backgroundOpacity < 1) {
-            // For named colors with opacity, we need to create a temporary element
-            // to get the RGB values
-            const tempEl = document.createElement('div');
-            tempEl.style.color = backgroundColor;
-            document.body.appendChild(tempEl);
-            const computedColor = getComputedStyle(tempEl).color;
-            document.body.removeChild(tempEl);
-
-            const rgbMatch = computedColor.match(/\d+/g);
-            if (rgbMatch && rgbMatch.length >= 3) {
-              const [r, g, b] = rgbMatch.map(Number);
-              ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${backgroundOpacity})`;
-            }
-          }
-        }
-
+      if (backgroundColor !== 'transparent' && parsedColors.background) {
+        ctx.fillStyle = `rgba(${parsedColors.background.r}, ${parsedColors.background.g}, ${parsedColors.background.b}, ${backgroundOpacity})`;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
       }
 
       const { x: mouseX, y: mouseY } = mousePositionRef.current;
+      const isHovering = mouseX > -999 && mouseY > -999 && (isTouchingRef.current || !('ontouchstart' in window));
 
-      // Debug: Visualize the dynamic hover area (uncomment for debugging)
-      // if (mouseX > 0 && mouseY > 0) {
-      //   ctx.beginPath();
-      //   for (let i = 0; i < 360; i += 5) {
-      //     const angle = (i * Math.PI) / 180;
-      //     // Calculate dynamic radius with sine waves
-      //     const dynamicRadius = calculateDynamicRadius(angle, animationTimeRef.current);
-      //     const x = mouseX + Math.cos(angle) * dynamicRadius;
-      //     const y = mouseY + Math.sin(angle) * dynamicRadius;
-      //     if (i === 0) {
-      //       ctx.moveTo(x, y);
-      //     } else {
-      //       ctx.lineTo(x, y);
-      //     }
-      //   }
-      //   ctx.closePath();
-      //   ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
-      //   ctx.stroke();
-      // }
+      // Skip expensive calculations if not hovering
+      const maxEffectDistance = hoverRadius + blurRadius + hoverRadius * animationIntensity;
 
-      for (let i = 0; i < particles.length; i++) {
+      // Process particles in batches for better performance
+      const batchSize = performanceMode ? 100 : 200;
+
+      for (let i = 0; i < activeParticleCount; i++) {
         const p = particles[i];
+
+        // Skip calculation if far from mouse and not in transition
         const dx = mouseX - p.x;
         const dy = mouseY - p.y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-        const angle = Math.atan2(dy, dx);
+        const distanceSquared = dx * dx + dy * dy;
 
-        // Calculate dynamic radius based on angle and time
-        const dynamicRadius = calculateDynamicRadius(angle, animationTimeRef.current);
+        // Quick check using squared distance (faster than sqrt)
+        if (isHovering && distanceSquared < maxEffectDistance * maxEffectDistance) {
+          const distance = Math.sqrt(distanceSquared);
+          const angle = Math.atan2(dy, dx);
 
-        if (distance < dynamicRadius && (isTouchingRef.current || !('ontouchstart' in window))) {
-          // Calculate force based on dynamic radius
-          const force = (dynamicRadius - distance) / dynamicRadius;
+          // Calculate dynamic radius based on angle and time
+          const dynamicRadius = calculateDynamicRadius(angle, animationTimeRef.current);
 
-          // Add slight variation to the angle for more organic movement
-          const angleVariation = Math.sin(p.angle! + animationTimeRef.current) * 0.2;
-          const moveAngle = angle + angleVariation;
+          // Calculate the blur zone
+          const blurStart = dynamicRadius;
+          const blurEnd = dynamicRadius + blurRadius;
 
-          // Calculate movement with organic variation
-          const moveX = Math.cos(moveAngle) * force * 60;
-          const moveY = Math.sin(moveAngle) * force * 60;
+          // Determine if the particle is in the blur zone
+          let blurRatio = 0;
 
-          // Apply a subtle oscillation to the particle position
-          const oscillation = Math.sin(animationTimeRef.current * 10 + p.angle!) * 2;
+          if (distance < blurStart) {
+            // Inside the main hover area - full effect
+            blurRatio = 1;
+          } else if (distance < blurEnd) {
+            // Inside the blur zone - partial effect based on distance
+            blurRatio = 1 - (distance - blurStart) / (blurEnd - blurStart);
 
-          p.x = p.baseX - moveX + oscillation * Math.cos(p.angle!);
-          p.y = p.baseY - moveY + oscillation * Math.sin(p.angle!);
+            // Apply easing function for smoother transition
+            blurRatio = easeOutCubic(blurRatio);
+          }
 
-          ctx.fillStyle = p.scatteredColor;
+          if (blurRatio > 0) {
+            // Calculate force based on blur ratio
+            const force = blurRatio;
+
+            // Add slight variation to the angle for more organic movement
+            const angleVariation = Math.sin(p.angle + animationTimeRef.current) * 0.2;
+            const moveAngle = angle + angleVariation;
+
+            // Calculate movement with organic variation
+            const moveX = Math.cos(moveAngle) * force * 60;
+            const moveY = Math.sin(moveAngle) * force * 60;
+
+            // Apply a subtle oscillation to the particle position
+            const oscillation = Math.sin(animationTimeRef.current * 10 + p.angle) * 2;
+
+            p.x = p.baseX - moveX * blurRatio + oscillation * Math.cos(p.angle) * blurRatio;
+            p.y = p.baseY - moveY * blurRatio + oscillation * Math.sin(p.angle) * blurRatio;
+
+            // Blend colors based on blur ratio
+            ctx.fillStyle = blendColors(parsedColors.base, parsedColors.hover, blurRatio);
+          } else {
+            // Add subtle movement even when not hovering
+            const returnSpeed = 0.1;
+            p.x += (p.baseX - p.x) * returnSpeed;
+            p.y += (p.baseY - p.y) * returnSpeed;
+            ctx.fillStyle = baseColor;
+          }
         } else {
-          // Add subtle movement even when not hovering
+          // Outside effect range - return to base position
           const returnSpeed = 0.1;
           p.x += (p.baseX - p.x) * returnSpeed;
           p.y += (p.baseY - p.y) * returnSpeed;
-          ctx.fillStyle = p.color;
+          ctx.fillStyle = baseColor;
         }
 
         ctx.fillRect(p.x, p.y, p.size, p.size);
@@ -287,34 +434,34 @@ export default function ParticleText({
           if (newParticle) {
             particles[i] = newParticle;
           } else {
+            // Remove particle if can't create a new one
             particles.splice(i, 1);
             i--;
+            activeParticleCount--;
           }
         }
       }
 
-      // Maintain particle count
-      const scaledParticleCount = Math.floor(particleCount * Math.sqrt((canvas.width * canvas.height) / (1920 * 1080)));
-      while (particles.length < scaledParticleCount) {
-        const newParticle = createParticle();
-        if (newParticle) particles.push(newParticle);
+      // Maintain particle count, but do it less frequently
+      if (timestamp % 60 < 16) {
+        // Only check every ~4 frames
+        const scaleFactor = Math.sqrt((canvas.clientWidth * canvas.clientHeight) / (1920 * 1080));
+        const targetCount = Math.floor(particleCount * scaleFactor * (performanceMode ? 0.5 : 1) * (isMobile ? 0.7 : 1));
+
+        // Add particles if needed, but limit how many we add per frame
+        if (activeParticleCount < targetCount) {
+          const toAdd = Math.min(5, targetCount - activeParticleCount);
+          for (let i = 0; i < toAdd; i++) {
+            const newParticle = createParticle();
+            if (newParticle) {
+              particles.push(newParticle);
+              activeParticleCount++;
+            }
+          }
+        }
       }
 
       animationFrameId = requestAnimationFrame(animate);
-    }
-
-    // Function to calculate dynamic radius with sine waves for uneven edge
-    function calculateDynamicRadius(angle: number, time: number): number {
-      let radius = hoverRadius;
-
-      // Add multiple sine waves with different frequencies and amplitudes
-      for (let i = 1; i <= edgeComplexity; i++) {
-        const frequency = i * 2;
-        const amplitude = (hoverRadius * animationIntensity) / i;
-        radius += Math.sin(angle * frequency + time * i) * amplitude;
-      }
-
-      return radius;
     }
 
     // Delay initialization slightly to ensure the canvas has proper dimensions
@@ -326,32 +473,46 @@ export default function ParticleText({
     }, 50);
 
     const handleResize = () => {
+      // Clear the radius cache on resize
+      radiusCache.current.clear();
+
       updateCanvasSize();
       createTextImage();
       particles = [];
+      activeParticleCount = 0;
       createInitialParticles();
     };
 
     const handleMove = (clientX: number, clientY: number) => {
       if (!canvas) return;
 
-      // Get the canvas's bounding rectangle relative to the viewport
       const rect = canvas.getBoundingClientRect();
-
-      // Calculate the mouse position relative to the canvas
       const x = clientX - rect.left;
       const y = clientY - rect.top;
 
       mousePositionRef.current = { x, y };
     };
 
+    // Throttle mouse move events for better performance
+    let lastMoveTime = 0;
+    const moveThreshold = performanceMode ? 30 : 16; // ms between move events (60fps or 30fps)
+
     const handleMouseMove = (e: MouseEvent) => {
+      const now = performance.now();
+      if (now - lastMoveTime < moveThreshold) return;
+
+      lastMoveTime = now;
       handleMove(e.clientX, e.clientY);
     };
 
     const handleTouchMove = (e: TouchEvent) => {
       if (e.touches.length > 0) {
         e.preventDefault();
+
+        const now = performance.now();
+        if (now - lastMoveTime < moveThreshold) return;
+
+        lastMoveTime = now;
         handleMove(e.touches[0].clientX, e.touches[0].clientY);
       }
     };
@@ -367,29 +528,30 @@ export default function ParticleText({
 
     const handleMouseLeave = () => {
       if (!('ontouchstart' in window)) {
-        // Set mousePosition to a value outside the canvas instead of 0,0
-        // This prevents particles from gathering at the top-left corner
         mousePositionRef.current = { x: -1000, y: -1000 };
       }
     };
 
+    // Use a more efficient resize observer
     const resizeObserver = new ResizeObserver(() => {
-      updateCanvasSize();
-      createTextImage();
-      particles = [];
-      createInitialParticles();
+      // Debounce resize events
+      if (resizeTimeout) clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(handleResize, 100);
     });
+
+    let resizeTimeout: ReturnType<typeof setTimeout> | null = null;
 
     resizeObserver.observe(canvas);
 
     window.addEventListener('resize', handleResize);
-    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
     window.addEventListener('touchmove', handleTouchMove, { passive: false });
     window.addEventListener('mouseleave', handleMouseLeave);
     window.addEventListener('touchstart', handleTouchStart);
     window.addEventListener('touchend', handleTouchEnd);
 
     return () => {
+      if (resizeTimeout) clearTimeout(resizeTimeout);
       clearTimeout(initTimeout);
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('mousemove', handleMouseMove);
@@ -399,6 +561,10 @@ export default function ParticleText({
       window.removeEventListener('touchend', handleTouchEnd);
       resizeObserver.disconnect();
       cancelAnimationFrame(animationFrameId);
+
+      // Clear caches
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      radiusCache.current.clear();
     };
   }, [
     text,
@@ -415,7 +581,11 @@ export default function ParticleText({
     edgeComplexity,
     animationSpeed,
     animationIntensity,
+    blurRadius,
+    performanceMode,
     isMobile,
+    parsedColors,
+    calculateDynamicRadius,
   ]);
 
   return (

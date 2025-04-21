@@ -35,7 +35,9 @@ export default function Page(): React.JSX.Element {
         )}
 
         {/* New Heading */}
-        {!isMobile && <ParticleText text='gloved.dev' size={100} hoverColor='#8B00FF' particleCount={8000} />}
+        {!isMobile && (
+          <ParticleText text='gloved.dev' size={100} hoverColor='#4B0082' particleCount={8000} edgeComplexity={5} />
+        )}
 
         <div className='flex max-w-[1000px] flex-shrink-0 flex-grow flex-wrap justify-center gap-4'>
           <div className='flex-shrink-0 flex-grow basis-[300px]'>
