@@ -49,9 +49,11 @@ function ChatMessage({ message }: { message: Message }) {
       const index = allMessages.findIndex((msg) => msg.id === m.id); // Find the index of the deleted message
 
       // Delete all subsequent messages
-      for (let i = index + 1; i < allMessages.length; i++) {
-        await dxdb.removeMessage(allMessages[i].id);
-      }
+      await dxdb.transaction('rw', [dxdb.messages, dxdb.threads], async () => {
+        for (let i = index + 1; i < allMessages.length; i++) {
+          dxdb.removeMessage(allMessages[i].id);
+        }
+      });
     },
     [threadId],
   );
