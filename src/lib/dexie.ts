@@ -316,7 +316,6 @@ export async function checkSync(userId: string) {
 export async function processStream(
   response: ReadableStream<Uint8Array>,
   messageId?: string,
-  callback: () => void = () => {},
   userId?: string,
 ): Promise<string> {
   const reader = response.getReader();
@@ -342,7 +341,6 @@ export async function processStream(
 
       // Handle the different types of messages in the stream
       if (line.startsWith('0:')) {
-        callback();
         // This is a message chunk
         const json: string = JSON.parse(line.slice(2)); // Remove the prefix
         messageContent += json; // Append the new content
@@ -353,7 +351,6 @@ export async function processStream(
           });
         }
       } else if (line.startsWith('g:')) {
-        callback();
         // This is a reasoning chunk
         const json: string = JSON.parse(line.slice(2)); // Remove the prefix
         reasoning += json.replace(/<think>|<\/think>/g, '');
@@ -364,7 +361,6 @@ export async function processStream(
           });
         }
       } else if (line.startsWith('3:')) {
-        callback();
         // This is an error chunk
         const json: string = JSON.parse(line.slice(2)); // Remove the prefix
         if (messageId) {
@@ -386,7 +382,6 @@ export async function processStream(
           if (userId) {
           }
         }
-        callback();
         break; // Exit the loop since we are done processing
       }
     }
@@ -431,7 +426,6 @@ export async function createMessage(
   userContent: string,
   model: ModelID,
   setInput: (input: string) => void,
-  callback?: () => void,
   systemPrompt?: string,
   attachments?: string[],
   userId?: string,
@@ -458,8 +452,6 @@ export async function createMessage(
     model,
   });
 
-  callback?.();
-
   const chatFetchOptions: ChatFetchOptions = {
     model,
     system: systemPrompt,
@@ -485,7 +477,7 @@ export async function createMessage(
 
     // Call the helper function to process the stream
     await dxdb.messages.update(assistantMessageId, { status: 'streaming' });
-    await processStream(reader, assistantMessageId, callback);
+    await processStream(reader, assistantMessageId);
     await dxdb.messages.update(assistantMessageId, { status: 'done' });
   } catch (e) {
     console.log('Uncaught error', e);
@@ -512,14 +504,12 @@ export async function updateMessage(
   message: Message,
   newContent: string,
   model: string,
-  callback: () => void,
   systemPrompt?: string,
   userId?: string,
 ) {
   // Stop any existing streams
   stopGeneration('Updating message, canceling any existing streams');
 
-  callback();
   const messageContent: string = newContent;
   await dxdb.messages.update(message.id, { content: messageContent, updated_at: createDate(), model: model });
   generateTitle(message.threadId);
@@ -553,7 +543,7 @@ export async function updateMessage(
     const reader = data.body as ReadableStream<Uint8Array>;
     if (!reader) return;
 
-    await processStream(reader, assistantMessageId, callback);
+    await processStream(reader, assistantMessageId);
   } catch (e) {
     console.log('Uncaught error', e);
     toast.error('Uh Oh! Something went wrong.');

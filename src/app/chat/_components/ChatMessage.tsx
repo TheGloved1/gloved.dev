@@ -29,7 +29,7 @@ const renderImages = (attachments?: string[]) => {
   );
 };
 
-function ChatMessage({ message, scrollEditCallback }: { message: Message; scrollEditCallback: () => void }) {
+function ChatMessage({ message }: { message: Message }) {
   const [input, setInput] = useState<string | null>(null);
   const [isHovered, setIsHovered] = useState<boolean>(false);
   const [showReasoning, setShowReasoning] = useState<boolean>(false);
@@ -115,17 +115,9 @@ function ChatMessage({ message, scrollEditCallback }: { message: Message; scroll
                 title='Send'
                 onClick={async () => {
                   await handleEditMessage(message);
-                  await updateMessage(
-                    message,
-                    input,
-                    model,
-                    () => {
-                      scrollEditCallback();
-                      setInput(null);
-                    },
-                    systemPrompt,
-                    syncUserIdIfEnabled,
-                  );
+                  const oldInput = input;
+                  setInput(null);
+                  await updateMessage(message, oldInput, model, systemPrompt, syncUserIdIfEnabled);
                 }}
               >
                 <Send className='-mb-0.5 -ml-0.5 !size-5' />
@@ -174,16 +166,7 @@ function ChatMessage({ message, scrollEditCallback }: { message: Message; scroll
               title='Retry'
               onClick={async () => {
                 await handleEditMessage(message);
-                await updateMessage(
-                  message,
-                  message.content,
-                  model,
-                  () => {
-                    scrollEditCallback();
-                  },
-                  systemPrompt,
-                  syncUserIdIfEnabled,
-                );
+                await updateMessage(message, message.content, model, systemPrompt, syncUserIdIfEnabled);
               }}
             >
               <RefreshCcw className='-mb-0.5 -ml-0.5 !size-5' />
@@ -265,6 +248,6 @@ function ChatMessage({ message, scrollEditCallback }: { message: Message; scroll
 }
 
 export default memo(ChatMessage, (prevProps, nextProps) => {
-  if (!equal(prevProps, nextProps)) return false;
+  if (!equal(prevProps.message, nextProps.message)) return false;
   return true;
 });

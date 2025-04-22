@@ -89,7 +89,7 @@ export default function Page(): React.JSX.Element {
 
   return (
     <main className='relative flex w-full flex-1 flex-col'>
-      <ChatInput scrollButtonCallback={handleScrollButton} scrollCallback={() => {}} isAtBottom={isAtBottom} />
+      <ChatInput scrollButtonCallback={handleScrollButton} isAtBottom={isAtBottom} />
       <div className='relative flex-1 overflow-clip'>
         <div
           onScroll={handleScroll}
@@ -98,7 +98,7 @@ export default function Page(): React.JSX.Element {
         >
           <div className='mx-auto flex w-full max-w-3xl translate-x-1 flex-col space-y-12 p-4 pb-16 text-sm'>
             {messages.map((message) => (
-              <ChatMessage scrollEditCallback={() => {}} message={message} key={message.id} />
+              <ChatMessage message={message} key={message.id} />
             ))}
           </div>
         </div>

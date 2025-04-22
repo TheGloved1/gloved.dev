@@ -21,12 +21,10 @@ import ModelDropdown from './ModelDropdown';
 const ChatInput = memo(
   ({
     createThread,
-    scrollCallback,
     isAtBottom,
     scrollButtonCallback = () => {},
   }: {
     createThread?: boolean;
-    scrollCallback?: () => void;
     isAtBottom?: boolean;
     scrollButtonCallback?: () => void;
   }) => {
@@ -38,13 +36,13 @@ const ChatInput = memo(
     const [model] = useLocalStorage<ModelID>('model', defaultModel);
     const [rows, setRows] = useLocalStorage<number>('rows', 2);
     const [systemPrompt] = useLocalStorage<string | undefined>('systemPrompt', undefined);
+    const [syncEnabled] = useLocalStorage<boolean>('syncEnabled', false);
     const auth = useAuth();
     const isMobile = useIsMobile();
     const router = useRouter();
     const { threadId } = useParams<{ threadId: string }>();
     const searchParams = useSearchParams();
     const query = searchParams.get('q');
-    const [syncEnabled, setSyncEnabled] = useLocalStorage<boolean>('syncEnabled', false);
 
     const syncUserIdIfEnabled = syncEnabled && auth.userId ? auth.userId : undefined;
 
@@ -90,7 +88,6 @@ const ChatInput = memo(
             query || input,
             model,
             setInput,
-            scrollCallback,
             systemPrompt?.trim(),
             attachments,
             syncUserIdIfEnabled,
@@ -102,16 +99,7 @@ const ChatInput = memo(
         }
         setLoading(false);
       } else {
-        await createMessage(
-          threadId,
-          input,
-          model,
-          setInput,
-          scrollCallback,
-          systemPrompt?.trim(),
-          attachments,
-          syncUserIdIfEnabled,
-        );
+        await createMessage(threadId, input, model, setInput, systemPrompt?.trim(), attachments, syncUserIdIfEnabled);
         setLoading(false);
         setRows(2);
       }
