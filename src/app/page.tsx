@@ -28,16 +28,14 @@ export default function Page(): React.JSX.Element {
       </div>
       <div className='container flex flex-col items-center justify-center gap-8 px-1 py-16 md:px-4'>
         {/* Old Heading */}
-        {isMobile && (
+        {/* {isMobile && (
           <h1 className='text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]'>
             gloved<span className='text-[hsl(280,100%,40%)]'>.</span>dev
           </h1>
-        )}
+        )} */}
 
         {/* New Heading */}
-        {!isMobile && (
-          <ParticleText text='gloved.dev' size={100} hoverColor='#4B0082' particleCount={8000} edgeComplexity={5} />
-        )}
+        <ParticleText text='gloved.dev' size={100} hoverColor='#4B0082' particleCount={8000} edgeComplexity={5} />
 
         <div className='flex max-w-[1000px] flex-shrink-0 flex-grow flex-wrap justify-center gap-4'>
           <div className='flex-shrink-0 flex-grow basis-[300px]'>
