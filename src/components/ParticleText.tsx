@@ -1,6 +1,7 @@
 'use client';
 
 import { useIsMobile } from '@/hooks/use-mobile';
+import dynamic from 'next/dynamic';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 interface ParticleTextProps {
@@ -23,7 +24,7 @@ interface ParticleTextProps {
   className?: string;
 }
 
-export default function ParticleText({
+function ParticleText({
   text,
   size = 80,
   fontFamily = 'sans-serif',
@@ -597,3 +598,5 @@ export default function ParticleText({
     />
   );
 }
+
+export default dynamic(() => Promise.resolve(ParticleText), { ssr: false });
