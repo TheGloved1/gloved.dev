@@ -146,7 +146,7 @@ export default function Page(): React.JSX.Element {
                   {tabs[currentTab].map((item, index) => (
                     <div key={index} className='flex items-start gap-2 border-t border-secondary/40 py-1 first:border-none'>
                       <button
-                        className={`w-full rounded-md py-2 text-left text-secondary-foreground hover:bg-secondary/40 sm:px-3 ${isPromptSelected(item) ? 'bg-secondary/50 hover:bg-secondary/70' : ''}`}
+                        className={`w-full rounded-md py-2 text-left text-secondary-foreground hover:bg-secondary/40 sm:px-3 ${isPromptSelected(item) ? 'bg-secondary/40 hover:bg-secondary/70' : ''}`}
                         onClick={() => {
                           handlePromptClick(item);
                         }}
