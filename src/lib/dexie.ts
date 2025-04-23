@@ -501,7 +501,7 @@ export async function createMessage(
 export async function updateMessage(
   message: Message,
   newContent: string,
-  model: string,
+  model: ModelID,
   systemPrompt?: string,
   userId?: string,
 ) {

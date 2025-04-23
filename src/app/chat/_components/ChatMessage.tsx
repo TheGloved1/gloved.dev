@@ -5,7 +5,7 @@ import Markdown from '@/components/Markdown';
 import { Button } from '@/components/ui/button';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import { useTextToSpeech } from '@/hooks/use-tts';
-import { defaultModel } from '@/lib/ai';
+import { defaultModel, ModelID } from '@/lib/ai';
 import { dxdb, Message, updateMessage } from '@/lib/dexie';
 import { tryCatch } from '@/lib/utils';
 import { useAuth } from '@clerk/nextjs';
@@ -35,7 +35,7 @@ function ChatMessage({ message }: { message: Message }) {
   const [showReasoning, setShowReasoning] = useState<boolean>(false);
   const { threadId } = useParams<{ threadId: string }>();
   const [systemPrompt] = useLocalStorage<string | undefined>('systemPrompt', undefined);
-  const [model] = useLocalStorage<string>('model', defaultModel);
+  const [model] = useLocalStorage<ModelID>('model', defaultModel);
   const [syncEnabled] = useLocalStorage<boolean>('syncEnabled', false);
   const [speak, stopSpeech, isSpeaking] = useTextToSpeech();
   const auth = useAuth();

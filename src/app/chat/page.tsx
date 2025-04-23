@@ -1,7 +1,7 @@
 'use client';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import { Code, GraduationCap, Newspaper, Sparkles } from 'lucide-react';
-import React from 'react';
+import React, { useState } from 'react';
 import ChatInput from './_components/ChatInput';
 
 export const dynamic = 'force-static';
@@ -67,9 +67,9 @@ const getRandomWelcomeMessage = () => {
 };
 
 export default function Page(): React.JSX.Element {
-  const [currentTab, setCurrentTab] = React.useState<Tab>('default');
+  const [currentTab, setCurrentTab] = useState<Tab>('default');
   const [input, setInput] = useLocalStorage('input', '');
-  const [welcomeMessage] = React.useState(getRandomWelcomeMessage());
+  const [welcomeMessage] = useState(getRandomWelcomeMessage());
 
   const isActiveTab = (tab: Tab) => tab === currentTab;
 
