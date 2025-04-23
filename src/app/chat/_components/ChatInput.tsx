@@ -83,15 +83,9 @@ const ChatInput = memo(
         const threadId = await dxdb.createThread();
         router.push('/chat/' + threadId);
         try {
-          await createMessage(
-            threadId,
-            query || input,
-            model,
-            setInput,
-            systemPrompt?.trim(),
-            attachments,
-            syncUserIdIfEnabled,
-          );
+          const prompt = input;
+          setInput('');
+          await createMessage(threadId, query || prompt, model, systemPrompt?.trim(), attachments, syncUserIdIfEnabled);
         } catch (e) {
           toast.error('Failed to generate message');
           setLoading(false);
@@ -99,7 +93,9 @@ const ChatInput = memo(
         }
         setLoading(false);
       } else {
-        await createMessage(threadId, input, model, setInput, systemPrompt?.trim(), attachments, syncUserIdIfEnabled);
+        const prompt = input;
+        setInput('');
+        await createMessage(threadId, prompt, model, systemPrompt?.trim(), attachments, syncUserIdIfEnabled);
         setLoading(false);
         setRows(2);
       }
@@ -107,7 +103,7 @@ const ChatInput = memo(
 
     useEffect(() => {
       if (query && createThread) {
-        handleSubmit(undefined);
+        handleSubmit();
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [query, createThread]);

@@ -425,7 +425,6 @@ export async function createMessage(
   threadId: string,
   userContent: string,
   model: ModelID,
-  setInput: (input: string) => void,
   systemPrompt?: string,
   attachments?: string[],
   userId?: string,
@@ -433,7 +432,6 @@ export async function createMessage(
   // Stop any existing streams
   stopGeneration('Creating message, canceling any existing streams');
 
-  setInput('');
   await dxdb.addMessage({
     threadId,
     content: userContent,

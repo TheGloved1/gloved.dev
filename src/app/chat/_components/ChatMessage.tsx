@@ -36,8 +36,8 @@ function ChatMessage({ message }: { message: Message }) {
   const { threadId } = useParams<{ threadId: string }>();
   const [systemPrompt] = useLocalStorage<string | undefined>('systemPrompt', undefined);
   const [model] = useLocalStorage<string>('model', defaultModel);
-  const [speak, stopSpeech, isSpeaking] = useTextToSpeech();
   const [syncEnabled] = useLocalStorage<boolean>('syncEnabled', false);
+  const [speak, stopSpeech, isSpeaking] = useTextToSpeech();
   const auth = useAuth();
   const syncUserIdIfEnabled = syncEnabled && auth.userId ? auth.userId : undefined;
 
@@ -46,7 +46,8 @@ function ChatMessage({ message }: { message: Message }) {
       const getThreadMessages = await tryCatch(dxdb.getThreadMessages(threadId)); // Get all messages in the thread
       if (getThreadMessages.error) return;
       const allMessages = getThreadMessages.data;
-      const index = allMessages.findIndex((msg) => msg.id === m.id); // Find the index of the deleted message
+      const index = allMessages.findIndex((msg) => msg.id === m.id); // Find the index of the edited message
+      if (index === -1) return toast.error('Failed to find selected message');
 
       // Delete all subsequent messages
       await dxdb.transaction('rw', [dxdb.messages, dxdb.threads], async () => {
