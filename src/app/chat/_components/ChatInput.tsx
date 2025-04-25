@@ -58,26 +58,24 @@ const ChatInput = memo(
       e?.preventDefault();
       setLoading(true);
       let attachments: string[] | undefined;
-      const temp: string[] = [];
       if (canUpload && fileInputRef.current?.files?.length) {
         const files = Array.from(fileInputRef.current.files);
         for (const file of files) {
-          const { data, error: uploadError } = await tryCatch(uploadImage(file, auth.userId!));
-          if (uploadError) {
+          const imageUpload = await tryCatch(uploadImage(file, auth.userId!));
+          if (imageUpload.error) {
             toast.error('Failed to upload images');
             setLoading(false);
             return;
           }
-          if (!data) {
+          if (!imageUpload.data) {
             toast.error('Failed to upload images');
             setLoading(false);
             return;
           }
-          temp.push(data);
-          fileInputRef.current.files = null;
+          attachments = [...(attachments || []), imageUpload.data];
           setImagePreview([]);
         }
-        attachments = temp;
+        fileInputRef.current.files = null;
       }
       if (createThread) {
         const threadId = await dxdb.createThread();
