@@ -1,6 +1,5 @@
 'use client';
 import AdminComponent from '@/components/AdminComponent';
-import Counter from '@/components/Counter';
 import { PageVisits } from '@/components/PageVisits';
 import ParticleText from '@/components/ParticleText';
 import ThemeChanger from '@/components/ThemeChanger';
@@ -259,7 +258,6 @@ export default function Page(): React.JSX.Element {
               </Link>
             </div>
           </div>
-          <Counter />
         </AdminComponent>
       </div>
       <div className='divider mx-auto w-[75vw] max-w-[1000px] items-center self-center' />
