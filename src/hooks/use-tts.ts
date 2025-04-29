@@ -1,7 +1,7 @@
 import React from 'react';
 
 /**
- * Returns a tuple of three values:
+ * Returns an object with three properties:
  *  - A `speak` function that takes a string and uses the Web Speech API to
  *    read it aloud.
  *  - A `stop` function that stops any ongoing speech.
@@ -11,7 +11,7 @@ import React from 'react';
  * If the Web Speech API is not supported in the current environment, the `speak` and `stop` functions will
  * do nothing, and `isSpeaking` will always be false.
  */
-export function useTextToSpeech(): [speak: (text: string) => void, stop: () => void, isSpeaking: boolean] {
+export function useTextToSpeech(): { speak: (text: string) => void; stop: () => void; isSpeaking: boolean } {
   const speech = window.speechSynthesis;
   const [isSpeaking, setIsSpeaking] = React.useState(false);
   const speak = React.useCallback(
@@ -24,10 +24,12 @@ export function useTextToSpeech(): [speak: (text: string) => void, stop: () => v
       // Cancel any ongoing speech
       speech.cancel();
 
+      const voices = speech.getVoices();
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.rate = 1.0;
       utterance.pitch = 1.0;
       utterance.volume = 0.8;
+      utterance.voice = voices.find((voice) => voice.name.toLowerCase().includes('david')) || null;
       utterance.onstart = () => {
         setIsSpeaking(true);
       };
@@ -58,5 +60,5 @@ export function useTextToSpeech(): [speak: (text: string) => void, stop: () => v
     speech.cancel();
   }, [speech]);
 
-  return [speak, stop, isSpeaking] as const;
+  return { speak, stop, isSpeaking };
 }

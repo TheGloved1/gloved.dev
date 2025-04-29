@@ -34,7 +34,7 @@ function ChatMessage({ message }: { message: Message }) {
   const [showReasoning, setShowReasoning] = useState<boolean>(false);
   const { threadId } = useParams<{ threadId: string }>();
   const { syncEnabled, model, systemPrompt } = useChatOptions();
-  const [speak, stopSpeech, isSpeaking] = useTextToSpeech();
+  const tts = useTextToSpeech();
   const auth = useAuth();
   const syncUserIdIfEnabled = syncEnabled && auth.userId ? auth.userId : undefined;
 
@@ -216,26 +216,26 @@ function ChatMessage({ message }: { message: Message }) {
         )}
         {message.role === 'assistant' && (
           <div className='absolute left-0 mt-2 flex items-center gap-2'>
-            {!isSpeaking ?
+            {!tts.isSpeaking ?
               <Button
                 className='inline-flex h-8 items-center justify-center gap-2 whitespace-nowrap rounded-md bg-secondary px-3 text-xs font-medium text-secondary-foreground opacity-0 shadow-sm transition-opacity hover:bg-secondary/80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 group-focus-within:opacity-100 group-hover:opacity-100 group-focus:opacity-100 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
                 title='Speak message'
                 tooltipSide='bottom'
                 onClick={() => {
-                  speak(message.content);
+                  tts.speak(message.content);
                 }}
               >
-                <Volume2Icon className='-ml-0.5!size-5 -mb-0.5' />
+                <Volume2Icon className='-mb-0.5 -ml-0.5 !size-5' />
               </Button>
             : <Button
                 className='inline-flex h-8 items-center justify-center gap-2 whitespace-nowrap rounded-md bg-destructive/80 px-3 text-xs font-medium text-destructive-foreground opacity-0 shadow-sm transition-opacity hover:bg-destructive focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 group-focus-within:opacity-100 group-hover:opacity-100 group-focus:opacity-100 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
                 title='Stop speaking'
                 tooltipSide='bottom'
                 onClick={() => {
-                  stopSpeech();
+                  tts.stop();
                 }}
               >
-                <VolumeXIcon className='-ml-0.5!size-5 -mb-0.5' />
+                <VolumeXIcon className='-mb-0.5 -ml-0.5 !size-5' />
               </Button>
             }
             <Button
