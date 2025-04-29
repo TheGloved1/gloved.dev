@@ -231,7 +231,7 @@ export async function deleteUserData(userId: string) {
  * @param email The email address to be added to the list of admins.
  */
 export async function addAdmin(email: string) {
-  const admins = ((await redis.get('admins')) as { admins: string[] })?.admins || [];
+  const admins = ((await redis.get('admins')) as string[]) || [];
   if (!admins.includes(email)) {
     await redis.set('admins', [...admins, email]);
   }
