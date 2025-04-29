@@ -9,14 +9,14 @@ type ToasterProps = React.ComponentProps<typeof Sonner>;
 
 const Toaster = ({ ...props }: ToasterProps) => {
   const pathname = usePathname();
-  const [theme] = useLocalStorage<Theme>('theme', themes.cooldark);
+  const [theme] = useLocalStorage<Theme>('theme', themes.dark);
   const getLightOrDarkTheme = () => {
     switch (theme.className) {
       case themes.light.className:
         return 'light';
-      case themes.dark.className:
+      case themes.classicdark.className:
         return 'dark';
-      case themes.cooldark.className:
+      case themes.dark.className:
         return 'dark';
     }
   };

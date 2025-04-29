@@ -14,7 +14,7 @@ export default function AdminComponent({
 }): React.JSX.Element {
   const { user } = useUser();
   const adminsQuery = useQuery({
-    queryKey: ['admins', user?.primaryEmailAddress?.emailAddress],
+    queryKey: ['admins'],
     queryFn: getAdminsAction,
     enabled: !!user?.primaryEmailAddress?.emailAddress,
     initialData: [],
@@ -25,6 +25,9 @@ export default function AdminComponent({
   }
 
   if (adminsQuery.isLoading) {
+    if (fallback) {
+      return <>{fallback}</>;
+    }
     return <Loading />;
   }
 
@@ -34,10 +37,6 @@ export default function AdminComponent({
 
   if (adminsQuery.data.includes(user.primaryEmailAddress.emailAddress)) {
     return <>{children}</>;
-  }
-
-  if (fallback) {
-    return <>{fallback}</>;
   }
 
   return <></>;

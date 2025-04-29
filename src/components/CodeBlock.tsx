@@ -15,15 +15,15 @@ type CodeBlockProps = {
   ExtraProps;
 
 const CodeBlock = ({ children = '', language = 'plaintext' }: CodeBlockProps) => {
-  const [theme] = useLocalStorage<Theme>('theme', themes.cooldark);
+  const [theme] = useLocalStorage<Theme>('theme', themes.dark);
   const [code, setCode] = useState(String(children));
 
   useEffect(() => {
     const getTheme = () => {
       switch (theme.className) {
-        case themes.cooldark.className:
-          return 'laserwave';
         case themes.dark.className:
+          return 'laserwave';
+        case themes.classicdark.className:
           return 'dark-plus';
         case themes.light.className:
           return 'catppuccin-latte';

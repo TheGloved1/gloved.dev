@@ -3,9 +3,8 @@ import ErrorAlert from '@/components/ErrorAlert';
 import LoadingSvg from '@/components/LoadingSvg';
 import Markdown from '@/components/Markdown';
 import { Button } from '@/components/ui/button';
-import { useLocalStorage } from '@/hooks/use-local-storage';
+import { useChatOptions } from '@/hooks/use-chat-options';
 import { useTextToSpeech } from '@/hooks/use-tts';
-import { defaultModel, ModelID } from '@/lib/ai';
 import { dxdb, Message, updateMessage } from '@/lib/dexie';
 import { tryCatch } from '@/lib/utils';
 import { useAuth } from '@clerk/nextjs';
@@ -13,7 +12,7 @@ import equal from 'fast-deep-equal';
 import { ChevronDown, ChevronUp, Copy, RefreshCcw, Send, SquarePen, Volume2Icon, VolumeXIcon } from 'lucide-react';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
-import { memo, useCallback, useState } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import Timestamp from './Timestamp';
 
@@ -34,9 +33,7 @@ function ChatMessage({ message }: { message: Message }) {
   const [isHovered, setIsHovered] = useState<boolean>(false);
   const [showReasoning, setShowReasoning] = useState<boolean>(false);
   const { threadId } = useParams<{ threadId: string }>();
-  const [systemPrompt] = useLocalStorage<string | undefined>('systemPrompt', undefined);
-  const [model] = useLocalStorage<ModelID>('model', defaultModel);
-  const [syncEnabled] = useLocalStorage<boolean>('syncEnabled', false);
+  const { syncEnabled, model, systemPrompt } = useChatOptions();
   const [speak, stopSpeech, isSpeaking] = useTextToSpeech();
   const auth = useAuth();
   const syncUserIdIfEnabled = syncEnabled && auth.userId ? auth.userId : undefined;
@@ -58,6 +55,21 @@ function ChatMessage({ message }: { message: Message }) {
     },
     [threadId],
   );
+
+  const checkForOldAttachmentLinks = useCallback(() => {
+    if (!message.attachments) return;
+    const newAttachments = message.attachments.map((attachment) => {
+      if (attachment.includes('/images')) {
+        return attachment.replace('/images', '/blob');
+      }
+      return attachment;
+    });
+    dxdb.messages.update(message.id, { attachments: newAttachments });
+  }, [message.attachments, message.id]);
+
+  useEffect(() => {
+    checkForOldAttachmentLinks();
+  }, [checkForOldAttachmentLinks]);
 
   if (message.status === 'error')
     return <ErrorAlert>{`Error: Something went wrong, please try again. ${message.content}`}</ErrorAlert>;

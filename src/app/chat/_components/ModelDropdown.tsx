@@ -5,21 +5,34 @@ import { type Theme, themes } from '@/components/ThemeChanger';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { useChatOptions } from '@/hooks/use-chat-options';
 import { checkIsAdminAction } from '@/lib/actions';
-import { defaultModel, type ModelID, Models } from '@/lib/ai';
+import { Models } from '@/lib/ai';
 import { tryCatch } from '@/lib/utils';
 import { useUser } from '@clerk/nextjs';
+import Fuse from 'fuse.js';
 import { Bot, ChevronDown, ChevronUp, Search } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { DeepSeekIcon, GeminiIcon, GPTIcon, LlamaIcon } from './ModelIcons';
 
 export default function ModelDropdown() {
   const { user, isSignedIn } = useUser();
   const [isAdmin, setIsAdmin] = useState(false);
-  const [model, setModel] = useLocalStorage<ModelID>('model', defaultModel);
+  const { model, setModel } = useChatOptions();
+  const [theme] = useLocalStorage<Theme>('theme', themes.dark);
   const [searchQuery, setSearchQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
-  const [theme] = useLocalStorage<Theme>('theme', themes.cooldark);
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(searchQuery);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 100); // 300ms debounce
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchQuery]);
 
   // Get the selected model details
   const selectedModel = Models.find((m) => m.value === model) ?? null;
@@ -38,14 +51,24 @@ export default function ModelDropdown() {
   }, [user]);
 
   // Filter models based on search query
-  const filteredModels = Models.filter((m) => {
-    if (!m.enabled) return false;
-    if (m.requirements.admin && !isAdmin) return false;
+  const filteredModels = useMemo(() => {
+    const availableModels = Models.filter((m) => {
+      if (!m.enabled) return false;
+      if (m.requirements.admin && !isAdmin) return false;
+      return true;
+    });
 
-    return (
-      m.label.toLowerCase().includes(searchQuery.toLowerCase()) || m.value.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  });
+    if (!debouncedSearchQuery.trim()) {
+      return availableModels;
+    }
+
+    const fuse = new Fuse(availableModels, {
+      keys: ['label', 'value', 'provider'],
+      threshold: 0.4,
+    });
+
+    return fuse.search(debouncedSearchQuery).map((result) => result.item);
+  }, [isAdmin, debouncedSearchQuery]);
 
   // Function to get the appropriate icon based on model name
   const getModelIcon = (model: string, size: 'sm' | 'md' | 'lg' = 'md') => {
@@ -78,7 +101,7 @@ export default function ModelDropdown() {
   );
 
   return (
-    <div className={theme.className}>
+    <div className={`${theme.className}`}>
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
           <Button

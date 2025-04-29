@@ -3,6 +3,7 @@ import AdminComponent from '@/components/AdminComponent';
 import Counter from '@/components/Counter';
 import { PageVisits } from '@/components/PageVisits';
 import ParticleText from '@/components/ParticleText';
+import ThemeChanger from '@/components/ThemeChanger';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
 import Constants from '@/lib/constants';
@@ -13,7 +14,7 @@ import React from 'react';
 export default function Page(): React.JSX.Element {
   const isMobile = useIsMobile();
   return (
-    <>
+    <ThemeChanger>
       <div className='absolute left-0 top-0 flex items-center gap-2 rounded-br-lg border-b-2 border-r-2 border-border p-2'>
         <SignedOut>
           <SignInButton mode={'modal'}>
@@ -271,6 +272,6 @@ export default function Page(): React.JSX.Element {
         </p>
       </div>
       <PageVisits />
-    </>
+    </ThemeChanger>
   );
 }

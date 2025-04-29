@@ -6,8 +6,8 @@ import { Button } from './ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 
 export const themes = {
-  cooldark: { name: 'Cool Dark', className: 'dark' },
-  dark: { name: 'Classic Dark', className: 'classic-dark' },
+  dark: { name: 'Dark', className: 'dark' },
+  classicdark: { name: 'Classic Dark', className: 'classic-dark' },
   light: { name: 'Light', className: 'light' },
 } as const;
 
@@ -24,9 +24,15 @@ const renderIcon = (theme: Theme) => {
   }
 };
 
-export default function ThemeChanger({ children }: { children: React.ReactNode }) {
+export default function ThemeChanger({
+  children,
+  disableButton = false,
+}: {
+  children: React.ReactNode;
+  disableButton?: boolean;
+}) {
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [theme, setTheme] = useLocalStorage<Theme>('theme', themes.cooldark);
+  const [theme, setTheme] = useLocalStorage<Theme>('theme', themes.dark);
   return (
     <div
       className={theme.className}
@@ -34,13 +40,16 @@ export default function ThemeChanger({ children }: { children: React.ReactNode }
         background: 'hsl(var(--background))',
         color: 'hsl(var(--foreground))',
       }}
+      suppressHydrationWarning
     >
-      <Button
-        className='fixed right-1 top-1 z-10 hidden bg-secondary hover:bg-accent md:block'
-        onClick={() => setDialogOpen(true)}
-      >
-        {renderIcon(theme)}
-      </Button>
+      {disableButton ? null : (
+        <Button
+          className='fixed right-1 top-1 z-10 hidden bg-secondary hover:bg-accent md:block'
+          onClick={() => setDialogOpen(true)}
+        >
+          {renderIcon(theme)}
+        </Button>
+      )}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
           <DialogHeader>
@@ -73,7 +82,7 @@ export default function ThemeChanger({ children }: { children: React.ReactNode }
 
 export function ThemeChangerButton() {
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [theme, setTheme] = useLocalStorage<Theme>('theme', themes.cooldark);
+  const [theme, setTheme] = useLocalStorage<Theme>('theme', themes.dark);
   return (
     <>
       <Button

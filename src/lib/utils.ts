@@ -343,13 +343,13 @@ export function formatMessageContent(content: string, attachments?: string[]) {
 }
 
 /**
- * Uploads an image to the {@link Constants.API} server and returns the URL of the uploaded image.
- * @param file The image file to be uploaded.
- * @param userId The ID of the user who is uploading the image.
+ * Uploads a file to the {@link Constants.API} server and returns the URL of the uploaded image.
+ * @param file The file to be uploaded.
+ * @param userId The ID of the user who is uploading the image. Link is public otherwise.
  * @returns The URL of the uploaded image.
- * @throws If the user ID is not provided or if the upload fails.
+ * @throws If the upload fails.
  */
-export async function uploadImage(file: File, userId?: string) {
+export async function upload(file: File, userId?: string) {
   try {
     if (!userId) {
       throw new Error('User ID is required');
@@ -359,7 +359,7 @@ export async function uploadImage(file: File, userId?: string) {
     formData.append('userId', userId);
     formData.append('file', file);
 
-    const response = await fetch(apiRoute('/images/upload'), {
+    const response = await fetch(apiRoute('/blob/upload'), {
       method: 'POST',
       body: formData,
     });

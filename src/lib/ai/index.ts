@@ -62,6 +62,7 @@ export const Models = [
       loggedin: false,
       admin: false,
     },
+    tools: true,
   } as const,
   {
     label: 'Gemini 2.0 Flash Lite',
@@ -75,6 +76,7 @@ export const Models = [
       loggedin: false,
       admin: false,
     },
+    tools: false,
   } as const,
   {
     label: 'Gemini 2.5 Flash (Preview)',
@@ -88,6 +90,7 @@ export const Models = [
       loggedin: true,
       admin: true,
     },
+    tools: false,
   } as const,
   {
     label: 'Gemini 2.5 Pro (Experimental)',
@@ -101,6 +104,7 @@ export const Models = [
       loggedin: false,
       admin: false,
     },
+    tools: false,
   } as const,
   {
     label: 'Qwen Coder-32b',
@@ -114,6 +118,7 @@ export const Models = [
       loggedin: true,
       admin: true,
     },
+    tools: false,
   } as const,
   {
     label: 'Qwen qwq-32b',
@@ -127,6 +132,7 @@ export const Models = [
       loggedin: true,
       admin: true,
     },
+    tools: false,
   } as const,
   {
     label: 'Llama 4 Scout',
@@ -140,6 +146,7 @@ export const Models = [
       loggedin: false,
       admin: false,
     },
+    tools: false,
   } as const,
   {
     label: 'Llama 4 Maverick',
@@ -153,6 +160,7 @@ export const Models = [
       loggedin: true,
       admin: true,
     },
+    tools: false,
   } as const,
   {
     label: 'Llama 3.1-8b',
@@ -166,6 +174,7 @@ export const Models = [
       loggedin: true,
       admin: true,
     },
+    tools: false,
   } as const,
   {
     label: 'Llama 3.3-70b',
@@ -179,6 +188,7 @@ export const Models = [
       loggedin: true,
       admin: true,
     },
+    tools: false,
   } as const,
   {
     label: 'Deepseek R1 (Qwen Distill)',
@@ -192,6 +202,7 @@ export const Models = [
       loggedin: true,
       admin: true,
     },
+    tools: false,
   } as const,
   {
     label: 'Deepseek R1 (Llama Distill)',
@@ -205,6 +216,7 @@ export const Models = [
       loggedin: false,
       admin: false,
     },
+    tools: false,
   } as const,
   {
     label: 'Groq Compound (Beta)',
@@ -218,6 +230,7 @@ export const Models = [
       loggedin: true,
       admin: true,
     },
+    tools: false,
   } as const,
   {
     label: 'OpenRouter Auto',
@@ -231,6 +244,7 @@ export const Models = [
       loggedin: true,
       admin: true,
     },
+    tools: false,
   } as const,
 ] as const;
 
@@ -239,4 +253,4 @@ export const ModelList = Models.map((m) => m.value);
 
 export const defaultModel = 'gemini-2.0-flash' as const;
 
-export type ChatFetchOptions = { model?: ModelID; system?: string; messages: Message[] };
+export type ChatFetchOptions = { model?: ModelID; system?: string; messages: Message[]; toolsEnabled?: boolean };

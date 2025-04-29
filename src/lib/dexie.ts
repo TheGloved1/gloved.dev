@@ -3,6 +3,7 @@
  * methods for adding, removing, and retrieving data. It also provides methods for synchronizing the
  * database with remote data.
  */
+import { getChatOptions } from '@/hooks/use-chat-options';
 import { deleteUserDataAction, exportThreadAction, syncAction } from '@/lib/actions';
 import { createDate, populateOnboardingThreads, sleep, tryCatch } from '@/lib/utils';
 import Dexie, { type EntityTable } from 'dexie';
@@ -50,8 +51,8 @@ class Database extends Dexie {
 
   constructor() {
     super('chatdb');
-    this.version(4).stores({
-      threads: '++id, title, created_at, last_message_at, status',
+    this.version(5).stores({
+      threads: '++id, title, created_at, updated_at, last_message_at, status',
       messages:
         '++id, threadId, content, model, role, attachments, reasoning, updated_at, status, [threadId+created_at], [threadId+status]',
     });
@@ -432,6 +433,8 @@ export async function createMessage(
   // Stop any existing streams
   stopGeneration('Creating message, canceling any existing streams');
 
+  const { toolsEnabled } = getChatOptions();
+
   await dxdb.addMessage({
     threadId,
     content: userContent,
@@ -454,6 +457,7 @@ export async function createMessage(
     model,
     system: systemPrompt,
     messages: allMessages,
+    toolsEnabled,
   };
 
   const signal = chatAbortController.signal;
@@ -522,6 +526,13 @@ export async function updateMessage(
 
   const signal = chatAbortController.signal;
 
+  const chatFetchOptions: ChatFetchOptions = {
+    model,
+    system: systemPrompt,
+    messages: allMessages,
+    toolsEnabled: getChatOptions().toolsEnabled,
+  };
+
   try {
     const { data, error } = await tryCatch(
       fetch('/api/chat', {
@@ -529,11 +540,7 @@ export async function updateMessage(
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          system: systemPrompt,
-          messages: allMessages,
-          model,
-        }),
+        body: JSON.stringify(chatFetchOptions),
         signal,
       }),
     );

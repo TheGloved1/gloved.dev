@@ -2,15 +2,17 @@
 import { createMessage, dxdb, stopGeneration } from '@/lib/dexie';
 import React, { memo, useEffect, useState } from 'react';
 
+import AdminComponent from '@/components/AdminComponent';
 import { Tooltip } from '@/components/TooltipSystem';
 import { Button } from '@/components/ui/button';
+import { useChatOptions } from '@/hooks/use-chat-options';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { defaultModel, ModelID } from '@/lib/ai';
+import { Models } from '@/lib/ai';
 import Constants from '@/lib/constants';
-import { tryCatch, uploadImage } from '@/lib/utils';
+import { tryCatch, upload } from '@/lib/utils';
 import { useAuth } from '@clerk/nextjs';
-import { ChevronDown, Paperclip, Send, Square, X } from 'lucide-react';
+import { ChevronDown, Paperclip, Send, Square, Wrench, X } from 'lucide-react';
 import Image from 'next/image';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useRef } from 'react';
@@ -33,10 +35,8 @@ const ChatInput = memo(
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [loading, setLoading] = useState<boolean>(false);
     const [input, setInput] = useLocalStorage('input', '');
-    const [model] = useLocalStorage<ModelID>('model', defaultModel);
-    const [rows, setRows] = useLocalStorage<number>('rows', 2);
-    const [systemPrompt] = useLocalStorage<string | undefined>('systemPrompt', undefined);
-    const [syncEnabled] = useLocalStorage<boolean>('syncEnabled', false);
+    const { toolsEnabled, setToolsEnabled, syncEnabled, model, systemPrompt } = useChatOptions();
+    const [rows, setRows] = useState<number>(2);
     const auth = useAuth();
     const isMobile = useIsMobile();
     const router = useRouter();
@@ -44,7 +44,9 @@ const ChatInput = memo(
     const searchParams = useSearchParams();
     const query = searchParams.get('q');
 
-    const syncUserIdIfEnabled = syncEnabled && auth.userId ? auth.userId : undefined;
+    const selectedModel = Models.find((m) => m.value === model) ?? null;
+
+    const userIdIfSyncEnabled = syncEnabled && auth.userId ? auth.userId : undefined;
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -61,7 +63,7 @@ const ChatInput = memo(
       if (canUpload && fileInputRef.current?.files?.length) {
         const files = Array.from(fileInputRef.current.files);
         for (const file of files) {
-          const imageUpload = await tryCatch(uploadImage(file, auth.userId!));
+          const imageUpload = await tryCatch(upload(file, auth.userId!));
           if (imageUpload.error) {
             toast.error('Failed to upload images');
             setLoading(false);
@@ -83,7 +85,7 @@ const ChatInput = memo(
         try {
           const prompt = input;
           setInput('');
-          await createMessage(threadId, query || prompt, model, systemPrompt?.trim(), attachments, syncUserIdIfEnabled);
+          await createMessage(threadId, query || prompt, model, systemPrompt?.trim(), attachments, userIdIfSyncEnabled);
         } catch (e) {
           toast.error('Failed to generate message');
           setLoading(false);
@@ -93,14 +95,14 @@ const ChatInput = memo(
       } else {
         const prompt = input;
         setInput('');
-        await createMessage(threadId, prompt, model, systemPrompt?.trim(), attachments, syncUserIdIfEnabled);
+        await createMessage(threadId, prompt, model, systemPrompt?.trim(), attachments, userIdIfSyncEnabled);
         setLoading(false);
         setRows(2);
       }
     };
 
     useEffect(() => {
-      if (query && createThread) {
+      if (query?.trim() && createThread) {
         handleSubmit();
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -243,7 +245,7 @@ const ChatInput = memo(
                               ref={fileInputRef}
                               disabled={loading}
                               onChange={handleImageChange}
-                              accept='image/jpeg, image/png, image/webp'
+                              accept='image/jpeg, image/png, image/webp, image/jpg, image/gif'
                               className='hidden'
                               id='image-upload'
                             />
@@ -288,6 +290,7 @@ const ChatInput = memo(
                         {loading && (
                           <Button
                             title='Stop'
+                            type='button'
                             onClick={(e) => {
                               e.preventDefault();
                               stopGeneration();
@@ -301,10 +304,28 @@ const ChatInput = memo(
                         )}
                       </div>
                     </div>
-                    <div className='flex flex-col gap-2 md:flex-row md:items-center'>
-                      <div className='flex items-center gap-1'>
-                        <ModelDropdown />
-                      </div>
+                  </div>
+                  <div className='flex flex-col gap-2 md:flex-row md:items-center'>
+                    <div className='z-50 ml-[-7px] flex items-center gap-1'>
+                      <ModelDropdown />
+                      {selectedModel?.tools ?
+                        <AdminComponent fallback={<></>}>
+                          <Button
+                            title={`AI can create and upload files for you (Experimental)`}
+                            variant='ghost'
+                            type='button'
+                            className={`${toolsEnabled ? 'bg-muted/40 hover:bg-muted/80' : 'bg-muted/0 hover:bg-muted/10'} -mb-1.5 inline-flex h-auto items-center justify-center gap-2 whitespace-nowrap rounded-full border border-solid border-secondary-foreground/10 px-3 py-1.5 pl-2 pr-2.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-foreground/50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0`}
+                            onClick={() => {
+                              setToolsEnabled(!toolsEnabled);
+                              if (!toolsEnabled) toast.info('Tools Enabled');
+                              if (toolsEnabled) toast.info('Tools Disabled');
+                            }}
+                          >
+                            <Wrench className='size-4' />
+                            Tools
+                          </Button>
+                        </AdminComponent>
+                      : null}
                     </div>
                   </div>
                 </form>
