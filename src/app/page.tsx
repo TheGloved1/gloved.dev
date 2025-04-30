@@ -201,7 +201,7 @@ export default function Page(): React.JSX.Element {
               <Video className='inline-block' /> Project History
             </Button>
           </DialogTrigger>
-          <DialogContent className='max-h-[75vh] max-w-[75vw] overflow-hidden'>
+          <DialogContent className='max-h-[60vh]'>
             <DialogHeader>
               <DialogTitle>Project History</DialogTitle>
               <DialogDescription>
@@ -215,7 +215,7 @@ export default function Page(): React.JSX.Element {
                 <Button>View Raw</Button>
               </Link>
             </div>
-            <DefaultPlayer autoPlay loop src={'/gource.webm'} />
+            <DefaultPlayer autoPlay loop src={'/gource.webm'} className='max-h-[60vh] overflow-hidden' />
           </DialogContent>
         </Dialog>
 
