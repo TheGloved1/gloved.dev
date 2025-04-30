@@ -4,14 +4,18 @@ import { PageVisits } from '@/components/PageVisits';
 import ParticleText from '@/components/ParticleText';
 import ThemeChanger from '@/components/ThemeChanger';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useIsMobile } from '@/hooks/use-mobile';
 import Constants from '@/lib/constants';
 import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs';
+import { Video } from 'lucide-react';
+import DefaultPlayer from 'next-video/player';
 import Link from 'next/link';
-import React from 'react';
+import React, { useState } from 'react';
 
 export default function Page(): React.JSX.Element {
   const isMobile = useIsMobile();
+  const [showGource, setShowGource] = useState(false);
   return (
     <ThemeChanger>
       <div className='absolute left-0 top-0 flex items-center gap-2 rounded-br-lg border-b-2 border-r-2 border-border p-2'>
@@ -191,6 +195,25 @@ export default function Page(): React.JSX.Element {
             </Link>
           </div>
         </div>
+
+        <Button className='btn gap-1' onClick={() => setShowGource(!showGource)}>
+          <Video className='inline-block' /> Project History
+        </Button>
+
+        <Dialog open={showGource} onOpenChange={setShowGource}>
+          <DialogContent className='max-h-[75vh] max-w-[75vw]'>
+            <DialogHeader>
+              <DialogTitle>Project History</DialogTitle>
+              <DialogDescription>
+                {
+                  'The project is displayed as a tree where the root of the repository is the centre, directories are branches and files are leaves.'
+                }
+              </DialogDescription>
+            </DialogHeader>
+            <DefaultPlayer autoPlay controls src={'/gource.webm'}></DefaultPlayer>
+          </DialogContent>
+        </Dialog>
+
         <AdminComponent>
           <div className='divider mx-auto w-[75vw] max-w-[1000px] items-center self-center' />
           <h2 className='text-3xl font-bold'>

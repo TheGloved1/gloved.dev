@@ -85,15 +85,6 @@ export default function Page(): React.JSX.Element {
     return isActiveTab(tab) ? activeTabStyle : inactiveTabStyle;
   };
 
-  const handlePromptClick = (prompt: string) => {
-    if (input.trim() === prompt.trim()) return setInput('');
-    setInput(prompt);
-  };
-
-  const isPromptSelected = (prompt: string) => {
-    return prompt.trim() === input.trim();
-  };
-
   return (
     <main className='relative flex w-full flex-1 flex-col'>
       <ChatInput createThread={true} isAtBottom={true} />
@@ -101,7 +92,9 @@ export default function Page(): React.JSX.Element {
         <div className='scrollbar-w-2 h-[100dvh] overflow-y-auto pb-36 scrollbar scrollbar-track-transparent scrollbar-thumb-gray-700 hover:scrollbar-thumb-gray-600'>
           <div className='pt-safe-offset-10 mx-auto flex w-full max-w-3xl flex-col space-y-12 px-4 pb-10'>
             <div className='flex h-[calc(100vh-20rem)] items-start justify-center'>
-              <div className='w-full space-y-6 px-2 pt-32 duration-300 animate-in fade-in-50 zoom-in-95 sm:px-8 sm:pt-48 md:pt-60'>
+              <div
+                className={`w-full space-y-6 px-2 duration-300 animate-in fade-in-50 zoom-in-95 sm:px-8 ${input ? 'pointer-events-none pt-[calc(max(15vh,2.5rem))] opacity-0 animate-out fade-out-0 zoom-out-105' : 'pt-32 sm:pt-48 md:pt-60'}`}
+              >
                 <h2 className='text-3xl font-semibold' suppressHydrationWarning>
                   {welcomeMessage}
                 </h2>
@@ -146,9 +139,9 @@ export default function Page(): React.JSX.Element {
                   {tabs[currentTab].map((item, index) => (
                     <div key={index} className='flex items-start gap-2 border-t border-secondary/40 py-1 first:border-none'>
                       <button
-                        className={`w-full rounded-md py-2 text-left text-secondary-foreground hover:bg-secondary/40 sm:px-3 ${isPromptSelected(item) ? 'bg-secondary/40 hover:bg-secondary/70' : ''}`}
+                        className={`w-full rounded-md py-2 text-left text-secondary-foreground hover:bg-secondary/40 sm:px-3`}
                         onClick={() => {
-                          handlePromptClick(item);
+                          setInput(item);
                         }}
                       >
                         <span>{item}</span>
