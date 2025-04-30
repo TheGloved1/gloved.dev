@@ -4,18 +4,17 @@ import { PageVisits } from '@/components/PageVisits';
 import ParticleText from '@/components/ParticleText';
 import ThemeChanger from '@/components/ThemeChanger';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useIsMobile } from '@/hooks/use-mobile';
 import Constants from '@/lib/constants';
 import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs';
 import { Video } from 'lucide-react';
 import DefaultPlayer from 'next-video/player';
 import Link from 'next/link';
-import React, { useState } from 'react';
+import React from 'react';
 
 export default function Page(): React.JSX.Element {
   const isMobile = useIsMobile();
-  const [showGource, setShowGource] = useState(false);
   return (
     <ThemeChanger>
       <div className='absolute left-0 top-0 flex items-center gap-2 rounded-br-lg border-b-2 border-r-2 border-border p-2'>
@@ -196,11 +195,12 @@ export default function Page(): React.JSX.Element {
           </div>
         </div>
 
-        <Button className='btn gap-1' onClick={() => setShowGource(!showGource)}>
-          <Video className='inline-block' /> Project History
-        </Button>
-
-        <Dialog open={showGource} onOpenChange={setShowGource}>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button className='btn gap-1'>
+              <Video className='inline-block' /> Project History
+            </Button>
+          </DialogTrigger>
           <DialogContent className='max-h-[75vh] max-w-[75vw]'>
             <DialogHeader>
               <DialogTitle>Project History</DialogTitle>
