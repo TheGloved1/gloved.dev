@@ -19,7 +19,7 @@
     "lint": "next lint",
     "prettier": "prettier --config ./package.json --write ./src",
     "generate-sitemap": "node generateSitemap.js",
-    "gource": ".\\..\\gource\\gource.exe --title \"gloved.dev\" --auto-skip-seconds 1 -f -1280x720 --font-size 18 --seconds-per-day 0.5 --stop-at-end -o - | ffmpeg -y -r 60 -f image2pipe -vcodec ppm -i - -vcodec libvpx -b 10000K public/gource.webm"
+    "gource": ".\\..\\gource\\gource --title \"gloved.dev\" --auto-skip-seconds 1 -f -1280x720 --font-size 18 --seconds-per-day 0.5 --stop-at-end -o - | ffmpeg -y -r 60 -f image2pipe -vcodec ppm -i - -vcodec libvpx -b 10000K public/gource.webm"
   },
   "prettier": {
     "printWidth": 125,
