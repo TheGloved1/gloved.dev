@@ -9,6 +9,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import Constants from '@/lib/constants';
 import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs';
 import { Video } from 'lucide-react';
+import DefaultPlayer from 'next-video/player';
 import Link from 'next/link';
 import React from 'react';
 
@@ -200,7 +201,7 @@ export default function Page(): React.JSX.Element {
               <Video className='inline-block' /> Project History
             </Button>
           </DialogTrigger>
-          <DialogContent className='max-h-[75vh] max-w-[75vw]'>
+          <DialogContent className='max-h-[75vh] max-w-[75vw] overflow-hidden'>
             <DialogHeader>
               <DialogTitle>Project History</DialogTitle>
               <DialogDescription>
@@ -214,7 +215,7 @@ export default function Page(): React.JSX.Element {
                 <Button>View Raw</Button>
               </Link>
             </div>
-            <video autoPlay controls src={'/gource.webm'} className='rounded-xl' />
+            <DefaultPlayer autoPlay loop src={'/gource.webm'} />
           </DialogContent>
         </Dialog>
 

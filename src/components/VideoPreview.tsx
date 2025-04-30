@@ -1,7 +1,7 @@
-import Player from 'next-video/player';
+import DefaultPlayer from 'next-video/player';
 
 const VideoPreview = ({ src, className }: { src: string; className?: string }): React.JSX.Element => {
-  return <Player src={src} className={className} />;
+  return <DefaultPlayer src={src} className={className} />;
 };
 
 export default VideoPreview;
