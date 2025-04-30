@@ -201,12 +201,12 @@ export default function Page(): React.JSX.Element {
               <Video className='inline-block' /> Project History
             </Button>
           </DialogTrigger>
-          <DialogContent className='max-h-[60vh]'>
+          <DialogContent className='max-h-[75vh]'>
             <DialogHeader>
               <DialogTitle>Project History</DialogTitle>
               <DialogDescription>
                 {
-                  'The project is displayed as a tree where the root of the repository is the centre, directories are branches and files are leaves.'
+                  'The project is displayed as a tree where the root is the centre, folders are branches and files are leaves.'
                 }
               </DialogDescription>
             </DialogHeader>
@@ -215,7 +215,7 @@ export default function Page(): React.JSX.Element {
                 <Button>View Raw</Button>
               </Link>
             </div>
-            <DefaultPlayer autoPlay loop src={'/gource.webm'} className='max-h-[60vh] overflow-hidden' />
+            <DefaultPlayer autoPlay loop src={'/gource.webm'} className='max-h-[75vh] overflow-hidden' />
           </DialogContent>
         </Dialog>
 
