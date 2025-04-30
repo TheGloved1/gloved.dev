@@ -9,7 +9,6 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import Constants from '@/lib/constants';
 import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs';
 import { Video } from 'lucide-react';
-import DefaultPlayer from 'next-video/player';
 import Link from 'next/link';
 import React from 'react';
 
@@ -215,7 +214,7 @@ export default function Page(): React.JSX.Element {
                 <Button>View Raw</Button>
               </Link>
             </div>
-            <DefaultPlayer autoPlay controls src={'/gource.webm'}></DefaultPlayer>
+            <video autoPlay controls src={'/gource.webm'} className='rounded-xl' />
           </DialogContent>
         </Dialog>
 
