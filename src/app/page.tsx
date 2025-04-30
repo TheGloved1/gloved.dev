@@ -215,7 +215,7 @@ export default function Page(): React.JSX.Element {
                 <Button>View Raw</Button>
               </Link>
             </div>
-            <DefaultPlayer autoPlay loop src={'/gource.webm'} className='max-h-[75vh] rounded-xl' />
+            <DefaultPlayer autoPlay loop src={'/gource.webm'} className='max-h-[75vh]' />
           </DialogContent>
         </Dialog>
 
