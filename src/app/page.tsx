@@ -203,18 +203,18 @@ export default function Page(): React.JSX.Element {
           </DialogTrigger>
           <DialogContent className='max-h-[75vh] max-w-[75vw]'>
             <DialogHeader>
-              <DialogTitle>
-                Project History{' '}
-                <Link href={'/gource.webm'}>
-                  <Button className='btn gap-1'>View Raw</Button>
-                </Link>
-              </DialogTitle>
+              <DialogTitle>Project History</DialogTitle>
               <DialogDescription>
                 {
                   'The project is displayed as a tree where the root of the repository is the centre, directories are branches and files are leaves.'
                 }
               </DialogDescription>
             </DialogHeader>
+            <div className='flex w-full items-center justify-center self-center'>
+              <Link href={'/gource.webm'}>
+                <Button>View Raw</Button>
+              </Link>
+            </div>
             <DefaultPlayer autoPlay controls src={'/gource.webm'}></DefaultPlayer>
           </DialogContent>
         </Dialog>
