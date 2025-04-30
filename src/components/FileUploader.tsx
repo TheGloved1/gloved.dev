@@ -202,7 +202,7 @@ export default function FileUploader(): React.JSX.Element {
         />
 
         {uploadProgress > 0 && uploadProgress < 100 && (
-          <div className='mt-2 w-full'>
+          <div className='mt-2 flex w-full flex-col items-center justify-center gap-2'>
             <progress className='progress progress-primary w-full' value={uploadProgress} max='100' />
             <p className='text-center'>{`Uploading: ${uploadProgress}%`}</p>
             <Button variant='destructive' onClick={handleCancelUpload}>
