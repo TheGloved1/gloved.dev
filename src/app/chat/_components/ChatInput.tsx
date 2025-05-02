@@ -308,7 +308,7 @@ const ChatInput = memo(
                   <div className='flex flex-col gap-2 md:flex-row md:items-center'>
                     <div className='z-50 ml-[-7px] flex items-center gap-1'>
                       <ModelDropdown />
-                      {selectedModel?.tools ?
+                      {selectedModel?.features.tools ?
                         <AdminComponent fallback={<></>}>
                           <Button
                             title={`AI can create and upload files for you (Experimental)`}

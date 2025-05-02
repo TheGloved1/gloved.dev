@@ -24,11 +24,11 @@ const groq = createGroq({ apiKey: env.GROQ });
 const openrouter = createOpenRouter({ apiKey: env.OPENROUTER });
 
 const languageModels = Models.reduce(
-  (acc, { value, provider, reasoning }) => {
+  (acc, { value, provider, features }) => {
     if (provider === 'google') {
       acc[value] = google.languageModel(value, { safetySettings });
     } else if (provider === 'groq') {
-      if (reasoning) {
+      if (features.reasoning) {
         acc[value] = wrapLanguageModel({
           model: groq.languageModel(value),
           middleware: extractReasoningMiddleware({ tagName: 'think' }),
@@ -76,7 +76,7 @@ export async function POST(req: NextRequest) {
     : undefined;
 
   let tools = undefined;
-  if (Models.find((d) => d.value === parsed.model)?.tools && toolsEnabled) {
+  if (Models.find((d) => d.value === parsed.model)?.features.tools && toolsEnabled) {
     tools = { uploadFile, uploadZipFile };
     system = system + '\n\n' + toolPrompt;
   }
