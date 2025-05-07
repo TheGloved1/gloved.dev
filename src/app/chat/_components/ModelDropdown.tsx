@@ -7,11 +7,12 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useAdmin } from '@/hooks/use-admin';
 import { useChatOptions } from '@/hooks/use-chat-options';
+import { useDebounce } from '@/hooks/use-debounce';
 import { Models } from '@/lib/ai';
 import { fuzzySearch } from '@/lib/utils';
 import { useUser } from '@clerk/nextjs';
 import { Bot, ChevronDown, ChevronUp, Search } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { DeepSeekIcon, GeminiIcon, GPTIcon, LlamaIcon } from './ModelIcons';
 
 export default function ModelDropdown() {
@@ -21,17 +22,7 @@ export default function ModelDropdown() {
   const [theme] = useLocalStorage<Theme>('theme', themes.dark);
   const [searchQuery, setSearchQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
-  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(searchQuery);
-
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedSearchQuery(searchQuery);
-    }, 100); // 300ms debounce
-
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [searchQuery]);
+  const debouncedSearchQuery = useDebounce(searchQuery, 150);
 
   // Get the selected model details
   const selectedModel = Models.find((m) => m.value === model) ?? null;
