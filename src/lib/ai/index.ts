@@ -49,7 +49,7 @@ export const safetySettings: SafetySettings = [
 export type ModelType = 'gemini' | 'qwen' | 'llama' | 'deepseek' | 'openrouter' | 'gpt';
 export const modelTypes = ['gemini', 'qwen', 'llama', 'deepseek', 'openrouter', 'gpt'] as const;
 
-export const Models = [
+export const Models = Object.freeze([
   {
     label: 'Gemini 2.0 Flash',
     value: 'gemini-2.0-flash',
@@ -58,7 +58,7 @@ export const Models = [
     enabled: true,
     description: "Google's latest stable model",
     requirements: {
-      loggedin: false,
+      loggedIn: false,
       admin: false,
     },
     features: {
@@ -74,7 +74,7 @@ export const Models = [
     enabled: true,
     description: 'Faster, less precise Gemini model',
     requirements: {
-      loggedin: false,
+      loggedIn: false,
       admin: false,
     },
     features: {
@@ -90,7 +90,7 @@ export const Models = [
     enabled: true,
     description: "Google's latest experimental fast model",
     requirements: {
-      loggedin: true,
+      loggedIn: true,
       admin: true,
     },
     features: {
@@ -106,7 +106,7 @@ export const Models = [
     enabled: true,
     description: "Google's latest experimental thinking model",
     requirements: {
-      loggedin: false,
+      loggedIn: false,
       admin: false,
     },
     features: {
@@ -122,7 +122,7 @@ export const Models = [
     enabled: true,
     description: 'Specialized code generation model with production-quality code output',
     requirements: {
-      loggedin: true,
+      loggedIn: true,
       admin: true,
     },
     features: {
@@ -138,7 +138,7 @@ export const Models = [
     enabled: true,
     description: 'Small but mighty reasoning model',
     requirements: {
-      loggedin: true,
+      loggedIn: true,
       admin: true,
     },
     features: {
@@ -154,7 +154,7 @@ export const Models = [
     enabled: true,
     description: 'Latest open-source model from Meta',
     requirements: {
-      loggedin: false,
+      loggedIn: false,
       admin: false,
     },
     features: {
@@ -170,7 +170,7 @@ export const Models = [
     enabled: true,
     description: 'Latest open-source model from Meta. Limited to small conversations',
     requirements: {
-      loggedin: true,
+      loggedIn: true,
       admin: true,
     },
     features: {
@@ -186,7 +186,7 @@ export const Models = [
     enabled: true,
     description: 'Lightweight version of Llama 3 optimized for fast responses and efficient inference',
     requirements: {
-      loggedin: true,
+      loggedIn: true,
       admin: true,
     },
     features: {
@@ -202,7 +202,7 @@ export const Models = [
     enabled: true,
     description: 'Fast, but not the smartest',
     requirements: {
-      loggedin: true,
+      loggedIn: true,
       admin: true,
     },
     features: {
@@ -218,7 +218,7 @@ export const Models = [
     enabled: true,
     description: 'DeepSeek R1, distilled on Qwen 32b',
     requirements: {
-      loggedin: true,
+      loggedIn: true,
       admin: true,
     },
     features: {
@@ -234,7 +234,7 @@ export const Models = [
     enabled: true,
     description: 'DeepSeek R1, distilled on Llama 3.3 70b',
     requirements: {
-      loggedin: false,
+      loggedIn: false,
       admin: false,
     },
     features: {
@@ -250,7 +250,7 @@ export const Models = [
     enabled: true,
     description: 'Compound-beta is a compound AI system powered by multiple openly available models',
     requirements: {
-      loggedin: true,
+      loggedIn: true,
       admin: true,
     },
     features: {
@@ -266,7 +266,7 @@ export const Models = [
     enabled: false,
     description: 'A model will be selected based on your prompt',
     requirements: {
-      loggedin: true,
+      loggedIn: true,
       admin: true,
     },
     features: {
@@ -274,7 +274,7 @@ export const Models = [
       reasoning: false,
     },
   },
-] as const;
+] as const);
 
 export type ModelID = (typeof Models)[number]['value'];
 export const ModelList = Models.map((m) => m.value);

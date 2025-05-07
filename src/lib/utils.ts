@@ -1,6 +1,7 @@
 import { dxdbType } from '@/lib/dexie';
 import axios from 'axios';
 import { type ClassValue, clsx } from 'clsx';
+import Fuse from 'fuse.js';
 import { twMerge } from 'tailwind-merge';
 import { defaultModel } from './ai';
 import Constants from './constants';
@@ -324,6 +325,30 @@ export async function populateOnboardingThreads(db: dxdbType) {
     updated_at: createDate(),
     status: 'done',
   });
+}
+
+/**
+ * Performs fuzzy search on an array of objects using Fuse.js
+ * @param items Array of objects to search through
+ * @param query Search query string
+ * @param keys Array of object keys to search within
+ * @param threshold Fuse.js threshold for match quality (0-1)
+ * @returns Array of items that match the search query
+ */
+export function fuzzySearch<T extends Record<string, any>>(
+  items: T[],
+  query: string,
+  keys: (keyof T)[],
+  threshold: number = 0.4,
+): T[] {
+  if (!query.trim()) return items;
+
+  const fuse = new Fuse(items, {
+    keys: keys as string[],
+    threshold,
+  });
+
+  return fuse.search(query).map((result) => result.item);
 }
 
 /**

@@ -1,52 +1,28 @@
 'use client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { addAdminAction, checkIsAdminAction, deleteSyncAction, getAdminsAction, removeAdminAction } from '@/lib/actions';
+import { useAdmin } from '@/hooks/use-admin';
+import { addAdminAction, deleteSyncAction, removeAdminAction } from '@/lib/actions';
 import { tryCatch } from '@/lib/utils';
 import { useUser } from '@clerk/nextjs';
 import { Loader2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 
 export default function Page() {
   const { user } = useUser();
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [admins, setAdmins] = useState<string[]>([]);
+  const admins = useAdmin();
   const [newAdmin, setNewAdmin] = useState('');
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const currentUserAsync = async () => {
-      if (!user?.primaryEmailAddress?.emailAddress) return;
-      setLoading(true);
-      const isAdmin = await tryCatch(checkIsAdminAction(user.primaryEmailAddress.emailAddress));
-      setLoading(false);
-      if (isAdmin.error) {
-        toast.error('Failed to check admin status');
-        return;
-      }
-      if (isAdmin.data) {
-        setIsAdmin(true);
-        const getAdmins = await tryCatch(getAdminsAction());
-        if (getAdmins.error) {
-          toast.error('Failed to get admins');
-          return;
-        }
-        setAdmins(getAdmins.data);
-      }
-    };
-    currentUserAsync();
-  }, [user?.primaryEmailAddress?.emailAddress]);
+  const email = user?.primaryEmailAddress?.emailAddress;
 
-  if (loading)
+  if (admins.isLoading)
     return (
       <div className='flex h-screen flex-col items-center justify-center'>
         <Loader2 className='animate-spin' />
       </div>
     );
-  if (!user || !user.primaryEmailAddress)
-    return <div className='flex h-screen flex-col items-center justify-center'>Not logged in</div>;
-  if (!isAdmin) return <div className='flex h-screen flex-col items-center justify-center'>Unauthorized</div>;
 
   return (
     <div className='h-screen w-screen bg-gray-900 p-4 text-white'>
@@ -57,7 +33,7 @@ export default function Page() {
           onSubmit={async (e) => {
             e.preventDefault();
             setLoading(true);
-            if (admins.includes(newAdmin)) {
+            if (admins.data.includes(newAdmin)) {
               toast.error('User is already an admin');
               setLoading(false);
               setNewAdmin('');
@@ -89,17 +65,16 @@ export default function Page() {
           </Button>
         </form>
         <ul className='mt-4 flex flex-col gap-2'>
-          {admins.map((admin) => (
+          {admins.data.map((admin) => (
             <li key={admin} className='flex items-center justify-between p-2'>
-              {admin === user?.primaryEmailAddress?.emailAddress && <span className='text-red-500'>{'You ->'}</span>}
+              {email === admin && <span className='text-red-500'>{'You ->'}</span>}
               <span>{admin}</span>
-              {admin !== user?.primaryEmailAddress?.emailAddress && (
+              {email !== admin && (
                 <Button
                   variant='destructive'
                   className='m-2 rounded p-2 text-white'
                   onClick={async () => {
-                    if (admin === user?.primaryEmailAddress?.emailAddress)
-                      return toast.error('You cannot remove yourself as an admin');
+                    if (email === admin) return toast.error('You cannot remove yourself as an admin');
                     await removeAdminAction(admin);
                     toast.success(`Removed ${admin} as an admin`);
                   }}
@@ -110,7 +85,7 @@ export default function Page() {
             </li>
           ))}
         </ul>
-        {user.primaryEmailAddress?.emailAddress === 'gloves1229@gmail.com' && (
+        {email === 'gloves1229@gmail.com' && (
           <div className='mt-4 flex flex-col gap-4'>
             <h2 className='text-xl font-bold'>Danger Zone</h2>
             <Button

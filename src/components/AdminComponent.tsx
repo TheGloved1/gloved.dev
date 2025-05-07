@@ -1,8 +1,6 @@
 'use client';
 import Loading from '@/components/loading';
-import { getAdminsAction } from '@/lib/actions';
-import { useUser } from '@clerk/nextjs';
-import { useQuery } from '@tanstack/react-query';
+import { useAdmin } from '@/hooks/use-admin';
 import React from 'react';
 
 export default function AdminComponent({
@@ -12,30 +10,20 @@ export default function AdminComponent({
   children: React.ReactNode;
   fallback?: React.ReactNode;
 }): React.JSX.Element {
-  const { user } = useUser();
-  const adminsQuery = useQuery({
-    queryKey: ['admins'],
-    queryFn: getAdminsAction,
-    enabled: !!user?.primaryEmailAddress?.emailAddress,
-    initialData: [],
-  });
+  const admins = useAdmin();
 
-  if (adminsQuery.error) {
+  if (admins.error) {
     return <></>;
   }
 
-  if (adminsQuery.isLoading) {
+  if (admins.isLoading) {
     if (fallback) {
       return <>{fallback}</>;
     }
     return <Loading />;
   }
 
-  if (!user?.primaryEmailAddress?.emailAddress) {
-    return <></>;
-  }
-
-  if (adminsQuery.data.includes(user.primaryEmailAddress.emailAddress)) {
+  if (admins.isAdmin) {
     return <>{children}</>;
   }
 

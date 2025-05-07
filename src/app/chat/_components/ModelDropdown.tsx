@@ -5,19 +5,18 @@ import { type Theme, themes } from '@/components/ThemeChanger';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { useAdmin } from '@/hooks/use-admin';
 import { useChatOptions } from '@/hooks/use-chat-options';
-import { checkIsAdminAction } from '@/lib/actions';
 import { Models } from '@/lib/ai';
-import { tryCatch } from '@/lib/utils';
+import { fuzzySearch } from '@/lib/utils';
 import { useUser } from '@clerk/nextjs';
-import Fuse from 'fuse.js';
 import { Bot, ChevronDown, ChevronUp, Search } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { DeepSeekIcon, GeminiIcon, GPTIcon, LlamaIcon } from './ModelIcons';
 
 export default function ModelDropdown() {
-  const { user, isSignedIn } = useUser();
-  const [isAdmin, setIsAdmin] = useState(false);
+  const { isSignedIn } = useUser();
+  const admins = useAdmin();
   const { model, setModel } = useChatOptions();
   const [theme] = useLocalStorage<Theme>('theme', themes.dark);
   const [searchQuery, setSearchQuery] = useState('');
@@ -37,38 +36,16 @@ export default function ModelDropdown() {
   // Get the selected model details
   const selectedModel = Models.find((m) => m.value === model) ?? null;
 
-  useEffect(() => {
-    const email = user?.primaryEmailAddress?.emailAddress;
-    if (!email) return;
-    const checkAdmin = async () => {
-      const isAdminAction = await tryCatch(checkIsAdminAction(email));
-      if (isAdminAction.error) {
-        return;
-      }
-      setIsAdmin(isAdminAction.data);
-    };
-    checkAdmin();
-  }, [user]);
-
   // Filter models based on search query
   const filteredModels = useMemo(() => {
     const availableModels = Models.filter((m) => {
       if (!m.enabled) return false;
-      if (m.requirements.admin && !isAdmin) return false;
+      if (m.requirements.admin && !admins.isAdmin) return false;
       return true;
     });
 
-    if (!debouncedSearchQuery.trim()) {
-      return availableModels;
-    }
-
-    const fuse = new Fuse(availableModels, {
-      keys: ['label', 'value', 'provider'],
-      threshold: 0.4,
-    });
-
-    return fuse.search(debouncedSearchQuery).map((result) => result.item);
-  }, [isAdmin, debouncedSearchQuery]);
+    return fuzzySearch(availableModels, debouncedSearchQuery, ['label', 'value', 'provider']);
+  }, [admins.isAdmin, debouncedSearchQuery]);
 
   // Function to get the appropriate icon based on model name
   const getModelIcon = (model: string, size: 'sm' | 'md' | 'lg' = 'md') => {
@@ -140,9 +117,9 @@ export default function ModelDropdown() {
                   <Tooltip delayDuration={600} disableHoverableContent>
                     <TooltipTrigger asChild>
                       <button
-                        disabled={modelItem.requirements?.loggedin && !isSignedIn}
+                        disabled={modelItem.requirements?.loggedIn && !isSignedIn}
                         onClick={() => {
-                          if (modelItem.requirements?.loggedin && !isSignedIn) return;
+                          if (modelItem.requirements?.loggedIn && !isSignedIn) return;
                           setModel(modelItem.value);
                           setIsOpen(false);
                         }}
@@ -150,7 +127,7 @@ export default function ModelDropdown() {
                           model === modelItem.value ?
                             'border-amber-500/40 shadow-[inset_0_0_15px_rgba(245,158,11,0.15)] ring-2 ring-amber-500/30'
                           : ''
-                        } ${modelItem.requirements?.loggedin && !isSignedIn ? 'opacity-50 grayscale filter' : ''}`}
+                        } ${modelItem.requirements?.loggedIn && !isSignedIn ? 'opacity-50 grayscale filter' : ''}`}
                       >
                         <div className='flex w-full flex-col items-center justify-center gap-1 font-medium transition-colors'>
                           {getModelIcon(modelItem.label, 'lg')}
@@ -171,7 +148,7 @@ export default function ModelDropdown() {
                       </button>
                     </TooltipTrigger>
                     <TooltipContent className='w-48'>
-                      {modelItem.requirements?.loggedin && !isSignedIn ?
+                      {modelItem.requirements?.loggedIn && !isSignedIn ?
                         'You must be signed in to use this model'
                       : modelItem.description}
                     </TooltipContent>

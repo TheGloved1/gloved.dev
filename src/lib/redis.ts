@@ -295,6 +295,13 @@ export async function setShortenedUrl(userId: string, id: string, url: string) {
   await redis.set('shortenedUrls', urls);
 }
 
+/**
+ * Retrieves all shortened URLs associated with the specified user ID from the Redis database.
+ * If the user ID does not exist, an empty object is returned.
+ *
+ * @param userId The user ID associated with the shortened URLs.
+ * @returns An object containing the shortened URLs associated with the specified user ID.
+ */
 export async function getAllUserShortenedUrls(userId: string) {
   return ((await redis.get('shortenedUrls')) as ShortenedUrls)?.[userId] || {};
 }
