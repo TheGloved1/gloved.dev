@@ -59,15 +59,6 @@ export default function ModelDropdown() {
     return <Bot className={className} />;
   };
 
-  // If no pinned models are available, show a message in the pinned tab
-  const noModelsFoundMessage = (
-    <div className='flex flex-col items-center justify-center p-8 text-center text-gray-400'>
-      <Search className='mb-3 h-12 w-12 text-gray-700' />
-      <h3 className='mb-1 text-lg font-medium text-gray-300'>No models found</h3>
-      <p className='max-w-[250px] text-sm'>No models found that match your search criteria.</p>
-    </div>
-  );
-
   return (
     <div className={`${theme.className}`}>
       <Popover open={isOpen} onOpenChange={setIsOpen}>
@@ -100,7 +91,11 @@ export default function ModelDropdown() {
           <div className='border-chat-border border-b px-3'></div>
 
           {filteredModels.length === 0 ?
-            noModelsFoundMessage
+            <div className='flex flex-col items-center justify-center p-8 text-center text-gray-400'>
+              <Search className='mb-3 h-12 w-12 text-gray-700' />
+              <h3 className='mb-1 text-lg font-medium text-gray-300'>No models found</h3>
+              <p className='max-w-[250px] text-sm'>No models found that match your search criteria.</p>
+            </div>
           : <div className='flex w-full flex-wrap justify-start gap-3.5 pb-4 pl-3 pr-2 pt-2.5'>
               {filteredModels.map((modelItem) => (
                 <div className='group relative' key={modelItem.value}>
