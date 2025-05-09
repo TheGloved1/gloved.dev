@@ -2,9 +2,20 @@ import { dxdbType } from '@/lib/dexie';
 import axios from 'axios';
 import { type ClassValue, clsx } from 'clsx';
 import Fuse from 'fuse.js';
+import { RefObject } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { defaultModel } from './ai';
 import Constants from './constants';
+
+/**
+ * Check if we're on the server or client side
+ */
+export const isClient = typeof window !== 'undefined';
+
+export const _window = /* #__PURE__ */ isClient ? window : undefined;
+export const _document = /* #__PURE__ */ isClient ? window.document : undefined;
+export const _navigator = /* #__PURE__ */ isClient ? window.navigator : undefined;
+export const _location = /* #__PURE__ */ isClient ? window.location : undefined;
 
 /**
  * A wrapper around `tailwind-merge` and `clsx` to concisely merge classnames.
@@ -15,6 +26,63 @@ import Constants from './constants';
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
+
+/**
+ * Any function
+ */
+export type Fn = () => void;
+
+/**
+ * Check if object is a react ref
+ */
+export const isRef = (obj: unknown): boolean =>
+  obj !== null && typeof obj === 'object' && Object.prototype.hasOwnProperty.call(obj, 'current');
+
+const toString = Object.prototype.toString;
+
+export const isBoolean = (val: any): val is boolean => typeof val === 'boolean';
+
+export const isFunction = <T extends Function>(val: any): val is T => typeof val === 'function';
+
+export const isNumber = (val: any): val is number => typeof val === 'number';
+
+export const isString = (val: unknown): val is string => typeof val === 'string';
+
+export const isObject = (val: any): val is object => toString.call(val) === '[object Object]';
+
+export const isWindow = (val: any): val is Window =>
+  typeof window !== 'undefined' && toString.call(val) === '[object Window]';
+
+export const noop = () => {};
+
+export const rand = (min: number, max: number) => {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+};
+
+export const round = (num: number) => Math.round(num * 1e2) / 1e2;
+
+/**
+ * Accepts either a ref object or a dom node and returns a dom node
+ *
+ * @param target - ref or a dom node
+ * @returns dom noe
+ */
+export function unRef<T = HTMLElement>(target: MaybeRef<T>): T {
+  const element = isRef(target) ? (target as RefObject<T>).current : (target as T);
+
+  return element;
+}
+
+/**
+ * Maybe it's a react ref, or a dom node.
+ *
+ * ```ts
+ * type MaybeRef<T> = T | RefObject<T>
+ * ```
+ */
+export type MaybeRef<T> = T | RefObject<T>;
 
 /**
  * A boolean indicating whether the code is running on the server (true) or in the browser (false).
