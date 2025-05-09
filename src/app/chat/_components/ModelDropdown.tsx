@@ -16,13 +16,13 @@ import { useMemo, useState } from 'react';
 import { DeepSeekIcon, GeminiIcon, GPTIcon, LlamaIcon } from './ModelIcons';
 
 export default function ModelDropdown() {
-  const { isSignedIn } = useUser();
-  const admins = useAdmin();
-  const { model, setModel } = useChatOptions();
-  const [theme] = useLocalStorage<Theme>('theme', themes.dark);
   const [searchQuery, setSearchQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
+  const { model, setModel } = useChatOptions();
+  const [theme] = useLocalStorage<Theme>('theme', themes.dark);
   const debouncedSearchQuery = useDebounce(searchQuery, 150);
+  const admins = useAdmin();
+  const { isSignedIn } = useUser();
 
   // Get the selected model details
   const selectedModel = Models.find((m) => m.value === model) ?? null;
