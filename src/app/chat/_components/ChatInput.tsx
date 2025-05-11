@@ -12,7 +12,7 @@ import { Models } from '@/lib/ai';
 import Constants from '@/lib/constants';
 import { tryCatch, upload } from '@/lib/utils';
 import { useAuth } from '@clerk/nextjs';
-import { ChevronDown, Paperclip, Send, Square, Wrench, X } from 'lucide-react';
+import { ArrowUp, ChevronDown, Paperclip, Square, Wrench, X } from 'lucide-react';
 import Image from 'next/image';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useRef } from 'react';
@@ -237,6 +237,8 @@ const ChatInput = memo(
                           }
                         }}
                       />
+                    </div>
+                    <div className='-mb-px mt-2 flex w-full flex-row-reverse justify-between'>
                       <div className='-mr-0.5 -mt-0.5 flex items-center justify-center gap-2'>
                         {canUpload ?
                           <div className='px-1'>
@@ -283,7 +285,7 @@ const ChatInput = memo(
                             disabled={!!!input.trim() && !!!imagePreview?.length}
                             className='border-reflect button-reflect relative inline-flex h-9 w-9 items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-[rgb(162,59,103)] bg-primary/20 p-2 text-sm font-semibold text-pink-50 shadow transition-colors hover:bg-[#d56698] hover:bg-pink-800/70 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring active:bg-[rgb(162,59,103)] active:bg-pink-800/40 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-[rgb(162,59,103)] disabled:hover:bg-primary/20 disabled:active:bg-[rgb(162,59,103)] disabled:active:bg-primary/20 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
                           >
-                            <Send className='size-4' />
+                            <ArrowUp className='!size-5' />
                             <span className='sr-only'>Send</span>
                           </Button>
                         )}
@@ -303,29 +305,29 @@ const ChatInput = memo(
                           </Button>
                         )}
                       </div>
-                    </div>
-                  </div>
-                  <div className='flex flex-col gap-2 md:flex-row md:items-center'>
-                    <div className='z-50 ml-[-7px] flex items-center gap-1'>
-                      <ModelDropdown />
-                      {selectedModel?.features.tools ?
-                        <AdminComponent fallback={<></>}>
-                          <Button
-                            title={`AI can create and upload files for you (Experimental)`}
-                            variant='ghost'
-                            type='button'
-                            className={`${toolsEnabled ? 'bg-muted/40 hover:bg-muted/80' : 'bg-muted/0 hover:bg-muted/10'} -mb-1.5 inline-flex h-auto items-center justify-center gap-2 whitespace-nowrap rounded-full border border-solid border-secondary-foreground/10 px-3 py-1.5 pl-2 pr-2.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-foreground/50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0`}
-                            onClick={() => {
-                              setToolsEnabled(!toolsEnabled);
-                              if (!toolsEnabled) toast.info('Tools Enabled');
-                              if (toolsEnabled) toast.info('Tools Disabled');
-                            }}
-                          >
-                            <Wrench className='size-4' />
-                            Tools
-                          </Button>
-                        </AdminComponent>
-                      : null}
+                      <div className='flex flex-col gap-2 md:flex-row md:items-center'>
+                        <div className='z-50 ml-[-7px] flex items-center gap-1'>
+                          <ModelDropdown />
+                          {selectedModel?.features.tools ?
+                            <AdminComponent fallback={<></>}>
+                              <Button
+                                title={`AI can create and upload files for you (Experimental)`}
+                                variant='ghost'
+                                type='button'
+                                className={`${toolsEnabled ? 'bg-muted/40 hover:bg-muted/80' : 'bg-muted/0 hover:bg-muted/10'} -mb-1.5 inline-flex h-auto items-center justify-center gap-2 whitespace-nowrap rounded-full border border-solid border-secondary-foreground/10 px-3 py-1.5 pl-2 pr-2.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-foreground/50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0`}
+                                onClick={() => {
+                                  setToolsEnabled(!toolsEnabled);
+                                  if (!toolsEnabled) toast.info('Tools Enabled');
+                                  if (toolsEnabled) toast.info('Tools Disabled');
+                                }}
+                              >
+                                <Wrench className='size-4' />
+                                Tools
+                              </Button>
+                            </AdminComponent>
+                          : null}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </form>
