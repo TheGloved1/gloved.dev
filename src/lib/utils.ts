@@ -1,5 +1,4 @@
 import { dxdbType } from '@/lib/dexie';
-import axios from 'axios';
 import { type ClassValue, clsx } from 'clsx';
 import Fuse from 'fuse.js';
 import { RefObject } from 'react';
@@ -30,7 +29,7 @@ export function cn(...inputs: ClassValue[]) {
 /**
  * Any function
  */
-export type Fn = () => void;
+export type Fn = (...args: any[]) => any;
 
 /**
  * Check if object is a react ref
@@ -138,9 +137,11 @@ export function apiRoute(route: string) {
 }
 
 export async function fetchIp() {
-  const response = await axios.get<{ ip: string }>('https://api64.ipify.org?format=json');
-  console.log('Client IP:', response.data.ip);
-  return response.data.ip;
+  const response = await tryCatch(fetch('https://api64.ipify.org?format=json'));
+  if (response.error) return;
+  const data = (await response.data.json()) as { ip: string };
+  console.log('Client IP:', data.ip);
+  return data.ip;
 }
 
 type Success<T> = {
