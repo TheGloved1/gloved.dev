@@ -1,5 +1,5 @@
 import { Models } from '@/lib/ai';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 
 function getModelName(model: string) {
   return Models.find((m) => m.value === model)?.label ?? model;
@@ -12,7 +12,7 @@ function getModelName(model: string) {
  * @prop {Date} date - The date to display a relative timestamp for
  * @returns {ReactElement} A React element that displays the relative timestamp
  */
-const Timestamp = React.memo(({ date, model }: { date: Date; model: string }) => {
+const Timestamp = memo(({ date, model }: { date: Date; model: string }) => {
   const [timestamp, setTimestamp] = useState(createTimestamp(date));
   const [interval, setIntervalState] = useState(calculateInterval(date));
 
@@ -21,11 +21,11 @@ const Timestamp = React.memo(({ date, model }: { date: Date; model: string }) =>
   }, [date]);
 
   useEffect(() => {
-    let intervalId: NodeJS.Timeout;
+    let newInterval: NodeJS.Timeout;
     if (interval !== null) {
-      intervalId = setInterval(updateTimestamp, interval);
+      newInterval = setInterval(updateTimestamp, interval);
     }
-    return () => clearInterval(intervalId);
+    return () => clearInterval(newInterval);
   }, [interval, updateTimestamp]);
 
   //Memoize to avoid unnecessary recalculation
@@ -36,7 +36,10 @@ const Timestamp = React.memo(({ date, model }: { date: Date; model: string }) =>
 
   return (
     <span className='text-xs text-neutral-500 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 group-focus:opacity-100'>
-      Generated with {getModelName(model)} {timestamp}
+      <span className='text-xs text-neutral-content opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 group-focus:opacity-100'>
+        Generated with {getModelName(model)}
+      </span>{' '}
+      {timestamp}
     </span>
   );
 });
