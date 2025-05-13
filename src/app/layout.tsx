@@ -13,12 +13,16 @@ import { JetBrains_Mono } from 'next/font/google';
 import Script from 'next/script';
 import React from 'react';
 import './globals.css';
-import Head from 'next/head';
 
 export const metadata: Metadata = {
   title: Constants.NAME,
   description: Constants.DESC,
   icons: Constants.ICON,
+  verification: {
+    other: {
+      'google-adsense-account': 'ca-pub-2820705010029927',
+    },
+  },
   openGraph: {
     title: Constants.NAME,
     description: Constants.DESC,
@@ -47,12 +51,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <ClerkProvider appearance={{ variables: { colorPrimary: '#333' }, baseTheme: dark }}>
       <html lang='en' suppressHydrationWarning>
-        <Script
-          async
-          src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2820705010029927'
-          crossOrigin='anonymous'
-          strategy='beforeInteractive'
-        />
         {env.NODE_ENV === 'development' && (
           <>
             {/* Dev Only Scripts Here */}
