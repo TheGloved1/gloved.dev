@@ -11,6 +11,8 @@ import { RefreshCcw } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 import { DeleteConfirmDialog } from './DeleteConfirmDialog';
 import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { Label } from './ui/label';
 
 export type FileInfo = {
   name: string;
@@ -183,9 +185,9 @@ export default function FileUploader(): React.JSX.Element {
         <p className='text-[0.5rem] md:text-sm'>{"(Don't download random files off the internet)"}</p>
         <br />
 
-        <label htmlFor='uploadBtn' className='label mt-2 pt-2'>
+        <Label htmlFor='uploadBtn' className='mt-2 pt-2'>
           {'Upload File'}
-        </label>
+        </Label>
         <div className='form-control'>
           <label className='label m-2 cursor-pointer rounded-xl bg-gray-600 p-2 text-black hover:bg-gray-700'>
             <span className='label-text text-balance'>{'Temporary file (24h)'}</span>
@@ -193,10 +195,10 @@ export default function FileUploader(): React.JSX.Element {
             <input type='checkbox' checked={isTemp} onChange={(e) => setIsTemp(e.target.checked)} className='checkbox' />
           </label>
         </div>
-        <input
+        <Input
           id='uploadBtn'
           ref={inputButton}
-          className='glass file-input file-input-primary max-w-80 rounded-xl bg-black hover:animate-pulse'
+          className='max-w-80 rounded-xl hover:animate-pulse'
           type='file'
           onChange={uploadFile}
         />
