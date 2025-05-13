@@ -1,19 +1,22 @@
 import { useCallback, useEffect, useRef } from 'react';
 
 /**
- * Returns a ref and a function to adjust the height of a textarea
- * to fit its content.
+ * Auto-resizes a textarea based on its content.
  *
- * @param {object} options
- * @param {number} options.minHeight The minimum height of the textarea
- * @param {number} [options.maxHeight] The maximum height of the textarea
+ * @param {{ minHeight: number; maxHeight?: number }} input - The input options for the auto-resizing textarea.
+ * @param {number} input.minHeight The minimum height of the textarea.
+ * @param {number | undefined} input.maxHeight The maximum height of the textarea. Optional.
  *
- * @returns {object}
- * @returns {React.MutableRefObject<HTMLTextAreaElement | null>} textareaRef
- * @returns {(reset?: boolean) => void} adjustHeight
- *   When called without arguments, it will adjust the height of the textarea
- *   to fit its content. When called with `true`, it will reset the height
- *   of the textarea to `options.minHeight`.
+ * @returns An object with the following properties:
+ *   - textareaRef: A ref to the textarea element.
+ *   - adjustHeight: A function to adjust the height of the textarea.
+ *
+ * @example
+ * ```tsx
+ * const [input, setInput] = useState('');
+ * const { textareaRef, adjustHeight } = useAutoResizeTextarea({ minHeight: 60, maxHeight: 200 });
+ * <textarea ref={textareaRef} onChange={(e) => { setInput(e.target.value); adjustHeight(); }} value={input} />
+ * ```
  */
 export function useAutoResizeTextarea({ minHeight, maxHeight }: { minHeight: number; maxHeight?: number }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
