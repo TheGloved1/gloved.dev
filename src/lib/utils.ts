@@ -157,21 +157,31 @@ type Failure<E> = {
 type Result<T, E = Error> = Success<T> | Failure<E>;
 
 /**
- * Makes a promise, and returns a result object with a discriminated union.
- * If the promise resolves, the result object will contain the resolved value in the `data` property, and `null` in the `error` property.
- * If the promise rejects, the result object will contain `null` in the `data` property, and the error in the `error` property.
- * @param promise - The promise to make.
- * @returns A result object with a discriminated union.
+ * Tries to execute a value (either a promise or a synchronous value) and returns a result object.
+ * If the value is a promise, it will be awaited. If the value is synchronous, it will be executed.
+ * If the value throws an error, the error will be caught and returned in the result object.
+ * @param value The value to be tried. It can be a promise or a synchronous value.
+ * @returns A result object containing the data if the value was successful, or the error if the value failed.
+ * @example
+ * ```typescript
+ * const result = tryCatch(fetch('/api/users'));
+ * // Handle error
+ * if (result.error) {
+ *   console.error(result.error);
+ *   return;
+ * }
+ * // Error has been handled above so we can be sure that result.data is not null.
+ * console.log(result.data);
+ * ```
  */
-export async function tryCatch<T, E = Error>(promise: Promise<T>): Promise<Result<T, E>> {
+export async function tryCatch<T, E = Error>(value: Promise<T> | T): Promise<Result<T, E>> {
   try {
-    const data = await promise;
+    const data = value instanceof Promise ? await value : value;
     return { data, error: null };
   } catch (error) {
     return { data: null, error: error as E };
   }
 }
-
 /**
  * Creates a string representing the current time in ISO format.
  * @returns A string representing the current time in ISO format.

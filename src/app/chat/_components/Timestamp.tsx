@@ -45,13 +45,10 @@ const Timestamp = memo(({ date, model }: { date: Date; model: string }) => {
 });
 Timestamp.displayName = 'Timestamp';
 
+const getSeconds = (date: Date) => Math.floor((new Date().getTime() - date.getTime()) / 1000);
+
 const calculateInterval = (date: Date) => {
-  let seconds;
-  try {
-    seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
-  } catch (e) {
-    seconds = 0;
-  }
+  const seconds = getSeconds(date);
   if (seconds < 86400) {
     // Less than a day old
     if (seconds < 60) return 1000; // 1 second
@@ -63,12 +60,7 @@ const calculateInterval = (date: Date) => {
 };
 
 const createTimestamp = (date: Date) => {
-  let seconds;
-  try {
-    seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
-  } catch (e) {
-    seconds = 0;
-  }
+  const seconds = getSeconds(date);
   let interval = Math.floor(seconds / 31536000);
 
   if (interval >= 1) {
