@@ -8,24 +8,26 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { useAdmin } from '@/hooks/use-admin';
 import { useChatOptions } from '@/hooks/use-chat-options';
 import { useDebounce } from '@/hooks/use-debounce';
-import { Models } from '@/lib/ai';
+import { Model, Models } from '@/lib/ai';
 import { fuzzySearch } from '@/lib/utils';
 import { useUser } from '@clerk/nextjs';
 import { Bot, ChevronDown, ChevronUp, Search } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useLayoutEffect, useMemo, useState } from 'react';
 import { DeepSeekIcon, GeminiIcon, GPTIcon, LlamaIcon } from './ModelIcons';
 
 export default function ModelDropdown() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
+  const [selectedModel, setSelectedModel] = useState<Model>(Models[0]);
   const { model, setModel } = useChatOptions();
   const [theme] = useLocalStorage<Theme>('theme', themes.dark);
   const debouncedSearchQuery = useDebounce(searchQuery, 150);
   const admins = useAdmin();
   const { isSignedIn } = useUser();
 
-  // Get the selected model details
-  const selectedModel = Models.find((m) => m.value === model) ?? null;
+  useLayoutEffect(() => {
+    setSelectedModel(Models.find((m) => m.value === model) || Models[0]);
+  }, [model]);
 
   // Filter models based on search query
   const filteredModels = useMemo(() => {
@@ -67,7 +69,7 @@ export default function ModelDropdown() {
             variant='ghost'
             className='-mb-2 inline-flex h-auto items-center justify-center gap-2 whitespace-nowrap rounded-md px-2 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted/40 hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-foreground/50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
           >
-            <span suppressHydrationWarning>{selectedModel?.label || 'No model selected'}</span>
+            <span suppressHydrationWarning>{selectedModel.label || 'No model selected'}</span>
             {isOpen ?
               <ChevronUp className='size-4 opacity-50' />
             : <ChevronDown className='size-4 opacity-50' />}

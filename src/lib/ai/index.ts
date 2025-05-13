@@ -277,6 +277,7 @@ export const Models = Object.freeze([
 ] as const);
 
 export type ModelID = (typeof Models)[number]['value'];
+export type Model = (typeof Models)[number];
 export const ModelList = Models.map((m) => m.value);
 
 export const defaultModel = 'gemini-2.0-flash' as const;
