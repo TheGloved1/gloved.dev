@@ -36,6 +36,8 @@ export default function ModelDropdown() {
       if (m.requirements.admin && !admins.isAdmin) return false;
       return true;
     });
+    
+    if (!debouncedSearchQuery.trim()) return availableModels;
 
     return fuzzySearch(availableModels, debouncedSearchQuery, ['label', 'value', 'provider']);
   }, [admins.isAdmin, debouncedSearchQuery]);
