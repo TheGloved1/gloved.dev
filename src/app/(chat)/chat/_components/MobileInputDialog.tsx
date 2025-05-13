@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { useAutoResizeTextarea } from '@/hooks/use-autoresize-textarea';
 
 export default function MobileInputDialog({
   input,
@@ -7,15 +8,14 @@ export default function MobileInputDialog({
   isOpen,
   setIsOpen,
   onSubmit,
-  rows,
 }: {
   input: string;
   setInput: (value: string) => void;
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
   onSubmit: (value: string) => void;
-  rows: number;
 }) {
+  const { textareaRef, adjustHeight } = useAutoResizeTextarea({ minHeight: 50 });
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsOpen(false);
@@ -31,13 +31,13 @@ export default function MobileInputDialog({
         <form onSubmit={handleSubmit} className='flex flex-col'>
           <textarea
             className='w-full resize-none rounded-lg border border-border bg-transparent p-1 text-base leading-6 text-neutral-100 outline-none focus:outline-none disabled:opacity-0'
-            style={{ height: `${(rows + 1) * 24}px` }}
-            rows={rows}
             value={input}
             placeholder={`Type message here...`}
             onChange={(e) => {
               setInput(e.target.value);
+              adjustHeight();
             }}
+            ref={textareaRef}
           />
           <span className='flex flex-row justify-between'>
             <Button

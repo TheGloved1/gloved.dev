@@ -1,6 +1,6 @@
 'use client';
 import { createMessage, dxdb, stopGeneration } from '@/lib/dexie';
-import React, { memo, useEffect, useState } from 'react';
+import React, { memo, useCallback, useEffect, useState } from 'react';
 
 import AdminComponent from '@/components/AdminComponent';
 import { Tooltip } from '@/components/TooltipSystem';
@@ -19,6 +19,7 @@ import { useRef } from 'react';
 import { toast } from 'sonner';
 import MobileInputDialog from './MobileInputDialog';
 import ModelDropdown from './ModelDropdown';
+import { useAutoResizeTextarea } from '@/hooks/use-autoresize-textarea';
 
 const ChatInput = memo(
   ({
@@ -36,7 +37,10 @@ const ChatInput = memo(
     const [loading, setLoading] = useState<boolean>(false);
     const [input, setInput] = useLocalStorage('input', '');
     const { toolsEnabled, setToolsEnabled, syncEnabled, model, systemPrompt } = useChatOptions();
-    const [rows, setRows] = useState<number>(2);
+    const { textareaRef, adjustHeight } = useAutoResizeTextarea({
+      minHeight: 60,
+      maxHeight: 200,
+    });
     const auth = useAuth();
     const isMobile = useIsMobile();
     const router = useRouter();
@@ -85,6 +89,7 @@ const ChatInput = memo(
         try {
           const prompt = input;
           setInput('');
+          adjustHeight(true);
           await createMessage(threadId, query || prompt, model, systemPrompt?.trim(), attachments, userIdIfSyncEnabled);
         } catch (e) {
           toast.error('Failed to generate message');
@@ -95,9 +100,9 @@ const ChatInput = memo(
       } else {
         const prompt = input;
         setInput('');
+        adjustHeight(true);
         await createMessage(threadId, prompt, model, systemPrompt?.trim(), attachments, userIdIfSyncEnabled);
         setLoading(false);
-        setRows(2);
       }
     };
 
@@ -107,13 +112,6 @@ const ChatInput = memo(
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [query, createThread]);
-
-    useEffect(() => {
-      const minRows = 2;
-      const maxRows = 6;
-      const newRows = input?.split('\n').length ?? 0;
-      setRows(Math.min(Math.max(minRows, newRows), maxRows));
-    }, [input, setRows]);
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const files = e.target.files;
@@ -215,22 +213,25 @@ const ChatInput = memo(
                     <div className='flex flex-grow flex-row items-start'>
                       <textarea
                         className='w-full resize-none bg-transparent text-base leading-6 text-foreground outline-none placeholder:text-secondary-foreground/60 disabled:opacity-0'
-                        style={{ height: `${(rows + 1) * 24}px` }}
                         value={input || ''}
                         disabled={loading}
                         placeholder='Type message here...'
-                        rows={rows}
+                        ref={textareaRef}
                         onFocus={handleMobileInput}
                         onChange={(e) => {
                           setInput(e.target.value);
+                          adjustHeight();
                         }}
                         onKeyDown={(e) => {
+                          // Shift + Enter for new line
                           if (e.key === 'Enter' && e.shiftKey) {
                             e.preventDefault();
                             setInput(input + '\n');
+                            adjustHeight();
+                            return;
                           } else if (e.key === 'Enter') {
-                            if (!input.trim() && !imagePreview) {
-                              e.preventDefault();
+                            e.preventDefault();
+                            if (!input.trim() && !imagePreview.length) {
                               return;
                             }
                             handleSubmit(e);
@@ -282,7 +283,7 @@ const ChatInput = memo(
                           <Button
                             title='Send Message'
                             type='submit'
-                            disabled={!!!input.trim() && !!!imagePreview?.length}
+                            disabled={!input.trim() && !imagePreview.length}
                             className='border-reflect button-reflect relative inline-flex h-9 w-9 items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-[rgb(162,59,103)] bg-primary/20 p-2 text-sm font-semibold text-pink-50 shadow transition-colors hover:bg-[#d56698] hover:bg-pink-800/70 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring active:bg-[rgb(162,59,103)] active:bg-pink-800/40 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-[rgb(162,59,103)] disabled:hover:bg-primary/20 disabled:active:bg-[rgb(162,59,103)] disabled:active:bg-primary/20 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
                           >
                             <ArrowUp className='!size-5' />
@@ -344,7 +345,6 @@ const ChatInput = memo(
             // Handle the message submission here
             handleSubmit();
           }}
-          rows={rows}
         />
       </div>
     );
