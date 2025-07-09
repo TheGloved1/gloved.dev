@@ -3,7 +3,7 @@
 import { RefreshCw, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 
-export default function EnhancedFactGenerator() {
+export default function Page() {
   const [fact, setFact] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -21,66 +21,83 @@ export default function EnhancedFactGenerator() {
   };
 
   return (
-    <div className='flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800 p-4'>
-      {/* Background decoration */}
+    <div className='flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800 p-3 sm:p-4 md:p-6 lg:p-8'>
+      {/* Background decoration - optimized for mobile */}
       <div className='absolute inset-0 overflow-hidden'>
-        <div className='absolute -right-40 -top-40 h-80 w-80 animate-pulse rounded-full bg-purple-500 opacity-20 mix-blend-multiply blur-xl filter'></div>
-        <div className='absolute -bottom-40 -left-40 h-80 w-80 animate-pulse rounded-full bg-pink-500 opacity-20 mix-blend-multiply blur-xl filter delay-1000'></div>
-        <div className='absolute left-40 top-40 h-80 w-80 animate-pulse rounded-full bg-indigo-500 opacity-20 mix-blend-multiply blur-xl filter delay-500'></div>
+        {/* Mobile: smaller, fewer decorative elements */}
+        <div className='absolute -right-20 -top-20 h-40 w-40 animate-pulse rounded-full bg-purple-500 opacity-20 mix-blend-multiply blur-xl filter sm:h-60 sm:w-60 md:h-80 md:w-80'></div>
+        <div className='absolute -bottom-20 -left-20 h-40 w-40 animate-pulse rounded-full bg-pink-500 opacity-20 mix-blend-multiply blur-xl filter delay-1000 sm:h-60 sm:w-60 md:h-80 md:w-80'></div>
+        <div className='absolute left-20 top-20 h-40 w-40 animate-pulse rounded-full bg-indigo-500 opacity-20 mix-blend-multiply blur-xl filter delay-500 sm:h-60 sm:w-60 md:h-80 md:w-80'></div>
       </div>
 
-      <div className='relative w-full max-w-2xl'>
-        {/* Main card */}
-        <div className='rounded-3xl border border-white/20 bg-white/10 p-8 shadow-2xl backdrop-blur-lg'>
-          {/* Header */}
-          <div className='mb-8 text-center'>
-            <div className='mb-4 flex items-center justify-center gap-3'>
-              <Sparkles className='h-8 w-8 text-yellow-400' />
-              <h1 className='bg-gradient-to-r from-white via-purple-200 to-pink-200 bg-clip-text text-4xl font-bold text-transparent md:text-5xl'>
+      <div className='relative w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-2xl xl:max-w-3xl'>
+        {/* Main card - responsive padding and border radius */}
+        <div className='rounded-2xl border border-white/20 bg-white/10 p-4 shadow-2xl backdrop-blur-lg sm:rounded-3xl sm:p-6 md:p-8'>
+          {/* Header - responsive typography and spacing */}
+          <div className='mb-6 text-center sm:mb-8'>
+            <div className='mb-3 flex items-center justify-center gap-2 sm:mb-4 sm:gap-3'>
+              <Sparkles className='h-6 w-6 flex-shrink-0 text-yellow-400 sm:h-7 sm:w-7 md:h-8 md:w-8' />
+              <h1 className='bg-gradient-to-r from-white via-purple-200 to-pink-200 bg-clip-text text-2xl font-bold leading-tight text-transparent sm:text-3xl md:text-4xl lg:text-5xl'>
                 {"Borbo's Fax Machine"}
               </h1>
-              <Sparkles className='h-8 w-8 text-yellow-400' />
+              <Sparkles className='h-6 w-6 flex-shrink-0 text-yellow-400 sm:h-7 sm:w-7 md:h-8 md:w-8' />
             </div>
           </div>
 
-          {/* Generate button */}
-          <div className='mb-8 text-center'>
+          {/* Generate button - mobile-optimized touch target */}
+          <div className='mb-6 text-center sm:mb-8'>
             <button
               onClick={generateFact}
               disabled={isLoading}
-              className='group relative inline-flex transform items-center gap-3 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-600 px-8 py-4 font-semibold text-white shadow-lg transition-all duration-200 hover:scale-105 hover:from-purple-500 hover:to-pink-500 hover:shadow-xl disabled:transform-none disabled:cursor-not-allowed disabled:opacity-50'
+              className='group relative inline-flex min-h-[48px] w-full transform items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 px-6 py-3 text-sm font-semibold text-white shadow-lg transition-all duration-200 hover:scale-105 hover:from-purple-500 hover:to-pink-500 hover:shadow-xl disabled:transform-none disabled:cursor-not-allowed disabled:opacity-50 sm:min-h-[56px] sm:w-auto sm:gap-3 sm:rounded-2xl sm:px-8 sm:py-4 sm:text-base'
             >
               <RefreshCw
-                className={`h-5 w-5 ${isLoading ? 'animate-spin' : 'transition-transform duration-300 group-hover:rotate-180'}`}
+                className={`h-4 w-4 flex-shrink-0 sm:h-5 sm:w-5 ${
+                  isLoading ? 'animate-spin' : 'transition-transform duration-300 group-hover:rotate-180'
+                }`}
               />
-              {isLoading ? 'Generating...' : 'Generate Interesting Fact'}
+              <span className='truncate'>{isLoading ? 'Generating...' : 'Generate Interesting Fact'}</span>
 
               {/* Button glow effect */}
-              <div className='absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-600 opacity-0 blur transition-opacity duration-200 group-hover:opacity-20'></div>
+              <div className='absolute inset-0 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 opacity-0 blur transition-opacity duration-200 group-hover:opacity-20 sm:rounded-2xl'></div>
             </button>
           </div>
 
-          {/* Fact display */}
-          <div className='flex min-h-[120px] items-center justify-center'>
+          {/* Fact display - responsive height and text sizing */}
+          <div className='flex min-h-[100px] items-center justify-center sm:min-h-[120px] md:min-h-[140px]'>
             {fact ?
-              <div className='rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm'>
-                <p className='text-center text-lg font-medium leading-relaxed text-white md:text-xl'>{fact}</p>
+              <div className='w-full rounded-xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm sm:rounded-2xl sm:p-6'>
+                <p className='break-words text-center text-sm font-medium leading-relaxed text-white sm:text-base md:text-lg lg:text-xl'>
+                  {fact}
+                </p>
               </div>
-            : <div className='text-center'>
-                <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-purple-500/20 to-pink-500/20'>
-                  <Sparkles className='h-8 w-8 text-purple-300' />
+            : <div className='px-4 text-center'>
+                <div className='mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-r from-purple-500/20 to-pink-500/20 sm:mb-4 sm:h-14 sm:w-14 md:h-16 md:w-16'>
+                  <Sparkles className='h-6 w-6 text-purple-300 sm:h-7 sm:w-7 md:h-8 md:w-8' />
                 </div>
-                <p className='text-lg text-purple-200 opacity-60'>Click the button above to discover an amazing fact!</p>
+                <p className='text-sm leading-relaxed text-purple-200 opacity-60 sm:text-base md:text-lg'>
+                  Tap the button above to discover a random fact!
+                </p>
               </div>
             }
           </div>
         </div>
 
-        {/* Footer */}
-        <div className='mt-6 text-center'>
-          <p className='text-sm text-purple-300 opacity-60'>Facts powered by uselessfacts.jsph.pl</p>
+        {/* Footer - responsive text sizing */}
+        <div className='mt-4 px-4 text-center sm:mt-6'>
+          <p className='text-xs text-purple-300 opacity-60 sm:text-sm'>Facts powered by uselessfacts.jsph.pl</p>
         </div>
       </div>
+
+      {/* Mobile-specific improvements */}
+      <style jsx global>{`
+        @media (max-width: 640px) {
+          body {
+            -webkit-text-size-adjust: 100%;
+            -webkit-tap-highlight-color: transparent;
+          }
+        }
+      `}</style>
     </div>
   );
 }
