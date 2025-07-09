@@ -71,6 +71,11 @@ const Constants = {
     link: '/shortener',
     description: 'A simple URL shortener web app. (Must be signed in)',
   } as const,
+  Fax: {
+    title: 'Fax',
+    link: '/fax',
+    description: 'A simple fact generator web app suggested by a friend.',
+  } as const,
 } as const;
 
 export default Constants;
