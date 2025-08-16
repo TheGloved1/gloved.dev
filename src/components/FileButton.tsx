@@ -22,8 +22,7 @@ import VideoPreview from './VideoPreview';
 export default function FileButton({ file }: { file: FileInfo }): React.JSX.Element {
   const [showDialog, setShowDialog] = useState(false);
   const encodedFileName = encodeURIComponent(file.name);
-  const tempQuery = file.isTemp ? '?temp=true' : '';
-  const fileUrl = apiRoute(`/files/download/${encodedFileName}${tempQuery}`);
+  const fileUrl = apiRoute(`/files/download/${encodedFileName}`);
   const previewUrl = apiRoute(`/files/view/${encodedFileName}`);
   const isMobile = useIsMobile();
 
