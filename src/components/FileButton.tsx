@@ -10,17 +10,6 @@ import { FileInfo } from './FileUploader';
 import VideoPreview from './VideoPreview';
 
 /**
- * Props for the FileButton component
- *
- * @prop {string} file - name of the file to be downloaded
- * @prop {boolean} [temp] - whether the file is temporary or not
- * @prop {string} [size] - size of the file in human-readable format
- */
-type FileButtonProps = {
-  file: FileInfo;
-};
-
-/**
  * Component to display a file with a button to copy or download it.
  * When clicked, it shows a dialog with options to copy the URL or download the file.
  * If the file is an image or video, it will be previewed in the dialog.
@@ -30,12 +19,12 @@ type FileButtonProps = {
  * @param {string} [props.size] - size of the file in human-readable format
  * @returns {React.JSX.Element}
  */
-export default function FileButton({ file }: FileButtonProps): React.JSX.Element {
+export default function FileButton({ file }: { file: FileInfo }): React.JSX.Element {
   const [showDialog, setShowDialog] = useState(false);
   const encodedFileName = encodeURIComponent(file.name);
   const tempQuery = file.isTemp ? '?temp=true' : '';
   const fileUrl = apiRoute(`/files/download/${encodedFileName}${tempQuery}`);
-  const previewUrl = apiRoute(`/files/view/${encodedFileName}${tempQuery}`);
+  const previewUrl = apiRoute(`/files/view/${encodedFileName}`);
   const isMobile = useIsMobile();
 
   const copyToClipboard = () => {

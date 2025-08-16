@@ -12,7 +12,8 @@ export default function Page() {
     try {
       const response = await fetch('https://uselessfacts.jsph.pl/random.json?language=en');
       const data = await response.json();
-      setFact(data.text);
+      const text = String(data.text);
+      setFact(text);
     } catch (error) {
       setFact('Oops! Could not fetch a fact right now. Try again later.');
     } finally {

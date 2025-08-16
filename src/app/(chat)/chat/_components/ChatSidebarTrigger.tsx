@@ -24,7 +24,6 @@ export default function ChatSidebarTrigger() {
       />
       <Link
         href='/chat'
-        title='New chat'
         className={
           isOpen ?
             'pointer-events-none inline-flex size-8 -translate-x-[2.125rem] items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium text-muted-foreground opacity-0 transition-[transform,opacity] delay-0 duration-150 hover:bg-muted/40 hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'

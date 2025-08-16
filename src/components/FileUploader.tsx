@@ -241,7 +241,7 @@ export default function FileUploader(): React.JSX.Element {
                         onClick={() => {
                           setFileToDelete(file);
                         }}
-                        title={`Delete file ${filesQuery.data.findIndex((f) => f.name === file.name) + 1} of ${filesQuery.data.length}`}
+                        title={`Delete file ${filesQuery.data.filter((f) => !f.isTemp).findIndex((f) => f.name === file.name) + 1} of ${filesQuery.data.filter((f) => !f.isTemp).length}`}
                       >
                         {'X'}
                       </Button>
@@ -265,7 +265,7 @@ export default function FileUploader(): React.JSX.Element {
                           onClick={() => {
                             setFileToDelete(file);
                           }}
-                          title={`Delete file ${filesQuery.data.findIndex((f) => f.name === file.name) + 1} of ${filesQuery.data.length}`}
+                          title={`Delete file ${filesQuery.data.filter((f) => f.isTemp).findIndex((f) => f.name === file.name) + 1} of ${filesQuery.data.filter((f) => f.isTemp).length}`}
                         >
                           {'X'}
                         </Button>

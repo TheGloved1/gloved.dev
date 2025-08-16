@@ -32,6 +32,30 @@ export function cn(...inputs: ClassValue[]) {
 export type Fn = (...args: any[]) => any;
 
 /**
+ * A utility type to prettify an object type, by removing all type inference.
+ *
+ * @typeParam T - The type to prettify.
+ */
+export type Prettify<T> = {
+  [K in keyof T]: T[K];
+} & {};
+
+export type Primitive = string | number | boolean | null | undefined;
+
+/**
+ * A type that allows values to be either:
+ * 1. One of the literal values from the input array (T[number])
+ * 2. Any value of the specified primitive types (Value[number]), excluding the literal values
+ * This is useful for creating types that allow both strict literal values and loose primitive types
+ *
+ * @typeParam T - The array of literal values
+ * @typeParam Value - The array of primitive types to allow (defaults to the types of T's elements)
+ */
+export type LooseAutoComplete<T extends readonly any[], Value extends Primitive[] = T[number][]> =
+  | T[number]
+  | Omit<Value[number], T[number]>;
+
+/**
  * Check if object is a react ref
  */
 export const isRef = (obj: unknown): boolean =>

@@ -37,7 +37,14 @@ import { toast } from 'sonner';
 import ChatSidebarTrigger from './ChatSidebarTrigger';
 
 // Helper function to categorize threads by date
-const categorizeThreads = (threads?: Thread[]) => {
+type ThreadCategories = {
+  Today: Thread[];
+  Yesterday: Thread[];
+  'Last 7 days': Thread[];
+  Older: Thread[];
+};
+
+const categorizeThreads = (threads?: Thread[]): Partial<ThreadCategories> => {
   if (!threads || threads.length === 0) return {};
 
   const today = new Date();
@@ -49,7 +56,7 @@ const categorizeThreads = (threads?: Thread[]) => {
   const lastWeek = new Date(today);
   lastWeek.setDate(lastWeek.getDate() - 7);
 
-  const categories: { [key: string]: Thread[] } = {
+  const categories: ThreadCategories = {
     Today: [],
     Yesterday: [],
     'Last 7 days': [],
@@ -71,7 +78,7 @@ const categorizeThreads = (threads?: Thread[]) => {
   });
 
   // Sort threads within each category by date (newest first)
-  Object.keys(categories).forEach((category) => {
+  (Object.keys(categories) as Array<keyof ThreadCategories>).forEach((category) => {
     categories[category].sort((a, b) => {
       const dateA = new Date(a.last_message_at || a.created_at || 0);
       const dateB = new Date(b.last_message_at || b.created_at || 0);
