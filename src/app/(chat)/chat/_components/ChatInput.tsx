@@ -1,10 +1,11 @@
 'use client';
 import { createMessage, dxdb, stopGeneration } from '@/lib/dexie';
-import React, { memo, useCallback, useEffect, useState } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 
 import AdminComponent from '@/components/AdminComponent';
 import { Tooltip } from '@/components/TooltipSystem';
 import { Button } from '@/components/ui/button';
+import { useAutoResizeTextarea } from '@/hooks/use-autoresize-textarea';
 import { useChatOptions } from '@/hooks/use-chat-options';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -19,7 +20,6 @@ import { useRef } from 'react';
 import { toast } from 'sonner';
 import MobileInputDialog from './MobileInputDialog';
 import ModelDropdown from './ModelDropdown';
-import { useAutoResizeTextarea } from '@/hooks/use-autoresize-textarea';
 
 const ChatInput = memo(
   ({
@@ -226,7 +226,10 @@ const ChatInput = memo(
                           // Shift + Enter for new line
                           if (e.key === 'Enter' && e.shiftKey) {
                             e.preventDefault();
-                            setInput(input + '\n');
+                            const cursorPosition = e.currentTarget.selectionStart;
+                            e.currentTarget.value = input.slice(0, cursorPosition) + '\n' + input.slice(cursorPosition);
+                            e.currentTarget.setSelectionRange(cursorPosition + 1, cursorPosition + 1);
+                            setInput(e.currentTarget.value);
                             adjustHeight();
                             return;
                           } else if (e.key === 'Enter') {
@@ -255,7 +258,7 @@ const ChatInput = memo(
                             <Tooltip content='Upload image' size='sm' unselectable='on' radius='lg' animationDuration={100}>
                               <label
                                 htmlFor='image-upload'
-                                className='inline-flex size-9 items-center justify-center gap-2 whitespace-nowrap rounded-md px-2 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted/40 hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-foreground/50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
+                                className='inline-flex size-9 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md px-2 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted/40 hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-foreground/50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
                               >
                                 <Paperclip className='!size-5' />
                               </label>
@@ -286,7 +289,7 @@ const ChatInput = memo(
                             disabled={!input.trim() && !imagePreview.length}
                             className='border-reflect button-reflect relative inline-flex h-9 w-9 items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-[rgb(162,59,103)] bg-primary/20 p-2 text-sm font-semibold text-pink-50 shadow transition-colors hover:bg-[#d56698] hover:bg-pink-800/70 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring active:bg-[rgb(162,59,103)] active:bg-pink-800/40 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-[rgb(162,59,103)] disabled:hover:bg-primary/20 disabled:active:bg-[rgb(162,59,103)] disabled:active:bg-primary/20 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
                           >
-                            <ArrowUp className='!size-5' />
+                            <ArrowUp className='!size-4' />
                             <span className='sr-only'>Send</span>
                           </Button>
                         )}
