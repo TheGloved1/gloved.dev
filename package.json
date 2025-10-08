@@ -71,7 +71,7 @@
     "clsx": "^2.1.1",
     "compressorjs": "^1.2.1",
     "crypto-js": "^4.2.0",
-    "daisyui": "^4.12.24",
+    "daisyui": "^5.1.29",
     "dexie": "^4.0.11",
     "dexie-react-hooks": "^1.1.7",
     "dotenv": "^16.5.0",
