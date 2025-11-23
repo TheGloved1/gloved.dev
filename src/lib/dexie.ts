@@ -60,12 +60,13 @@ class Database extends Dexie {
       console.log('[DEXIE] Ready');
     });
 
-    this.on('populate', async () => {
+    // Population function for onboarding threads is broken
+    /* this.on('populate', async () => {
       const populate = await tryCatch(populateOnboardingThreads(this));
       if (populate.error) {
         console.log('[DEXIE] Failed to populate onboarding threads');
       }
-    });
+    }); */
 
     this.threads.hook('creating', (primKey, obj) => {
       // console.log('[DEXIE] Creating thread', obj);
@@ -231,7 +232,7 @@ class Database extends Dexie {
     const threads = await this.threads.toArray();
     const messages = await this.messages.toArray();
     const { data, error: dbSyncError } = await tryCatch(syncAction({ threads, messages }, userId));
-    if (!data || dbSyncError) return console.log('[SYNC] Failed to import data'), toast.error('Failed to import data');
+    if (!data || dbSyncError) return (console.log('[SYNC] Failed to import data'), toast.error('Failed to import data'));
     const { threads: newThreads, messages: newMessages } = data;
     if (!newThreads.length && !newMessages.length) return console.log('[SYNC] No data found in server');
     await Promise.all([this.threads.bulkPut(newThreads), this.messages.bulkPut(newMessages)]);
