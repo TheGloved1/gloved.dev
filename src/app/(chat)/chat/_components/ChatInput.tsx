@@ -2,7 +2,6 @@
 import { createMessage, dxdb, stopGeneration } from '@/lib/dexie';
 import React, { memo, useEffect, useState } from 'react';
 
-import AdminComponent from '@/components/AdminComponent';
 import { Tooltip } from '@/components/TooltipSystem';
 import { Button } from '@/components/ui/button';
 import { useAutoResizeTextarea } from '@/hooks/use-autoresize-textarea';
@@ -13,7 +12,7 @@ import { Models } from '@/lib/ai';
 import Constants from '@/lib/constants';
 import { tryCatch, upload } from '@/lib/utils';
 import { useAuth } from '@clerk/nextjs';
-import { ArrowUp, ChevronDown, Paperclip, Square, Wrench, X } from 'lucide-react';
+import { ArrowUp, ChevronDown, Paperclip, Square, X } from 'lucide-react';
 import Image from 'next/image';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useRef } from 'react';
@@ -36,7 +35,7 @@ const ChatInput = memo(
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [loading, setLoading] = useState<boolean>(false);
     const [input, setInput] = useLocalStorage('input', '');
-    const { toolsEnabled, setToolsEnabled, syncEnabled, model, systemPrompt } = useChatOptions();
+    const { syncEnabled, model, systemPrompt } = useChatOptions();
     const { textareaRef, adjustHeight } = useAutoResizeTextarea({
       minHeight: 60,
       maxHeight: 200,
@@ -312,24 +311,6 @@ const ChatInput = memo(
                       <div className='flex flex-col gap-2 md:flex-row md:items-center'>
                         <div className='z-50 ml-[-7px] flex items-center gap-1'>
                           <ModelDropdown />
-                          {selectedModel?.features.tools ?
-                            <AdminComponent fallback={<></>}>
-                              <Button
-                                title={`AI can create and upload files for you (Experimental)`}
-                                variant='ghost'
-                                type='button'
-                                className={`${toolsEnabled ? 'bg-muted/40 hover:bg-muted/80' : 'bg-muted/0 hover:bg-muted/10'} -mb-1.5 inline-flex h-auto items-center justify-center gap-2 whitespace-nowrap rounded-full border border-solid border-secondary-foreground/10 px-3 py-1.5 pl-2 pr-2.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-foreground/50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0`}
-                                onClick={() => {
-                                  setToolsEnabled(!toolsEnabled);
-                                  if (!toolsEnabled) toast.info('Tools Enabled');
-                                  if (toolsEnabled) toast.info('Tools Disabled');
-                                }}
-                              >
-                                <Wrench className='size-4' />
-                                Tools
-                              </Button>
-                            </AdminComponent>
-                          : null}
                         </div>
                       </div>
                     </div>

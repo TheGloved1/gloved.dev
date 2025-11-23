@@ -118,9 +118,7 @@ function ChatMessage({ message }: { message: Message }) {
                 variant='ghost'
                 className='inline-flex h-8 items-center justify-center gap-2 whitespace-nowrap rounded-md px-3 text-xs font-medium transition-colors hover:bg-neutral-800/40 hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
                 title='Cancel'
-                onClick={() => {
-                  setInput(null);
-                }}
+                onClick={() => setInput(null)}
               >
                 Cancel
               </Button>

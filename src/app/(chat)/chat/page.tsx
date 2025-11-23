@@ -62,9 +62,7 @@ const randomWelcomeMessages: string[] = [
   'Do you like sushi?',
 ];
 
-const getRandomWelcomeMessage = () => {
-  return randomWelcomeMessages[Math.floor(Math.random() * randomWelcomeMessages.length)];
-};
+const getRandomWelcomeMessage = () => randomWelcomeMessages[Math.floor(Math.random() * randomWelcomeMessages.length)];
 
 export default function Page(): React.JSX.Element {
   const [currentTab, setCurrentTab] = useState<Tab>('default');

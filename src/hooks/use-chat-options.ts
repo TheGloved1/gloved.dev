@@ -16,12 +16,18 @@ import { useLocalStorage } from './use-local-storage';
  *   - setModel: A function to set the value of model.
  */
 export function useChatOptions() {
-  const [toolsEnabled, setToolsEnabled] = useLocalStorage('toolsEnabled', false);
   const [syncEnabled, setSyncEnabled] = useLocalStorage('syncEnabled', false);
   const [systemPrompt, setSystemPrompt] = useLocalStorage<string | undefined>('systemPrompt', undefined);
   const [model, setModel] = useLocalStorage<ModelID>('model', defaultModel);
 
-  return { toolsEnabled, setToolsEnabled, syncEnabled, setSyncEnabled, systemPrompt, setSystemPrompt, model, setModel };
+  return {
+    syncEnabled,
+    setSyncEnabled,
+    systemPrompt,
+    setSystemPrompt,
+    model,
+    setModel,
+  };
 }
 
 /**
@@ -34,9 +40,8 @@ export function useChatOptions() {
  *   - model: The model to use for generating the response.
  */
 export function getChatOptions() {
-  const toolsEnabled = localStorage.getItem('toolsEnabled') === 'true';
   const syncEnabled = localStorage.getItem('syncEnabled') === 'true';
   const systemPrompt = localStorage.getItem('systemPrompt')?.trim();
   const model = (localStorage.getItem('model') || defaultModel) as ModelID;
-  return { toolsEnabled, syncEnabled, systemPrompt, model };
+  return { syncEnabled, systemPrompt, model };
 }

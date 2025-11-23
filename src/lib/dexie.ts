@@ -3,7 +3,6 @@
  * methods for adding, removing, and retrieving data. It also provides methods for synchronizing the
  * database with remote data.
  */
-import { getChatOptions } from '@/hooks/use-chat-options';
 import { deleteUserDataAction, exportThreadAction, syncAction } from '@/lib/actions';
 import { createDate, populateOnboardingThreads, sleep, tryCatch } from '@/lib/utils';
 import Dexie, { type EntityTable } from 'dexie';
@@ -433,8 +432,6 @@ export async function createMessage(
   // Stop any existing streams
   stopGeneration('Creating message, canceling any existing streams');
 
-  const { toolsEnabled } = getChatOptions();
-
   await dxdb.addMessage({
     threadId,
     content: userContent,
@@ -457,7 +454,6 @@ export async function createMessage(
     model,
     system: systemPrompt,
     messages: allMessages,
-    toolsEnabled,
   };
 
   const signal = chatAbortController.signal;
@@ -530,7 +526,6 @@ export async function updateMessage(
     model,
     system: systemPrompt,
     messages: allMessages,
-    toolsEnabled: getChatOptions().toolsEnabled,
   };
 
   try {

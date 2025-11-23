@@ -1,8 +1,6 @@
 import { env } from '@/env';
 import { fetchSystemPrompt } from '@/lib/actions';
 import { ChatFetchOptions, defaultModel, modelConfig, ModelID, Models, safetySettings } from '@/lib/ai';
-import { toolPrompt } from '@/lib/ai/tool-prompt';
-import { uploadFile, uploadZipFile } from '@/lib/ai/tools';
 import { formatMessageContent, tryCatch } from '@/lib/utils';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { createGroq } from '@ai-sdk/groq';
@@ -28,10 +26,10 @@ const languageModels = Models.reduce(
     if (provider === 'google') {
       acc[value] = google.languageModel(value, { safetySettings });
     } else if (provider === 'groq') {
-      if (features.reasoning) {
+      if (features.includes('reasoning')) {
         acc[value] = wrapLanguageModel({
           model: groq.languageModel(value),
-          middleware: extractReasoningMiddleware({ tagName: 'think' }),
+          middleware: extractReasoningMiddleware({ tagName: 'think', startWithReasoning: true }),
         });
       } else {
         acc[value] = groq.languageModel(value);
@@ -55,8 +53,8 @@ const modelProvider = customProvider({
 
 export async function POST(req: NextRequest) {
   const parsed: ChatFetchOptions = await req.json();
-  const { messages, toolsEnabled } = parsed;
-  let system = !!parsed.system?.trim() ? parsed.system.trim() : ((await tryCatch(fetchSystemPrompt())).data ?? '');
+  const { messages } = parsed;
+  const system = !!parsed.system?.trim() ? parsed.system.trim() : ((await tryCatch(fetchSystemPrompt())).data ?? '');
 
   const coreMessages = messages.map((msg) => ({
     role: msg.role,
@@ -75,19 +73,12 @@ export async function POST(req: NextRequest) {
       modelConfig.presencePenalty
     : undefined;
 
-  let tools = undefined;
-  if (Models.find((d) => d.value === parsed.model)?.features.tools && toolsEnabled) {
-    tools = { uploadFile, uploadZipFile };
-    system = system + '\n\n' + toolPrompt;
-  }
-
   return createDataStreamResponse({
     execute: (dataStream) => {
       const result = streamText({
         system,
         model,
         messages: coreMessages,
-        tools,
         temperature: modelConfig.temperature,
         maxTokens: modelConfig.maxTokens,
         frequencyPenalty: freqPenalty,

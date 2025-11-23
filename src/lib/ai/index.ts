@@ -49,6 +49,10 @@ export const safetySettings: SafetySettings = [
 export type ModelType = 'gemini' | 'qwen' | 'llama' | 'deepseek' | 'openrouter' | 'gpt';
 export const modelTypes = ['gemini', 'qwen', 'llama', 'deepseek', 'openrouter', 'gpt'] as const;
 
+export type Tools = ('fileTools' | 'searchTool')[];
+
+export type Features = 'reasoning'[];
+
 export const Models = Object.freeze([
   {
     label: 'Gemini 2.0 Flash',
@@ -61,10 +65,8 @@ export const Models = Object.freeze([
       loggedIn: false,
       admin: false,
     },
-    features: {
-      tools: true,
-      reasoning: false,
-    },
+    tools: [] as Tools,
+    features: [] as Features,
   },
   {
     label: 'Gemini 2.0 Flash Lite',
@@ -77,10 +79,8 @@ export const Models = Object.freeze([
       loggedIn: false,
       admin: false,
     },
-    features: {
-      tools: false,
-      reasoning: false,
-    },
+    tools: [] as Tools,
+    features: [] as Features,
   },
   {
     label: 'Gemini 2.5 Flash (Preview)',
@@ -93,10 +93,8 @@ export const Models = Object.freeze([
       loggedIn: true,
       admin: true,
     },
-    features: {
-      tools: false,
-      reasoning: false,
-    },
+    tools: [] as Tools,
+    features: [] as Features,
   },
   {
     label: 'Gemini 2.5 Pro (Experimental)',
@@ -106,13 +104,11 @@ export const Models = Object.freeze([
     enabled: true,
     description: "Google's latest experimental thinking model",
     requirements: {
-      loggedIn: false,
-      admin: false,
+      loggedIn: true,
+      admin: true,
     },
-    features: {
-      tools: false,
-      reasoning: false,
-    },
+    tools: [] as Tools,
+    features: [] as Features,
   },
   {
     label: 'Qwen Coder-32b',
@@ -125,10 +121,8 @@ export const Models = Object.freeze([
       loggedIn: true,
       admin: true,
     },
-    features: {
-      tools: false,
-      reasoning: false,
-    },
+    tools: [] as Tools,
+    features: [] as Features,
   },
   {
     label: 'Qwen qwq-32b',
@@ -141,10 +135,8 @@ export const Models = Object.freeze([
       loggedIn: true,
       admin: true,
     },
-    features: {
-      tools: false,
-      reasoning: false,
-    },
+    tools: [] as Tools,
+    features: ['reasoning'] as Features,
   },
   {
     label: 'Llama 4 Scout',
@@ -157,10 +149,8 @@ export const Models = Object.freeze([
       loggedIn: false,
       admin: false,
     },
-    features: {
-      tools: false,
-      reasoning: false,
-    },
+    tools: [] as Tools,
+    features: ['reasoning'] as Features,
   },
   {
     label: 'Llama 4 Maverick',
@@ -173,10 +163,8 @@ export const Models = Object.freeze([
       loggedIn: true,
       admin: true,
     },
-    features: {
-      tools: false,
-      reasoning: false,
-    },
+    tools: [] as Tools,
+    features: ['reasoning'] as Features,
   },
   {
     label: 'Llama 3.1-8b',
@@ -189,10 +177,8 @@ export const Models = Object.freeze([
       loggedIn: true,
       admin: true,
     },
-    features: {
-      tools: false,
-      reasoning: false,
-    },
+    tools: [] as Tools,
+    features: ['reasoning'] as Features,
   },
   {
     label: 'Llama 3.3-70b',
@@ -205,10 +191,8 @@ export const Models = Object.freeze([
       loggedIn: true,
       admin: true,
     },
-    features: {
-      tools: false,
-      reasoning: false,
-    },
+    tools: [] as Tools,
+    features: ['reasoning'] as Features,
   },
   {
     label: 'Deepseek R1 (Qwen Distill)',
@@ -221,10 +205,8 @@ export const Models = Object.freeze([
       loggedIn: true,
       admin: true,
     },
-    features: {
-      tools: false,
-      reasoning: false,
-    },
+    tools: [] as Tools,
+    features: [] as Features,
   },
   {
     label: 'Deepseek R1 (Llama Distill)',
@@ -237,10 +219,8 @@ export const Models = Object.freeze([
       loggedIn: false,
       admin: false,
     },
-    features: {
-      tools: false,
-      reasoning: false,
-    },
+    tools: [] as Tools,
+    features: ['reasoning'] as Features,
   },
   {
     label: 'Groq Compound (Beta)',
@@ -253,10 +233,8 @@ export const Models = Object.freeze([
       loggedIn: true,
       admin: true,
     },
-    features: {
-      tools: false,
-      reasoning: false,
-    },
+    tools: [] as Tools,
+    features: [] as Features,
   },
   {
     label: 'OpenRouter Auto',
@@ -269,10 +247,8 @@ export const Models = Object.freeze([
       loggedIn: true,
       admin: true,
     },
-    features: {
-      tools: false,
-      reasoning: false,
-    },
+    tools: [] as Tools,
+    features: [] as Features,
   },
 ] as const);
 
@@ -282,4 +258,8 @@ export const ModelList = Models.map((m) => m.value);
 
 export const defaultModel = 'gemini-2.0-flash' as const;
 
-export type ChatFetchOptions = { model?: ModelID; system?: string; messages: Message[]; toolsEnabled?: boolean };
+export type ChatFetchOptions = {
+  model?: ModelID;
+  system?: string;
+  messages: Message[];
+};

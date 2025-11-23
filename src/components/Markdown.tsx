@@ -1,5 +1,6 @@
 import { ClassAttributes, HTMLAttributes } from 'react';
 import Markdown, { Components, ExtraProps, Options } from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import CodeBlock from './CodeBlock';
 
 const components: Components = {
@@ -44,7 +45,7 @@ export default function CustomMarkdown({
 }: Options & { className?: string }): React.JSX.Element {
   return (
     <div className={className || undefined}>
-      <Markdown components={components} {...props}>
+      <Markdown remarkPlugins={[remarkGfm]} components={components} {...props}>
         {children}
       </Markdown>
     </div>

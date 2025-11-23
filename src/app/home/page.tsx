@@ -58,7 +58,7 @@ export default function Page(): React.JSX.Element {
           <ObserverSection id={sections[0]}>
             <p className='text-xl font-extrabold'>{'Welcome to my website!'}</p>
             <p className='p-3 text-xl'></p>
-            <p>{"I'm Kaden Hood."}</p>
+            <p>{"I'm Kaden Hood"}</p>
             <p>{'a self taught software engineer.'}</p>
           </ObserverSection>
           <div className='divider mx-auto w-[75vw] max-w-[1000px] justify-center' />
