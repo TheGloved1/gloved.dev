@@ -8,8 +8,6 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react
 import ChatInput from '../_components/ChatInput';
 import ChatMessage from '../_components/ChatMessage';
 
-export const dynamic = 'force-static';
-
 export default function Page(): React.JSX.Element {
   const router = useRouter();
   const { threadId } = useParams<{ threadId: string }>();

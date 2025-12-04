@@ -1,12 +1,12 @@
 import { Message } from '@/lib/dexie';
 const temperature = 0.95;
-const maxTokens = 4096;
+const maxOutputTokens = 4096;
 const frequencyPenalty = 0.95;
 const presencePenalty = 0.15;
 
 export const modelConfig = {
   temperature,
-  maxTokens,
+  maxOutputTokens,
   frequencyPenalty,
   presencePenalty,
 } as const;
@@ -46,8 +46,8 @@ export const safetySettings: SafetySettings = [
   },
 ];
 
-export type ModelType = 'gemini' | 'qwen' | 'llama' | 'deepseek' | 'openrouter' | 'gpt';
-export const modelTypes = ['gemini', 'qwen', 'llama', 'deepseek', 'openrouter', 'gpt'] as const;
+export type ModelType = 'gemini' | 'qwen' | 'llama' | 'deepseek' | 'gpt';
+export const modelTypes = ['gemini', 'qwen', 'llama', 'deepseek', 'gpt'] as const;
 
 export type Tools = ('fileTools' | 'searchTool')[];
 
@@ -236,27 +236,13 @@ export const Models = Object.freeze([
     tools: [] as Tools,
     features: [] as Features,
   },
-  {
-    label: 'OpenRouter Auto',
-    value: 'openrouter/auto',
-    provider: 'openrouter',
-    type: 'openrouter',
-    enabled: false,
-    description: 'A model will be selected based on your prompt',
-    requirements: {
-      loggedIn: true,
-      admin: true,
-    },
-    tools: [] as Tools,
-    features: [] as Features,
-  },
 ] as const);
 
 export type ModelID = (typeof Models)[number]['value'];
 export type Model = (typeof Models)[number];
 export const ModelList = Models.map((m) => m.value);
 
-export const defaultModel = 'gemini-2.0-flash' as const;
+export const defaultModel = 'gemini-2.0-flash-lite' as const;
 
 export type ChatFetchOptions = {
   model?: ModelID;

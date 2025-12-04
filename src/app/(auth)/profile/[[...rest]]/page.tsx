@@ -1,18 +1,20 @@
 'use client';
 import PageBack from '@/components/PageBack';
 import { useAuth, UserProfile } from '@clerk/nextjs';
-import { useRouter } from 'next/navigation';
+import { redirect } from 'next/navigation';
+import { Suspense } from 'react';
 
 export default function Page() {
   const auth = useAuth();
-  const router = useRouter();
   if (auth.isLoaded && !auth.userId) {
-    return router.replace('/sign-in');
+    return (redirect('/sign-in'), null);
   }
   return (
-    <main className='flex min-h-screen items-center justify-center'>
-      <PageBack />
-      <UserProfile />
-    </main>
+    <Suspense fallback={<></>}>
+      <main className='flex min-h-screen items-center justify-center'>
+        <PageBack />
+        <UserProfile />
+      </main>
+    </Suspense>
   );
 }

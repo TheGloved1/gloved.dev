@@ -1,6 +1,5 @@
 'use client';
-import { checkDevMode } from '@/lib/actions';
-import { useQuery } from '@tanstack/react-query';
+import useIsDev from '@/hooks/use-is-dev';
 import dynamic from 'next/dynamic';
 import React, { useEffect, useState } from 'react';
 
@@ -31,9 +30,10 @@ function RainingLetters({
   const [charCount, setCharCount] = useState<number>(characterCount);
   const [activeIndices, setActiveIndices] = useState<Set<number>>(new Set());
   const [prefersReducedMotion, setPrefersReducedMotion] = useState<boolean>(false);
-  const isDev = useQuery({ queryKey: ['devMode'], queryFn: checkDevMode, initialData: false });
+  const isDev = useIsDev();
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCharacters((prevChars) => {
       prevChars.sort(() => {
         return Math.random() >= 0.5 ? 1 : -1;
@@ -76,6 +76,7 @@ function RainingLetters({
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setPrefersReducedMotion(mediaQuery.matches);
     const onPrefersReducedMotionChange = (e: MediaQueryListEvent) => {
       setPrefersReducedMotion(e.matches);
@@ -117,7 +118,7 @@ function RainingLetters({
   return (
     <>
       <div className={`relative h-full w-full ${backgroundColor}`}>
-        {isDev.data && (
+        {isDev && (
           <div className='fixed right-0 top-1/2 z-50 flex max-w-72 -translate-y-1/2 transform flex-wrap items-center p-4'>
             <h1 title='Character Count' className='text-sm text-white'>
               Character Count: {charCount}
