@@ -1,5 +1,4 @@
 'use client';
-
 import { RefreshCw, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 

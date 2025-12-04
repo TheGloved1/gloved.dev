@@ -7,7 +7,7 @@ import { deleteUserDataAction, exportThreadAction, syncAction } from '@/lib/acti
 import { createDate, populateOnboardingThreads, sleep, tryCatch } from '@/lib/utils';
 import Dexie, { type EntityTable } from 'dexie';
 import { toast } from 'sonner';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 import { ChatFetchOptions, ModelID } from './ai';
 
 export const threadSchema = z.object({
@@ -24,7 +24,7 @@ export const messageSchema = z.object({
   threadId: z.string(),
   content: z.string(),
   attachments: z.array(z.string()).optional(),
-  reasoning: z.string().optional(),
+  reasoningText: z.string().optional(),
   model: z.string(),
   role: z.enum(['user', 'assistant']),
   created_at: z.string(),
@@ -130,7 +130,7 @@ class Database extends Dexie {
       updated_at: createDate(),
       content: '',
       attachments: undefined,
-      reasoning: undefined,
+      reasoningText: undefined,
     });
   }
 
@@ -194,7 +194,7 @@ class Database extends Dexie {
     await this.messages
       .where('threadId')
       .equals(threadId)
-      .modify({ status: 'deleted', content: '', updated_at: createDate(), attachments: undefined, reasoning: undefined });
+      .modify({ status: 'deleted', content: '', updated_at: createDate(), attachments: undefined, reasoningText: undefined });
 
     if (userId) {
       await this.exportThread(threadId, userId);
@@ -358,7 +358,7 @@ export async function processStream(
         if (messageId && reasoning.trim() !== '') {
           await dxdb.messages.update(messageId, {
             updated_at: createDate(),
-            reasoning: reasoning, // Update with the accumulated reasoning
+            reasoningText: reasoning, // Update with the accumulated reasoning
           });
         }
       } else if (line.startsWith('3:')) {
