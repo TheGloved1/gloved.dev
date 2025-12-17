@@ -76,7 +76,7 @@ function ChatMessage({ message }: { message: Message }) {
   if (
     message.content.trim() === '' &&
     !message.attachments &&
-    (!message.reasoningText || message.reasoningText.trim() === '') &&
+    (!message.reasoning || message.reasoning.trim() === '') &&
     message.status === 'streaming'
   )
     return (
@@ -139,7 +139,7 @@ function ChatMessage({ message }: { message: Message }) {
             </div>
           </>
         : <>
-            {message.reasoningText && message.reasoningText?.trim() !== '' ?
+            {message.reasoning && message.reasoning?.trim() !== '' ?
               <div className='mb-2 flex items-center gap-2'>
                 <button
                   onClick={() => setShowReasoning(!showReasoning)}
@@ -152,11 +152,11 @@ function ChatMessage({ message }: { message: Message }) {
                 </button>
               </div>
             : null}
-            {message.reasoningText && message.reasoningText?.trim() !== '' ?
+            {message.reasoning && message.reasoning?.trim() !== '' ?
               showReasoning ?
                 <div className='mb-4 rounded-lg bg-neutral-800/20 p-3'>
                   <Markdown className='prose prose-sm prose-neutral prose-invert max-w-none text-foreground prose-pre:m-0 prose-pre:bg-transparent prose-pre:p-0'>
-                    {message.reasoningText}
+                    {message.reasoning}
                   </Markdown>
                 </div>
               : null
