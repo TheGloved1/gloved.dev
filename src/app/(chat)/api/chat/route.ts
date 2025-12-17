@@ -53,11 +53,8 @@ export async function POST(req: NextRequest) {
     role: msg.role,
     content: formatMessageContent(msg.content, msg.attachments),
   })) as ModelMessage[];
-  console.log(JSON.stringify(coreMessages, null, 2));
 
   const model = modelProvider.languageModel(parsed.model ?? defaultModel);
-
-  // Don't send penalties if the model is gemini-2.5-pro-exp-03-25 or gemini-2.5-flash-preview-04-17
 
   const stream = createUIMessageStream({
     execute: ({ writer }) => {

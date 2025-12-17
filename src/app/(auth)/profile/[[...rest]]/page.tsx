@@ -6,12 +6,10 @@ import { useRouter } from 'next/navigation';
 export default function Page() {
   const auth = useAuth();
   const router = useRouter();
-  if (auth.isLoaded) {
-    if (!auth.userId) {
+  if (!auth.isLoaded || !auth.userId) {
+    if (auth.isLoaded && !auth.userId) {
       router.replace('/sign-in');
-      return <></>;
     }
-  } else {
     return <></>;
   }
   return (
