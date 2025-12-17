@@ -58,14 +58,6 @@ export async function POST(req: NextRequest) {
   const model = modelProvider.languageModel(parsed.model ?? defaultModel);
 
   // Don't send penalties if the model is gemini-2.5-pro-exp-03-25 or gemini-2.5-flash-preview-04-17
-  const freqPenalty =
-    parsed.model !== 'gemini-2.5-pro-exp-03-25' && parsed.model !== 'gemini-2.5-flash-preview-04-17' ?
-      modelConfig.frequencyPenalty
-    : undefined;
-  const presPenalty =
-    parsed.model !== 'gemini-2.5-pro-exp-03-25' && parsed.model !== 'gemini-2.5-flash-preview-04-17' ?
-      modelConfig.presencePenalty
-    : undefined;
 
   const stream = createUIMessageStream({
     execute: ({ writer }) => {
@@ -80,17 +72,17 @@ export async function POST(req: NextRequest) {
         messages: coreMessages,
         temperature: modelConfig.temperature,
         maxOutputTokens: modelConfig.maxOutputTokens,
-        frequencyPenalty: freqPenalty,
-        presencePenalty: presPenalty,
+        frequencyPenalty: modelConfig.frequencyPenalty,
+        presencePenalty: modelConfig.presencePenalty,
         abortSignal: req.signal,
         experimental_transform: smoothStream({ delayInMs: null }),
-        onChunk() {
+        onChunk: ({ chunk }) => {
           writer.write({
             type: 'data-status',
             data: { status: 'streaming' },
           });
         },
-        onFinish() {
+        onFinish: ({ usage }) => {
           writer.write({
             type: 'data-status',
             data: { status: 'completed' },
