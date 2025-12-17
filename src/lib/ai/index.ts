@@ -55,12 +55,40 @@ export type Features = 'reasoning'[];
 
 export const Models = Object.freeze([
   {
+    label: 'Gemini Flash Latest',
+    value: 'gemini-flash-latest',
+    provider: 'google',
+    type: 'gemini',
+    enabled: true,
+    description: "Google's latest flash model",
+    requirements: {
+      loggedIn: false,
+      admin: false,
+    },
+    tools: [] as Tools,
+    features: [] as Features,
+  },
+  {
+    label: 'Gemini Flash Lite Latest',
+    value: 'gemini-flash-lite-latest',
+    provider: 'google',
+    type: 'gemini',
+    enabled: true,
+    description: "Google's latest flash lite model",
+    requirements: {
+      loggedIn: false,
+      admin: false,
+    },
+    tools: [] as Tools,
+    features: [] as Features,
+  },
+  {
     label: 'Gemini 2.0 Flash',
     value: 'gemini-2.0-flash',
     provider: 'google',
     type: 'gemini',
     enabled: true,
-    description: "Google's latest stable model",
+    description: "Google's most balanced multimodal model with great performance across all tasks.",
     requirements: {
       loggedIn: false,
       admin: false,
@@ -74,7 +102,7 @@ export const Models = Object.freeze([
     provider: 'google',
     type: 'gemini',
     enabled: true,
-    description: 'Faster, less precise Gemini model',
+    description: "Google's smallest and most cost effective model, built for at scale usage.",
     requirements: {
       loggedIn: false,
       admin: false,
@@ -83,12 +111,12 @@ export const Models = Object.freeze([
     features: [] as Features,
   },
   {
-    label: 'Gemini 2.5 Flash (Preview)',
-    value: 'gemini-2.5-flash-preview-04-17',
+    label: 'Gemini 2.5 Flash',
+    value: 'gemini-2.5-flash',
     provider: 'google',
     type: 'gemini',
     enabled: true,
-    description: "Google's latest experimental fast model",
+    description: "Google's hybrid reasoning model, with a 1M token context window and thinking budgets.",
     requirements: {
       loggedIn: true,
       admin: true,
@@ -97,12 +125,12 @@ export const Models = Object.freeze([
     features: [] as Features,
   },
   {
-    label: 'Gemini 2.5 Pro (Experimental)',
-    value: 'gemini-2.5-pro-exp-03-25',
+    label: 'Gemini 2.5 Pro',
+    value: 'gemini-2.5-pro',
     provider: 'google',
     type: 'gemini',
     enabled: true,
-    description: "Google's latest experimental thinking model",
+    description: "Google's advanced reasoning model, which excels at coding and complex reasoning tasks",
     requirements: {
       loggedIn: true,
       admin: true,
@@ -242,7 +270,7 @@ export type ModelID = (typeof Models)[number]['value'];
 export type Model = (typeof Models)[number];
 export const ModelList = Models.map((m) => m.value);
 
-export const defaultModel = 'gemini-2.0-flash-lite' as const;
+export const defaultModel = 'gemini-flash-lite-latest' as const;
 
 export type ChatFetchOptions = {
   model?: ModelID;

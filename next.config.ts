@@ -8,7 +8,7 @@ const nextConfig: NextConfig = {
     GOOGLE_GENERATIVE_AI_API_KEY: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
     GROQ: process.env.GROQ_API_KEY,
   },
-  cacheComponents: true,
+  cacheComponents: false,
   reactCompiler: true,
   experimental: {
     webpackBuildWorker: true,
