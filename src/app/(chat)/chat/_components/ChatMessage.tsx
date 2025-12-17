@@ -152,7 +152,7 @@ function ChatMessage({ message }: { message: Message }) {
                 </button>
               </div>
             : null}
-            {message.reasoning && message.reasoning?.trim() !== '' ?
+            {message.reasoning && message.reasoning.trim() !== '' ?
               showReasoning ?
                 <div className='mb-4 rounded-lg bg-neutral-800/20 p-3'>
                   <Markdown className='prose prose-sm prose-neutral prose-invert max-w-none text-foreground prose-pre:m-0 prose-pre:bg-transparent prose-pre:p-0'>
