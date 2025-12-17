@@ -139,7 +139,7 @@ function ChatMessage({ message }: { message: Message }) {
             </div>
           </>
         : <>
-            {message.reasoning && message.reasoning?.trim() !== '' ?
+            {message.reasoning && message.reasoning.trim() !== '' ?
               <div className='mb-2 flex items-center gap-2'>
                 <button
                   onClick={() => setShowReasoning(!showReasoning)}
