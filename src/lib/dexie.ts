@@ -24,7 +24,7 @@ export const messageSchema = z.object({
   threadId: z.string(),
   content: z.string(),
   attachments: z.array(z.string()).optional(),
-  reasoningText: z.string().optional(),
+  reasoning: z.string().optional(),
   model: z.string(),
   role: z.enum(['user', 'assistant']),
   created_at: z.string(),
@@ -130,7 +130,7 @@ class Database extends Dexie {
       updated_at: createDate(),
       content: '',
       attachments: undefined,
-      reasoningText: undefined,
+      reasoning: undefined,
     });
   }
 
@@ -191,10 +191,13 @@ class Database extends Dexie {
     await this.threads.update(threadId, { status: 'deleted', updated_at: createDate() });
 
     // Mark messages as deleted
-    await this.messages
-      .where('threadId')
-      .equals(threadId)
-      .modify({ status: 'deleted', content: '', updated_at: createDate(), attachments: undefined, reasoningText: undefined });
+    await this.messages.where('threadId').equals(threadId).modify({
+      status: 'deleted',
+      content: '',
+      updated_at: createDate(),
+      attachments: undefined,
+      reasoning: undefined,
+    });
 
     if (userId) {
       await this.exportThread(threadId, userId);
@@ -358,7 +361,7 @@ export async function processStream(
         if (messageId && reasoning.trim() !== '') {
           await dxdb.messages.update(messageId, {
             updated_at: createDate(),
-            reasoningText: reasoning, // Update with the accumulated reasoning
+            reasoning, // Update with the accumulated reasoning
           });
         }
       } else if (line.startsWith('3:')) {

@@ -85,7 +85,13 @@ export async function POST(req: NextRequest) {
         onFinish: ({ usage }) => {
           writer.write({
             type: 'data-status',
-            data: { status: 'completed' },
+            data: { status: 'done' },
+          });
+        },
+        onError: ({ error }) => {
+          writer.write({
+            type: 'data-status',
+            data: { status: 'error' },
           });
         },
       });

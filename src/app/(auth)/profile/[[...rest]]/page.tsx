@@ -8,7 +8,7 @@ export default function Page() {
   const router = useRouter();
   if (auth.isLoaded) {
     if (!auth.userId) {
-      router.push('/sign-in');
+      router.replace('/sign-in');
       return <></>;
     }
   } else {
