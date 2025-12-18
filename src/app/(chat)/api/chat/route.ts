@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
     execute: ({ writer }) => {
       writer.write({
         type: 'data-status',
-        data: { status: 'call started' },
+        data: { status: 'streaming' },
       });
 
       const result = streamText({
@@ -69,16 +69,10 @@ export async function POST(req: NextRequest) {
         messages: coreMessages,
         temperature: modelConfig.temperature,
         maxOutputTokens: modelConfig.maxOutputTokens,
-        frequencyPenalty: modelConfig.frequencyPenalty,
-        presencePenalty: modelConfig.presencePenalty,
+        // frequencyPenalty: modelConfig.frequencyPenalty,
+        // presencePenalty: modelConfig.presencePenalty,
         abortSignal: req.signal,
         experimental_transform: smoothStream({ delayInMs: null }),
-        onChunk: ({ chunk }) => {
-          writer.write({
-            type: 'data-status',
-            data: { status: 'streaming' },
-          });
-        },
         onFinish: ({ usage }) => {
           writer.write({
             type: 'data-status',

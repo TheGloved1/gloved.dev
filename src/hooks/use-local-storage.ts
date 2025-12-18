@@ -52,6 +52,7 @@ function useLocalStorage<T>(key: string, defaultValue: T, options?: Options<T>):
 
   const rawValueRef = useRef<string | null>(null);
 
+  // eslint-disable-next-line react-hooks/refs
   const [value, setValue] = useState(() => {
     if (typeof window === 'undefined') return defaultValue;
 

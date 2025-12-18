@@ -26,6 +26,7 @@ export default function ModelDropdown() {
   const { isSignedIn } = useUser();
 
   useLayoutEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSelectedModel(Models.find((m) => m.value === model) || Models[0]);
   }, [model]);
 
@@ -36,7 +37,7 @@ export default function ModelDropdown() {
       if (m.requirements.admin && !admins.isAdmin) return false;
       return true;
     });
-    
+
     if (!debouncedSearchQuery.trim()) return availableModels;
 
     return fuzzySearch(availableModels, debouncedSearchQuery, ['label', 'value', 'provider']);

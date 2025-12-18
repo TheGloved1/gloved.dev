@@ -327,66 +327,92 @@ export async function processStream(
   let done = false;
   let messageContent = '';
   let buffer = '';
-  let reasoning = '';
 
-  while (true) {
-    if (done) break;
+  while (!done) {
     const { value, done: doneReading } = await reader.read();
     done = doneReading;
+    if (value) {
+      buffer += decoder.decode(value, { stream: true });
+    }
 
-    // Decode the value and process the chunk
-    const chunk = decoder.decode(value, { stream: true });
-    buffer += chunk; // Accumulate the buffer
+    let newlineIndex = buffer.indexOf('\n');
+    while (newlineIndex >= 0) {
+      const line = buffer.slice(0, newlineIndex).trim();
+      buffer = buffer.slice(newlineIndex + 1);
+      newlineIndex = buffer.indexOf('\n');
+      if (!line) continue;
 
-    // Split the chunk into lines based on the expected format
-    const lines = chunk.split('\n');
-    for (const line of lines) {
-      if (line.trim() === '') continue; // Skip empty lines
-
-      // Handle the different types of messages in the stream
-      if (line.startsWith('0:')) {
-        // This is a message chunk
-        const json: string = JSON.parse(line.slice(2)); // Remove the prefix
-        messageContent += json; // Append the new content
-        if (messageId) {
-          await dxdb.messages.update(messageId, {
-            updated_at: createDate(),
-            content: messageContent, // Update with the accumulated content
-          });
-        }
-      } else if (line.startsWith('g:')) {
-        // This is a reasoning chunk
-        const json: string = JSON.parse(line.slice(2)); // Remove the prefix
-        reasoning += json.replace(/<think>|<\/think>/g, '');
-        if (messageId && reasoning.trim() !== '') {
-          await dxdb.messages.update(messageId, {
-            updated_at: createDate(),
-            reasoning, // Update with the accumulated reasoning
-          });
-        }
-      } else if (line.startsWith('3:')) {
-        // This is an error chunk
-        const json: string = JSON.parse(line.slice(2)); // Remove the prefix
-        if (messageId) {
-          await dxdb.messages.update(messageId, {
-            updated_at: createDate(),
-            content: json,
-            status: 'error',
-          });
-        }
-      } else if (line.startsWith('e:')) {
-        // This indicates the end of the message
+      if (!line.startsWith('data:')) continue;
+      const payload = line.slice(5).trim();
+      if (payload === '[DONE]') {
         done = true;
         if (messageId) {
           await dxdb.messages.update(messageId, {
-            created_at: createDate(),
             updated_at: createDate(),
-            status: 'done', // Mark as finished
+            status: 'done',
           });
-          if (userId) {
+        }
+        break;
+      }
+      let evt: any = null;
+      try {
+        evt = JSON.parse(payload);
+      } catch {
+        continue;
+      }
+      const type = evt?.type as string | undefined;
+      if (!type) continue;
+
+      if (type === 'data-status') {
+        const status = evt?.data?.status as string | undefined;
+        if (messageId && status) {
+          await dxdb.messages.update(messageId, {
+            updated_at: createDate(),
+            status:
+              status === 'streaming' ? 'streaming'
+              : status === 'done' ? 'done'
+              : undefined,
+          });
+        }
+      } else if (type === 'start' || type === 'start-step' || type === 'text-start') {
+        if (messageId) {
+          await dxdb.messages.update(messageId, {
+            updated_at: createDate(),
+            status: 'streaming',
+          });
+        }
+      } else if (type === 'text-delta') {
+        const delta = (evt?.delta ?? '') as string;
+        if (delta) {
+          messageContent += delta;
+          if (messageId) {
+            await dxdb.messages.update(messageId, {
+              updated_at: createDate(),
+              content: messageContent,
+            });
           }
         }
-        break; // Exit the loop since we are done processing
+      } else if (type === 'text-end') {
+      } else if (type === 'finish-step') {
+      } else if (type === 'finish') {
+        done = true;
+        if (messageId) {
+          await dxdb.messages.update(messageId, {
+            updated_at: createDate(),
+            status: 'done',
+          });
+        }
+        break;
+      } else if (type === 'error') {
+        const errMsg =
+          typeof evt?.error === 'string' ? evt.error : ((evt?.error?.message as string | undefined) ?? 'Unknown error');
+        if (messageId) {
+          await dxdb.messages.update(messageId, {
+            updated_at: createDate(),
+            content: errMsg,
+            status: 'error',
+          });
+        }
       }
     }
   }
@@ -396,10 +422,8 @@ export async function processStream(
       status: 'error',
     });
   }
-
   if (messageContent.trim() === '') return 'Error: No content received';
-
-  return messageContent; // Return the accumulated message content
+  return messageContent;
 }
 
 let chatAbortController = new AbortController();
@@ -579,7 +603,7 @@ export async function generateTitle(threadId: string) {
     ...allMessages.map((m) => ({ role: m.role, content: m.content })),
     newMessage,
   ];
-  const model: ModelID = 'gemini-2.0-flash';
+  const model: ModelID = 'gemini-flash-lite-latest';
   try {
     const { data, error } = await tryCatch(
       fetch('/api/chat', {

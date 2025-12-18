@@ -188,6 +188,7 @@ type Result<T, E = Error> = Success<T> | Failure<E>;
  * @returns A result object containing the data if the value was successful, or the error if the value failed.
  * @example
  * ```typescript
+ * // This utility function would look something like this:
  * const result = tryCatch(fetch('/api/users'));
  * // Handle error
  * if (result.error) {
@@ -196,6 +197,15 @@ type Result<T, E = Error> = Success<T> | Failure<E>;
  * }
  * // Error has been handled above so we can be sure that result.data is not null.
  * console.log(result.data);
+ *
+ * // Compare to this:
+ * try {
+ *   const data = await fetch('/api/users');
+ *   console.log(data);
+ * } catch (error) {
+ *   // This error cant be used anywhere else
+ *   console.error(error);
+ * }
  * ```
  */
 export async function tryCatch<T, E = Error>(value: Promise<T> | T): Promise<Result<T, E>> {
@@ -206,6 +216,7 @@ export async function tryCatch<T, E = Error>(value: Promise<T> | T): Promise<Res
     return { data: null, error: error as E };
   }
 }
+
 /**
  * Creates a string representing the current time in ISO format.
  * @returns A string representing the current time in ISO format.

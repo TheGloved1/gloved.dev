@@ -49,11 +49,25 @@ export const safetySettings: SafetySettings = [
 export type ModelType = 'gemini' | 'qwen' | 'llama' | 'deepseek' | 'gpt';
 export const modelTypes = ['gemini', 'qwen', 'llama', 'deepseek', 'gpt'] as const;
 
-export type Tools = ('fileTools' | 'searchTool')[];
+export type Tools = 'fileTools'[];
 
 export type Features = 'reasoning'[];
 
 export const Models = Object.freeze([
+  {
+    label: 'Test Model',
+    value: 'groq/compound-mini',
+    provider: 'groq',
+    type: 'gpt',
+    enabled: true,
+    description: 'Test model',
+    requirements: {
+      loggedIn: true,
+      admin: true,
+    },
+    tools: [] as Tools,
+    features: [] as Features,
+  },
   {
     label: 'Gemini Flash Latest',
     value: 'gemini-flash-latest',
@@ -251,12 +265,12 @@ export const Models = Object.freeze([
     features: ['reasoning'] as Features,
   },
   {
-    label: 'Groq Compound (Beta)',
-    value: 'compound-beta',
+    label: 'Groq Compound',
+    value: 'groq/compound',
     provider: 'groq',
     type: 'compound',
     enabled: true,
-    description: 'Compound-beta is a compound AI system powered by multiple openly available models',
+    description: 'Compound is a compound AI system powered by multiple openly available models',
     requirements: {
       loggedIn: true,
       admin: true,
