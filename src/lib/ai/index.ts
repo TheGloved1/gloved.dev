@@ -55,20 +55,6 @@ export type Features = 'reasoning'[];
 
 export const Models = Object.freeze([
   {
-    label: 'Test Model',
-    value: 'groq/compound-mini',
-    provider: 'groq',
-    type: 'gpt',
-    enabled: true,
-    description: 'Test model',
-    requirements: {
-      loggedIn: true,
-      admin: true,
-    },
-    tools: [] as Tools,
-    features: [] as Features,
-  },
-  {
     label: 'Gemini Flash Latest',
     value: 'gemini-flash-latest',
     provider: 'google',
