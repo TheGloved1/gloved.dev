@@ -53,7 +53,16 @@ export default function FileButton({ file }: { file: FileInfo }): React.JSX.Elem
   return (
     <>
       <div className='mx-2 w-64 truncate rounded-xl'>
-        <Button onClick={() => setShowDialog(true)} className='mx-2 rounded-xl p-3 hover:animate-pulse hover:bg-gray-700'>
+        <Button
+          variant='outline'
+          onClick={() => setShowDialog(true)}
+          className='p-3 hover:animate-pulse'
+          title={
+            <>
+              View <span className='rounded bg-neutral px-1 font-extrabold text-primary-foreground'>{file.name}</span>
+            </>
+          }
+        >
           {file.name}
         </Button>
       </div>

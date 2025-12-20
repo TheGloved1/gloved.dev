@@ -1,10 +1,11 @@
 'use client';
+import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 
 export default function NotFound() {
   return (
-    <div className='flex h-screen w-screen flex-col items-center justify-center bg-gray-900 p-12'>
+    <div className='flex h-screen w-screen flex-col items-center justify-center bg-background p-12'>
       <motion.div
         className='flex flex-col items-center justify-center rounded-lg bg-gray-800 p-12 shadow-md'
         initial={{ opacity: 0 }}
@@ -27,29 +28,15 @@ export default function NotFound() {
           }}
           transition={{ duration: 0.5 }}
         >
-          404
+          <div className='text-red-700'>404</div>
         </motion.h1>
         <motion.p className='mb-8 text-2xl' initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
           Page not found. Why are you here?
         </motion.p>
         <Link href='/'>
-          <motion.button
-            drag
-            className='rounded-md bg-gray-700 px-4 py-2 font-bold text-white hover:bg-gray-600'
-            initial={{ scale: 0.75 }}
-            whileHover={{ scale: 1 }}
-            transition={{
-              duration: 0.1,
-              ease: 'easeInOut',
-              bounce: 0.5,
-              bounceDamping: 10,
-              min: 0.5,
-              stiffness: 100,
-              damping: 10,
-            }}
-          >
+          <Button variant={'secondary'} className='rounded-md px-8 py-6 font-bold text-white hover:bg-gray-600'>
             Go home
-          </motion.button>
+          </Button>
         </Link>
       </motion.div>
     </div>

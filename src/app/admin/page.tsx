@@ -6,6 +6,7 @@ import { addAdminAction, deleteSyncAction, removeAdminAction } from '@/lib/actio
 import { tryCatch } from '@/lib/utils';
 import { useUser } from '@clerk/nextjs';
 import { Loader2 } from 'lucide-react';
+import { notFound } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
@@ -16,6 +17,8 @@ export default function Page() {
   const [loading, setLoading] = useState(false);
 
   const email = user?.primaryEmailAddress?.emailAddress;
+
+  if (!user) return notFound();
 
   if (admins.isLoading)
     return (

@@ -215,8 +215,12 @@ export default function FileUploader(): React.JSX.Element {
 
         <h2 className='place-items-center content-center justify-center pb-4 pt-4 text-center'>
           {'Download Files '}
-          <Button onClick={() => queryClient.invalidateQueries({ queryKey: ['files'] })} title='Refresh Files'>
-            <RefreshCcw className='h-4 w-4' />
+          <Button
+            variant='outline'
+            onClick={() => queryClient.invalidateQueries({ queryKey: ['files'] })}
+            title='Refresh Files'
+          >
+            <RefreshCcw className='h-4 w-4' /> Refresh
           </Button>
         </h2>
         <h3 className='rounded-2xl bg-gray-500 bg-opacity-50 px-2 py-1 text-sm underline'>
@@ -236,7 +240,7 @@ export default function FileUploader(): React.JSX.Element {
                     <li className='flex w-64 flex-row p-1 text-[.2rem]' key={file.name}>
                       <FileButton file={file} />
                       <Button
-                        variant={'destructive'}
+                        variant='destructive'
                         disabled={false}
                         onClick={() => {
                           setFileToDelete(file);

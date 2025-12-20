@@ -1,5 +1,5 @@
 'use client';
-import AdminComponent from '@/components/AdminComponent';
+import AdminShow from '@/components/AdminShow';
 import { PageVisits } from '@/components/PageVisits';
 import ParticleText from '@/components/ParticleText';
 import ThemeChanger from '@/components/ThemeChanger';
@@ -234,7 +234,7 @@ export default function Page(): React.JSX.Element {
           </DialogContent>
         </Dialog>
 
-        <AdminComponent>
+        <AdminShow>
           <div className='divider mx-auto w-[75vw] max-w-[1000px] items-center self-center' />
           <h2 className='text-3xl font-bold'>
             <u>{'Admin Stuff'}</u>
@@ -301,7 +301,7 @@ export default function Page(): React.JSX.Element {
               </Link>
             </div>
           </div>
-        </AdminComponent>
+        </AdminShow>
       </div>
       <div className='divider mx-auto w-[75vw] max-w-[1000px] items-center self-center' />
       <div className='px-30 container flex flex-col items-center gap-1 self-center px-4 py-4 text-xs md:text-sm lg:text-base'>

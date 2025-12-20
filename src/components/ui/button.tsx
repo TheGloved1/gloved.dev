@@ -31,15 +31,19 @@ const buttonVariants = cva(
   },
 );
 
-export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
+export interface ButtonProps
+  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'title'>, VariantProps<typeof buttonVariants> {
   asChild?: boolean;
   tooltipSide?: 'top' | 'right' | 'bottom' | 'left';
   enableTooltip?: boolean;
+  title?: React.ReactNode;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, title, enableTooltip = true, tooltipSide, ...props }, ref) => {
+  ({ className, variant, size, asChild = false, title, enableTooltip = true, tooltipSide = 'top', ...props }, ref) => {
     const Comp = asChild ? Slot : 'button';
+    const isStringTitle = typeof title === 'string';
+
     if (title && enableTooltip) {
       return (
         <Tooltip>
@@ -51,14 +55,24 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
               {...props}
             />
           </TooltipTrigger>
-          <TooltipContent side={tooltipSide} align='center' className='bg-accent text-accent-foreground'>
+          <TooltipContent
+            side={tooltipSide}
+            align='center'
+            className='pointer-events-none cursor-none bg-accent text-accent-foreground'
+          >
             {title}
           </TooltipContent>
         </Tooltip>
       );
     }
     return (
-      <Comp suppressHydrationWarning className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...props} />
+      <Comp
+        suppressHydrationWarning
+        className={cn(buttonVariants({ variant, size, className }))}
+        ref={ref}
+        title={isStringTitle ? title : undefined}
+        {...props}
+      />
     );
   },
 );
