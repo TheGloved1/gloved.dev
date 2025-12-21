@@ -1,4 +1,14 @@
 'use client';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Switch } from '@/components/ui/switch';
@@ -15,6 +25,7 @@ import { toast } from 'sonner';
 
 export default function Page() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [syncDialogOpen, setSyncDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'customization' | 'sync'>('customization');
   const [syncEnabled, setSyncEnabled] = useLocalStorage<boolean>('syncEnabled', false);
   const [systemPrompt, setSystemPrompt] = useLocalStorage<string | undefined>('systemPrompt', undefined);
@@ -67,7 +78,6 @@ export default function Page() {
   useEffect(() => {
     if (syncEnabled) {
       handleSyncNow();
-    } else {
     }
   }, [handleSyncNow, syncEnabled]);
 
@@ -120,25 +130,52 @@ export default function Page() {
                   <div className='space-y-6'>
                     <div className='flex flex-col gap-2'>
                       <p className='text-muted-foreground/80'>
-                        Enable and disable Cloud Sync. Threads will be synced whenever new messages are sent.
+                        Enable and disable Cloud Sync. Threads will be synced whenever new messages are sent.{' '}
+                        <span className='text-sm text-red-700'>(EXPERIMENTAL: May cause data loss, use with caution)</span>
                       </p>
                     </div>
                     <div className='flex flex-col gap-4'>
-                      <div className='flex flex-row items-center gap-2'>
-                        <label
-                          className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
-                          htmlFor='sync-enabled'
-                        >
-                          Enable Cloud Sync
-                        </label>
-                        <Switch id='sync-enabled' checked={syncEnabled} onCheckedChange={setSyncEnabled} />
-                      </div>
-                      <div className='flex'>
-                        <Button variant='secondary' onClick={handleSyncNow}>
-                          <RefreshCw className='mr-2 h-5 w-5' />
-                          Sync Now
-                        </Button>
-                      </div>
+                      <AlertDialog open={syncDialogOpen} onOpenChange={setSyncDialogOpen}>
+                        <AlertDialogContent color='black'>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              Enable Cloud Sync? <span className='text-red-700'>(EXPERIMENTAL)</span>
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              {`Are you sure you want to enable Cloud Sync? This will sync your threads with the cloud and could cause data loss or corruption.`}
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel onClick={() => setSyncDialogOpen(false)}>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => setSyncEnabled(true)}>Enable</AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                        <div className='flex flex-row items-center gap-2'>
+                          <label
+                            className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
+                            htmlFor='sync-enabled'
+                          >
+                            Enable Cloud Sync{' '}
+                          </label>
+                          <Switch
+                            id='sync-enabled'
+                            checked={syncEnabled}
+                            onCheckedChange={(checked) => {
+                              if (checked) {
+                                setSyncDialogOpen(true);
+                              } else {
+                                setSyncEnabled(false);
+                              }
+                            }}
+                          />
+                        </div>
+                        <div className='flex'>
+                          <Button variant='secondary' onClick={handleSyncNow}>
+                            <RefreshCw className='mr-2 h-5 w-5' />
+                            Sync Now
+                          </Button>
+                        </div>
+                      </AlertDialog>
                     </div>
                   </div>
                 </section>
