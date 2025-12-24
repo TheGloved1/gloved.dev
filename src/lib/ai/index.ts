@@ -46,8 +46,8 @@ export const safetySettings: SafetySettings = [
   },
 ];
 
-export type ModelType = 'gemini' | 'qwen' | 'llama' | 'deepseek' | 'gpt';
-export const modelTypes = ['gemini', 'qwen', 'llama', 'deepseek', 'gpt'] as const;
+export type ModelType = 'gemini' | 'qwen' | 'llama' | 'deepseek' | 'gpt' | 'other';
+export const modelTypes = ['gemini', 'qwen', 'llama', 'deepseek', 'gpt', 'other'] as const;
 
 export type Tools = 'fileTools'[];
 
@@ -131,6 +131,20 @@ export const Models = Object.freeze([
     type: 'gemini',
     enabled: true,
     description: "Google's advanced reasoning model, which excels at coding and complex reasoning tasks",
+    requirements: {
+      loggedIn: true,
+      admin: true,
+    },
+    tools: [] as Tools,
+    features: [] as Features,
+  },
+  {
+    label: 'Kimi K2',
+    value: 'moonshotai/kimi-k2-instruct-0905',
+    provider: 'groq',
+    type: 'other',
+    enabled: true,
+    description: 'A powerful text-to-text model, excels at writing.',
     requirements: {
       loggedIn: true,
       admin: true,
