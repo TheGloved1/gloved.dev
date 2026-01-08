@@ -1,0 +1,132 @@
+@import 'tailwindcss';
+
+/* TailwindConvert Info: '@tailwindcss/line-clamp' plugin was removed as its functionality is now built into Tailwind CSS v4 core. */
+
+@theme {
+	--color-border: hsl(var(--border));
+	--color-input: hsl(var(--input));
+	--color-ring: hsl(var(--ring));
+	--color-background: hsl(var(--background));
+	--color-foreground: hsl(var(--foreground));
+	--color-primary-DEFAULT: hsl(var(--primary));
+	--color-primary-foreground: hsl(var(--primary-foreground));
+	--color-secondary-DEFAULT: hsl(var(--secondary));
+	--color-secondary-foreground: hsl(var(--secondary-foreground));
+	--color-destructive-DEFAULT: hsl(var(--destructive));
+	--color-destructive-foreground: hsl(var(--destructive-foreground));
+	--color-muted-DEFAULT: hsl(var(--muted));
+	--color-muted-foreground: hsl(var(--muted-foreground));
+	--color-accent-DEFAULT: hsl(var(--accent));
+	--color-accent-foreground: hsl(var(--accent-foreground));
+	--color-popover-DEFAULT: hsl(var(--popover));
+	--color-popover-foreground: hsl(var(--popover-foreground));
+	--color-card-DEFAULT: hsl(var(--card));
+	--color-card-foreground: hsl(var(--card-foreground));
+	--color-chart-1: hsl(var(--chart-1));
+	--color-chart-2: hsl(var(--chart-2));
+	--color-chart-3: hsl(var(--chart-3));
+	--color-chart-4: hsl(var(--chart-4));
+	--color-chart-5: hsl(var(--chart-5));
+	--color-sidebar-DEFAULT: hsl(var(--sidebar-background));
+	--color-sidebar-foreground: hsl(var(--sidebar-foreground));
+	--color-sidebar-primary: hsl(var(--sidebar-primary));
+	--color-sidebar-primary-foreground: hsl(var(--sidebar-primary-foreground));
+	--color-sidebar-accent: hsl(var(--sidebar-accent));
+	--color-sidebar-accent-foreground: hsl(var(--sidebar-accent-foreground));
+	--color-sidebar-border: hsl(var(--sidebar-border));
+	--color-sidebar-ring: hsl(var(--sidebar-ring));
+	--container-center: true;
+	--container-padding: 2rem;
+	--breakpoint-2xl: 87.5rem;
+	--text-model-primary: var(--color-heading);
+	--background-model-primary: var(--color-heading);
+	--background-chat-accent: var(--chat-accent);
+	--background-chat-input-background: var(--chat-input-background);
+	--border-model-primary: var(--color-heading);
+	--border-chat-accent: var(--chat-accent);
+	--border-chat-input-background: var(--chat-input-background);
+	--outline-model-primary: var(--color-heading);
+	--outline-chat-background: var(--chat-background);
+	--outline-chat-accent: var(--chat-accent);
+	--outline-chat-input-background: var(--chat-input-background);
+	--font-jetbrains: var(--font-jetbrains);
+	--font-geist: var(--font-geist);
+	--rounded-lg: var(--radius);
+	--rounded-md: calc(var(--radius) - 2px);
+	--rounded-sm: calc(var(--radius) - 4px);
+}
+
+@keyframes fadeOut {
+	0% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 0;
+	}
+}
+
+@keyframes fadeInLeft {
+	0% {
+		opacity: 0;
+		transform: translateX(-500px);
+	}
+	100% {
+		opacity: 1;
+		transform: translateX(0);
+	}
+}
+
+@keyframes fadeOutLeft {
+	0% {
+		opacity: 1;
+		transform: translateX(0);
+	}
+	100% {
+		opacity: 0;
+		transform: translateX(-500px);
+	}
+}
+
+@keyframes accordion-down {
+	from {
+		height: 0;
+	}
+	to {
+		height: var(--radix-accordion-content-height);
+	}
+}
+
+@keyframes accordion-up {
+	from {
+		height: var(--radix-accordion-content-height);
+	}
+	to {
+		height: 0;
+	}
+}
+
+/* TailwindConvert Info: The following @plugin directives require the respective plugins to be installed in your project (e.g., via npm). They might have compatibility or resolution issues in sandboxed environments like Tailwind Play. */
+@plugin 'daisyui';
+@plugin 'tailwindcss-animate';
+@plugin 'tailwind-scrollbar';
+@plugin '@tailwindcss/typography';
+
+@utility animate-fadeOut {
+	animation: fadeOut 2.5s ease-in-out;
+}
+
+@utility animate-fade-in-left {
+	animation: fadeInLeft 1s ease-out forwards;
+}
+
+@utility animate-fade-out-left {
+	animation: fadeOutLeft 1s ease-out forwards;
+}
+
+@utility animate-accordion-down {
+	animation: accordion-down 0.2s ease-out;
+}
+
+@utility animate-accordion-up {
+	animation: accordion-up 0.2s ease-out;
+}
