@@ -39,7 +39,6 @@ export type Message = z.infer<typeof messageSchema>;
  * A Dexie database for storing chat data. This database stores threads and messages, and provides
  * methods for adding, removing, and retrieving data. It also provides methods for synchronizing the
  * database with remote data.
- * @class
  * @extends Dexie
  * @property {EntityTable<Thread, 'id'>} threads - A table for storing threads.
  * @property {EntityTable<Message, 'id'>} messages - A table for storing messages.

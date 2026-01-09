@@ -1,5 +1,4 @@
-import { env } from '../env';
-import { messageSchema, threadSchema } from '$lib/dexie';
+import { env } from './env';
 import { apiRoute, tryCatch } from '$lib/utils';
 import {
 	addAdminDb,
@@ -15,6 +14,30 @@ import {
 } from '$lib/server/redis.server';
 import { query } from '$app/server';
 import { z } from 'zod';
+
+// Local copies of the thread and message schemas to avoid a circular import
+// with `$lib/dexie`, which also imports functions from this module.
+const threadSchema = z.object({
+	id: z.string(),
+	title: z.string(),
+	created_at: z.string(),
+	updated_at: z.string(),
+	last_message_at: z.string(),
+	status: z.enum(['streaming', 'done', 'error', 'deleted'])
+});
+
+const messageSchema = z.object({
+	id: z.string(),
+	threadId: z.string(),
+	content: z.string(),
+	attachments: z.array(z.string()).optional(),
+	reasoning: z.string().optional(),
+	model: z.string(),
+	role: z.enum(['user', 'assistant']),
+	created_at: z.string(),
+	updated_at: z.string(),
+	status: z.enum(['streaming', 'done', 'error', 'deleted'])
+});
 
 /**
  * Fetches the system prompt from the server.

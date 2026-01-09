@@ -1,4 +1,4 @@
-import { env } from '../../env';
+import { env } from '$lib/env';
 import type { Message, Thread } from '$lib/dexie';
 import { Redis } from '@upstash/redis';
 
