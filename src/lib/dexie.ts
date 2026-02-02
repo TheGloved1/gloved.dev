@@ -4,7 +4,7 @@
  * database with remote data.
  */
 import { deleteUserDataAction, exportThreadAction, syncAction } from '@/lib/actions';
-import { createDate, populateOnboardingThreads, sleep, tryCatch } from '@/lib/utils';
+import { now, populateOnboardingThreads, sleep, tryCatch } from '@/lib/utils';
 import Dexie, { type EntityTable } from 'dexie';
 import { toast } from 'sonner';
 import { z } from 'zod/v3';
@@ -109,12 +109,12 @@ class Database extends Dexie {
       await this.messages.add({
         ...message,
         id,
-        updated_at: createDate(),
-        created_at: createDate(),
+        updated_at: now(),
+        created_at: now(),
       });
       await this.threads.update(message.threadId, {
-        last_message_at: createDate(),
-        updated_at: createDate(),
+        last_message_at: now(),
+        updated_at: now(),
       });
     });
     return id;
@@ -127,7 +127,7 @@ class Database extends Dexie {
   async removeMessage(id: string) {
     await this.messages.update(id, {
       status: 'deleted',
-      updated_at: createDate(),
+      updated_at: now(),
       content: '',
       attachments: undefined,
       reasoning: undefined,
@@ -143,9 +143,9 @@ class Database extends Dexie {
     await this.threads.add({
       id,
       title: 'New Chat',
-      created_at: createDate(),
-      updated_at: createDate(),
-      last_message_at: createDate(),
+      created_at: now(),
+      updated_at: now(),
+      last_message_at: now(),
       status: 'done',
     });
     return id;
@@ -188,13 +188,13 @@ class Database extends Dexie {
    */
   async deleteThread(threadId: string, userId?: string) {
     // Mark thread as deleted
-    await this.threads.update(threadId, { status: 'deleted', updated_at: createDate() });
+    await this.threads.update(threadId, { status: 'deleted', updated_at: now() });
 
     // Mark messages as deleted
     await this.messages.where('threadId').equals(threadId).modify({
       status: 'deleted',
       content: '',
-      updated_at: createDate(),
+      updated_at: now(),
       attachments: undefined,
       reasoning: undefined,
     });
@@ -348,7 +348,7 @@ export async function processStream(
         done = true;
         if (messageId) {
           await dxdb.messages.update(messageId, {
-            updated_at: createDate(),
+            updated_at: now(),
             status: 'done',
           });
         }
@@ -367,7 +367,7 @@ export async function processStream(
         const status = evt?.data?.status as string | undefined;
         if (messageId && status) {
           await dxdb.messages.update(messageId, {
-            updated_at: createDate(),
+            updated_at: now(),
             status:
               status === 'streaming' ? 'streaming'
               : status === 'done' ? 'done'
@@ -377,7 +377,7 @@ export async function processStream(
       } else if (type === 'start' || type === 'start-step' || type === 'text-start') {
         if (messageId) {
           await dxdb.messages.update(messageId, {
-            updated_at: createDate(),
+            updated_at: now(),
             status: 'streaming',
           });
         }
@@ -387,7 +387,7 @@ export async function processStream(
           messageContent += delta;
           if (messageId) {
             await dxdb.messages.update(messageId, {
-              updated_at: createDate(),
+              updated_at: now(),
               content: messageContent,
             });
           }
@@ -398,7 +398,7 @@ export async function processStream(
         done = true;
         if (messageId) {
           await dxdb.messages.update(messageId, {
-            updated_at: createDate(),
+            updated_at: now(),
             status: 'done',
           });
         }
@@ -408,17 +408,18 @@ export async function processStream(
           typeof evt?.error === 'string' ? evt.error : ((evt?.error?.message as string | undefined) ?? 'Unknown error');
         if (messageId) {
           await dxdb.messages.update(messageId, {
-            updated_at: createDate(),
+            updated_at: now(),
             content: errMsg,
             status: 'error',
           });
         }
+        break;
       }
     }
   }
   if (messageId && messageContent.trim() === '') {
     await dxdb.messages.update(messageId, {
-      updated_at: createDate(),
+      updated_at: now(),
       status: 'error',
     });
   }
@@ -537,7 +538,7 @@ export async function updateMessage(
   stopGeneration('Updating message, canceling any existing streams');
 
   const messageContent: string = newContent;
-  await dxdb.messages.update(message.id, { content: messageContent, updated_at: createDate(), model: model });
+  await dxdb.messages.update(message.id, { content: messageContent, updated_at: now(), model: model });
   generateTitle(message.threadId);
   const allMessages = await dxdb.getThreadMessages(message.threadId);
   const assistantMessageId = await dxdb.addMessage({
@@ -603,7 +604,7 @@ export async function generateTitle(threadId: string) {
     ...allMessages.map((m) => ({ role: m.role, content: m.content })),
     newMessage,
   ];
-  const model: ModelID = 'gemini-flash-lite-latest';
+  const model: ModelID = 'gemini-2.5-flash-lite';
   try {
     const { data, error } = await tryCatch(
       fetch('/api/chat', {
@@ -623,7 +624,7 @@ export async function generateTitle(threadId: string) {
     if (!data.body) return toast.error('Failed to generate title');
     const title = await processStream(data.body);
     await dxdb.threads.update(threadId, {
-      updated_at: createDate(),
+      updated_at: now(),
       title,
     });
   } catch (e) {
