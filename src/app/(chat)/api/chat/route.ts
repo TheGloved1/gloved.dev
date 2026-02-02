@@ -21,19 +21,29 @@ import { NextRequest } from 'next/server';
 const google = createGoogleGenerativeAI({ apiKey: env.GEMINI });
 const groq = createGroq({ apiKey: env.GROQ });
 
+const createLanguageModel = ({ value, provider, features }: (typeof Models)[number]) => {
+  const baseModel =
+    provider === 'google' ? google.languageModel(value)
+    : provider === 'groq' ? groq.languageModel(value)
+    : null;
+
+  if (!baseModel) {
+    return null;
+  }
+
+  return provider === 'groq' && features.includes('reasoning') ?
+      wrapLanguageModel({
+        model: baseModel,
+        middleware: extractReasoningMiddleware({ tagName: 'think', startWithReasoning: true }),
+      })
+    : baseModel;
+};
+
 const languageModels = Models.reduce(
-  (acc, { value, provider, features }) => {
-    if (provider === 'google') {
-      acc[value] = google.languageModel(value);
-    } else if (provider === 'groq') {
-      if (features.includes('reasoning')) {
-        acc[value] = wrapLanguageModel({
-          model: groq.languageModel(value),
-          middleware: extractReasoningMiddleware({ tagName: 'think', startWithReasoning: true }),
-        });
-      } else {
-        acc[value] = groq.languageModel(value);
-      }
+  (acc, model) => {
+    const modelInstance = createLanguageModel(model);
+    if (modelInstance) {
+      acc[model.value] = modelInstance;
     }
     return acc;
   },

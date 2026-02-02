@@ -163,8 +163,8 @@ export default function FileUploader(): React.JSX.Element {
     try {
       const files = event.target.files;
       if (!files || files.length === 0) {
-        console.error('No files found!');
-        setAlert('No files found!');
+        console.error('No files found in FileInput!');
+        setAlert('No files found in FileInput!');
         return;
       }
       const file = files[0];

@@ -55,54 +55,26 @@ export type Features = 'reasoning'[];
 
 export const Models = Object.freeze([
   {
-    label: 'Gemini Flash Latest',
-    value: 'gemini-flash-latest',
-    provider: 'google',
-    type: 'gemini',
+    label: 'Kimi K2',
+    value: 'moonshotai/kimi-k2-instruct-0905',
+    provider: 'groq',
+    type: 'other',
     enabled: true,
-    description: "Google's latest flash model",
+    description: 'A powerful text-to-text model, excels at writing.',
     requirements: {
-      loggedIn: false,
-      admin: false,
+      loggedIn: true,
+      admin: true,
     },
     tools: [] as Tools,
     features: [] as Features,
   },
   {
-    label: 'Gemini Flash Lite Latest',
-    value: 'gemini-flash-lite-latest',
+    label: 'Gemini 2.5 Flash Lite',
+    value: 'gemini-2.5-flash-lite',
     provider: 'google',
     type: 'gemini',
     enabled: true,
-    description: "Google's latest flash lite model",
-    requirements: {
-      loggedIn: false,
-      admin: false,
-    },
-    tools: [] as Tools,
-    features: [] as Features,
-  },
-  {
-    label: 'Gemini 2.0 Flash',
-    value: 'gemini-2.0-flash',
-    provider: 'google',
-    type: 'gemini',
-    enabled: true,
-    description: "Google's most balanced multimodal model with great performance across all tasks.",
-    requirements: {
-      loggedIn: false,
-      admin: false,
-    },
-    tools: [] as Tools,
-    features: [] as Features,
-  },
-  {
-    label: 'Gemini 2.0 Flash Lite',
-    value: 'gemini-2.0-flash-lite',
-    provider: 'google',
-    type: 'gemini',
-    enabled: true,
-    description: "Google's smallest and most cost effective model, built for at scale usage.",
+    description: "Google's flash lite model",
     requirements: {
       loggedIn: false,
       admin: false,
@@ -131,20 +103,6 @@ export const Models = Object.freeze([
     type: 'gemini',
     enabled: true,
     description: "Google's advanced reasoning model, which excels at coding and complex reasoning tasks",
-    requirements: {
-      loggedIn: true,
-      admin: true,
-    },
-    tools: [] as Tools,
-    features: [] as Features,
-  },
-  {
-    label: 'Kimi K2',
-    value: 'moonshotai/kimi-k2-instruct-0905',
-    provider: 'groq',
-    type: 'other',
-    enabled: true,
-    description: 'A powerful text-to-text model, excels at writing.',
     requirements: {
       loggedIn: true,
       admin: true,
@@ -284,7 +242,7 @@ export type ModelID = (typeof Models)[number]['value'];
 export type Model = (typeof Models)[number];
 export const ModelList = Models.map((m) => m.value);
 
-export const defaultModel = 'gemini-flash-lite-latest' as const;
+export const defaultModel = 'moonshotai/kimi-k2-instruct-0905' as const;
 
 export type ChatFetchOptions = {
   model?: ModelID;
