@@ -595,8 +595,8 @@ export default function BGRemover() {
                               {m === 'isnet' ?
                                 'DEFAULT'
                               : m === 'isnet_fp16' ?
-                                'FP16 (FAST)'
-                              : 'QUINT8 (LIGHT)'}
+                                'FP16'
+                              : 'QUINT8'}
                             </button>
                           ))}
                         </div>
