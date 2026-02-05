@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: `${Constants.NAME} | ${Constants.BGRemover.title}`,
   description: Constants.BGRemover.description,
+  icons: '/bgremover.png',
 };
 
 export default function Layout({ children }: { children: React.ReactNode }) {
