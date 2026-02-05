@@ -166,7 +166,7 @@ export default function BGRemover() {
 
   return (
     <div className='flex h-screen flex-col overflow-hidden bg-[#0a0a0a] text-white selection:bg-fuchsia-500/30'>
-      <style jsx global>{`
+      <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap');
 
         .font-display {
@@ -501,14 +501,26 @@ export default function BGRemover() {
                     </Button>
                   )}
 
-                  {processedImage && (
+                  {processedImage && !isProcessing && (
                     <Button
                       onClick={removeBackgroundFromImage}
                       disabled={isProcessing}
-                      variant='outline'
-                      className='font-mono-industrial h-8 w-full flex-shrink-0 border-white/20 text-[10px] uppercase tracking-wider hover:border-white/40 hover:bg-white/5'
+                      className='brutal-shadow font-display h-10 w-full flex-shrink-0 border-2 border-fuchsia-500 bg-fuchsia-500 text-sm font-bold uppercase tracking-wider text-black transition-all hover:bg-fuchsia-400 disabled:opacity-50'
                     >
                       REPROCESS
+                    </Button>
+                  )}
+
+                  {/* Loading button - shows when processing */}
+                  {isProcessing && (
+                    <Button
+                      disabled
+                      className='brutal-shadow font-display h-10 w-full flex-shrink-0 cursor-not-allowed border-2 border-fuchsia-500 bg-fuchsia-500 text-sm font-bold uppercase tracking-wider text-black transition-all hover:bg-fuchsia-400 disabled:opacity-50'
+                    >
+                      <div className='flex items-center gap-2'>
+                        <div className='h-1.5 w-1.5 animate-pulse bg-fuchsia-500' />
+                        <span>PROCESSING</span>
+                      </div>
                     </Button>
                   )}
                 </div>
