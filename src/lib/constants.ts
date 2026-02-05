@@ -31,6 +31,11 @@ const Constants = {
     link: '/calc',
     description: 'A simple calculator web app. Do math calculations',
   } as const,
+  BGRemover: {
+    title: 'BG Remover',
+    link: '/bgremover',
+    description: 'Remove the background from an image',
+  } as const,
   Github: {
     title: 'Github',
     link: 'https://github.com/TheGloved1/',
