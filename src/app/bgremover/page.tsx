@@ -16,7 +16,7 @@ export default function BGRemover() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState<{ progress: number; stage: string } | null>(null);
   const [dragActive, setDragActive] = useState(false);
-  const [device, setDevice] = useState<'cpu' | 'gpu'>('cpu');
+  const [device, setDevice] = useState<'cpu' | 'gpu'>('gpu');
   const [model, setModel] = useState<'isnet' | 'isnet_fp16' | 'isnet_quint8'>('isnet');
   const [outputFormat, setOutputFormat] = useState<'image/png' | 'image/jpeg' | 'image/webp'>('image/png');
   const [quality, setQuality] = useState(0.8);
