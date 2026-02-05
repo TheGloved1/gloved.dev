@@ -86,6 +86,35 @@ export default function BGRemover() {
     }
   };
 
+  const handlePaste = useCallback(
+    (e: ClipboardEvent) => {
+      const items = e.clipboardData?.items;
+      if (!items) return;
+
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        if (item.type.indexOf('image') !== -1) {
+          const file = item.getAsFile();
+          if (file) {
+            handleFileSelect(file);
+            e.preventDefault();
+            break;
+          }
+        }
+      }
+    },
+    [handleFileSelect],
+  );
+
+  // Add paste event listener on mount and remove on unmount
+  React.useEffect(() => {
+    const handlePasteGlobal = (e: ClipboardEvent) => handlePaste(e);
+    document.addEventListener('paste', handlePasteGlobal);
+    return () => {
+      document.removeEventListener('paste', handlePasteGlobal);
+    };
+  }, [handlePaste]);
+
   const removeBackgroundFromImage = async () => {
     if (DEBUG_MODE) console.log('BGRemover: Starting background removal');
 
@@ -330,10 +359,10 @@ export default function BGRemover() {
                         <ImageIcon className='mx-auto h-16 w-16 text-slate-400 group-hover:text-blue-500 dark:text-slate-500 dark:group-hover:text-blue-400' />
                       </div>
                       <p className='mb-2 text-lg font-medium text-slate-700 dark:text-slate-300'>
-                        Drag and drop your image here
+                        Drag and drop your image here, or paste from clipboard
                       </p>
                       <p className='mb-6 text-sm text-slate-500 dark:text-slate-400'>
-                        Supports JPG, PNG, WebP formats up to 10MB
+                        Supports JPG, PNG, WebP formats up to 10MB. Use Ctrl+V (or Cmd+V) to paste images.
                       </p>
                       <Button
                         asChild
@@ -563,7 +592,7 @@ export default function BGRemover() {
                 </div>
                 <h4 className='mb-2 font-semibold text-slate-900 dark:text-slate-100'>Upload Image</h4>
                 <p className='text-sm text-slate-600 dark:text-slate-400'>
-                  Drag and drop or click to select your image file
+                  Drag and drop, click to select, or paste from clipboard (Ctrl+V/Cmd+V)
                 </p>
               </div>
 
