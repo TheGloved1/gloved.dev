@@ -216,21 +216,6 @@ export default function BGRemover() {
     <TooltipProvider>
       <div className='min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800'>
         <style jsx>{`
-          .bg-checkerboard {
-            background-color: rgba(255, 255, 255, 0.5);
-            background-image:
-              linear-gradient(45deg, rgba(229, 231, 235, 0.8) 25%, transparent 25%),
-              linear-gradient(-45deg, rgba(229, 231, 235, 0.8) 25%, transparent 25%),
-              linear-gradient(45deg, transparent 75%, rgba(229, 231, 235, 0.8) 75%),
-              linear-gradient(-45deg, transparent 75%, rgba(229, 231, 235, 0.8) 75%);
-            background-size: 20px 20px;
-            background-position:
-              0 0,
-              0 10px,
-              10px -10px,
-              -10px 0px;
-          }
-
           @keyframes float {
             0%,
             100% {
@@ -521,7 +506,7 @@ export default function BGRemover() {
 
                 {processedImage ?
                   <div className='relative overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700'>
-                    <div className='bg-checkerboard absolute inset-0' />
+                    <div className='absolute inset-0 bg-transparent' />
                     <img src={processedImage} alt='Processed' className='relative h-96 w-full object-contain' />
                     <div className='absolute bottom-2 left-2 rounded-lg bg-green-600/90 px-2 py-1 text-xs text-white'>
                       Background Removed
