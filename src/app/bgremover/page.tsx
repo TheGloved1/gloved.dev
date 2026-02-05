@@ -376,10 +376,26 @@ export default function BGRemover() {
                     </div>
                   </div>
                 : <div className='relative overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700'>
-                    <img src={selectedImage} alt='Original' className='h-96 w-full object-contain' />
-                    <div className='absolute bottom-2 left-2 rounded-lg bg-black/70 px-2 py-1 text-xs text-white'>
-                      Original
-                    </div>
+                    <input
+                      ref={fileInputRef}
+                      type='file'
+                      accept='image/*'
+                      onChange={handleFileInput}
+                      className='absolute inset-0 cursor-pointer opacity-0'
+                      id='file-upload-replace'
+                    />
+                    <label htmlFor='file-upload-replace' className='cursor-pointer'>
+                      <img src={selectedImage} alt='Original' className='h-96 w-full object-contain' />
+                      <div className='absolute bottom-2 left-2 rounded-lg bg-black/70 px-2 py-1 text-xs text-white'>
+                        Original
+                      </div>
+                      <div className='absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-opacity hover:opacity-100'>
+                        <div className='text-center text-white'>
+                          <Upload className='mx-auto mb-2 h-8 w-8' />
+                          <p className='text-sm font-medium'>Click to replace image</p>
+                        </div>
+                      </div>
+                    </label>
                   </div>
                 }
               </div>
