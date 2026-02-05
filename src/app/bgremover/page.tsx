@@ -2,12 +2,11 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { removeBackground } from '@imgly/background-removal';
-import { Download, Image as ImageIcon, Shield, Sparkles, Upload, Wand2, X, Zap } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { ArrowRight, Cpu, Download, X, Zap } from 'lucide-react';
+import Link from 'next/link';
 import React, { useCallback, useRef, useState } from 'react';
 
 export default function BGRemover() {
@@ -23,39 +22,16 @@ export default function BGRemover() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imglyPath = typeof window !== 'undefined' ? window.location.origin + '/imgly/' : undefined;
 
-  // Debug logging toggle - set to false to disable all console logs
-  const DEBUG_MODE = true;
-
-  const handleFileSelect = useCallback(
-    (file: File) => {
-      if (DEBUG_MODE)
-        console.log('BGRemover: File selected', {
-          name: file.name,
-          size: file.size,
-          type: file.type,
-          lastModified: file.lastModified,
-        });
-
-      if (file && file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          if (DEBUG_MODE)
-            console.log('BGRemover: File read successfully', {
-              resultLength: e.target?.result ? (e.target.result as string).length : 0,
-            });
-          setSelectedImage(e.target?.result as string);
-          setProcessedImage(null);
-        };
-        reader.onerror = (error) => {
-          if (DEBUG_MODE) console.error('BGRemover: Error reading file', error);
-        };
-        reader.readAsDataURL(file);
-      } else {
-        if (DEBUG_MODE) console.warn('BGRemover: Invalid file type', file.type);
-      }
-    },
-    [DEBUG_MODE],
-  );
+  const handleFileSelect = useCallback((file: File) => {
+    if (file && file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setSelectedImage(e.target?.result as string);
+        setProcessedImage(null);
+      };
+      reader.readAsDataURL(file);
+    }
+  }, []);
 
   const handleDrag = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -72,7 +48,6 @@ export default function BGRemover() {
       e.preventDefault();
       e.stopPropagation();
       setDragActive(false);
-
       if (e.dataTransfer.files && e.dataTransfer.files[0]) {
         handleFileSelect(e.dataTransfer.files[0]);
       }
@@ -90,7 +65,6 @@ export default function BGRemover() {
     (e: ClipboardEvent) => {
       const items = e.clipboardData?.items;
       if (!items) return;
-
       for (let i = 0; i < items.length; i++) {
         const item = items[i];
         if (item.type.indexOf('image') !== -1) {
@@ -106,7 +80,6 @@ export default function BGRemover() {
     [handleFileSelect],
   );
 
-  // Add paste event listener on mount and remove on unmount
   React.useEffect(() => {
     const handlePasteGlobal = (e: ClipboardEvent) => handlePaste(e);
     document.addEventListener('paste', handlePasteGlobal);
@@ -116,39 +89,19 @@ export default function BGRemover() {
   }, [handlePaste]);
 
   const removeBackgroundFromImage = async () => {
-    if (DEBUG_MODE) console.log('BGRemover: Starting background removal');
+    if (!selectedImage) return;
 
-    if (!selectedImage) {
-      if (DEBUG_MODE) console.error('BGRemover: No selected image');
-      return;
-    }
-
-    // Clear previous result when processing again
     setProcessedImage(null);
     setProgress(null);
-
     setIsProcessing(true);
-    setProgress({ progress: 0, stage: 'Initializing...' });
-    const startTime = performance.now();
+    setProgress({ progress: 0, stage: 'INITIALIZING' });
 
     try {
-      if (DEBUG_MODE) console.log('BGRemover: Converting data URL to blob');
-
-      // Convert data URL to blob
       const response = await fetch(selectedImage);
       const blob = await response.blob();
 
-      if (DEBUG_MODE)
-        console.log('BGRemover: Blob created', {
-          size: blob.size,
-          type: blob.type,
-        });
+      setProgress({ progress: 25, stage: 'LOADING MODEL' });
 
-      setProgress({ progress: 25, stage: 'Loading model...' });
-
-      if (DEBUG_MODE) console.log('BGRemover: Calling removeBackground API');
-
-      // Use the professional background removal library
       const resultBlob = await removeBackground(blob, {
         device: device,
         model,
@@ -157,31 +110,21 @@ export default function BGRemover() {
           format: outputFormat,
           quality: quality,
         },
-        progress: (key, current, total) => {
-          if (DEBUG_MODE) console.log('BGRemover: Progress update', { key, current, total });
-
-          // Handle different progress formats
+        progress: (key, current) => {
           let displayProgress = 0;
           if (current > 1 && current <= 4) {
-            // If progress is 0-4 (stage-based), convert to percentage
             displayProgress = Math.round((current / 4) * 100);
           } else if (current > 1) {
-            // If progress is > 4, it might be bytes or another format
-            displayProgress = Math.min(99, Math.round(current / 100000000)); // Normalize to percentage
+            displayProgress = Math.min(99, Math.round(current / 100000000));
           } else {
-            // If progress is 0-1, convert to percentage
             displayProgress = Math.round(current * 100);
           }
-
-          setProgress({ progress: displayProgress, stage: key });
+          setProgress({ progress: displayProgress, stage: key.toUpperCase().replace(/_/g, ' ') });
         },
       });
 
-      setProgress({ progress: 75, stage: 'Converting to data URL...' });
+      setProgress({ progress: 75, stage: 'CONVERTING' });
 
-      if (DEBUG_MODE) console.log('BGRemover: Background removed, converting to data URL');
-
-      // Convert result blob to data URL
       const processedDataUrl = await new Promise<string>((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = () => resolve(reader.result as string);
@@ -189,21 +132,11 @@ export default function BGRemover() {
         reader.readAsDataURL(resultBlob);
       });
 
-      const endTime = performance.now();
-      const processingTime = (endTime - startTime).toFixed(2);
-
-      if (DEBUG_MODE)
-        console.log('BGRemover: Processing completed', {
-          processingTime: `${processingTime}ms`,
-          outputSize: processedDataUrl.length,
-          outputSizeKB: (processedDataUrl.length / 1024).toFixed(2) + 'KB',
-        });
-
       setProcessedImage(processedDataUrl);
-      setProgress({ progress: 100, stage: 'Complete' });
+      setProgress({ progress: 100, stage: 'COMPLETE' });
     } catch (error) {
-      if (DEBUG_MODE) console.error('BGRemover: Error during processing', error);
-      setProgress({ progress: 0, stage: 'Error' });
+      console.error('BGRemover: Error during processing', error);
+      setProgress({ progress: 0, stage: 'ERROR' });
     } finally {
       setIsProcessing(false);
       setTimeout(() => {
@@ -213,26 +146,16 @@ export default function BGRemover() {
   };
 
   const downloadImage = () => {
-    if (DEBUG_MODE)
-      console.log('BGRemover: Downloading processed image', {
-        hasProcessedImage: !!processedImage,
-        imageSize: processedImage ? processedImage.length : 0,
-      });
-
     if (processedImage) {
       const link = document.createElement('a');
       const extension = outputFormat === 'image/jpeg' ? 'jpg' : outputFormat.split('/')[1];
-      link.download = `background-removed.${extension}`;
+      link.download = `extracted.${extension}`;
       link.href = processedImage;
       link.click();
-      if (DEBUG_MODE) console.log('BGRemover: Download initiated');
-    } else {
-      if (DEBUG_MODE) console.warn('BGRemover: No processed image to download');
     }
   };
 
   const resetAll = () => {
-    if (DEBUG_MODE) console.log('BGRemover: Resetting all state');
     setSelectedImage(null);
     setProcessedImage(null);
     setProgress(null);
@@ -242,412 +165,485 @@ export default function BGRemover() {
   };
 
   return (
-    <TooltipProvider>
-      <div className='min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800'>
-        <style jsx>{`
-          @keyframes float {
-            0%,
-            100% {
-              transform: translateY(0px);
-            }
-            50% {
-              transform: translateY(-10px);
-            }
-          }
+    <div className='flex h-screen flex-col overflow-hidden bg-[#0a0a0a] text-white selection:bg-fuchsia-500/30'>
+      <style jsx global>{`
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap');
 
-          .float-animation {
-            animation: float 3s ease-in-out infinite;
-          }
+        .font-display {
+          font-family: 'Syne', sans-serif;
+        }
 
-          @keyframes pulse-glow {
-            0%,
-            100% {
-              box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
-            }
-            50% {
-              box-shadow: 0 0 40px rgba(59, 130, 246, 0.8);
-            }
-          }
+        .font-mono-industrial {
+          font-family: 'Space Grotesk', monospace;
+        }
 
-          .pulse-glow {
-            animation: pulse-glow 2s ease-in-out infinite;
-          }
-        `}</style>
+        .noise-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          pointer-events: none;
+          z-index: 9999;
+          opacity: 0.03;
+          background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+        }
 
-        <div className='container mx-auto max-w-6xl p-6'>
-          {/* Header */}
-          <div className='mb-8 text-center'>
-            <div className='mb-4 inline-flex items-center justify-center rounded-full bg-blue-100 p-3 dark:bg-blue-900'>
-              <Sparkles className='h-8 w-8 text-blue-600 dark:text-blue-400' />
-            </div>
-            <h1 className='mb-3 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-4xl font-bold text-transparent dark:from-blue-400 dark:to-purple-400'>
-              Background Remover
+        .grid-pattern {
+          background-image:
+            linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+          background-size: 60px 60px;
+        }
+
+        .glow-line {
+          box-shadow:
+            0 0 20px rgba(236, 72, 153, 0.5),
+            0 0 40px rgba(236, 72, 153, 0.2);
+        }
+
+        .brutal-shadow {
+          box-shadow: 6px 6px 0 rgba(236, 72, 153, 0.8);
+        }
+
+        .brutal-shadow-sm {
+          box-shadow: 3px 3px 0 rgba(236, 72, 153, 0.6);
+        }
+
+        @keyframes glitch {
+          0%,
+          100% {
+            transform: translate(0);
+          }
+          20% {
+            transform: translate(-2px, 2px);
+          }
+          40% {
+            transform: translate(-2px, -2px);
+          }
+          60% {
+            transform: translate(2px, 2px);
+          }
+          80% {
+            transform: translate(2px, -2px);
+          }
+        }
+
+        .glitch-text:hover {
+          animation: glitch 0.3s ease infinite;
+        }
+
+        .checkerboard {
+          background-image:
+            linear-gradient(45deg, #1a1a1a 25%, transparent 25%), linear-gradient(-45deg, #1a1a1a 25%, transparent 25%),
+            linear-gradient(45deg, transparent 75%, #1a1a1a 75%), linear-gradient(-45deg, transparent 75%, #1a1a1a 75%);
+          background-size: 16px 16px;
+          background-position:
+            0 0,
+            0 8px,
+            8px -8px,
+            -8px 0px;
+          background-color: #0f0f0f;
+        }
+      `}</style>
+
+      <div className='noise-overlay' />
+
+      {/* Compact Header */}
+      <header className='flex-shrink-0 border-b border-white/10 px-4 py-3 lg:px-6'>
+        <div className='flex items-center justify-between'>
+          <div className='flex items-center gap-4'>
+            <div className='glow-line h-2 w-2 bg-fuchsia-500' />
+            <h1 className='font-display text-xl font-bold uppercase tracking-tight lg:text-2xl'>
+              <span className='glitch-text'>BG</span>
+              <span className='text-fuchsia-500'>_</span>
+              <span className='glitch-text'>REMOVER</span>
             </h1>
-            <p className='mx-auto max-w-2xl text-lg text-muted-foreground'>
-              Remove backgrounds from your images instantly with advanced algorithms. All processing happens securely in your
-              browser.
-            </p>
-
-            {/* Feature badges */}
-            <div className='mt-6 flex flex-wrap justify-center gap-2'>
-              <div className='flex items-center rounded-full bg-green-100 px-3 py-1 text-sm text-green-800 dark:bg-green-900 dark:text-green-200'>
-                <Shield className='mr-1 h-3 w-3' />
-                Privacy First
-              </div>
-              <div className='flex items-center rounded-full bg-blue-100 px-3 py-1 text-sm text-blue-800 dark:bg-blue-900 dark:text-blue-200'>
-                <Zap className='mr-1 h-3 w-3' />
-                Lightning Fast
-              </div>
-              <div className='flex items-center rounded-full bg-purple-100 px-3 py-1 text-sm text-purple-800 dark:bg-purple-900 dark:text-purple-200'>
-                <Sparkles className='mr-1 h-3 w-3' />
-                Advanced Processing
-              </div>
-            </div>
+            <Link href='/'>
+              <span className='font-mono-industrial hidden text-[10px] tracking-[0.2em] text-white/30 hover:text-white lg:inline'>
+                GLOVED.DEV
+              </span>
+            </Link>
           </div>
-
-          {/* Main Content */}
-          <div className='space-y-8'>
-            {/* Left Column - Upload & Settings */}
-            <div className='space-y-6'>
-              {/* Upload Area */}
-              <div className='rounded-2xl bg-white p-6 shadow-lg dark:bg-slate-800'>
-                <div className='mb-4 flex items-center justify-between'>
-                  <h2 className='text-xl font-semibold text-slate-900 dark:text-slate-100'>Upload Image</h2>
-                  {selectedImage && (
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          variant='outline'
-                          size='sm'
-                          onClick={resetAll}
-                          className='hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950 dark:hover:text-red-400'
-                        >
-                          <X className='mr-2 h-4 w-4' />
-                          Clear
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Remove image and start over</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  )}
-                </div>
-
-                {!selectedImage ?
-                  <div
-                    className={cn(
-                      'group relative overflow-hidden rounded-xl border-2 border-dashed transition-all duration-300',
-                      dragActive ?
-                        'pulse-glow border-blue-500 bg-blue-50 dark:border-blue-400 dark:bg-blue-950'
-                      : 'border-slate-300 bg-slate-50 hover:border-slate-400 hover:bg-slate-100 dark:border-slate-600 dark:bg-slate-900 dark:hover:border-slate-500 dark:hover:bg-slate-800',
-                    )}
-                    onDragEnter={handleDrag}
-                    onDragLeave={handleDrag}
-                    onDragOver={handleDrag}
-                    onDrop={handleDrop}
-                  >
-                    <input
-                      ref={fileInputRef}
-                      type='file'
-                      accept='image/*'
-                      onChange={handleFileInput}
-                      className='absolute inset-0 cursor-pointer opacity-0'
-                      id='file-upload'
-                    />
-                    <div className='p-12 text-center'>
-                      <div className='float-animation mb-4'>
-                        <ImageIcon className='mx-auto h-16 w-16 text-slate-400 group-hover:text-blue-500 dark:text-slate-500 dark:group-hover:text-blue-400' />
-                      </div>
-                      <p className='mb-2 text-lg font-medium text-slate-700 dark:text-slate-300'>
-                        Drag and drop your image here, or paste from clipboard
-                      </p>
-                      <p className='mb-6 text-sm text-slate-500 dark:text-slate-400'>
-                        Supports JPG, PNG, WebP formats up to 10MB. Use Ctrl+V (or Cmd+V) to paste images.
-                      </p>
-                      <Button
-                        asChild
-                        className='bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700'
-                      >
-                        <label htmlFor='file-upload' className='cursor-pointer'>
-                          <Upload className='mr-2 h-4 w-4' />
-                          Choose Image
-                        </label>
-                      </Button>
-                    </div>
-                  </div>
-                : <div className='relative overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700'>
-                    <input
-                      ref={fileInputRef}
-                      type='file'
-                      accept='image/*'
-                      onChange={handleFileInput}
-                      className='absolute inset-0 cursor-pointer opacity-0'
-                      id='file-upload-replace'
-                    />
-                    <label htmlFor='file-upload-replace' className='cursor-pointer'>
-                      <img src={selectedImage} alt='Original' className='h-96 w-full object-contain' />
-                      <div className='absolute bottom-2 left-2 rounded-lg bg-black/70 px-2 py-1 text-xs text-white'>
-                        Original
-                      </div>
-                      <div className='absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-opacity hover:opacity-100'>
-                        <div className='text-center text-white'>
-                          <Upload className='mx-auto mb-2 h-8 w-8' />
-                          <p className='text-sm font-medium'>Click to replace image</p>
-                        </div>
-                      </div>
-                    </label>
-                  </div>
-                }
-              </div>
-
-              {/* Settings Panel */}
-              {selectedImage && (
-                <div className='rounded-2xl bg-white p-6 shadow-lg dark:bg-slate-800'>
-                  <div className='mb-6 flex items-center justify-between'>
-                    <h3 className='text-lg font-semibold text-slate-900 dark:text-slate-100'>Processing Settings</h3>
-                  </div>
-
-                  <div className='space-y-6'>
-                    <div className='grid gap-6 md:grid-cols-2'>
-                      <div className='space-y-2'>
-                        <label className='text-sm font-medium text-slate-700 dark:text-slate-300'>Processing Speed</label>
-                        <Select
-                          value={device}
-                          onValueChange={(value: 'cpu' | 'gpu') => setDevice(value)}
-                          disabled={isProcessing}
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value='cpu'>🐌 CPU (Compatible)</SelectItem>
-                            <SelectItem value='gpu'>⚡ GPU (Faster)</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      <div className='space-y-2'>
-                        <label className='text-sm font-medium text-slate-700 dark:text-slate-300'>Output Format</label>
-                        <Select
-                          value={outputFormat}
-                          onValueChange={(value: 'image/png' | 'image/jpeg' | 'image/webp') => setOutputFormat(value)}
-                          disabled={isProcessing}
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value='image/png'>🖼️ PNG (Default)</SelectItem>
-                            <SelectItem value='image/jpeg'>📷 JPEG (Smaller)</SelectItem>
-                            <SelectItem value='image/webp'>🌐 WebP (Modern)</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-
-                    <div className='space-y-4'>
-                      <div className='space-y-2'>
-                        <label className='text-sm font-medium text-slate-700 dark:text-slate-300'>Processing Model</label>
-                        <Select
-                          value={model}
-                          onValueChange={(value: 'isnet' | 'isnet_fp16' | 'isnet_quint8') => setModel(value)}
-                          disabled={isProcessing}
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value='isnet'>Default</SelectItem>
-                            <SelectItem value='isnet_fp16'>FP16</SelectItem>
-                            <SelectItem value='isnet_quint8'>QUINT8</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      <div className='space-y-2'>
-                        <label className='text-sm font-medium text-slate-700 dark:text-slate-300'>
-                          Quality: {Math.round(quality * 100)}%
-                        </label>
-                        <div className='space-y-1'>
-                          <input
-                            type='range'
-                            min='0.1'
-                            max='1'
-                            step='0.1'
-                            value={quality}
-                            onChange={(e) => setQuality(Number(e.target.value))}
-                            className='h-2 w-full cursor-pointer appearance-none rounded-lg bg-slate-200 dark:bg-slate-700'
-                            disabled={isProcessing}
-                          />
-                          <div className='flex justify-between text-xs text-slate-500 dark:text-slate-400'>
-                            <span>Smaller</span>
-                            <span>Better</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Action Buttons */}
-                    <div className='space-y-3'>
-                      <Button
-                        onClick={removeBackgroundFromImage}
-                        disabled={isProcessing}
-                        className='w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 disabled:from-slate-400 disabled:to-slate-500'
-                        size='lg'
-                      >
-                        {isProcessing ?
-                          <>
-                            <div className='mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent' />
-                            Processing...
-                          </>
-                        : processedImage ?
-                          <>
-                            <Wand2 className='mr-2 h-4 w-4' />
-                            Process Again
-                          </>
-                        : <>
-                            <Sparkles className='mr-2 h-4 w-4' />
-                            Remove Background
-                          </>
-                        }
-                      </Button>
-
-                      {processedImage && (
-                        <Button
-                          variant='outline'
-                          onClick={() => setProcessedImage(null)}
-                          disabled={isProcessing}
-                          className='w-full'
-                        >
-                          <X className='mr-2 h-4 w-4' />
-                          Clear Result
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              )}
+          <div className='flex items-center gap-4'>
+            <div className='font-mono-industrial hidden text-[10px] text-white/30 lg:flex lg:items-center lg:gap-4'>
+              <span>LOCAL PROCESSING</span>
+              <span>•</span>
+              <span>ZERO UPLOAD</span>
             </div>
-
-            {/* Right Column - Result */}
-            <div className='space-y-6'>
-              <div className='rounded-2xl bg-white p-6 shadow-lg dark:bg-slate-800'>
-                <div className='mb-4 flex items-center justify-between'>
-                  <h2 className='text-xl font-semibold text-slate-900 dark:text-slate-100'>Result</h2>
-                  {processedImage && (
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button onClick={downloadImage} size='sm' className='bg-green-600 text-white hover:bg-green-700'>
-                          <Download className='mr-2 h-4 w-4' />
-                          Download
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Download processed image</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  )}
-                </div>
-
-                {processedImage ?
-                  <div className='relative overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700'>
-                    <div className='absolute inset-0 bg-transparent' />
-                    <img src={processedImage} alt='Processed' className='relative h-96 w-full object-contain' />
-                    <div className='absolute bottom-2 left-2 rounded-lg bg-green-600/90 px-2 py-1 text-xs text-white'>
-                      Background Removed
-                    </div>
-                  </div>
-                : isProcessing ?
-                  <div className='flex h-96 items-center justify-center rounded-xl border border-dashed border-slate-300 bg-slate-50 dark:border-slate-600 dark:bg-slate-900'>
-                    <div className='text-center'>
-                      <div className='mb-4'>
-                        <div className='mx-auto h-16 w-16 animate-spin rounded-full border-4 border-blue-600 border-t-transparent' />
-                      </div>
-                      <p className='mb-2 text-lg font-medium text-slate-700 dark:text-slate-300'>Processing your image...</p>
-                      {progress && (
-                        <div className='mx-auto max-w-xs space-y-2 px-4'>
-                          <Progress value={progress.progress} className='h-2' />
-                          <p className='text-sm text-slate-600 dark:text-slate-400'>
-                            {progress.stage} ({progress.progress}%)
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                : <div className='flex h-96 items-center justify-center rounded-xl border border-dashed border-slate-300 bg-slate-50 dark:border-slate-600 dark:bg-slate-900'>
-                    <div className='text-center'>
-                      <div className='mb-4'>
-                        <ImageIcon className='mx-auto h-16 w-16 text-slate-400 dark:text-slate-500' />
-                      </div>
-                      <p className='text-lg font-medium text-slate-700 dark:text-slate-300'>
-                        Processed image will appear here
-                      </p>
-                      <p className='mt-2 text-sm text-slate-500 dark:text-slate-400'>
-                        Upload an image and click &ldquo;Remove Background&rdquo; to get started
-                      </p>
-                    </div>
-                  </div>
-                }
-              </div>
-            </div>
-          </div>
-
-          {/* Instructions Section */}
-          <div className='mt-12 rounded-2xl bg-white p-8 shadow-lg dark:bg-slate-800'>
-            <div className='mb-6 text-center'>
-              <h3 className='mb-2 text-2xl font-bold text-slate-900 dark:text-slate-100'>How It Works</h3>
-              <p className='text-slate-600 dark:text-slate-400'>
-                Get professional background removal in just a few simple steps
-              </p>
-            </div>
-
-            <div className='grid gap-6 md:grid-cols-2 lg:grid-cols-3'>
-              <div className='text-center'>
-                <div className='mb-3 inline-flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900'>
-                  <span className='text-lg font-bold text-blue-600 dark:text-blue-400'>1</span>
-                </div>
-                <h4 className='mb-2 font-semibold text-slate-900 dark:text-slate-100'>Upload Image</h4>
-                <p className='text-sm text-slate-600 dark:text-slate-400'>
-                  Drag and drop, click to select, or paste from clipboard (Ctrl+V/Cmd+V)
-                </p>
-              </div>
-
-              <div className='text-center'>
-                <div className='mb-3 inline-flex h-12 w-12 items-center justify-center rounded-full bg-purple-100 dark:bg-purple-900'>
-                  <span className='text-lg font-bold text-purple-600 dark:text-purple-400'>2</span>
-                </div>
-                <h4 className='mb-2 font-semibold text-slate-900 dark:text-slate-100'>Configure Settings</h4>
-                <p className='text-sm text-slate-600 dark:text-slate-400'>
-                  Choose processing speed and output format that suits your needs
-                </p>
-              </div>
-
-              <div className='text-center'>
-                <div className='mb-3 inline-flex h-12 w-12 items-center justify-center rounded-full bg-green-100 dark:bg-green-900'>
-                  <span className='text-lg font-bold text-green-600 dark:text-green-400'>3</span>
-                </div>
-                <h4 className='mb-2 font-semibold text-slate-900 dark:text-slate-100'>Download Result</h4>
-                <p className='text-sm text-slate-600 dark:text-slate-400'>
-                  Get your image with background removed instantly
-                </p>
-              </div>
-            </div>
-
-            <div className='mt-8 rounded-xl bg-slate-50 p-4 dark:bg-slate-900'>
-              <div className='flex items-start space-x-3'>
-                <Shield className='mt-0.5 h-5 w-5 text-green-600 dark:text-green-400' />
-                <div>
-                  <h4 className='font-semibold text-slate-900 dark:text-slate-100'>Privacy & Security</h4>
-                  <p className='mt-1 text-sm text-slate-600 dark:text-slate-400'>
-                    All image processing happens directly in your browser using WebAssembly. Your images never leave your
-                    device, ensuring complete privacy and security.
-                  </p>
-                </div>
-              </div>
+            <div className='flex h-8 w-8 items-center justify-center border border-fuchsia-500/50 bg-fuchsia-500/10'>
+              <div className='h-1.5 w-1.5 animate-pulse bg-fuchsia-500' />
             </div>
           </div>
         </div>
-      </div>
-    </TooltipProvider>
+      </header>
+
+      {/* Main Content - Fills remaining space */}
+      <main className='grid-pattern flex-1 overflow-hidden px-4 py-4 lg:px-6'>
+        <AnimatePresence mode='wait'>
+          {!selectedImage ?
+            /* Upload State */
+            <motion.div
+              key='upload'
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className='flex h-full items-center justify-center'
+            >
+              <div
+                className={cn(
+                  'group relative h-full w-full max-w-4xl border-2 border-dashed transition-all duration-300',
+                  dragActive ? 'border-fuchsia-500 bg-fuchsia-500/5' : 'border-white/20 hover:border-white/40',
+                )}
+                onDragEnter={handleDrag}
+                onDragLeave={handleDrag}
+                onDragOver={handleDrag}
+                onDrop={handleDrop}
+              >
+                <input
+                  ref={fileInputRef}
+                  type='file'
+                  accept='image/*'
+                  onChange={handleFileInput}
+                  className='absolute inset-0 z-10 cursor-pointer opacity-0'
+                  id='file-upload'
+                />
+
+                {/* Corner decorations */}
+                <div className='absolute left-0 top-0 h-6 w-6 border-l-2 border-t-2 border-fuchsia-500' />
+                <div className='absolute right-0 top-0 h-6 w-6 border-r-2 border-t-2 border-fuchsia-500' />
+                <div className='absolute bottom-0 left-0 h-6 w-6 border-b-2 border-l-2 border-fuchsia-500' />
+                <div className='absolute bottom-0 right-0 h-6 w-6 border-b-2 border-r-2 border-fuchsia-500' />
+
+                <div className='flex h-full flex-col items-center justify-center p-8'>
+                  <motion.div
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 0.2 }}
+                    className='mb-6 flex h-20 w-20 items-center justify-center border border-white/10 bg-white/5'
+                  >
+                    <svg className='h-10 w-10 text-white/30' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+                      <path
+                        strokeLinecap='square'
+                        strokeWidth={1}
+                        d='M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z'
+                      />
+                    </svg>
+                  </motion.div>
+
+                  <motion.div
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.3 }}
+                    className='text-center'
+                  >
+                    <h2 className='font-display text-2xl font-bold uppercase tracking-tight lg:text-3xl'>DROP YOUR IMAGE</h2>
+                    <p className='font-mono-industrial mt-3 text-xs text-white/50'>CLICK ANYWHERE • PASTE WITH CTRL+V</p>
+                    <div className='font-mono-industrial mt-6 flex flex-wrap items-center justify-center gap-3 text-[10px] text-white/30'>
+                      <span className='border border-white/10 px-2 py-1'>JPG</span>
+                      <span className='border border-white/10 px-2 py-1'>PNG</span>
+                      <span className='border border-white/10 px-2 py-1'>WEBP</span>
+                    </div>
+                  </motion.div>
+                </div>
+
+                {dragActive && (
+                  <motion.div
+                    initial={{ top: 0 }}
+                    animate={{ top: '100%' }}
+                    transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                    className='absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-fuchsia-500 to-transparent'
+                  />
+                )}
+              </div>
+            </motion.div>
+          : /* Processing State */
+            <motion.div
+              key='processing'
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className='flex h-full flex-col'
+            >
+              {/* Toolbar */}
+              <div className='mb-3 flex flex-shrink-0 flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-3'>
+                <div className='flex items-center gap-3'>
+                  <Button
+                    variant='ghost'
+                    onClick={resetAll}
+                    className='font-mono-industrial h-8 border border-white/10 px-3 text-[10px] uppercase tracking-wider hover:border-red-500/50 hover:bg-red-500/10 hover:text-red-400'
+                  >
+                    <X className='mr-1.5 h-3 w-3' />
+                    CLEAR
+                  </Button>
+
+                  {processedImage && (
+                    <Button
+                      onClick={downloadImage}
+                      className='brutal-shadow-sm font-mono-industrial h-8 border-2 border-fuchsia-500 bg-fuchsia-500 px-4 text-[10px] uppercase tracking-wider text-black transition-all hover:bg-fuchsia-400'
+                    >
+                      <Download className='mr-1.5 h-3 w-3' />
+                      DOWNLOAD
+                    </Button>
+                  )}
+                </div>
+
+                <div className='font-mono-industrial text-[10px] text-white/40'>
+                  {isProcessing ?
+                    <span className='flex items-center gap-2'>
+                      <span className='h-1.5 w-1.5 animate-pulse bg-fuchsia-500' />
+                      PROCESSING
+                    </span>
+                  : processedImage ?
+                    <span className='text-green-400'>✓ COMPLETE</span>
+                  : 'READY'}
+                </div>
+              </div>
+
+              {/* Content area */}
+              <div className='grid min-h-0 flex-1 gap-4 lg:grid-cols-[1fr,240px]'>
+                {/* Image area - side by side */}
+                <div className='flex min-h-0 flex-col gap-3'>
+                  <div className='grid min-h-0 flex-1 grid-cols-2 gap-3'>
+                    {/* Original image - clickable to replace */}
+                    <label
+                      htmlFor='file-upload-replace'
+                      className='group relative min-h-0 cursor-pointer overflow-hidden border border-white/10 bg-black transition-all hover:border-white/30'
+                    >
+                      <input
+                        type='file'
+                        accept='image/*'
+                        onChange={handleFileInput}
+                        className='hidden'
+                        id='file-upload-replace'
+                      />
+                      <img src={selectedImage} alt='Original' className='h-full w-full object-contain' />
+                      <div className='absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 transition-opacity group-hover:opacity-100'>
+                        <div className='text-center'>
+                          <svg
+                            className='mx-auto h-6 w-6 text-white/80'
+                            fill='none'
+                            viewBox='0 0 24 24'
+                            stroke='currentColor'
+                          >
+                            <path
+                              strokeLinecap='round'
+                              strokeLinejoin='round'
+                              strokeWidth={1.5}
+                              d='M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12'
+                            />
+                          </svg>
+                          <p className='font-mono-industrial mt-1 text-[10px] text-white/80'>REPLACE</p>
+                        </div>
+                      </div>
+                      <div className='font-mono-industrial absolute bottom-2 left-2 z-10 border border-white/20 bg-black/80 px-2 py-0.5 text-[10px] uppercase'>
+                        ORIGINAL
+                      </div>
+                    </label>
+
+                    {/* Processed image */}
+                    <div className='relative min-h-0 overflow-hidden border border-white/10 bg-black'>
+                      <div className='checkerboard absolute inset-0' />
+
+                      {processedImage ?
+                        <img src={processedImage} alt='Processed' className='relative h-full w-full object-contain' />
+                      : isProcessing ?
+                        <div className='absolute inset-0 flex flex-col items-center justify-center'>
+                          <div className='relative mb-4 h-16 w-16 border border-fuchsia-500/30'>
+                            <motion.div
+                              animate={{ rotate: 360 }}
+                              transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+                              className='absolute inset-1 border-2 border-transparent border-t-fuchsia-500'
+                            />
+                            <motion.div
+                              animate={{ rotate: -360 }}
+                              transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
+                              className='absolute inset-3 border-2 border-transparent border-b-fuchsia-500/50'
+                            />
+                          </div>
+                          {progress && (
+                            <div className='w-32 space-y-2'>
+                              <div className='h-1 overflow-hidden bg-white/10'>
+                                <motion.div
+                                  className='h-full bg-fuchsia-500'
+                                  initial={{ width: 0 }}
+                                  animate={{ width: `${progress.progress}%` }}
+                                />
+                              </div>
+                              <div className='font-mono-industrial text-center text-[10px]'>
+                                <span className='text-white/50'>{progress.stage}</span>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      : <div className='absolute inset-0 flex items-center justify-center'>
+                          <p className='font-mono-industrial text-[10px] text-white/30'>RESULT</p>
+                        </div>
+                      }
+
+                      {processedImage && (
+                        <div className='font-mono-industrial absolute bottom-2 left-2 z-10 border border-fuchsia-500/50 bg-black/80 px-2 py-0.5 text-[10px] uppercase text-fuchsia-400'>
+                          EXTRACTED
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Action button */}
+                  {!processedImage && !isProcessing && (
+                    <Button
+                      onClick={removeBackgroundFromImage}
+                      disabled={isProcessing}
+                      className='brutal-shadow font-display h-10 w-full flex-shrink-0 border-2 border-fuchsia-500 bg-fuchsia-500 text-sm font-bold uppercase tracking-wider text-black transition-all hover:bg-fuchsia-400 disabled:opacity-50'
+                    >
+                      <span>EXTRACT SUBJECT</span>
+                      <ArrowRight className='ml-2 h-4 w-4' />
+                    </Button>
+                  )}
+
+                  {processedImage && (
+                    <Button
+                      onClick={removeBackgroundFromImage}
+                      disabled={isProcessing}
+                      variant='outline'
+                      className='font-mono-industrial h-8 w-full flex-shrink-0 border-white/20 text-[10px] uppercase tracking-wider hover:border-white/40 hover:bg-white/5'
+                    >
+                      REPROCESS
+                    </Button>
+                  )}
+                </div>
+
+                {/* Settings panel */}
+                <div className='flex flex-col gap-3 overflow-y-auto'>
+                  <div className='border border-white/10 bg-white/[0.02] p-4'>
+                    <h3 className='font-display mb-4 text-[10px] font-bold uppercase tracking-wider text-white/50'>
+                      CONFIG
+                    </h3>
+
+                    <div className='space-y-4'>
+                      {/* Device */}
+                      <div className='space-y-1.5'>
+                        <label className='font-mono-industrial text-[10px] text-white/40'>PROCESSING</label>
+                        <div className='grid grid-cols-2 gap-1.5'>
+                          <button
+                            onClick={() => setDevice('cpu')}
+                            disabled={isProcessing}
+                            className={cn(
+                              'font-mono-industrial flex items-center justify-center gap-1.5 border p-2 text-[10px] uppercase transition-all disabled:opacity-50',
+                              device === 'cpu' ?
+                                'border-fuchsia-500 bg-fuchsia-500/10 text-fuchsia-400'
+                              : 'border-white/10 text-white/50 hover:border-white/30',
+                            )}
+                          >
+                            <Cpu className='h-3 w-3' />
+                            CPU
+                          </button>
+                          <button
+                            onClick={() => setDevice('gpu')}
+                            disabled={isProcessing}
+                            className={cn(
+                              'font-mono-industrial flex items-center justify-center gap-1.5 border p-2 text-[10px] uppercase transition-all disabled:opacity-50',
+                              device === 'gpu' ?
+                                'border-fuchsia-500 bg-fuchsia-500/10 text-fuchsia-400'
+                              : 'border-white/10 text-white/50 hover:border-white/30',
+                            )}
+                          >
+                            <Zap className='h-3 w-3' />
+                            GPU
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Output Format */}
+                      <div className='space-y-1.5'>
+                        <label className='font-mono-industrial text-[10px] text-white/40'>FORMAT</label>
+                        <div className='grid grid-cols-3 gap-1.5'>
+                          {(['image/png', 'image/jpeg', 'image/webp'] as const).map((format) => (
+                            <button
+                              key={format}
+                              onClick={() => setOutputFormat(format)}
+                              disabled={isProcessing}
+                              className={cn(
+                                'font-mono-industrial border p-1.5 text-[10px] uppercase transition-all disabled:opacity-50',
+                                outputFormat === format ?
+                                  'border-fuchsia-500 bg-fuchsia-500/10 text-fuchsia-400'
+                                : 'border-white/10 text-white/50 hover:border-white/30',
+                              )}
+                            >
+                              {format.split('/')[1]}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Model */}
+                      <div className='space-y-1.5'>
+                        <label className='font-mono-industrial text-[10px] text-white/40'>MODEL</label>
+                        <div className='space-y-1.5'>
+                          {(['isnet', 'isnet_fp16', 'isnet_quint8'] as const).map((m) => (
+                            <button
+                              key={m}
+                              onClick={() => setModel(m)}
+                              disabled={isProcessing}
+                              className={cn(
+                                'font-mono-industrial w-full border p-1.5 text-left text-[10px] uppercase transition-all disabled:opacity-50',
+                                model === m ?
+                                  'border-fuchsia-500 bg-fuchsia-500/10 text-fuchsia-400'
+                                : 'border-white/10 text-white/50 hover:border-white/30',
+                              )}
+                            >
+                              {m === 'isnet' ?
+                                'DEFAULT'
+                              : m === 'isnet_fp16' ?
+                                'FP16 (FAST)'
+                              : 'QUINT8 (LIGHT)'}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Quality */}
+                      <div className='space-y-2'>
+                        <div className='flex items-center justify-between'>
+                          <label className='font-mono-industrial text-[10px] text-white/40'>QUALITY</label>
+                          <span className='font-mono-industrial text-[10px] text-fuchsia-400'>
+                            {Math.round(quality * 100)}%
+                          </span>
+                        </div>
+                        <input
+                          type='range'
+                          min='0.1'
+                          max='1'
+                          step='0.1'
+                          value={quality}
+                          onChange={(e) => setQuality(Number(e.target.value))}
+                          disabled={isProcessing}
+                          className='h-1 w-full cursor-pointer appearance-none bg-white/10 accent-fuchsia-500 disabled:opacity-50'
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Info panel */}
+                  <div className='border border-white/10 bg-white/[0.02] p-4'>
+                    <h3 className='font-display mb-3 text-[10px] font-bold uppercase tracking-wider text-white/50'>INFO</h3>
+                    <div className='font-mono-industrial space-y-2 text-[10px] text-white/40'>
+                      <div className='flex justify-between'>
+                        <span>PROCESSING</span>
+                        <span className='text-white/60'>LOCAL</span>
+                      </div>
+                      <div className='flex justify-between'>
+                        <span>PRIVACY</span>
+                        <span className='text-green-400'>SECURE</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          }
+        </AnimatePresence>
+      </main>
+    </div>
   );
 }
