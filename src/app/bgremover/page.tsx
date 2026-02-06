@@ -231,7 +231,6 @@ export function BGRemover() {
       const clipboardItem = new ClipboardItem({ [blob.type]: blob });
       await navigator.clipboard.write([clipboardItem]);
 
-      // Show feedback
       setCopyFeedback(true);
       setTimeout(() => setCopyFeedback(false), 1000);
     } catch (error) {
@@ -246,6 +245,7 @@ export function BGRemover() {
       link.download = `extracted_${new Date().toISOString()}.${extension}`;
       link.href = processedImage;
       link.click();
+      document.body.removeChild(link);
     }
   };
 
@@ -527,7 +527,8 @@ export function BGRemover() {
                         className='hidden'
                         id='file-upload-replace'
                       />
-                      <img src={selectedImage} alt='Original' className='h-full w-full object-contain' />
+                      <div className='checkerboard absolute inset-0' />
+                      <img src={selectedImage} alt='Original' className='relative h-full w-full object-contain' />
                       <div className='absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 transition-opacity group-hover:opacity-100'>
                         <div className='text-center'>
                           <svg
