@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import { useLocalStorage } from '@/hooks/use-local-storage';
@@ -6,13 +5,8 @@ import { removeBackground } from '@imgly/background-removal';
 import { AnimatePresence, motion } from 'framer-motion';
 import dynamic from 'next/dynamic';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Header } from './_components/Header';
-import { ImageViewer } from './_components/ImageViewer';
-import { ProcessingControls } from './_components/ProcessingControls';
-import { SettingsPanel } from './_components/SettingsPanel';
-import { Toolbar } from './_components/Toolbar';
-import { UploadArea } from './_components/UploadArea';
-import type { Device, Model, OutputFormat, ProgressState } from './_components/types';
+import { Header, ImageViewer, ProcessingControls, SettingsPanel, Toolbar, UploadArea } from './_components';
+import type { Device, Model, OutputFormat, ProgressState } from './types';
 
 function BGRemoverComponent() {
   const [selectedImage, setSelectedImage] = useLocalStorage<string | null>('bgremover-selected-image', null);
