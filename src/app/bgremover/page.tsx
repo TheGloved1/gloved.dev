@@ -2,16 +2,18 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { useLocalStorage } from '@/hooks/use-local-storage';
 import { cn } from '@/lib/utils';
 import { removeBackground } from '@imgly/background-removal';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowRight, Cpu, Download, X, Zap } from 'lucide-react';
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
-export default function BGRemover() {
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [processedImage, setProcessedImage] = useState<string | null>(null);
+export function BGRemover() {
+  const [selectedImage, setSelectedImage] = useLocalStorage<string | null>('bgremover-selected-image', null);
+  const [processedImage, setProcessedImage] = useLocalStorage<string | null>('bgremover-processed-image', null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState<{ progress: number; stage: string } | null>(null);
   const [dragActive, setDragActive] = useState(false);
@@ -19,20 +21,24 @@ export default function BGRemover() {
   const [model, setModel] = useState<'isnet' | 'isnet_fp16' | 'isnet_quint8'>('isnet');
   const [outputFormat, setOutputFormat] = useState<'image/png' | 'image/jpeg' | 'image/webp'>('image/png');
   const [quality, setQuality] = useState(0.8);
+  const [copyFeedback, setCopyFeedback] = useState(false);
   const abortControllerRef = useRef<AbortController | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imglyPath = typeof window !== 'undefined' ? window.location.origin + '/imgly/' : undefined;
 
-  const handleFileSelect = useCallback((file: File) => {
-    if (file && file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setSelectedImage(e.target?.result as string);
-        setProcessedImage(null);
-      };
-      reader.readAsDataURL(file);
-    }
-  }, []);
+  const handleFileSelect = useCallback(
+    (file: File) => {
+      if (file && file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          setSelectedImage(e.target?.result as string);
+          setProcessedImage(null);
+        };
+        reader.readAsDataURL(file);
+      }
+    },
+    [setProcessedImage, setSelectedImage],
+  );
 
   const handleDrag = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -210,6 +216,26 @@ export default function BGRemover() {
           }
         }, 4000);
       }
+    }
+  };
+
+  const copyImageToClipboard = async () => {
+    if (!processedImage) return;
+
+    try {
+      // Convert data URL to blob
+      const response = await fetch(processedImage);
+      const blob = await response.blob();
+
+      // Create ClipboardItem and copy to clipboard
+      const clipboardItem = new ClipboardItem({ [blob.type]: blob });
+      await navigator.clipboard.write([clipboardItem]);
+
+      // Show feedback
+      setCopyFeedback(true);
+      setTimeout(() => setCopyFeedback(false), 1000);
+    } catch (error) {
+      console.error('Failed to copy image to clipboard:', error);
     }
   };
 
@@ -526,11 +552,52 @@ export default function BGRemover() {
                     </label>
 
                     {/* Processed image */}
-                    <div className='relative min-h-0 overflow-hidden border border-white/10 bg-black'>
+                    <div
+                      className={cn(
+                        'group relative min-h-0 overflow-hidden border border-white/10 bg-black transition-all',
+                        processedImage && 'cursor-pointer hover:border-fuchsia-500/50',
+                      )}
+                      onClick={processedImage ? copyImageToClipboard : undefined}
+                    >
                       <div className='checkerboard absolute inset-0' />
 
                       {processedImage ?
-                        <img src={processedImage} alt='Processed' className='relative h-full w-full object-contain' />
+                        <>
+                          <img src={processedImage} alt='Processed' className='relative h-full w-full object-contain' />
+                          <div className='absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 transition-opacity group-hover:opacity-100'>
+                            <div className='text-center'>
+                              {copyFeedback ?
+                                <>
+                                  <svg
+                                    className='mx-auto h-6 w-6 text-green-400'
+                                    fill='none'
+                                    viewBox='0 0 24 24'
+                                    stroke='currentColor'
+                                  >
+                                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M5 13l4 4L19 7' />
+                                  </svg>
+                                  <p className='font-mono-industrial mt-1 text-[10px] text-green-400'>COPIED!</p>
+                                </>
+                              : <>
+                                  <svg
+                                    className='mx-auto h-6 w-6 text-white/80'
+                                    fill='none'
+                                    viewBox='0 0 24 24'
+                                    stroke='currentColor'
+                                  >
+                                    <path
+                                      strokeLinecap='round'
+                                      strokeLinejoin='round'
+                                      strokeWidth={1.5}
+                                      d='M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z'
+                                    />
+                                  </svg>
+                                  <p className='font-mono-industrial mt-1 text-[10px] text-white/80'>COPY</p>
+                                </>
+                              }
+                            </div>
+                          </div>
+                        </>
                       : isProcessing ?
                         <div className='absolute inset-0 flex flex-col items-center justify-center'>
                           <div className='relative mb-4 h-16 w-16 border border-fuchsia-500/30'>
@@ -752,3 +819,5 @@ export default function BGRemover() {
     </div>
   );
 }
+
+export default dynamic(() => Promise.resolve(BGRemover), { ssr: false });
