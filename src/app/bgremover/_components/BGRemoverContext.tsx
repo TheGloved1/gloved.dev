@@ -1,8 +1,8 @@
 'use client';
 
-import { createContext, useContext, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import { removeBackground } from '@imgly/background-removal';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 
 export type Device = 'cpu' | 'gpu';
 export type Model = 'isnet' | 'isnet_fp16' | 'isnet_quint8';
@@ -49,6 +49,7 @@ interface BGRemoverContextType {
   downloadImage: () => void;
   cancelProcessing: () => void;
   resetAll: () => void;
+  resetToDefaults: () => void;
 
   // Refs
   fileInputRef: React.RefObject<HTMLInputElement | null>;
@@ -68,16 +69,21 @@ interface BGRemoverProviderProps {
   children: ReactNode;
 }
 
+export const defaultDevice: Device = 'gpu';
+export const defaultModel: Model = 'isnet';
+export const defaultOutputFormat: OutputFormat = 'image/png';
+export const defaultQuality: number = 0.8;
+
 export function BGRemoverProvider({ children }: BGRemoverProviderProps) {
   const [selectedImage, setSelectedImage] = useLocalStorage<string | null>('bgremover-selected-image', null);
   const [processedImage, setProcessedImage] = useLocalStorage<string | null>('bgremover-processed-image', null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState<ProgressState | null>(null);
   const [dragActive, setDragActive] = useState(false);
-  const [device, setDevice] = useState<Device>('gpu');
-  const [model, setModel] = useState<Model>('isnet');
-  const [outputFormat, setOutputFormat] = useState<OutputFormat>('image/png');
-  const [quality, setQuality] = useState(0.8);
+  const [device, setDevice] = useLocalStorage<Device>('bgremover-device', defaultDevice);
+  const [model, setModel] = useLocalStorage<Model>('bgremover-model', defaultModel);
+  const [outputFormat, setOutputFormat] = useLocalStorage<OutputFormat>('bgremover-output-format', defaultOutputFormat);
+  const [quality, setQuality] = useLocalStorage<number>('bgremover-quality', defaultQuality);
   const [copyFeedback, setCopyFeedback] = useState(false);
   const abortControllerRef = useRef<AbortController | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -323,6 +329,13 @@ export function BGRemoverProvider({ children }: BGRemoverProviderProps) {
     }
   }, [setSelectedImage, setProcessedImage]);
 
+  const resetToDefaults = useCallback(() => {
+    setDevice(defaultDevice);
+    setModel(defaultModel);
+    setOutputFormat(defaultOutputFormat);
+    setQuality(defaultQuality);
+  }, [setDevice, setModel, setOutputFormat, setQuality]);
+
   const value = useMemo(
     () => ({
       selectedImage,
@@ -355,6 +368,7 @@ export function BGRemoverProvider({ children }: BGRemoverProviderProps) {
       downloadImage,
       cancelProcessing,
       resetAll,
+      resetToDefaults,
       fileInputRef,
     }),
     [
@@ -371,6 +385,10 @@ export function BGRemoverProvider({ children }: BGRemoverProviderProps) {
       imglyPath,
       setSelectedImage,
       setProcessedImage,
+      setDevice,
+      setModel,
+      setOutputFormat,
+      setQuality,
       handleFileSelect,
       handleDrag,
       handleDrop,
@@ -380,6 +398,7 @@ export function BGRemoverProvider({ children }: BGRemoverProviderProps) {
       downloadImage,
       cancelProcessing,
       resetAll,
+      resetToDefaults,
     ],
   );
 

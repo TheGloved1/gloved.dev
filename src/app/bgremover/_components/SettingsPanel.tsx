@@ -6,8 +6,18 @@ import { memo, useCallback } from 'react';
 import { useBGRemover } from './BGRemoverContext';
 
 export const SettingsPanel = memo(function SettingsPanel() {
-  const { device, model, outputFormat, quality, isProcessing, setDevice, setModel, setOutputFormat, setQuality } =
-    useBGRemover();
+  const {
+    device,
+    model,
+    outputFormat,
+    quality,
+    isProcessing,
+    setDevice,
+    setModel,
+    setOutputFormat,
+    setQuality,
+    resetToDefaults,
+  } = useBGRemover();
   const handleQualityChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setQuality(Number(e.target.value));
@@ -26,19 +36,6 @@ export const SettingsPanel = memo(function SettingsPanel() {
             <label className='font-mono-industrial text-[10px] text-white/40'>PROCESSING</label>
             <div className='grid grid-cols-2 gap-1.5'>
               <button
-                onClick={() => setDevice('cpu')}
-                disabled={isProcessing}
-                className={cn(
-                  'font-mono-industrial flex items-center justify-center gap-1.5 border p-2 text-[10px] uppercase transition-all disabled:opacity-50',
-                  device === 'cpu' ?
-                    'border-fuchsia-500 bg-fuchsia-500/10 text-fuchsia-400'
-                  : 'border-white/10 text-white/50 hover:border-white/30',
-                )}
-              >
-                <Cpu className='h-3 w-3' />
-                CPU
-              </button>
-              <button
                 onClick={() => setDevice('gpu')}
                 disabled={isProcessing}
                 className={cn(
@@ -50,6 +47,19 @@ export const SettingsPanel = memo(function SettingsPanel() {
               >
                 <Zap className='h-3 w-3' />
                 GPU
+              </button>
+              <button
+                onClick={() => setDevice('cpu')}
+                disabled={isProcessing}
+                className={cn(
+                  'font-mono-industrial flex items-center justify-center gap-1.5 border p-2 text-[10px] uppercase transition-all disabled:opacity-50',
+                  device === 'cpu' ?
+                    'border-fuchsia-500 bg-fuchsia-500/10 text-fuchsia-400'
+                  : 'border-white/10 text-white/50 hover:border-white/30',
+                )}
+              >
+                <Cpu className='h-3 w-3' />
+                CPU
               </button>
             </div>
           </div>
@@ -119,6 +129,15 @@ export const SettingsPanel = memo(function SettingsPanel() {
               className='h-1 w-full cursor-pointer appearance-none bg-white/10 accent-fuchsia-500 disabled:opacity-50'
             />
           </div>
+
+          {/* Reset to Defaults */}
+          <button
+            onClick={resetToDefaults}
+            disabled={isProcessing}
+            className='font-mono-industrial mt-4 w-full border border-white/10 p-2 text-[10px] uppercase text-white/50 transition-all hover:border-red-500/50 hover:text-red-400 disabled:opacity-50'
+          >
+            RESET DEFAULTS
+          </button>
         </div>
       </div>
 
