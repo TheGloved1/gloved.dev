@@ -4,26 +4,11 @@
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import { memo } from 'react';
+import { useBGRemover } from './BGRemoverContext';
 
-interface ImageViewerProps {
-  selectedImage: string | null;
-  processedImage: string | null;
-  isProcessing: boolean;
-  progress: { progress: number; stage: string } | null;
-  copyFeedback: boolean;
-  onFileInput: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onCopyImage: () => void;
-}
-
-export const ImageViewer = memo(function ImageViewer({
-  selectedImage,
-  processedImage,
-  isProcessing,
-  progress,
-  copyFeedback,
-  onFileInput,
-  onCopyImage,
-}: ImageViewerProps) {
+export const ImageViewer = memo(function ImageViewer() {
+  const { selectedImage, processedImage, isProcessing, progress, copyFeedback, handleFileInput, copyImageToClipboard } =
+    useBGRemover();
   return (
     <div className='grid min-h-0 flex-1 grid-cols-2 gap-3'>
       {/* Original image - clickable to replace */}
@@ -31,7 +16,7 @@ export const ImageViewer = memo(function ImageViewer({
         htmlFor='file-upload-replace'
         className='group relative min-h-0 cursor-pointer overflow-hidden border border-white/10 bg-black transition-all hover:border-white/30'
       >
-        <input type='file' accept='image/*' onChange={onFileInput} className='hidden' id='file-upload-replace' />
+        <input type='file' accept='image/*' onChange={handleFileInput} className='hidden' id='file-upload-replace' />
         <div className='checkerboard absolute inset-0' />
         {selectedImage && <img src={selectedImage} alt='Original' className='relative h-full w-full object-contain' />}
         <div className='absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 transition-opacity group-hover:opacity-100'>
@@ -58,7 +43,7 @@ export const ImageViewer = memo(function ImageViewer({
           'group relative min-h-0 overflow-hidden border border-white/10 bg-black transition-all',
           processedImage && 'cursor-pointer hover:border-fuchsia-500/50',
         )}
-        onClick={processedImage ? onCopyImage : undefined}
+        onClick={processedImage ? copyImageToClipboard : undefined}
       >
         <div className='checkerboard absolute inset-0' />
 

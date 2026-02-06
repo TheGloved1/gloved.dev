@@ -3,36 +3,16 @@
 import { cn } from '@/lib/utils';
 import { Cpu, Zap } from 'lucide-react';
 import { memo, useCallback } from 'react';
-import type { Device, Model, OutputFormat } from '../types';
+import { useBGRemover } from './BGRemoverContext';
 
-interface SettingsPanelProps {
-  device: Device;
-  model: Model;
-  outputFormat: OutputFormat;
-  quality: number;
-  isProcessing: boolean;
-  onDeviceChange: (device: Device) => void;
-  onModelChange: (model: Model) => void;
-  onFormatChange: (format: OutputFormat) => void;
-  onQualityChange: (quality: number) => void;
-}
-
-export const SettingsPanel = memo(function SettingsPanel({
-  device,
-  model,
-  outputFormat,
-  quality,
-  isProcessing,
-  onDeviceChange,
-  onModelChange,
-  onFormatChange,
-  onQualityChange,
-}: SettingsPanelProps) {
+export const SettingsPanel = memo(function SettingsPanel() {
+  const { device, model, outputFormat, quality, isProcessing, setDevice, setModel, setOutputFormat, setQuality } =
+    useBGRemover();
   const handleQualityChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      onQualityChange(Number(e.target.value));
+      setQuality(Number(e.target.value));
     },
-    [onQualityChange],
+    [setQuality],
   );
 
   return (
@@ -46,7 +26,7 @@ export const SettingsPanel = memo(function SettingsPanel({
             <label className='font-mono-industrial text-[10px] text-white/40'>PROCESSING</label>
             <div className='grid grid-cols-2 gap-1.5'>
               <button
-                onClick={() => onDeviceChange('cpu')}
+                onClick={() => setDevice('cpu')}
                 disabled={isProcessing}
                 className={cn(
                   'font-mono-industrial flex items-center justify-center gap-1.5 border p-2 text-[10px] uppercase transition-all disabled:opacity-50',
@@ -59,7 +39,7 @@ export const SettingsPanel = memo(function SettingsPanel({
                 CPU
               </button>
               <button
-                onClick={() => onDeviceChange('gpu')}
+                onClick={() => setDevice('gpu')}
                 disabled={isProcessing}
                 className={cn(
                   'font-mono-industrial flex items-center justify-center gap-1.5 border p-2 text-[10px] uppercase transition-all disabled:opacity-50',
@@ -81,7 +61,7 @@ export const SettingsPanel = memo(function SettingsPanel({
               {(['image/png', 'image/jpeg', 'image/webp'] as const).map((format) => (
                 <button
                   key={format}
-                  onClick={() => onFormatChange(format)}
+                  onClick={() => setOutputFormat(format)}
                   disabled={isProcessing}
                   className={cn(
                     'font-mono-industrial border p-1.5 text-[10px] uppercase transition-all disabled:opacity-50',
@@ -103,7 +83,7 @@ export const SettingsPanel = memo(function SettingsPanel({
               {(['isnet', 'isnet_fp16', 'isnet_quint8'] as const).map((m) => (
                 <button
                   key={m}
-                  onClick={() => onModelChange(m)}
+                  onClick={() => setModel(m)}
                   disabled={isProcessing}
                   className={cn(
                     'font-mono-industrial w-full border p-1.5 text-left text-[10px] uppercase transition-all disabled:opacity-50',

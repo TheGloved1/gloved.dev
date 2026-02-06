@@ -2,24 +2,11 @@
 
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
-import type { RefObject } from 'react';
 import { memo } from 'react';
+import { useBGRemover } from './BGRemoverContext';
 
-interface UploadAreaProps {
-  fileInputRef: RefObject<HTMLInputElement | null>;
-  dragActive: boolean;
-  onFileInput: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onDrag: (e: React.DragEvent) => void;
-  onDrop: (e: React.DragEvent) => void;
-}
-
-export const UploadArea = memo(function UploadArea({
-  fileInputRef,
-  dragActive,
-  onFileInput,
-  onDrag,
-  onDrop,
-}: UploadAreaProps) {
+export const UploadArea = memo(function UploadArea() {
+  const { fileInputRef, dragActive, handleFileInput, handleDrag, handleDrop } = useBGRemover();
   return (
     <motion.div
       key='upload'
@@ -33,16 +20,16 @@ export const UploadArea = memo(function UploadArea({
           'group relative h-full w-full max-w-4xl border-2 border-dashed transition-all duration-300',
           dragActive ? 'border-fuchsia-500 bg-fuchsia-500/5' : 'border-white/20 hover:border-white/40',
         )}
-        onDragEnter={onDrag}
-        onDragLeave={onDrag}
-        onDragOver={onDrag}
-        onDrop={onDrop}
+        onDragEnter={handleDrag}
+        onDragLeave={handleDrag}
+        onDragOver={handleDrag}
+        onDrop={handleDrop}
       >
         <input
           ref={fileInputRef}
           type='file'
           accept='image/png,image/jpeg,image/jpg,image/webp'
-          onChange={onFileInput}
+          onChange={handleFileInput}
           title={``}
           className='absolute inset-0 z-10 cursor-pointer opacity-0'
           id='file-upload'
