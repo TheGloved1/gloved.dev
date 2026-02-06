@@ -152,9 +152,10 @@ export default function BGRemover() {
         return;
       }
 
-      setProgress({ progress: 75, stage: 'CONVERTING' });
+      setProgress({ progress: 35, stage: 'CONVERTING' });
 
       const processedDataUrl = await new Promise<string>((resolve, reject) => {
+        setProgress({ progress: 50, stage: 'CONVERTING' });
         if (abortController.signal.aborted) {
           reject(new DOMException('Processing was cancelled', 'AbortError'));
           return;
@@ -164,6 +165,7 @@ export default function BGRemover() {
         reader.onload = () => {
           if (!abortController.signal.aborted) {
             resolve(reader.result as string);
+            setProgress({ progress: 75, stage: 'CONVERTING' });
           }
         };
         reader.onerror = reject;
@@ -385,7 +387,7 @@ export default function BGRemover() {
                 <input
                   ref={fileInputRef}
                   type='file'
-                  accept='image/*'
+                  accept='image/png,image/jpeg,image/jpg,image/webp'
                   onChange={handleFileInput}
                   className='absolute inset-0 z-10 cursor-pointer opacity-0'
                   id='file-upload'
