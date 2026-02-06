@@ -7,7 +7,7 @@ import { removeBackground } from '@imgly/background-removal';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowRight, Cpu, Download, X, Zap } from 'lucide-react';
 import Link from 'next/link';
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 export default function BGRemover() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -19,6 +19,7 @@ export default function BGRemover() {
   const [model, setModel] = useState<'isnet' | 'isnet_fp16' | 'isnet_quint8'>('isnet');
   const [outputFormat, setOutputFormat] = useState<'image/png' | 'image/jpeg' | 'image/webp'>('image/png');
   const [quality, setQuality] = useState(0.8);
+  const abortControllerRef = useRef<AbortController | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imglyPath = typeof window !== 'undefined' ? window.location.origin + '/imgly/' : undefined;
 
@@ -80,7 +81,7 @@ export default function BGRemover() {
     [handleFileSelect],
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     const handlePasteGlobal = (e: ClipboardEvent) => handlePaste(e);
     document.addEventListener('paste', handlePasteGlobal);
     return () => {
@@ -91,14 +92,32 @@ export default function BGRemover() {
   const removeBackgroundFromImage = async () => {
     if (!selectedImage) return;
 
+    // Cancel any existing processing
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+
+    // Wait a bit for the previous session to clean up
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    // Create new abort controller for this processing session
+    const abortController = new AbortController();
+    abortControllerRef.current = abortController;
+
     setProcessedImage(null);
     setProgress(null);
     setIsProcessing(true);
     setProgress({ progress: 0, stage: 'INITIALIZING' });
 
     try {
-      const response = await fetch(selectedImage);
+      const response = await fetch(selectedImage, { signal: abortController.signal });
       const blob = await response.blob();
+
+      // Check if aborted during fetch
+      if (abortController.signal.aborted) {
+        return;
+      }
 
       setProgress({ progress: 25, stage: 'LOADING MODEL' });
 
@@ -111,6 +130,11 @@ export default function BGRemover() {
           quality: quality,
         },
         progress: (key, current) => {
+          // Don't update progress if processing was cancelled
+          if (abortController.signal.aborted) {
+            return;
+          }
+
           let displayProgress = 0;
           if (current > 1 && current <= 4) {
             displayProgress = Math.round((current / 4) * 100);
@@ -123,25 +147,67 @@ export default function BGRemover() {
         },
       });
 
+      // Check if aborted during background removal
+      if (abortController.signal.aborted) {
+        return;
+      }
+
       setProgress({ progress: 75, stage: 'CONVERTING' });
 
       const processedDataUrl = await new Promise<string>((resolve, reject) => {
+        if (abortController.signal.aborted) {
+          reject(new DOMException('Processing was cancelled', 'AbortError'));
+          return;
+        }
+
         const reader = new FileReader();
-        reader.onload = () => resolve(reader.result as string);
+        reader.onload = () => {
+          if (!abortController.signal.aborted) {
+            resolve(reader.result as string);
+          }
+        };
         reader.onerror = reject;
         reader.readAsDataURL(resultBlob);
       });
 
+      // Final check before updating state
+      if (abortController.signal.aborted) {
+        return;
+      }
+
       setProcessedImage(processedDataUrl);
       setProgress({ progress: 100, stage: 'COMPLETE' });
     } catch (error) {
+      // Only handle error if it's not an abort error
+      if (error instanceof DOMException && error.name === 'AbortError') {
+        console.log('BGRemover: Processing cancelled');
+        return;
+      }
+
+      // Handle ONNX session errors
+      if (error instanceof Error && error.message.includes('Session already started')) {
+        console.log('BGRemover: Session conflict, retrying...');
+        // Retry after a longer delay
+        setTimeout(() => {
+          if (!abortController.signal.aborted) {
+            removeBackgroundFromImage();
+          }
+        }, 500);
+        return;
+      }
+
       console.error('BGRemover: Error during processing', error);
       setProgress({ progress: 0, stage: 'ERROR' });
     } finally {
-      setIsProcessing(false);
-      setTimeout(() => {
-        setProgress(null);
-      }, 2000);
+      // Only update state if this is still the current processing session
+      if (abortControllerRef.current === abortController) {
+        setIsProcessing(false);
+        setTimeout(() => {
+          if (abortControllerRef.current === abortController) {
+            setProgress(null);
+          }
+        }, 4000);
+      }
     }
   };
 
@@ -149,16 +215,32 @@ export default function BGRemover() {
     if (processedImage) {
       const link = document.createElement('a');
       const extension = outputFormat === 'image/jpeg' ? 'jpg' : outputFormat.split('/')[1];
-      link.download = `extracted.${extension}`;
+      link.download = `extracted_${new Date().toISOString()}.${extension}`;
       link.href = processedImage;
       link.click();
     }
   };
 
+  const cancelProcessing = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+    setIsProcessing(false);
+    setProgress(null);
+  };
+
   const resetAll = () => {
+    // Cancel any ongoing processing
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+
     setSelectedImage(null);
     setProcessedImage(null);
     setProgress(null);
+    setIsProcessing(false);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -513,15 +595,24 @@ export default function BGRemover() {
 
                   {/* Loading button - shows when processing */}
                   {isProcessing && (
-                    <Button
-                      disabled
-                      className='brutal-shadow font-display h-10 w-full flex-shrink-0 cursor-not-allowed border-2 border-fuchsia-500 bg-fuchsia-500 text-sm font-bold uppercase tracking-wider text-black transition-all hover:bg-fuchsia-400 disabled:opacity-50'
-                    >
-                      <div className='flex items-center gap-2'>
-                        <div className='h-1.5 w-1.5 animate-pulse bg-fuchsia-500' />
-                        <span>PROCESSING</span>
-                      </div>
-                    </Button>
+                    <div className='flex gap-2'>
+                      <Button
+                        disabled
+                        className='brutal-shadow font-display h-10 flex-1 cursor-not-allowed border-2 border-fuchsia-500 bg-fuchsia-500 text-sm font-bold uppercase tracking-wider text-black transition-all hover:bg-fuchsia-400 disabled:opacity-50'
+                      >
+                        <div className='flex items-center justify-center gap-2'>
+                          <div className='h-1.5 w-1.5 animate-pulse bg-fuchsia-500' />
+                          <span>PROCESSING</span>
+                        </div>
+                      </Button>
+                      <Button
+                        onClick={cancelProcessing}
+                        className='brutal-shadow-sm font-mono-industrial h-10 flex-shrink-0 border-2 border-red-500 bg-red-500 px-4 text-[10px] uppercase tracking-wider text-white transition-all hover:bg-red-400'
+                      >
+                        <X className='mr-1.5 h-3 w-3' />
+                        CANCEL
+                      </Button>
+                    </div>
                   )}
                 </div>
 
