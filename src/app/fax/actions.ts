@@ -12,7 +12,7 @@ export async function generateFactAction() {
   const promptResult = await generateText({
     model: modelProvider.languageModel('moonshotai/kimi-k2-instruct-0905'),
     prompt:
-      "Generate a short, specific prompt for generating an interesting and funny fact. Some suggestions are random domains like science, history, nature, technology, space, animals, cars, or human psychology, but be creative. Keep it under 15 words. Examples: 'Generate a surprising fact about deep sea creatures', 'Share an interesting historical coincidence', 'Reveal a fascinating physics phenomenon'.",
+      "Generate a short, specific prompt for generating an interesting and funny fact. CAR FACTS ONLY. Keep it under 15 words. Examples: 'Generate a weird car design fact', 'Share a surprising car history fact', 'Reveal a funny car manufacturing fact'",
     temperature: 1,
     maxOutputTokens: 100,
   });
