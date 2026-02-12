@@ -50,7 +50,7 @@ const languageModels = Models.reduce(
   {} as Record<ModelID, LanguageModelV2>,
 );
 
-const modelProvider = customProvider({
+export const modelProvider = customProvider({
   languageModels,
 });
 

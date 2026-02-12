@@ -1,6 +1,7 @@
 'use client';
 import { RefreshCw, Sparkles } from 'lucide-react';
 import { useState } from 'react';
+import { generateFactAction } from './actions';
 
 export default function Page() {
   const [fact, setFact] = useState('');
@@ -9,12 +10,11 @@ export default function Page() {
   const generateFact = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('https://uselessfacts.jsph.pl/random.json?language=en');
-      const data = await response.json();
-      const text = String(data.text);
-      setFact(text);
+      const result = await generateFactAction();
+      setFact(result);
     } catch (error) {
-      setFact('Oops! Could not fetch a fact right now. Try again later.');
+      console.error('Error generating fact:', error);
+      setFact('Oops! Could not generate a fact right now. Try again later.');
     } finally {
       setIsLoading(false);
     }
@@ -85,7 +85,7 @@ export default function Page() {
 
         {/* Footer - responsive text sizing */}
         <div className='mt-4 px-4 text-center sm:mt-6'>
-          <p className='text-xs text-purple-300 opacity-60 sm:text-sm'>Facts powered by uselessfacts.jsph.pl</p>
+          <p className='text-xs text-purple-300 opacity-60 sm:text-sm'>Facts powered by AI</p>
         </div>
       </div>
 
