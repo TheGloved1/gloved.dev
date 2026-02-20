@@ -16,6 +16,7 @@ const nextConfig: NextConfig = {
     inlineCss: true,
     parallelServerCompiles: true,
   },
+  allowedDevOrigins: ['localhost', '192.168.0.111', 'home.gloved.dev'],
   devIndicators: {
     position: 'bottom-left',
   },

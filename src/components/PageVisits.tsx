@@ -1,6 +1,8 @@
 'use client';
 import { useLocalStorage } from '@/hooks/use-local-storage';
-import { apiRoute } from '@/lib/utils';
+import { useMount } from '@/hooks/use-mount';
+import { getUUID } from '@/lib/actions';
+import { apiRoute, tryCatch } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import React from 'react';
@@ -14,13 +16,19 @@ const getVisits = async (visitorId: string | null) => {
 
 export function PageVisits(): React.JSX.Element | null {
   const [visitorId, setVisitorId] = useLocalStorage<string | null>('visitorId', null);
-  if (visitorId === null) {
-    setVisitorId(crypto.randomUUID());
-  }
   const visitsQuery = useQuery({
     queryKey: ['pageVisits'],
     queryFn: () => getVisits(visitorId || null),
     initialData: { visitorIds: [], visits: 0 },
+  });
+  useMount(() => {
+    if (visitorId === null) {
+      tryCatch(getUUID()).then((result) => {
+        if (!result.error) {
+          setVisitorId(() => result.data);
+        }
+      });
+    }
   });
   if (visitsQuery.isError) return null;
   if (visitsQuery.isFetching) return null;

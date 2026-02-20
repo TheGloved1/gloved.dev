@@ -15,6 +15,10 @@ import {
   setShortenedUrl,
 } from './redis';
 
+export async function getUUID(): Promise<string> {
+  return crypto.randomUUID();
+}
+
 /**
  * Fetches the system prompt from the server.
  * @returns A promise that resolves to the system prompt text.
