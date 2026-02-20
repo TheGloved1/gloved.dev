@@ -212,11 +212,11 @@ export function BGRemoverProvider({ children }: BGRemoverProviderProps) {
 
           let displayProgress = 0;
           if (current > 1 && current <= 4) {
-            displayProgress = Math.round((current / 4) * 100);
+            displayProgress = Math.round((current / 4 - 1) * 25 + 25);
           } else if (current > 1) {
-            displayProgress = Math.min(99, Math.round(current / 100000000));
+            displayProgress = Math.min(50, Math.round((current / 100000000) * 25 + 25));
           } else {
-            displayProgress = Math.round(current * 100);
+            displayProgress = Math.round((current * 100) / 4 + 25);
           }
           setProgress({ progress: displayProgress, stage: key.toUpperCase().replace(/_/g, ' ') });
         },
@@ -226,10 +226,10 @@ export function BGRemoverProvider({ children }: BGRemoverProviderProps) {
         return;
       }
 
-      setProgress({ progress: 35, stage: 'CONVERTING' });
+      setProgress({ progress: 50, stage: 'CONVERTING' });
 
       const processedDataUrl = await new Promise<string>((resolve, reject) => {
-        setProgress({ progress: 50, stage: 'CONVERTING' });
+        setProgress({ progress: 65, stage: 'CONVERTING' });
         if (abortController.signal.aborted) {
           reject(new DOMException('Processing was cancelled', 'AbortError'));
           return;
@@ -254,12 +254,12 @@ export function BGRemoverProvider({ children }: BGRemoverProviderProps) {
       setProgress({ progress: 100, stage: 'COMPLETE' });
     } catch (error) {
       if (error instanceof DOMException && error.name === 'AbortError') {
-        console.log('BGRemover: Processing cancelled');
+        console.log('[BGRemover] Processing cancelled');
         return;
       }
 
       if (error instanceof Error && error.message.includes('Session already started')) {
-        console.log('BGRemover: Session conflict, retrying...');
+        console.log('[BGRemover] Session conflict, retrying...');
         setTimeout(() => {
           if (!abortController.signal.aborted) {
             removeBackgroundFromImage();
@@ -268,7 +268,7 @@ export function BGRemoverProvider({ children }: BGRemoverProviderProps) {
         return;
       }
 
-      console.error('BGRemover: Error during processing', error);
+      console.error('[BGRemover] Error during processing', error);
       setProgress({ progress: 0, stage: 'ERROR' });
     } finally {
       if (abortControllerRef.current === abortController) {
@@ -295,7 +295,7 @@ export function BGRemoverProvider({ children }: BGRemoverProviderProps) {
       setCopyFeedback(true);
       setTimeout(() => setCopyFeedback(false), 1000);
     } catch (error) {
-      console.error('Failed to copy image to clipboard:', error);
+      console.error('[BGRemover] Failed to copy image to clipboard:', error);
     }
   }, [processedImage]);
 
