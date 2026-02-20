@@ -11,11 +11,13 @@ export const SettingsPanel = memo(function SettingsPanel() {
     model,
     outputFormat,
     quality,
+    removalMode,
     isProcessing,
     setDevice,
     setModel,
     setOutputFormat,
     setQuality,
+    setRemovalMode,
     resetToDefaults,
   } = useBGRemover();
   const handleQualityChange = useCallback(
@@ -31,6 +33,37 @@ export const SettingsPanel = memo(function SettingsPanel() {
         <h3 className='font-display mb-4 text-[10px] font-bold uppercase tracking-wider text-white/50'>CONFIG</h3>
 
         <div className='space-y-4'>
+          {/* Removal Mode */}
+          <div className='space-y-1.5'>
+            <label className='font-mono-industrial text-[10px] text-white/40'>REMOVAL MODE</label>
+            <div className='grid grid-cols-2 gap-1.5'>
+              <button
+                onClick={() => setRemovalMode('background')}
+                disabled={isProcessing}
+                className={cn(
+                  'font-mono-industrial flex items-center justify-center gap-1.5 border p-2 text-[10px] uppercase transition-all disabled:opacity-50',
+                  removalMode === 'background' ?
+                    'border-fuchsia-500 bg-fuchsia-500/10 text-fuchsia-400'
+                  : 'border-white/10 text-white/50 hover:border-white/30',
+                )}
+              >
+                BACKGROUND
+              </button>
+              <button
+                onClick={() => setRemovalMode('foreground')}
+                disabled={isProcessing}
+                className={cn(
+                  'font-mono-industrial flex items-center justify-center gap-1.5 border p-2 text-[10px] uppercase transition-all disabled:opacity-50',
+                  removalMode === 'foreground' ?
+                    'border-fuchsia-500 bg-fuchsia-500/10 text-fuchsia-400'
+                  : 'border-white/10 text-white/50 hover:border-white/30',
+                )}
+              >
+                FOREGROUND
+              </button>
+            </div>
+          </div>
+
           {/* Device */}
           <div className='space-y-1.5'>
             <label className='font-mono-industrial text-[10px] text-white/40'>PROCESSING</label>

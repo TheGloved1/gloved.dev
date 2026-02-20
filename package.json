@@ -11,7 +11,7 @@
   },
   "repository": "https://github.com/gloved.dev",
   "scripts": {
-    "dev": "next dev --port 4321",
+    "dev": "next dev",
     "build:prerender": "next build --debug-prerender ",
     "build": "next build",
     "build:full": "prettier --write ./src && next build",

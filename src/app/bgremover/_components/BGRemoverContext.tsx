@@ -1,12 +1,13 @@
 'use client';
 
 import { useLocalStorage } from '@/hooks/use-local-storage';
-import { removeBackground } from '@imgly/background-removal';
+import { removeBackground, removeForeground } from '@imgly/background-removal';
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 
 export type Device = 'cpu' | 'gpu';
 export type Model = 'isnet' | 'isnet_fp16' | 'isnet_quint8';
 export type OutputFormat = 'image/png' | 'image/jpeg' | 'image/webp';
+export type RemovalMode = 'background' | 'foreground';
 
 export interface ProgressState {
   progress: number;
@@ -24,6 +25,7 @@ interface BGRemoverContextType {
   model: Model;
   outputFormat: OutputFormat;
   quality: number;
+  removalMode: RemovalMode;
   copyFeedback: boolean;
   imglyPath: string | undefined;
 
@@ -37,6 +39,7 @@ interface BGRemoverContextType {
   setModel: (value: Model) => void;
   setOutputFormat: (value: OutputFormat) => void;
   setQuality: (value: number) => void;
+  setRemovalMode: (value: RemovalMode) => void;
   setCopyFeedback: (value: boolean) => void;
 
   // Handlers
@@ -73,6 +76,7 @@ export const defaultDevice: Device = 'gpu';
 export const defaultModel: Model = 'isnet';
 export const defaultOutputFormat: OutputFormat = 'image/png';
 export const defaultQuality: number = 0.8;
+export const defaultRemovalMode: RemovalMode = 'background';
 
 export function BGRemoverProvider({ children }: BGRemoverProviderProps) {
   const [selectedImage, setSelectedImage] = useLocalStorage<string | null>('bgremover-selected-image', null);
@@ -84,6 +88,7 @@ export function BGRemoverProvider({ children }: BGRemoverProviderProps) {
   const [model, setModel] = useLocalStorage<Model>('bgremover-model', defaultModel);
   const [outputFormat, setOutputFormat] = useLocalStorage<OutputFormat>('bgremover-output-format', defaultOutputFormat);
   const [quality, setQuality] = useLocalStorage<number>('bgremover-quality', defaultQuality);
+  const [removalMode, setRemovalMode] = useLocalStorage<RemovalMode>('bgremover-removal-mode', defaultRemovalMode);
   const [copyFeedback, setCopyFeedback] = useState(false);
   const abortControllerRef = useRef<AbortController | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -192,7 +197,7 @@ export function BGRemoverProvider({ children }: BGRemoverProviderProps) {
 
       setProgress({ progress: 25, stage: 'LOADING MODEL' });
 
-      const resultBlob = await removeBackground(blob, {
+      const resultBlob = await (removalMode === 'background' ? removeBackground : removeForeground)(blob, {
         device: device,
         model,
         publicPath: imglyPath,
@@ -275,7 +280,7 @@ export function BGRemoverProvider({ children }: BGRemoverProviderProps) {
         }, 4000);
       }
     }
-  }, [selectedImage, device, model, imglyPath, outputFormat, quality, setProcessedImage]);
+  }, [selectedImage, device, model, imglyPath, outputFormat, quality, removalMode, setProcessedImage]);
 
   const copyImageToClipboard = useCallback(async () => {
     if (!processedImage) return;
@@ -334,7 +339,8 @@ export function BGRemoverProvider({ children }: BGRemoverProviderProps) {
     setModel(defaultModel);
     setOutputFormat(defaultOutputFormat);
     setQuality(defaultQuality);
-  }, [setDevice, setModel, setOutputFormat, setQuality]);
+    setRemovalMode(defaultRemovalMode);
+  }, [setDevice, setModel, setOutputFormat, setQuality, setRemovalMode]);
 
   const value = useMemo(
     () => ({
@@ -347,6 +353,7 @@ export function BGRemoverProvider({ children }: BGRemoverProviderProps) {
       model,
       outputFormat,
       quality,
+      removalMode,
       copyFeedback,
       imglyPath,
       setSelectedImage,
@@ -358,6 +365,7 @@ export function BGRemoverProvider({ children }: BGRemoverProviderProps) {
       setModel,
       setOutputFormat,
       setQuality,
+      setRemovalMode,
       setCopyFeedback,
       handleFileSelect,
       handleDrag,
@@ -381,6 +389,7 @@ export function BGRemoverProvider({ children }: BGRemoverProviderProps) {
       model,
       outputFormat,
       quality,
+      removalMode,
       copyFeedback,
       imglyPath,
       setSelectedImage,
@@ -389,6 +398,7 @@ export function BGRemoverProvider({ children }: BGRemoverProviderProps) {
       setModel,
       setOutputFormat,
       setQuality,
+      setRemovalMode,
       handleFileSelect,
       handleDrag,
       handleDrop,
