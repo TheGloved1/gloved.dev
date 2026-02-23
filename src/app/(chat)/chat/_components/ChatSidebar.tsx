@@ -101,7 +101,7 @@ export default function ChatSidebar({ children }: { children?: React.ReactNode }
 
   const handleDelete = async (id: string) => {
     const { error } = await tryCatch(dxdb.deleteThread(id)); // Delete the thread
-    if (error) return toast.error('Error deleting thread'), router.push('/chat');
+    if (error) return (toast.error('Error deleting thread'), router.push('/chat'));
     toast.success('Thread deleted');
     if (isCurrentThread(id)) router.replace('/chat');
   };
@@ -217,35 +217,21 @@ export default function ChatSidebar({ children }: { children?: React.ReactNode }
             : null}
           </SidebarContent>
           <SidebarFooter className='mb-1 p-2'>
-            <SignedOut>
-              <div className='flex items-center gap-2'>
+            <div className='flex items-center gap-2'>
+              <SignedOut>
                 <SignInButton mode={'modal'}>
                   <Button className='w-full gap-1'>Sign in</Button>
                 </SignInButton>
-                <Link
-                  href='/chat/settings'
-                  onClick={async (e) => {
-                    e.preventDefault();
-                    return router.push('/sign-in');
-                  }}
-                  type='button'
-                >
-                  <Button variant='ghost' className='h-8 w-8 rounded-full p-0 text-2xl'>
-                    <Settings className='h-5 w-5' />
-                  </Button>
-                </Link>
-              </div>
-            </SignedOut>
-            <SignedIn>
-              <div className='flex items-center gap-2'>
+              </SignedOut>
+              <SignedIn>
                 <UserButton showName userProfileUrl='/profile' />
-                <Link href='/chat/settings' className='ml-auto'>
-                  <Button variant='ghost' className='h-8 w-8 rounded-full p-0 text-2xl'>
-                    <Settings className='h-5 w-5' />
-                  </Button>
-                </Link>
-              </div>
-            </SignedIn>
+              </SignedIn>
+              <Link href='/chat/settings' className='ml-auto'>
+                <Button variant='ghost' className='h-8 w-8 rounded-full p-0 text-2xl'>
+                  <Settings className='h-5 w-5' />
+                </Button>
+              </Link>
+            </div>
           </SidebarFooter>
         </Sidebar>
         <ChatSidebarTrigger />

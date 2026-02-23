@@ -7,3 +7,6 @@
 - [x] Add text-to-speech functionality
 - [x] Add stuff to base chat page to make starting chats or threads more than a simple new chat button
 - [x] Add better image upload storage solution with api.gloved.dev
+- [x] Add error handling to glovedapi.ts
+- [x] Finish transitioning to glovedapi.ts for all calls to api.gloved.dev
+- [ ] Implement GlovedChat DnD options

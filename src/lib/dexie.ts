@@ -212,8 +212,15 @@ class Database extends Dexie {
   async deleteAllData(userId?: string | null) {
     const threads = await this.threads.toArray();
     const messages = await this.messages.toArray();
-    await Promise.all(threads.map((thread) => this.threads.delete(thread.id)));
-    await Promise.all(messages.map((msg) => this.messages.delete(msg.id)));
+    const deleteThreads = await tryCatch(Promise.all(threads.map((thread) => this.threads.delete(thread.id))));
+    const deleteMessages = await tryCatch(Promise.all(messages.map((msg) => this.messages.delete(msg.id))));
+    if (deleteThreads.error || deleteMessages.error) {
+      if (deleteThreads.error && deleteMessages.error) return toast.error('Failed to delete threads and messages!');
+      if (deleteThreads.error) return toast.error('Failed to delete threads!');
+      if (deleteMessages.error) return toast.error('Failed to delete messages!');
+    } else {
+      toast.success('Successfully deleted all local data!');
+    }
     if (userId) {
       const { error: deleteUserDataError } = await tryCatch(deleteUserDataAction(userId));
       if (deleteUserDataError) {
@@ -318,11 +325,7 @@ export async function checkSync(userId: string) {
  * @param callback A function to call when the response has been processed. Default is an empty function.
  * @returns A Promise that resolves with the accumulated message content.
  */
-export async function processStream(
-  response: ReadableStream<Uint8Array>,
-  messageId?: string,
-  userId?: string,
-): Promise<string> {
+export async function processStream(response: ReadableStream<Uint8Array>, messageId?: string): Promise<string> {
   const reader = response.getReader();
   const decoder = new TextDecoder();
   let done = false;

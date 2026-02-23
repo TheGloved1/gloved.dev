@@ -1,4 +1,5 @@
 'use client';
+import { Tooltip } from '@/components/TooltipSystem';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,6 +15,8 @@ import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '@/components/
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useLocalStorage } from '@/hooks/use-local-storage';
+import { usePreviousLocal } from '@/hooks/use-previous-local';
+import { DND_SYSTEM_PROMPT } from '@/lib/ai/dnd';
 import { dxdb } from '@/lib/dexie';
 import { tryCatch } from '@/lib/utils';
 import { useAuth } from '@clerk/nextjs';
@@ -29,12 +32,25 @@ export default function Page() {
   const [activeTab, setActiveTab] = useState<'customization' | 'sync'>('customization');
   const [syncEnabled, setSyncEnabled] = useLocalStorage<boolean>('syncEnabled', false);
   const [systemPrompt, setSystemPrompt] = useLocalStorage<string | undefined>('systemPrompt', undefined);
+  const [previousSystemPrompt, setPreviousSystemPrompt] = usePreviousLocal<string | undefined>(
+    'previousSystemPrompt',
+    systemPrompt,
+  );
+  const [dndMode, setDndMode] = useState(false);
   const router = useRouter();
   const auth = useAuth();
 
+  useEffect(() => {
+    if (systemPrompt === DND_SYSTEM_PROMPT) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setDndMode(true);
+    } else {
+      setDndMode(false);
+    }
+  }, [systemPrompt, previousSystemPrompt]);
+
   const handleDelete = async () => {
     await dxdb.deleteAllData(auth.userId);
-    toast.success('Data deleted');
     setDeleteDialogOpen(false);
     router.push('/chat');
   };
@@ -69,8 +85,23 @@ export default function Page() {
     toast.success('Data exported');
   };
 
+  const handleDndModeToggle = (enabled: boolean) => {
+    if (enabled) {
+      // Set DND system prompt
+      setSystemPrompt(DND_SYSTEM_PROMPT);
+    } else {
+      // Restore old system prompt if it exists, otherwise set to empty string
+      if (previousSystemPrompt && previousSystemPrompt !== DND_SYSTEM_PROMPT) {
+        setSystemPrompt(previousSystemPrompt);
+      } else {
+        // Set to empty string if there was no old prompt
+        setSystemPrompt('');
+      }
+    }
+  };
+
   const handleSyncNow = useCallback(async () => {
-    if (!auth.userId) return;
+    if (!auth.userId) return toast.error('You must be signed in to sync data!');
     await dxdb.syncDexie(auth.userId);
     toast.success('Data synced');
   }, [auth.userId]);
@@ -80,8 +111,6 @@ export default function Page() {
       handleSyncNow();
     }
   }, [handleSyncNow, syncEnabled]);
-
-  if (auth.isLoaded && !auth.isSignedIn) return router.replace('/sign-in');
 
   return (
     <div className='h-screen w-full overflow-y-auto'>
@@ -117,10 +146,30 @@ export default function Page() {
                 </p>
                 <textarea
                   value={systemPrompt ?? undefined}
-                  onChange={(e) => setSystemPrompt(e.target.value)}
+                  onChange={(e) => {
+                    setSystemPrompt(e.target.value);
+                    setPreviousSystemPrompt(e.target.value);
+                  }}
                   placeholder={`For example: "Your name is John, and you work at McDonald's. You are a deeply disturbed person who has a strong desire to tell people that you know how doors work."`}
-                  className='flex min-h-[175px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-sm placeholder:text-muted focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 sm:min-h-[150px] md:min-h-[100px] md:text-sm'
+                  className='flex max-h-[400px] min-h-[175px] w-full max-w-[600px] rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-sm placeholder:text-muted focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 sm:min-h-[150px] md:min-h-[100px] md:text-sm'
                 />
+                <Button onClick={() => setSystemPrompt('')}>Clear</Button>
+                <div className='mt-4 flex flex-row items-center gap-2'>
+                  <label
+                    className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
+                    htmlFor='dnd-mode'
+                  >
+                    Enable D&D Mode
+                  </label>
+                  <Tooltip content='Give the AI knowledge of Dungeons and Dragons'>
+                    <Switch
+                      className='bg-foreground'
+                      id='dnd-mode'
+                      checked={dndMode}
+                      onCheckedChange={handleDndModeToggle}
+                    />
+                  </Tooltip>
+                </div>
               </div>
             </TabsContent>
             <TabsContent value='sync'>
@@ -147,7 +196,14 @@ export default function Page() {
                           </AlertDialogHeader>
                           <AlertDialogFooter>
                             <AlertDialogCancel onClick={() => setSyncDialogOpen(false)}>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => setSyncEnabled(true)}>Enable</AlertDialogAction>
+                            <AlertDialogAction
+                              onClick={() => {
+                                if (!auth.userId) return toast.error('You must be signed in to sync data!');
+                                setSyncEnabled(true);
+                              }}
+                            >
+                              Enable
+                            </AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>
                         <div className='flex flex-row items-center gap-2'>
@@ -164,6 +220,7 @@ export default function Page() {
                               if (checked) {
                                 setSyncDialogOpen(true);
                               } else {
+                                if (!auth.userId) return toast.error('You must be signed in to sync data!');
                                 setSyncEnabled(false);
                               }
                             }}

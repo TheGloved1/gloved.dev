@@ -26,7 +26,7 @@ const tabs = {
     'Good books for fans of Rick Rubin',
     'Countries ranked by number of corgis',
     'Most successful companies in the world',
-    'How much does Claude cost?',
+    'How much does Agent cost?',
   ],
   code: [
     'Write code to invert a binary search tree in Python',
