@@ -1,5 +1,5 @@
 // Custom SDK for api.gloved.dev
-import axios, { type AxiosInstance, type AxiosProgressEvent, type AxiosRequestConfig } from 'axios';
+import axios, { type AxiosInstance, type AxiosRequestConfig } from 'axios';
 import { tryCatch, type Result } from './utils';
 
 export const GLOVED_API_URL = 'https://api.gloved.dev';
@@ -43,12 +43,6 @@ export interface PageVisitsResponse {
   visitorIds: string[];
 }
 
-export interface ApiError {
-  error: string;
-  message: string;
-  statusCode?: number;
-}
-
 export interface ListFilesOptions {
   gallery?: boolean;
   convert?: boolean;
@@ -58,14 +52,6 @@ export interface GlovedApiOptions {
   baseUrl?: string;
   defaultHeaders?: Record<string, string>;
   timeout?: number;
-}
-
-export interface UploadProgress {
-  onProgress?: (progressEvent: AxiosProgressEvent) => void;
-}
-
-export interface DownloadProgress {
-  onDownloadProgress?: (progressEvent: AxiosProgressEvent) => void;
 }
 
 // ============================================================================
