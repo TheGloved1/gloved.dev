@@ -2,24 +2,19 @@
 import Loading from '@/components/loading';
 import PageBack from '@/components/PageBack';
 import { Button } from '@/components/ui/button';
-import { apiRoute } from '@/lib/utils';
+import glovedApi, { GalleryFileInfo } from '@/lib/glovedapi';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import axios, { AxiosProgressEvent, AxiosResponse } from 'axios';
+import { AxiosProgressEvent } from 'axios';
 import Image from 'next/image';
 import Link from 'next/link';
 import React, { useEffect, useRef, useState } from 'react';
 
-type GalleryFile = {
-  name: string;
-  createdAt: string;
-  size: string;
-};
-
 async function fetchGallery() {
-  const response: AxiosResponse<GalleryFile[]> = await axios.get(apiRoute('/files/?gallery=true'));
+  const response = await glovedApi.listGallery();
+  if (response.error) throw response.error;
 
   // Sort by numeric index in the filename
-  const sortedFiles: GalleryFile[] = response.data.sort((a, b) => {
+  const sortedFiles = response.data.sort((a, b) => {
     const indexA = extractIndexFromFilename(a.name);
     const indexB = extractIndexFromFilename(b.name);
     return indexA - indexB; // Ascending order
@@ -35,20 +30,13 @@ function extractIndexFromFilename(filename: string): number {
 }
 
 async function galleryUploadApi(file: File, onUploadProgress: (progressEvent: AxiosProgressEvent) => void) {
-  const formData = new FormData();
-  formData.append('file', file);
-  formData.append('gallery', 'true');
-  await axios.post(apiRoute('/files/upload'), formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-    onUploadProgress,
-  });
+  await glovedApi.uploadGalleryItem(file, { onUploadProgress });
 }
 
 async function galleryDeleteApi(file: string) {
   console.log('Deleting file:', file);
-  await axios.delete(apiRoute(`/files/delete/${file}?gallery=true`));
+  await glovedApi.deleteGalleryItem(file);
+  // await axios.delete(apiRoute(`/files/delete/${file}?gallery=true`));
 }
 
 export default function GalleryPage(): React.JSX.Element {
@@ -87,7 +75,7 @@ export default function GalleryPage(): React.JSX.Element {
     },
   });
 
-  const galleryQuery = useQuery<GalleryFile[], Error>({
+  const galleryQuery = useQuery<GalleryFileInfo[], Error>({
     queryKey: ['gallery'],
     queryFn: fetchGallery,
     initialData: [],
@@ -153,13 +141,13 @@ export default function GalleryPage(): React.JSX.Element {
                 className='group relative flex h-24 w-24 flex-col items-center justify-center border-2 border-dashed border-slate-500 sm:h-32 sm:w-32 md:h-48 md:w-48'
               >
                 <Link
-                  href={apiRoute(`/files/download/${file.name}?gallery=true`)}
+                  href={`${glovedApi.baseUrl}/files/download/${file.name}?gallery=true`}
                   target='_blank'
                   rel='noopener noreferrer'
                   className='relative flex h-24 w-24 flex-col items-center justify-center border-2 border-dashed border-slate-500 sm:h-32 sm:w-32 md:h-48 md:w-48'
                 >
                   <Image
-                    src={`${apiRoute(`/files/download/${file.name}?gallery=true`)}`}
+                    src={`${glovedApi.baseUrl}/files/download/${file.name}?gallery=true`}
                     alt={file.name}
                     className='bottom-0 left-0 right-0 top-0 max-h-full max-w-full cursor-pointer rounded-xl object-center p-2'
                     title={'Download ' + file.name}

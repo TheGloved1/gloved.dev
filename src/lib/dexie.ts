@@ -4,10 +4,11 @@
  * database with remote data.
  */
 import { deleteUserDataAction, exportThreadAction, syncAction } from '@/lib/actions';
-import { now, populateOnboardingThreads, sleep, tryCatch } from '@/lib/utils';
+import { populateOnboardingThreads } from '@/lib/ai/onboarding';
+import { now, sleep, tryCatch } from '@/lib/utils';
 import Dexie, { type EntityTable } from 'dexie';
 import { toast } from 'sonner';
-import { z } from 'zod/v3';
+import { z } from 'zod';
 import { ChatFetchOptions, ModelID } from './ai';
 
 export const threadSchema = z.object({

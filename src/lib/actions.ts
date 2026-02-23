@@ -1,7 +1,7 @@
 'use server';
 import { env } from '@/env';
 import { Message, Thread } from '@/lib/dexie';
-import { apiRoute, tryCatch } from '@/lib/utils';
+import glovedApi from './glovedapi';
 import {
   addAdmin,
   dbSync,
@@ -24,11 +24,7 @@ export async function getUUID(): Promise<string> {
  * @returns A promise that resolves to the system prompt text.
  */
 export async function fetchSystemPrompt() {
-  const { data, error } = await tryCatch(fetch(apiRoute('/system-prompt')));
-  if (error) {
-    return null;
-  }
-  return await data.text();
+  return glovedApi.getSystemPrompt();
 }
 
 /**
@@ -81,7 +77,7 @@ export async function addAdminAction(email: string) {
 }
 
 export async function removeAdminAction(email: string) {
-  await removeAdmin(email);
+  return await removeAdmin(email);
 }
 
 export async function getAdminsAction() {

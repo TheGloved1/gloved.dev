@@ -4,9 +4,10 @@ import FileButton from '@/components/FileButton';
 import Loading from '@/components/loading';
 import { env } from '@/env';
 import { useLocalStorage } from '@/hooks/use-local-storage';
-import { apiRoute, tryCatch } from '@/lib/utils';
+import glovedApi, { type FileInfo } from '@/lib/glovedapi';
+import { tryCatch } from '@/lib/utils';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import axios, { type AxiosProgressEvent } from 'axios';
+import { type AxiosProgressEvent } from 'axios';
 import { RefreshCcw } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 import { DeleteConfirmDialog } from './DeleteConfirmDialog';
@@ -14,25 +15,18 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 
-export type FileInfo = {
-  name: string;
-  isTemp: boolean;
-  createdAt: string;
-  size: string;
+const fetchFiles = async () => {
+  const result = await glovedApi.listFiles();
+  if (result.error) throw result.error;
+  return result.data;
 };
 
-const fetchFiles = async (): Promise<FileInfo[]> => {
-  const { data: response, error } = await tryCatch(axios.get<FileInfo[]>(apiRoute('/files/')));
-  if (error) throw error;
-  return response.data;
+const deleteFileApi = async (filename: string, isTemp: boolean) => {
+  await glovedApi.deleteFile(filename, isTemp);
 };
 
-const deleteFileApi = async (file: FileInfo, isTemp: boolean) => {
-  await axios.delete(apiRoute(`/files/delete/${file.name}?temp=${isTemp}`));
-};
-
-const permanentDeleteFileApi = async (file: FileInfo, isTemp: boolean) => {
-  await axios.delete(apiRoute(`/files/permanent-delete/${file.name}?temp=${isTemp}`));
+const permanentDeleteFileApi = async (filename: string, isTemp: boolean) => {
+  await glovedApi.permanentDeleteFile(filename, isTemp);
 };
 
 const uploadFileApi = async (
@@ -44,12 +38,9 @@ const uploadFileApi = async (
   const formData = new FormData();
   formData.append('file', file);
   formData.append('temp', isTemp.toString());
-  await axios.post(apiRoute('/files/upload'), formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-    onUploadProgress,
+  await glovedApi.uploadFile(formData, {
     signal: signal,
+    onUploadProgress,
   });
 };
 
@@ -62,37 +53,39 @@ export default function FileUploader(): React.JSX.Element {
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [isTemp, setIsTemp] = useState<boolean>(false);
   const [fileToDelete, setFileToDelete] = useState<FileInfo | null>(null);
-  const [uploadRequest, setUploadRequest] = useState<AbortController | null>(null);
+  const [uploadRequestController, setUploadRequestController] = useState<AbortController | null>(null);
   const inputButton = useRef<HTMLInputElement>(null);
 
   const filesQuery = useQuery({ queryKey: ['files'], queryFn: fetchFiles, initialData: [] });
 
   const deleteMutation = useMutation({
-    mutationFn: ({ file, isTemp }: { file: FileInfo; isTemp: boolean }) => deleteFileApi(file, isTemp),
+    mutationFn: ({ filename, isTemp }: { filename: string; isTemp: boolean }) => deleteFileApi(filename, isTemp),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['files'] });
+      setFileToDelete(null);
     },
   });
 
   const permanentDeleteMutation = useMutation({
-    mutationFn: ({ file, isTemp }: { file: FileInfo; isTemp: boolean }) => permanentDeleteFileApi(file, isTemp),
+    mutationFn: ({ filename, isTemp }: { filename: string; isTemp: boolean }) => permanentDeleteFileApi(filename, isTemp),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['files'] });
+      setFileToDelete(null);
     },
   });
 
   const handleCancelUpload = () => {
-    if (uploadRequest) {
-      uploadRequest.abort();
+    if (uploadRequestController) {
+      uploadRequestController.abort();
       setUploadProgress(0);
-      setUploadRequest(null);
+      setUploadRequestController(null);
     }
   };
 
   const uploadMutation = useMutation({
     mutationFn: (file: File) => {
       const controller = new AbortController();
-      setUploadRequest(controller);
+      setUploadRequestController(controller);
 
       return uploadFileApi(
         file,
@@ -109,7 +102,7 @@ export default function FileUploader(): React.JSX.Element {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['files'] });
       setUploadProgress(0);
-      setUploadRequest(null);
+      setUploadRequestController(null);
       if (inputButton.current) {
         inputButton.current.value = '';
       }
@@ -142,14 +135,16 @@ export default function FileUploader(): React.JSX.Element {
 
     if (permanent) {
       const { error } = await tryCatch(
-        permanentDeleteMutation.mutateAsync({ file: fileToDelete, isTemp: fileToDelete.isTemp }),
+        permanentDeleteMutation.mutateAsync({ filename: fileToDelete.name, isTemp: fileToDelete.isTemp }),
       );
       if (error) {
         setAlert(error.message);
         return;
       }
     } else {
-      const { error } = await tryCatch(deleteMutation.mutateAsync({ file: fileToDelete, isTemp: fileToDelete.isTemp }));
+      const { error } = await tryCatch(
+        deleteMutation.mutateAsync({ filename: fileToDelete.name, isTemp: fileToDelete.isTemp }),
+      );
       if (error) {
         setAlert(error.message);
         return;

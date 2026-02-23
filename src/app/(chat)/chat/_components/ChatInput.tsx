@@ -8,7 +8,6 @@ import { useAutoResizeTextarea } from '@/hooks/use-autoresize-textarea';
 import { useChatOptions } from '@/hooks/use-chat-options';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { Models } from '@/lib/ai';
 import Constants from '@/lib/constants';
 import { tryCatch, upload } from '@/lib/utils';
 import { useAuth } from '@clerk/nextjs';
@@ -46,8 +45,6 @@ const ChatInput = memo(
     const { threadId } = useParams<{ threadId: string }>();
     const searchParams = useSearchParams();
     const query = searchParams.get('q');
-
-    const selectedModel = Models.find((m) => m.value === model) ?? null;
 
     const userIdIfSyncEnabled = syncEnabled && auth.userId ? auth.userId : undefined;
 

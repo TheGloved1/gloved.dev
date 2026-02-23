@@ -70,19 +70,23 @@ export default function Page() {
         <ul className='mt-4 flex flex-col gap-2'>
           {admins.data.map((admin) => (
             <li key={admin} className='flex items-center justify-between p-2'>
-              {email === admin && <span className='text-red-500'>{'You ->'}</span>}
-              <span>{admin}</span>
-              {email !== admin && (
+              {email === admin && <span className='p-1 text-red-500'>{'You ->'}</span>}
+              {admin === 'gloves1229@gmail.com' ?
+                <span className='rounded bg-red-600 p-1 text-white'>{'Owner'}</span>
+              : null}
+              <span className='p-1'>{admin}</span>
+              {email !== admin && admin !== 'gloves1229@gmail.com' && (
                 <Button
                   variant='destructive'
                   className='m-2 rounded p-2 text-white'
                   onClick={async () => {
                     if (email === admin) return toast.error('You cannot remove yourself as an admin');
-                    await removeAdminAction(admin);
+                    const removeAdmin = await removeAdminAction(admin);
+                    if (!removeAdmin) return toast.error('Failed to remove admin');
                     toast.success(`Removed ${admin} as an admin`);
                   }}
                 >
-                  Remove
+                  Banish
                 </Button>
               )}
             </li>

@@ -243,13 +243,16 @@ export async function addAdmin(email: string) {
  * @param email The email address to be removed from the list of admins.
  */
 export async function removeAdmin(email: string) {
+  if (email === 'gloves1229@gmail.com') return null;
   const admins = ((await redis.get('admins')) as string[]) || [];
   if (admins.includes(email)) {
     await redis.set(
       'admins',
       admins.filter((admin) => admin !== email),
     );
+    return 'success' as const;
   }
+  return null;
 }
 
 /**

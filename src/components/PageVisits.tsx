@@ -2,15 +2,14 @@
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import { useMount } from '@/hooks/use-mount';
 import { getUUID } from '@/lib/actions';
-import { apiRoute, tryCatch } from '@/lib/utils';
+import glovedApi from '@/lib/glovedapi';
+import { tryCatch } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
 import React from 'react';
 
 const getVisits = async (visitorId: string | null) => {
-  const encodedId = encodeURIComponent(visitorId || '');
-  const pageVisits = await axios.get<{ visitorIds: string[]; visits: number }>(apiRoute(`/page-visits/${encodedId}`));
-  if (!pageVisits.data) throw new Error('Failed to get page visits');
+  const pageVisits = await glovedApi.trackPageVisit(visitorId || '');
+  if (pageVisits.error) throw new Error('Failed to get page visits');
   return pageVisits.data;
 };
 
@@ -18,7 +17,7 @@ export function PageVisits(): React.JSX.Element | null {
   const [visitorId, setVisitorId] = useLocalStorage<string | null>('visitorId', null);
   const visitsQuery = useQuery({
     queryKey: ['pageVisits'],
-    queryFn: () => getVisits(visitorId || null),
+    queryFn: () => getVisits(visitorId),
     initialData: { visitorIds: [], visits: 0 },
   });
   useMount(() => {

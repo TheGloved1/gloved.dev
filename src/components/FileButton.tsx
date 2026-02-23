@@ -2,11 +2,10 @@
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { apiRoute } from '@/lib/utils';
+import glovedApi, { FileInfo } from '@/lib/glovedapi';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
-import { FileInfo } from './FileUploader';
 import VideoPreview from './VideoPreview';
 
 /**
@@ -21,9 +20,8 @@ import VideoPreview from './VideoPreview';
  */
 export default function FileButton({ file }: { file: FileInfo }): React.JSX.Element {
   const [showDialog, setShowDialog] = useState(false);
-  const encodedFileName = encodeURIComponent(file.name);
-  const fileUrl = apiRoute(`/files/download/${encodedFileName}`);
-  const previewUrl = apiRoute(`/files/view/${encodedFileName}`);
+  const fileUrl = glovedApi.getFileDownloadUrl(file.name);
+  const previewUrl = glovedApi.getFileViewUrl(file.name);
   const isMobile = useIsMobile();
 
   const copyToClipboard = () => {
