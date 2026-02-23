@@ -14,8 +14,8 @@ export const Models = Object.freeze([
     enabled: true,
     description: 'A powerful text-to-text model, excels at writing.',
     requirements: {
-      loggedIn: true,
-      admin: true,
+      loggedIn: false,
+      admin: false,
     },
     tools: [] as Tools,
     features: [] as Features,
@@ -28,7 +28,7 @@ export const Models = Object.freeze([
     enabled: true,
     description: "Google's flash lite model",
     requirements: {
-      loggedIn: false,
+      loggedIn: true,
       admin: false,
     },
     tools: [] as Tools,
@@ -98,7 +98,7 @@ export const Models = Object.freeze([
     enabled: true,
     description: 'Latest open-source model from Meta',
     requirements: {
-      loggedIn: false,
+      loggedIn: true,
       admin: false,
     },
     tools: [] as Tools,
@@ -113,7 +113,7 @@ export const Models = Object.freeze([
     description: 'Latest open-source model from Meta. Limited to small conversations',
     requirements: {
       loggedIn: true,
-      admin: true,
+      admin: false,
     },
     tools: [] as Tools,
     features: ['reasoning'] as Features,
@@ -155,7 +155,7 @@ export const Models = Object.freeze([
     description: 'DeepSeek R1, distilled on Qwen 32b',
     requirements: {
       loggedIn: true,
-      admin: true,
+      admin: false,
     },
     tools: [] as Tools,
     features: [] as Features,
@@ -168,7 +168,7 @@ export const Models = Object.freeze([
     enabled: true,
     description: 'DeepSeek R1, distilled on Llama 3.3 70b',
     requirements: {
-      loggedIn: false,
+      loggedIn: true,
       admin: false,
     },
     tools: [] as Tools,
