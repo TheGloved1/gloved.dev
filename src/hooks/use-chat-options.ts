@@ -1,5 +1,6 @@
-import { defaultModel, ModelID } from '@/lib/ai';
+import { defaultModel, ModelID, ModelList } from '@/lib/ai';
 import { useLocalStorage } from './use-local-storage';
+import { useMount } from './use-mount';
 
 /**
  * React hook to get/set the chat options. The options are stored in local storage,
@@ -19,6 +20,12 @@ export function useChatOptions() {
   const [syncEnabled, setSyncEnabled] = useLocalStorage('syncEnabled', false);
   const [systemPrompt, setSystemPrompt] = useLocalStorage<string | undefined>('systemPrompt', undefined);
   const [model, setModel] = useLocalStorage<ModelID>('model', defaultModel);
+
+  useMount(() => {
+    if (!ModelList.includes(model)) {
+      setModel(defaultModel);
+    }
+  });
 
   return {
     syncEnabled,
