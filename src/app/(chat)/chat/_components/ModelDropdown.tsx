@@ -8,7 +8,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { useAdmin } from '@/hooks/use-admin';
 import { useChatOptions } from '@/hooks/use-chat-options';
 import { useDebounce } from '@/hooks/use-debounce';
-import { Model, Models } from '@/lib/ai';
+import { defaultModel, Model, Models } from '@/lib/ai';
 import { fuzzySearch } from '@/lib/utils';
 import { useUser } from '@clerk/nextjs';
 import { Bot, ChevronDown, ChevronUp, Search } from 'lucide-react';
@@ -134,6 +134,9 @@ export default function ModelDropdown() {
                             <div className='-mt-0.5 text-[10px] text-primary/75'>
                               {(modelItem.label.match(/\([^)]*\)/g) || []).join(' ')}
                             </div>
+                            {modelItem.value === defaultModel && (
+                              <div className='mt-1 text-[10px] text-amber-500'>Default</div>
+                            )}
                           </div>
                         </div>
                       </button>

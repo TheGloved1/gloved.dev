@@ -162,7 +162,7 @@ export const Models = Object.freeze([
     features: ['reasoning'] as Features,
   },
   {
-    label: 'Deepseek R1',
+    label: 'Deepseek R1 (OpenRouter)',
     value: 'deepseek/deepseek-r1-0528:free',
     provider: 'openrouter' as ModelProvider,
     type: 'deepseek' as ModelType,
