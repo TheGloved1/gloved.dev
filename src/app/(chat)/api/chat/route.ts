@@ -4,7 +4,8 @@ import glovedApi from '@/lib/glovedapi';
 import { formatMessageContent } from '@/lib/utils';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { createGroq } from '@ai-sdk/groq';
-import { LanguageModelV2 } from '@ai-sdk/provider';
+import { type LanguageModelV2 } from '@ai-sdk/provider';
+import { createOpenRouter } from '@openrouter/ai-sdk-provider';
 import {
   createUIMessageStream,
   createUIMessageStreamResponse,
@@ -20,11 +21,15 @@ import { NextRequest } from 'next/server';
 
 const google = createGoogleGenerativeAI({ apiKey: env.GEMINI });
 const groq = createGroq({ apiKey: env.GROQ });
+const openrouter = createOpenRouter({
+  apiKey: env.OPENROUTER,
+});
 
 const createLanguageModel = ({ value, provider, features }: (typeof Models)[number]) => {
   const baseModel =
     provider === 'google' ? google.languageModel(value)
     : provider === 'groq' ? groq.languageModel(value)
+    : provider === 'openrouter' ? openrouter.languageModel(value)
     : null;
 
   if (!baseModel) {

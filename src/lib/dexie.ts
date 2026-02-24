@@ -51,7 +51,7 @@ class Database extends Dexie {
 
   constructor() {
     super('chatdb');
-    this.version(5).stores({
+    this.version(6).stores({
       threads: '++id, title, created_at, updated_at, last_message_at, status',
       messages:
         '++id, threadId, content, model, role, attachments, reasoning, updated_at, status, [threadId+created_at], [threadId+status]',
@@ -86,6 +86,11 @@ class Database extends Dexie {
     return (await this.threads.where('status').notEqual('deleted').sortBy('last_message_at')).toReversed();
   }
 
+  /**
+   * Retrieves a thread by its ID.
+   * @param threadId The ID of the thread to retrieve.
+   * @returns A promise that resolves to the thread object if found, or null otherwise.
+   */
   async getThread(threadId: string) {
     return (await this.getThreads()).find((t) => t.id === threadId);
   }
@@ -608,7 +613,7 @@ export async function generateTitle(threadId: string) {
     ...allMessages.map((m) => ({ role: m.role, content: m.content })),
     newMessage,
   ];
-  const model: ModelID = 'gemini-2.5-flash-lite';
+  const model: ModelID = 'moonshotai/kimi-k2-instruct-0905';
   try {
     const { data, error } = await tryCatch(
       fetch('/api/chat', {
@@ -624,8 +629,8 @@ export async function generateTitle(threadId: string) {
         }),
       }),
     );
-    if (error) return toast.error('Failed to generate title');
-    if (!data.body) return toast.error('Failed to generate title');
+    if (error) return toast.error('Failed to generate title!');
+    if (!data.body) return toast.error('Failed to generate title!');
     const title = await processStream(data.body);
     await dxdb.threads.update(threadId, {
       updated_at: now(),
@@ -633,6 +638,6 @@ export async function generateTitle(threadId: string) {
     });
   } catch (e) {
     console.log('Uncaught error', e);
-    toast.error('Failed to generate title');
+    toast.error('Failed to generate title!');
   }
 }

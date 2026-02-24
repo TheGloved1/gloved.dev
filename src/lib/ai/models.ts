@@ -4,12 +4,13 @@ export type Features = 'reasoning'[];
 
 export type ModelID = (typeof Models)[number]['value'];
 export type Model = (typeof Models)[number];
+export type ModelProvider = 'google' | 'groq' | 'openrouter';
 export type ModelType = 'gemini' | 'qwen' | 'llama' | 'deepseek' | 'gpt' | 'other';
 export const Models = Object.freeze([
   {
     label: 'Kimi K2',
     value: 'moonshotai/kimi-k2-instruct-0905',
-    provider: 'groq',
+    provider: 'groq' as ModelProvider,
     type: 'other' as ModelType,
     enabled: true,
     description: 'A powerful text-to-text model, excels at writing.',
@@ -23,7 +24,7 @@ export const Models = Object.freeze([
   {
     label: 'Gemini 2.5 Flash Lite',
     value: 'gemini-2.5-flash-lite',
-    provider: 'google',
+    provider: 'google' as ModelProvider,
     type: 'gemini' as ModelType,
     enabled: true,
     description: "Google's flash lite model",
@@ -37,7 +38,7 @@ export const Models = Object.freeze([
   {
     label: 'Gemini 2.5 Flash',
     value: 'gemini-2.5-flash',
-    provider: 'google',
+    provider: 'google' as ModelProvider,
     type: 'gemini' as ModelType,
     enabled: true,
     description: "Google's hybrid reasoning model, with a 1M token context window and thinking budgets.",
@@ -51,7 +52,7 @@ export const Models = Object.freeze([
   {
     label: 'Gemini 2.5 Pro',
     value: 'gemini-2.5-pro',
-    provider: 'google',
+    provider: 'google' as ModelProvider,
     type: 'gemini' as ModelType,
     enabled: true,
     description: "Google's advanced reasoning model, which excels at coding and complex reasoning tasks",
@@ -65,7 +66,7 @@ export const Models = Object.freeze([
   {
     label: 'Qwen Coder-32b',
     value: 'qwen-2.5-coder-32b',
-    provider: 'groq',
+    provider: 'groq' as ModelProvider,
     type: 'qwen' as ModelType,
     enabled: true,
     description: 'Specialized code generation model with production-quality code output',
@@ -79,7 +80,7 @@ export const Models = Object.freeze([
   {
     label: 'Qwen qwq-32b',
     value: 'qwen-qwq-32b',
-    provider: 'groq',
+    provider: 'groq' as ModelProvider,
     type: 'qwen' as ModelType,
     enabled: true,
     description: 'Small but mighty reasoning model',
@@ -93,7 +94,7 @@ export const Models = Object.freeze([
   {
     label: 'Llama 4 Scout',
     value: 'meta-llama/llama-4-scout-17b-16e-instruct',
-    provider: 'groq',
+    provider: 'groq' as ModelProvider,
     type: 'llama' as ModelType,
     enabled: true,
     description: 'Latest open-source model from Meta',
@@ -107,7 +108,7 @@ export const Models = Object.freeze([
   {
     label: 'Llama 4 Maverick',
     value: 'meta-llama/llama-4-maverick-17b-128e-instruct',
-    provider: 'groq',
+    provider: 'groq' as ModelProvider,
     type: 'llama' as ModelType,
     enabled: true,
     description: 'Latest open-source model from Meta. Limited to small conversations',
@@ -121,7 +122,7 @@ export const Models = Object.freeze([
   {
     label: 'Llama 3.1-8b',
     value: 'llama-3.1-8b-instant',
-    provider: 'groq',
+    provider: 'groq' as ModelProvider,
     type: 'llama' as ModelType,
     enabled: true,
     description: 'Lightweight version of Llama 3 optimized for fast responses and efficient inference',
@@ -135,7 +136,7 @@ export const Models = Object.freeze([
   {
     label: 'Llama 3.3-70b',
     value: 'llama-3.3-70b-versatile',
-    provider: 'groq',
+    provider: 'groq' as ModelProvider,
     type: 'llama' as ModelType,
     enabled: true,
     description: 'Fast, but not the smartest',
@@ -149,7 +150,7 @@ export const Models = Object.freeze([
   {
     label: 'Deepseek R1 (Qwen Distill)',
     value: 'deepseek-r1-distill-qwen-32b',
-    provider: 'groq',
+    provider: 'groq' as ModelProvider,
     type: 'qwen' as ModelType,
     enabled: true,
     description: 'DeepSeek R1, distilled on Qwen 32b',
@@ -163,7 +164,7 @@ export const Models = Object.freeze([
   {
     label: 'Deepseek R1 (Llama Distill)',
     value: 'deepseek-r1-distill-llama-70b',
-    provider: 'groq',
+    provider: 'groq' as ModelProvider,
     type: 'llama' as ModelType,
     enabled: true,
     description: 'DeepSeek R1, distilled on Llama 3.3 70b',
@@ -177,7 +178,7 @@ export const Models = Object.freeze([
   {
     label: 'Groq Compound',
     value: 'groq/compound',
-    provider: 'groq',
+    provider: 'groq' as ModelProvider,
     type: 'compound' as ModelType,
     enabled: true,
     description: 'Compound is a compound AI system powered by multiple openly available models',
