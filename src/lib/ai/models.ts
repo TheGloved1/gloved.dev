@@ -22,6 +22,20 @@ export const Models = Object.freeze([
     features: [] as Features,
   },
   {
+    label: 'GPT OSS 120B',
+    value: 'openai/gpt-oss-120b:free',
+    provider: 'openrouter' as ModelProvider,
+    type: 'gpt' as ModelType,
+    enabled: true,
+    description: "OpenAI's open source GPT OSS 120B model",
+    requirements: {
+      loggedIn: true,
+      admin: false,
+    },
+    tools: [] as Tools,
+    features: [] as Features,
+  },
+  {
     label: 'Gemini 2.5 Flash Lite',
     value: 'gemini-2.5-flash-lite',
     provider: 'google' as ModelProvider,
@@ -143,6 +157,20 @@ export const Models = Object.freeze([
     requirements: {
       loggedIn: true,
       admin: true,
+    },
+    tools: [] as Tools,
+    features: ['reasoning'] as Features,
+  },
+  {
+    label: 'Deepseek R1',
+    value: 'deepseek/deepseek-r1-0528:free',
+    provider: 'openrouter' as ModelProvider,
+    type: 'deepseek' as ModelType,
+    enabled: true,
+    description: 'DeepSeek R1 from OpenRouter',
+    requirements: {
+      loggedIn: true,
+      admin: false,
     },
     tools: [] as Tools,
     features: ['reasoning'] as Features,
