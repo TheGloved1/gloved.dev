@@ -71,8 +71,7 @@ function ChatMessage({ message }: { message: Message }) {
     checkForOldAttachmentLinks();
   }, [checkForOldAttachmentLinks]);
 
-  if (message.status === 'error')
-    return <ErrorAlert>{`Error: Something went wrong, please try again. ${message.content}`}</ErrorAlert>;
+  if (message.status === 'error') return <ErrorAlert>{`Error: Something went wrong, please try again.`}</ErrorAlert>;
   if (
     message.content.trim() === '' &&
     !message.attachments &&

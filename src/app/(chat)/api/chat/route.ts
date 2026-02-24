@@ -21,9 +21,7 @@ import { NextRequest } from 'next/server';
 
 const google = createGoogleGenerativeAI({ apiKey: env.GEMINI });
 const groq = createGroq({ apiKey: env.GROQ });
-const openrouter = createOpenRouter({
-  apiKey: env.OPENROUTER,
-});
+const openrouter = createOpenRouter({ apiKey: env.OPENROUTER });
 
 const createLanguageModel = ({ value, provider, features }: (typeof Models)[number]) => {
   const baseModel =
@@ -97,8 +95,15 @@ export async function POST(req: NextRequest) {
         onError: ({ error }) => {
           writer.write({
             type: 'data-status',
-            data: { status: 'error' },
+            data: {
+              status: 'error',
+              error:
+                error && typeof error === 'object' && 'message' in error && typeof (error as any).message === 'string' ?
+                  (error as any).message
+                : 'Unknown error',
+            },
           });
+          console.error('[CHAT] Error:', (error as Error)?.message || error);
         },
       });
       writer.merge(result.toUIMessageStream());

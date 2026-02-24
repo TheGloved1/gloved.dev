@@ -373,7 +373,14 @@ export async function processStream(response: ReadableStream<Uint8Array>, messag
       if (!type) continue;
 
       if (type === 'data-status') {
-        const status = evt?.data?.status as string | undefined;
+        const dataStatus = evt as {
+          type: 'data-status';
+          data: {
+            status: 'streaming' | 'done' | 'error';
+            error?: string;
+          };
+        };
+        const status = dataStatus.data.status;
         if (messageId && status) {
           await dxdb.messages.update(messageId, {
             updated_at: now(),
@@ -414,13 +421,16 @@ export async function processStream(response: ReadableStream<Uint8Array>, messag
         break;
       } else if (type === 'error') {
         const errMsg =
-          typeof evt?.error === 'string' ? evt.error : ((evt?.error?.message as string | undefined) ?? 'Unknown error');
+          typeof evt?.errorText === 'string' ?
+            evt.errorText
+          : ((evt?.error?.message as string | undefined) ?? 'Unknown error');
         if (messageId) {
           await dxdb.messages.update(messageId, {
             updated_at: now(),
             content: errMsg,
             status: 'error',
           });
+          console.error('[CHAT] Error:', errMsg);
         }
         break;
       }
