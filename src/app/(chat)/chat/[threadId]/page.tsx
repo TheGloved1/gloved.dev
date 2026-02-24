@@ -1,10 +1,11 @@
 'use client';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useMount } from '@/hooks/use-mount';
 import { dxdb } from '@/lib/dexie';
 import { sleep } from '@/lib/utils';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useParams, useRouter } from 'next/navigation';
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import ChatInput from '../_components/ChatInput';
 import ChatMessage from '../_components/ChatMessage';
 
@@ -17,11 +18,21 @@ export default function Page(): React.JSX.Element {
   const distanceFromBottom = useRef<number>(0);
   const isMobile = useIsMobile();
 
-  useEffect(() => {
+  useMount(() => {
     dxdb.getThread(threadId).then((thread) => {
       if (!thread) router.replace('/chat');
     });
-  }, [router, threadId]);
+
+    const scrollToBottom = () => {
+      if (!scrollContainerRef.current) return;
+      scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
+      setIsAtBottom(true);
+    };
+    scrollToBottom();
+    sleep(250).then(() => {
+      scrollToBottom();
+    });
+  });
 
   const messages = useLiveQuery(
     () => {
@@ -43,18 +54,6 @@ export default function Page(): React.JSX.Element {
     scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
     setIsAtBottom(true);
   };
-
-  useEffect(() => {
-    const scrollToBottom = () => {
-      if (!scrollContainerRef.current) return;
-      scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
-      setIsAtBottom(true);
-    };
-    scrollToBottom();
-    sleep(250).then(() => {
-      scrollToBottom();
-    });
-  }, []);
 
   useLayoutEffect(() => {
     if (!scrollContainerRef.current) return;
