@@ -132,7 +132,8 @@ const animationVariants = {
 };
 
 export interface TooltipProps
-  extends Omit<React.ComponentPropsWithoutRef<typeof ShadcnTooltipContent>, 'content'>,
+  extends
+    Omit<React.ComponentPropsWithoutRef<typeof ShadcnTooltipContent>, 'content'>,
     VariantProps<typeof tooltipVariants> {
   /**
    * The content to display inside the tooltip

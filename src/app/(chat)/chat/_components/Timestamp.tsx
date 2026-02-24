@@ -1,5 +1,5 @@
 import { Models } from '@/lib/ai';
-import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 
 function getModelName(model: string) {
   return Models.find((m) => m.value === model)?.label ?? model;
