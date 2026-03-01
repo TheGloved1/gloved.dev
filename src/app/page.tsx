@@ -29,15 +29,15 @@ import DefaultPlayer from 'next-video/player';
 import Link from 'next/link';
 import React from 'react';
 
-interface AppItem {
-  icon: React.ComponentType<{ className?: string }>;
-  title: string;
-  description: string;
-  link: string;
-}
-
 export default function Page(): React.JSX.Element {
   const isMobile = useIsMobile();
+
+  interface AppItem {
+    icon: React.ComponentType<{ className?: string }>;
+    title: string;
+    description: string;
+    link: string;
+  }
 
   const apps: AppItem[] = [
     { icon: Home, title: Constants.Home.title, description: Constants.Home.description, link: Constants.Home.link },
@@ -89,7 +89,7 @@ export default function Page(): React.JSX.Element {
     },
   ];
 
-  const adminApps = [
+  const adminApps: AppItem[] = [
     {
       icon: Shield,
       title: Constants.Admin.title,
@@ -106,7 +106,49 @@ export default function Page(): React.JSX.Element {
     },
   ];
 
-  const animationDelay = (index: number) => `${index * 0.1 + 0.5}s`;
+  /**
+   * Calculate the animation delay for a given index.
+   * The animation delay is calculated as follows: (index * 0.1 + 1)s
+   * This means that the first item will have an animation delay of 1s, the second item will have an animation delay of 1.1s, and so on.
+   * @param index The index of the item.
+   * @returns The animation delay in seconds.
+   */
+  const animationDelay = (index: number) => `${index * 0.1 + 1}s`;
+
+  /**
+   * Renders a list of apps with their respective icons, titles, and descriptions.
+   * Each app is rendered as a separate link with a fade-in animation.
+   * The animation delay is calculated based on the index of the app.
+   * @param apps A list of AppItem objects to render.
+   * @returns A JSX element containing the rendered apps.
+   */
+  function renderApps(apps: AppItem[]): React.JSX.Element {
+    return (
+      <div className='flex max-w-[1600px] flex-wrap justify-center gap-4'>
+        {apps.map((app, index) => (
+          <div
+            key={app.link}
+            className='fadeIn basis-full sm:basis-1/2 lg:basis-[30%] xl:basis-[22%]'
+            style={{ animationDelay: animationDelay(index) }}
+          >
+            <Link
+              className='group flex h-full w-full flex-col justify-center gap-4 rounded-xl bg-gradient-to-br from-white/5 to-white/10 p-6 text-white transition-all duration-300 hover:scale-105 hover:from-white/10 hover:to-white/20 hover:shadow-[0_0_20px_rgba(186,85,211,0.5)]'
+              href={app.link}
+              prefetch
+            >
+              <app.icon className='h-8 w-8 self-center' />
+              <h3 className='text-center text-lg font-bold'>
+                <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
+                  {app.title} {'->'}
+                </span>
+              </h3>
+              <div className='text-center text-sm'>{app.description}</div>
+            </Link>
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <ThemeChanger>
@@ -143,27 +185,7 @@ export default function Page(): React.JSX.Element {
         {!isMobile && (
           <ParticleText text='gloved.dev' size={100} hoverColor='#4B0082' particleCount={8000} edgeComplexity={5} />
         )}
-
-        <div className='grid max-w-[1200px] grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
-          {apps.map((app, index) => (
-            <div key={app.link} className='fadeIn' style={{ animationDelay: animationDelay(index) }}>
-              <Link
-                className='group flex h-full w-full flex-col justify-center gap-4 rounded-xl bg-gradient-to-br from-white/5 to-white/10 p-6 text-white transition-all duration-300 hover:scale-105 hover:from-white/10 hover:to-white/20 hover:shadow-[0_0_20px_rgba(186,85,211,0.5)]'
-                href={app.link}
-                prefetch
-              >
-                <app.icon className='h-6 w-6 self-center' />
-                <h3 className='text-center text-lg font-bold'>
-                  <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
-                    {app.title} {'->'}
-                  </span>
-                </h3>
-                <div className='text-center text-sm'>{app.description}</div>
-              </Link>
-            </div>
-          ))}
-        </div>
-
+        {renderApps(apps)}
         <Dialog>
           <DialogTrigger asChild>
             <Button className='btn gap-1'>
@@ -193,25 +215,7 @@ export default function Page(): React.JSX.Element {
           <h2 className='text-3xl font-bold'>
             <u>{'Admin Stuff'}</u>
           </h2>
-          <div className='grid max-w-[1200px] grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
-            {adminApps.map((app, index) => (
-              <div key={app.link} className='fadeIn' style={{ animationDelay: animationDelay(index) }}>
-                <Link
-                  className='group flex h-full w-full flex-col justify-center gap-4 rounded-xl bg-gradient-to-br from-white/5 to-white/10 p-6 text-white transition-all duration-300 hover:scale-105 hover:from-white/10 hover:to-white/20 hover:shadow-[0_0_20px_rgba(186,85,211,0.5)]'
-                  href={app.link}
-                  prefetch
-                >
-                  <app.icon className='h-6 w-6 self-center' />
-                  <h3 className='text-center text-lg font-bold'>
-                    <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
-                      {app.title} {'->'}
-                    </span>
-                  </h3>
-                  <div className='text-center text-sm'>{app.description}</div>
-                </Link>
-              </div>
-            ))}
-          </div>
+          {renderApps(adminApps)}
         </AdminShow>
       </div>
       <div className='divider mx-auto w-[75vw] max-w-[1000px] items-center self-center' />
