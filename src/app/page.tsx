@@ -8,15 +8,107 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { useIsMobile } from '@/hooks/use-mobile';
 import Constants from '@/lib/constants';
 import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs';
-import { Video } from 'lucide-react';
+import {
+  Calculator,
+  CheckSquare,
+  Cookie,
+  Gamepad2,
+  Github,
+  Home,
+  Link2,
+  MessageCircle,
+  Palette,
+  Phone,
+  Scissors,
+  Shield,
+  Upload,
+  Users,
+  Video,
+  Zap,
+} from 'lucide-react';
 import DefaultPlayer from 'next-video/player';
 import Link from 'next/link';
 import React from 'react';
 
+interface AppItem {
+  icon: React.ComponentType<{ className?: string }>;
+  title: string;
+  description: string;
+  link: string;
+}
+
 export default function Page(): React.JSX.Element {
   const isMobile = useIsMobile();
+
+  const apps: AppItem[] = [
+    { icon: Home, title: Constants.Home.title, description: Constants.Home.description, link: Constants.Home.link },
+    { icon: MessageCircle, title: Constants.Chat.title, description: Constants.Chat.description, link: Constants.Chat.link },
+    {
+      icon: Upload,
+      title: Constants.FileUploader.title,
+      description: Constants.FileUploader.description,
+      link: Constants.FileUploader.link,
+    },
+    {
+      icon: Scissors,
+      title: Constants.BGRemover.title,
+      description: Constants.BGRemover.description,
+      link: Constants.BGRemover.link,
+    },
+    { icon: Palette, title: Constants.Colors.title, description: Constants.Colors.description, link: Constants.Colors.link },
+    {
+      icon: Cookie,
+      title: Constants.Cookies.title,
+      description: Constants.Cookies.description,
+      link: Constants.Cookies.link,
+    },
+    {
+      icon: CheckSquare,
+      title: Constants.Todos.title,
+      description: Constants.Todos.description,
+      link: Constants.Todos.link,
+    },
+    {
+      icon: Gamepad2,
+      title: Constants.Hangman.title,
+      description: Constants.Hangman.description,
+      link: Constants.Hangman.link,
+    },
+    { icon: Calculator, title: Constants.Calc.title, description: Constants.Calc.description, link: Constants.Calc.link },
+    {
+      icon: Link2,
+      title: Constants.Shortener.title,
+      description: Constants.Shortener.description,
+      link: Constants.Shortener.link,
+    },
+    { icon: Phone, title: Constants.Fax.title, description: Constants.Fax.description, link: Constants.Fax.link },
+    { icon: Github, title: Constants.Github.title, description: Constants.Github.description, link: Constants.Github.link },
+  ];
+
+  const adminApps = [
+    {
+      icon: Shield,
+      title: Constants.Admin.title,
+      description: Constants.Admin.description,
+      link: Constants.Admin.link,
+    },
+    { icon: Zap, title: Constants.Black.title, description: Constants.Black.description, link: Constants.Black.link },
+    { icon: Palette, title: Constants.White.title, description: Constants.White.description, link: Constants.White.link },
+    {
+      icon: Users,
+      title: Constants.Discord.title,
+      description: Constants.Discord.description,
+      link: Constants.Discord.link,
+    },
+  ];
+
   return (
     <ThemeChanger>
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `.fadeIn { opacity: 0; animation: fadeIn 0.5s ease-out forwards; } @keyframes fadeIn { to { opacity: 1; } }`,
+        }}
+      />
       <div className='absolute left-0 top-0 flex items-center gap-2 rounded-br-lg border-b-2 border-r-2 border-border p-2'>
         <SignedOut>
           <SignInButton mode={'modal'}>
@@ -29,10 +121,14 @@ export default function Page(): React.JSX.Element {
           </div>
         </SignedIn>
       </div>
-      <div className='container flex flex-col items-center justify-center gap-8 px-1 py-16 md:px-4'>
+      <div className='container relative flex flex-col items-center justify-center gap-8 px-1 py-16 md:px-4'>
+        <div className='absolute inset-0 -z-10 bg-gradient-to-br from-transparent via-purple-900/10 to-transparent'></div>
         {/* Old Heading */}
         {isMobile && (
-          <h1 className='text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]'>
+          <h1
+            className='text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]'
+            style={{ textShadow: '0 0 10px rgba(186,85,211,0.5)' }}
+          >
             gloved<span className='text-[hsl(280,100%,40%)]'>.</span>dev
           </h1>
         )}
@@ -42,187 +138,24 @@ export default function Page(): React.JSX.Element {
           <ParticleText text='gloved.dev' size={100} hoverColor='#4B0082' particleCount={8000} edgeComplexity={5} />
         )}
 
-        <div className='flex max-w-[1000px] flex-shrink-0 flex-grow flex-wrap justify-center gap-4'>
-          <div className='flex-shrink-0 flex-grow basis-[300px]'>
-            <Link
-              className='group flex h-full w-full flex-col justify-center gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
-              href={Constants.Home.link}
-              prefetch
-            >
-              <h3 className='text-2xl font-bold'>
-                {Constants.Home.title}{' '}
-                <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
-                  {'->'}
-                </span>
-              </h3>
-              <div className='text-lg'>{Constants.Home.description}</div>
-            </Link>
-          </div>
-          <div className='flex-shrink-0 flex-grow basis-[300px]'>
-            <Link
-              className='group flex h-full w-full flex-col justify-center gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
-              href={Constants.Chat.link}
-              prefetch
-            >
-              <h3 className='text-2xl font-bold'>
-                {Constants.Chat.title}{' '}
-                <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
-                  {'->'}
-                </span>
-              </h3>
-              <div className='text-lg'>{Constants.Chat.description}</div>
-            </Link>
-          </div>
-          <div className='flex-shrink-0 flex-grow basis-[300px]'>
-            <Link
-              className='group flex h-full w-full flex-col justify-center gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
-              href={Constants.FileUploader.link}
-              prefetch
-            >
-              <h3 className='text-2xl font-bold'>
-                {Constants.FileUploader.title}{' '}
-                <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
-                  {'->'}
-                </span>
-              </h3>
-              <div className='text-lg'>{Constants.FileUploader.description}</div>
-            </Link>
-          </div>
-          <div className='flex-shrink-0 flex-grow basis-[300px]'>
-            <Link
-              className='group flex h-full w-full flex-col justify-center gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
-              href={Constants.BGRemover.link}
-              prefetch
-            >
-              <h3 className='text-2xl font-bold'>
-                {Constants.BGRemover.title}{' '}
-                <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
-                  {'->'}
-                </span>
-              </h3>
-              <div className='text-lg'>{Constants.BGRemover.description}</div>
-            </Link>
-          </div>
-          <div className='flex-shrink-0 flex-grow basis-[300px]'>
-            <Link
-              className='group flex h-full w-full flex-col justify-center gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
-              href={Constants.Colors.link}
-              prefetch
-            >
-              <h3 className='text-2xl font-bold'>
-                {Constants.Colors.title}{' '}
-                <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
-                  {'->'}
-                </span>
-              </h3>
-              <div className='text-lg'>{Constants.Colors.description}</div>
-            </Link>
-          </div>
-          <div className='flex-shrink-0 flex-grow basis-[300px]'>
-            <Link
-              className='group flex h-full w-full flex-col justify-center gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
-              href={Constants.Cookies.link}
-              prefetch
-            >
-              <h3 className='text-2xl font-bold'>
-                {Constants.Cookies.title}{' '}
-                <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
-                  {'->'}
-                </span>
-              </h3>
-              <div className='text-lg'>{Constants.Cookies.description}</div>
-            </Link>
-          </div>
-          <div className='flex-shrink-0 flex-grow basis-[300px]'>
-            <Link
-              className='group flex h-full w-full flex-col justify-center gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
-              href={Constants.Todos.link}
-              prefetch
-            >
-              <h3 className='text-2xl font-bold'>
-                {Constants.Todos.title}{' '}
-                <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
-                  {'->'}
-                </span>
-              </h3>
-              <div className='text-lg'>{Constants.Todos.description}</div>
-            </Link>
-          </div>
-          <div className='flex-shrink-0 flex-grow basis-[300px]'>
-            <Link
-              className='group flex h-full w-full flex-col justify-center gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
-              href={Constants.Hangman.link}
-              prefetch
-            >
-              <h3 className='text-2xl font-bold'>
-                {Constants.Hangman.title}{' '}
-                <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
-                  {'->'}
-                </span>
-              </h3>
-              <div className='text-lg'>{Constants.Hangman.description}</div>
-            </Link>
-          </div>
-          <div className='flex-shrink-0 flex-grow basis-[300px]'>
-            <Link
-              className='group flex h-full w-full flex-col justify-center gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
-              href={Constants.Calc.link}
-              prefetch
-            >
-              <h3 className='text-2xl font-bold'>
-                {Constants.Calc.title}{' '}
-                <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
-                  {'->'}
-                </span>
-              </h3>
-              <div className='text-lg'>{Constants.Calc.description}</div>
-            </Link>
-          </div>
-          <div className='flex-shrink-0 flex-grow basis-[300px]'>
-            <Link
-              className='group flex h-full w-full flex-col justify-center gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
-              href={Constants.Shortener.link}
-              prefetch
-            >
-              <h3 className='text-2xl font-bold'>
-                {Constants.Shortener.title}{' '}
-                <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
-                  {'->'}
-                </span>
-              </h3>
-              <div className='text-lg'>{Constants.Shortener.description}</div>
-            </Link>
-          </div>
-          <div className='flex-shrink-0 flex-grow basis-[300px]'>
-            <Link
-              className='group flex h-full w-full flex-col justify-center gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
-              href={Constants.Fax.link}
-              prefetch
-            >
-              <h3 className='text-2xl font-bold'>
-                {Constants.Fax.title}{' '}
-                <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
-                  {'->'}
-                </span>
-              </h3>
-              <div className='text-lg'>{Constants.Fax.description}</div>
-            </Link>
-          </div>
-          <div className='flex-shrink-0 flex-grow basis-[300px]'>
-            <Link
-              className='group flex h-full w-full flex-col justify-center gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
-              href={Constants.Github.link}
-              prefetch
-            >
-              <h3 className='text-2xl font-bold'>
-                {Constants.Github.title}{' '}
-                <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
-                  {'->'}
-                </span>
-              </h3>
-              <div className='text-lg'>{Constants.Github.description}</div>
-            </Link>
-          </div>
+        <div className='grid max-w-[1200px] grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
+          {apps.map((app, index) => (
+            <div key={app.link} className='fadeIn' style={{ animationDelay: `${index * 0.1}s` }}>
+              <Link
+                className='group flex h-full w-full flex-col justify-center gap-4 rounded-xl bg-gradient-to-br from-white/5 to-white/10 p-6 text-white transition-all duration-300 hover:scale-105 hover:from-white/10 hover:to-white/20 hover:shadow-[0_0_20px_rgba(186,85,211,0.5)]'
+                href={app.link}
+                prefetch
+              >
+                <app.icon className='h-10 w-10 self-center' />
+                <h3 className='text-center text-xl font-bold'>
+                  <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
+                    {app.title} {'->'}
+                  </span>
+                </h3>
+                <div className='text-center text-lg'>{app.description}</div>
+              </Link>
+            </div>
+          ))}
         </div>
 
         <Dialog>
@@ -254,67 +187,24 @@ export default function Page(): React.JSX.Element {
           <h2 className='text-3xl font-bold'>
             <u>{'Admin Stuff'}</u>
           </h2>
-          <div className='flex max-w-[1000px] flex-shrink-0 flex-grow flex-wrap justify-center gap-4'>
-            <div className='flex-shrink-0 flex-grow basis-[300px]'>
-              <Link
-                className='group flex h-full w-full flex-col justify-center gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
-                href={'/admin'}
-                prefetch
-              >
-                <h3 className='text-2xl font-bold'>
-                  {'Admin Panel'}{' '}
-                  <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
-                    {'->'}
-                  </span>
-                </h3>
-                <div className='text-lg'>{'Admin page for admin stuff'}</div>
-              </Link>
-            </div>
-            <div className='flex-shrink-0 flex-grow basis-[300px]'>
-              <Link
-                className='group flex h-full w-full flex-col justify-center gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
-                href={Constants.Black.link}
-                prefetch
-              >
-                <h3 className='text-2xl font-bold'>
-                  {Constants.Black.title}{' '}
-                  <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
-                    {'->'}
-                  </span>
-                </h3>
-                <div className='text-lg'>{Constants.Black.description}</div>
-              </Link>
-            </div>
-            <div className='flex-shrink-0 flex-grow basis-[300px]'>
-              <Link
-                className='group flex h-full w-full flex-col justify-center gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
-                href={Constants.White.link}
-                prefetch
-              >
-                <h3 className='text-2xl font-bold'>
-                  {Constants.White.title}{' '}
-                  <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
-                    {'->'}
-                  </span>
-                </h3>
-                <div className='text-lg'>{Constants.White.description}</div>
-              </Link>
-            </div>
-            <div className='flex-shrink-0 flex-grow basis-[300px]'>
-              <Link
-                className='group flex h-full w-full flex-col justify-center gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20'
-                href={Constants.Discord.link}
-                prefetch
-              >
-                <h3 className='text-2xl font-bold'>
-                  {Constants.Discord.title}{' '}
-                  <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
-                    {'->'}
-                  </span>
-                </h3>
-                <div className='text-lg'>{Constants.Discord.description}</div>
-              </Link>
-            </div>
+          <div className='grid max-w-[1200px] grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
+            {adminApps.map((app, index) => (
+              <div key={app.link} className='fadeIn' style={{ animationDelay: `${index * 0.1 + 1}s` }}>
+                <Link
+                  className='group flex h-full w-full flex-col justify-center gap-4 rounded-xl bg-gradient-to-br from-white/5 to-white/10 p-6 text-white transition-all duration-300 hover:scale-105 hover:from-white/10 hover:to-white/20 hover:shadow-[0_0_20px_rgba(186,85,211,0.5)]'
+                  href={app.link}
+                  prefetch
+                >
+                  <app.icon className='h-10 w-10 self-center' />
+                  <h3 className='text-center text-xl font-bold'>
+                    <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
+                      {app.title} {'->'}
+                    </span>
+                  </h3>
+                  <div className='text-center text-lg'>{app.description}</div>
+                </Link>
+              </div>
+            ))}
           </div>
         </AdminShow>
       </div>
