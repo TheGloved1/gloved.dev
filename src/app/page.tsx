@@ -114,7 +114,7 @@ export default function Page(): React.JSX.Element {
    * @param total The total number of items in the array.
    * @returns The animation delay in seconds.
    */
-  const animationDelay = (index: number, total: number) => `${1 + (index / total) * Math.exp(-index * 0.04)}s`;
+  const animationDelay = (index: number, total: number) => `${0.6 + (index / total) * Math.exp(-index * 0.04)}s`;
 
   /**
    * Renders a list of apps with their respective icons, titles, and descriptions.
