@@ -8,12 +8,12 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { useIsMobile } from '@/hooks/use-mobile';
 import Constants from '@/lib/constants';
 import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs';
+import { SiDiscord, SiGithub } from '@icons-pack/react-simple-icons';
 import {
   Calculator,
   CheckSquare,
   Cookie,
   Gamepad2,
-  Github,
   Home,
   Link2,
   MessageCircle,
@@ -22,7 +22,6 @@ import {
   Scissors,
   Shield,
   Upload,
-  Users,
   Video,
   Zap,
 } from 'lucide-react';
@@ -82,7 +81,12 @@ export default function Page(): React.JSX.Element {
       link: Constants.Shortener.link,
     },
     { icon: Phone, title: Constants.Fax.title, description: Constants.Fax.description, link: Constants.Fax.link },
-    { icon: Github, title: Constants.Github.title, description: Constants.Github.description, link: Constants.Github.link },
+    {
+      icon: SiGithub,
+      title: Constants.Github.title,
+      description: Constants.Github.description,
+      link: Constants.Github.link,
+    },
   ];
 
   const adminApps = [
@@ -95,12 +99,14 @@ export default function Page(): React.JSX.Element {
     { icon: Zap, title: Constants.Black.title, description: Constants.Black.description, link: Constants.Black.link },
     { icon: Palette, title: Constants.White.title, description: Constants.White.description, link: Constants.White.link },
     {
-      icon: Users,
+      icon: SiDiscord,
       title: Constants.Discord.title,
       description: Constants.Discord.description,
       link: Constants.Discord.link,
     },
   ];
+
+  const animationDelay = (index: number) => `${index * 0.1 + 0.5}s`;
 
   return (
     <ThemeChanger>
@@ -140,7 +146,7 @@ export default function Page(): React.JSX.Element {
 
         <div className='grid max-w-[1200px] grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
           {apps.map((app, index) => (
-            <div key={app.link} className='fadeIn' style={{ animationDelay: `${index * 0.1}s` }}>
+            <div key={app.link} className='fadeIn' style={{ animationDelay: animationDelay(index) }}>
               <Link
                 className='group flex h-full w-full flex-col justify-center gap-4 rounded-xl bg-gradient-to-br from-white/5 to-white/10 p-6 text-white transition-all duration-300 hover:scale-105 hover:from-white/10 hover:to-white/20 hover:shadow-[0_0_20px_rgba(186,85,211,0.5)]'
                 href={app.link}
@@ -189,7 +195,7 @@ export default function Page(): React.JSX.Element {
           </h2>
           <div className='grid max-w-[1200px] grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
             {adminApps.map((app, index) => (
-              <div key={app.link} className='fadeIn' style={{ animationDelay: `${index * 0.1 + 1}s` }}>
+              <div key={app.link} className='fadeIn' style={{ animationDelay: animationDelay(index) }}>
                 <Link
                   className='group flex h-full w-full flex-col justify-center gap-4 rounded-xl bg-gradient-to-br from-white/5 to-white/10 p-6 text-white transition-all duration-300 hover:scale-105 hover:from-white/10 hover:to-white/20 hover:shadow-[0_0_20px_rgba(186,85,211,0.5)]'
                   href={app.link}
@@ -212,9 +218,11 @@ export default function Page(): React.JSX.Element {
       <div className='px-30 container flex flex-col items-center gap-1 self-center px-4 py-4 text-xs md:text-sm lg:text-base'>
         <p className='p-4 text-sm'>
           {'Help me improve the site and '}
-          <Link className='btn btn-outline text-sm' href={'https://crotus.io/gloves/review'}>
-            {'Write a review!'}
-          </Link>
+          <Button asChild variant='outline' size='sm'>
+            <Link href={'https://crotus.io/gloves/review'} target='_blank'>
+              Write a review!
+            </Link>
+          </Button>
         </p>
       </div>
       <PageVisits />

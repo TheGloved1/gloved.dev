@@ -83,6 +83,11 @@ const Constants = {
     link: '/fax',
     description: 'A simple fact generator web app suggested by a friend.',
   } as const,
+  Admin: {
+    title: 'Admin Panel',
+    link: '/admin',
+    description: 'Admin panel for admin stuff',
+  } as const,
 } as const;
 
 export default Constants;
