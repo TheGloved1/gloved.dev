@@ -10,6 +10,7 @@ import Constants from '@/lib/constants';
 import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs';
 import { SiDiscord, SiGithub } from '@icons-pack/react-simple-icons';
 import {
+  BookMarked,
   Calculator,
   CheckSquare,
   Cookie,
@@ -18,7 +19,6 @@ import {
   Link2,
   MessageCircle,
   Palette,
-  Phone,
   Scissors,
   Shield,
   Upload,
@@ -80,7 +80,7 @@ export default function Page(): React.JSX.Element {
       description: Constants.Shortener.description,
       link: Constants.Shortener.link,
     },
-    { icon: Phone, title: Constants.Fax.title, description: Constants.Fax.description, link: Constants.Fax.link },
+    { icon: BookMarked, title: Constants.Fax.title, description: Constants.Fax.description, link: Constants.Fax.link },
     {
       icon: SiGithub,
       title: Constants.Github.title,
