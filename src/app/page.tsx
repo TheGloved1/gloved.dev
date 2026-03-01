@@ -152,13 +152,13 @@ export default function Page(): React.JSX.Element {
                 href={app.link}
                 prefetch
               >
-                <app.icon className='h-10 w-10 self-center' />
-                <h3 className='text-center text-xl font-bold'>
+                <app.icon className='h-6 w-6 self-center' />
+                <h3 className='text-center text-lg font-bold'>
                   <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
                     {app.title} {'->'}
                   </span>
                 </h3>
-                <div className='text-center text-lg'>{app.description}</div>
+                <div className='text-center text-sm'>{app.description}</div>
               </Link>
             </div>
           ))}
@@ -201,13 +201,13 @@ export default function Page(): React.JSX.Element {
                   href={app.link}
                   prefetch
                 >
-                  <app.icon className='h-10 w-10 self-center' />
-                  <h3 className='text-center text-xl font-bold'>
+                  <app.icon className='h-6 w-6 self-center' />
+                  <h3 className='text-center text-lg font-bold'>
                     <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
                       {app.title} {'->'}
                     </span>
                   </h3>
-                  <div className='text-center text-lg'>{app.description}</div>
+                  <div className='text-center text-sm'>{app.description}</div>
                 </Link>
               </div>
             ))}
