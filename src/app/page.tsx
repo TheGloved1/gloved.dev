@@ -108,12 +108,13 @@ export default function Page(): React.JSX.Element {
 
   /**
    * Calculate the animation delay for a given index.
-   * The animation delay is calculated as follows: (index * 0.1 + 1)s
-   * This means that the first item will have an animation delay of 1s, the second item will have an animation delay of 1.1s, and so on.
-   * @param index The index of the item.
+   * The animation delay speeds up over time using exponential decay.
+   * This creates a cascading effect that gets faster with each subsequent item.
+   * @param index The index of the item in the array.
+   * @param total The total number of items in the array.
    * @returns The animation delay in seconds.
    */
-  const animationDelay = (index: number) => `${index * 0.1 + 1}s`;
+  const animationDelay = (index: number, total: number) => `${1 + (index / total) * Math.exp(-index * 0.04)}s`;
 
   /**
    * Renders a list of apps with their respective icons, titles, and descriptions.
@@ -129,7 +130,7 @@ export default function Page(): React.JSX.Element {
           <div
             key={app.link}
             className='fadeIn basis-full sm:basis-1/2 lg:basis-[30%] xl:basis-[22%]'
-            style={{ animationDelay: animationDelay(index) }}
+            style={{ animationDelay: animationDelay(index, apps.length) }}
           >
             <Link
               className='group flex h-full w-full flex-col justify-center gap-4 rounded-xl bg-gradient-to-br from-white/5 to-white/10 p-6 text-white transition-all duration-300 hover:scale-105 hover:from-white/10 hover:to-white/20 hover:shadow-[0_0_20px_rgba(186,85,211,0.5)]'
