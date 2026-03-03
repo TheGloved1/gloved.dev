@@ -17,6 +17,7 @@ import {
   Gamepad2,
   Home,
   Link2,
+  LucideProps,
   MessageCircle,
   Palette,
   Scissors,
@@ -33,7 +34,7 @@ export default function Page(): React.JSX.Element {
   const isMobile = useIsMobile();
 
   interface AppItem {
-    icon: React.ComponentType<{ className?: string }>;
+    icon: React.ForwardRefExoticComponent<Omit<LucideProps, 'ref'> & React.RefAttributes<SVGSVGElement>>;
     title: string;
     description: string;
     link: string;
@@ -129,7 +130,7 @@ export default function Page(): React.JSX.Element {
         {apps.map((app, index) => (
           <div
             key={app.link}
-            className='fadeIn basis-full sm:basis-1/2 lg:basis-[30%] xl:basis-[22%]'
+            className='fadeIn basis-full sm:basis-[45%] md:basis-[33%] lg:basis-[30%] xl:basis-[22%]'
             style={{ animationDelay: animationDelay(index, apps.length) }}
           >
             <Link
