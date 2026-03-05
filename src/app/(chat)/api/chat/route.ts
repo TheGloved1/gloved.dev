@@ -95,9 +95,9 @@ export async function POST(req: NextRequest) {
   let tools: ToolSet | undefined;
 
   /**
-   * Returns a ToolSet object containing the custom tools available in the model.
-   * The ToolSet object will be undefined if no custom tools are available in the model.
-   * @returns {ToolSet | undefined} The ToolSet object containing the custom tools available in the model.
+   * Retrieves the tools for the given model and adds them to the tools list.
+   * If the model supports D&D, it will also add the D&D tools to the tools list
+   * and set the system prompt with the D&D tools.
    */
   const getTools = async (): Promise<void> => {
     if (!options.tools || options.tools.length === 0) {
