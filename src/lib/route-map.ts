@@ -67,9 +67,9 @@ export const RouteMap: Record<string, RouteInfo> = {
       relativePath: 'src/app/fax/page.tsx',
       githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/fax/page.tsx'
     },
-    '/file-uploader/page': {
-      relativePath: 'src/app/file-uploader/page.tsx',
-      githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/file-uploader/page.tsx'
+    '/files/page': {
+      relativePath: 'src/app/files/page.tsx',
+      githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/files/page.tsx'
     },
     '/gallery/page': {
       relativePath: 'src/app/gallery/page.tsx',
