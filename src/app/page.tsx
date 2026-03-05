@@ -115,7 +115,7 @@ export default function Page(): React.JSX.Element {
    * @param total The total number of items in the array.
    * @returns The animation delay in seconds.
    */
-  const animationDelay = (index: number, total: number) => `${0.6 + (index / total) * Math.exp(-index * 0.04)}s`;
+  const animationDelay = (index: number, total: number) => `${0.4 + (index / total) * Math.exp(-index * 0.04)}s`;
 
   /**
    * Renders a list of apps with their respective icons, titles, and descriptions.
@@ -174,19 +174,14 @@ export default function Page(): React.JSX.Element {
       <div className='container relative flex flex-col items-center justify-center gap-8 px-1 py-16 md:px-4'>
         <div className='absolute inset-0 -z-10 bg-gradient-to-br from-transparent via-purple-900/10 to-transparent'></div>
         {/* Old Heading */}
-        {isMobile && (
+        {isMobile ?
           <h1
             className='text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]'
             style={{ textShadow: '0 0 10px rgba(186,85,211,0.5)' }}
           >
             gloved<span className='text-[hsl(280,100%,40%)]'>.</span>dev
           </h1>
-        )}
-
-        {/* New Heading */}
-        {!isMobile && (
-          <ParticleText text='gloved.dev' size={100} hoverColor='#4B0082' particleCount={8000} edgeComplexity={5} />
-        )}
+        : <ParticleText text='gloved.dev' size={100} hoverColor='#4B0082' particleCount={8000} edgeComplexity={5} />}
         {renderApps(apps)}
         <Dialog>
           <DialogTrigger asChild>

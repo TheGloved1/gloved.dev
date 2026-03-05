@@ -2,6 +2,7 @@
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
 import Constants from '@/lib/constants';
+import { getRouteInfo } from '@/lib/route-map';
 import { Code2 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -10,14 +11,9 @@ import React from 'react';
 export default function SourceCodeButton(): React.JSX.Element | null {
   const pathname = usePathname();
   const isMobile = useIsMobile();
-  const sourceCodeUrl =
-    (
-      (pathname.includes('-') && pathname.split('-').length === 5) ||
-      pathname.includes('/welcome') ||
-      pathname.includes('/faq')
-    ) ?
-      `${Constants.GITHUB_URL}${pathname.split('/').slice(0, -1).join('/')}/%5BthreadId%5D/page.tsx`
-    : `${Constants.GITHUB_URL}${pathname == '/' ? '' : pathname}/page.tsx`;
+
+  const routeInfo = getRouteInfo(pathname);
+  const sourceCodeUrl = routeInfo?.githubUrl || Constants.GITHUB_URL;
 
   return isMobile ? null : (
       <Link prefetch as={sourceCodeUrl} href={sourceCodeUrl} target='_blank' rel='noopener noreferrer'>
