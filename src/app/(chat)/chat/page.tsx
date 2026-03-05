@@ -107,7 +107,7 @@ export default function Page(): React.JSX.Element {
   };
 
   useEffect(() => {
-    if (!tools?.includes('dnd') && currentTab === 'D&D') {
+    if (!tools?.includes(CustomTool.DND) && currentTab === 'D&D') {
       // Use setTimeout to avoid setState during render
       setTimeout(() => {
         setCurrentTab('Default');
@@ -134,7 +134,7 @@ export default function Page(): React.JSX.Element {
                 >
                   {(Object.entries(tabs) as [Tab, string[]][]).map(([tab]): React.ReactNode => {
                     if (tab === 'Default') return null;
-                    if (tab === 'D&D' && tools && !tools.includes(CustomTool.DND_TOOLS)) return null;
+                    if (tab === 'D&D' && tools && !tools.includes(CustomTool.DND)) return null;
                     return (
                       <Button
                         key={tab}

@@ -7,6 +7,7 @@ import {
   DND_SYSTEM_PROMPT,
   DND_TOOLS_PROMPT,
   dndTools,
+  Feature,
   Model,
   modelConfig,
   ModelID,
@@ -48,7 +49,7 @@ const createLanguageModel = ({ value, provider, features }: (typeof Models)[numb
     return null;
   }
 
-  return (provider === 'groq' || provider === 'openrouter') && features.includes('reasoning') ?
+  return (provider === 'groq' || provider === 'openrouter') && features.includes(Feature.REASONING) ?
       wrapLanguageModel({
         model: baseModel,
         middleware: extractReasoningMiddleware({ tagName: 'think', startWithReasoning: true }),
@@ -120,7 +121,7 @@ export async function POST(req: NextRequest) {
     system += '\n\nYou have access to the following tools:';
 
     /* Add Tools to Tools List */
-    if (tools.includes(CustomTool.DND_TOOLS) && isToolAvailable(CustomTool.DND_TOOLS)) {
+    if (tools.includes(CustomTool.DND) && isToolAvailable(CustomTool.DND)) {
       console.log('[CHAT] Adding D&D tools');
       Object.entries(dndTools).forEach(([key, tool]) => {
         allTools[key] = tool;

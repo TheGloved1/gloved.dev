@@ -1,10 +1,10 @@
-export const CustomTool = {
-  DND_TOOLS: 'dnd',
-} as const;
-export type CustomTools = (typeof CustomTool)[keyof typeof CustomTool][];
-export const Feature = {
-  REASONING: 'reasoning',
-} as const;
+export enum CustomTool {
+  DND = 'dnd',
+}
+export type CustomTools = CustomTool[];
+export enum Feature {
+  REASONING = 'reasoning',
+}
 export type Features = (typeof Feature)[keyof typeof Feature][];
 export type ModelID = (typeof Models)[number]['value'];
 export type Model = (typeof Models)[number];
@@ -22,7 +22,7 @@ export const Models = Object.freeze([
       loggedIn: false,
       admin: false,
     },
-    tools: [CustomTool.DND_TOOLS] as CustomTools,
+    tools: [CustomTool.DND] as CustomTools,
     features: [] as Features,
   },
   {
@@ -50,7 +50,7 @@ export const Models = Object.freeze([
       loggedIn: false,
       admin: false,
     },
-    tools: [CustomTool.DND_TOOLS] as CustomTools,
+    tools: [CustomTool.DND] as CustomTools,
     features: [] as Features,
   },
   {

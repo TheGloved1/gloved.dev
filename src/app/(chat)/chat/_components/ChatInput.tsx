@@ -21,6 +21,52 @@ import { toast } from 'sonner';
 import MobileInputDialog from './MobileInputDialog';
 import ModelDropdown from './ModelDropdown';
 
+/**
+ * A component to display tool buttons for the currently selected model.
+ * The component will display a button for each tool that is available for the model.
+ * Clicking on a button will toggle the tool on or off.
+ * The component will also display a button to enable or disable D&D mode, if the model supports it.
+ */
+function ToolButtons() {
+  const { model, tools, setTools } = useChat();
+  const selectedModel = Models.find((m) => m.value === model);
+  const isMobile = useIsMobile();
+
+  const activeButtonClass = 'bg-muted/40 hover:bg-muted/80';
+  const inactiveButtonClass = 'bg-muted/0 hover:bg-muted/10';
+  const getButtonClass = (tool: CustomTool) =>
+    (tools?.includes(tool) ? activeButtonClass : inactiveButtonClass) +
+    ' -mb-1.5 inline-flex h-auto items-center justify-center gap-2 whitespace-nowrap rounded-full border border-solid border-secondary-foreground/10 px-3 py-1.5 pl-2 pr-2.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-foreground/50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0';
+
+  const handleToolToggle = (tool: CustomTool) => {
+    const currentTools = tools;
+    setTools((prev) => {
+      if (currentTools?.includes(tool)) {
+        return prev?.filter((t) => t !== tool);
+      } else {
+        return [...(prev ?? []), tool];
+      }
+    });
+  };
+  return (
+    <>
+      {/* DND Tool */}
+      {selectedModel?.tools?.includes(CustomTool.DND) ?
+        <Button
+          title={`${tools?.includes(CustomTool.DND) ? 'Disable' : 'Enable'} D&D Mode`}
+          variant='ghost'
+          type='button'
+          className={getButtonClass(CustomTool.DND)}
+          onClick={() => handleToolToggle(CustomTool.DND)}
+        >
+          <SiDungeonsanddragons className='size-4' />
+          {isMobile ? 'D&D' : 'D&D Mode'}
+        </Button>
+      : null}
+    </>
+  );
+}
+
 const ChatInput = memo(
   ({
     createThread,
@@ -47,8 +93,6 @@ const ChatInput = memo(
     const { threadId } = useParams<{ threadId: string }>();
     const searchParams = useSearchParams();
     const query = searchParams.get('q');
-
-    const selectedModel = Models.find((m) => m.value === model) ?? null;
 
     const userIdIfSyncEnabled = syncEnabled && auth.userId ? auth.userId : undefined;
 
@@ -322,33 +366,7 @@ const ChatInput = memo(
                       <div className='flex flex-col gap-2 md:flex-row md:items-center'>
                         <div className='z-50 ml-[-7px] flex items-center gap-1'>
                           <ModelDropdown />
-                          {selectedModel?.tools?.includes(CustomTool.DND_TOOLS) ?
-                            <Button
-                              title={`${tools?.includes(CustomTool.DND_TOOLS) ? 'Disable' : 'Enable'} D&D Mode`}
-                              variant='ghost'
-                              type='button'
-                              className={`${tools?.includes(CustomTool.DND_TOOLS) ? 'bg-muted/40 hover:bg-muted/80' : 'bg-muted/0 hover:bg-muted/10'} -mb-1.5 inline-flex h-auto items-center justify-center gap-2 whitespace-nowrap rounded-full border border-solid border-secondary-foreground/10 px-3 py-1.5 pl-2 pr-2.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-foreground/50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0`}
-                              onClick={() => {
-                                const currentTools = tools;
-                                setTools((prev) => {
-                                  if (currentTools?.includes(CustomTool.DND_TOOLS)) {
-                                    console.log('[CHAT] D&D Mode Disabled');
-                                    return prev?.filter((t) => t !== CustomTool.DND_TOOLS);
-                                  } else {
-                                    console.log('[CHAT] D&D Mode Enabled');
-                                    return [...(prev ?? []), CustomTool.DND_TOOLS];
-                                  }
-                                });
-                              }}
-                            >
-                              <SiDungeonsanddragons className='size-4' />
-                              {isMobile ?
-                                tools?.includes(CustomTool.DND_TOOLS) ?
-                                  'D&D'
-                                : 'D&D'
-                              : 'D&D Mode'}
-                            </Button>
-                          : null}
+                          <ToolButtons />
                         </div>
                       </div>
                     </div>
