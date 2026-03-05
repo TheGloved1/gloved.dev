@@ -1003,7 +1003,7 @@ export const DND_TOOLS_PROMPT = `You have access to Dungeons & Dragons 5th Editi
 - "I need a Hard encounter with goblins for level 2 party of 3"
 - "Deadly encounter in a forest for level 5 party of 5"
 
-### 6. rollDiceTool
+### 6. rollDice
 **Purpose**: Roll dice using standard D&D notation
 **When to use**: For any dice rolls, damage rolls, or randomization needs
 **Parameters**:
@@ -1028,7 +1028,7 @@ export const DND_TOOLS_PROMPT = `You have access to Dungeons & Dragons 5th Editi
 ## Common Scenarios:
 
 - **Character Creation**: Use generateDndCharacter + getDndClassInfo
-- **Combat**: Use calculateSkillCheck for attacks/saves, rollDiceTool for damage, simulateCombatEncounter for planning
+- **Combat**: Use calculateSkillCheck for attacks/saves, rollDice for damage, simulateCombatEncounter for planning
 - **Exploration**: Use calculateSkillCheck for perception/stealth, getSpellInfo for utility spells
 - **Social**: Use calculateSkillCheck for persuasion/deception/intimidation
 - **Leveling Up**: Use getDndClassInfo with new level, recalculate HP and abilities

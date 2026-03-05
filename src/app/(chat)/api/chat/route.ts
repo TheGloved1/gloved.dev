@@ -2,7 +2,6 @@ import { env } from '@/env';
 import {
   ChatFetchOptions,
   CustomTool,
-  CustomTools,
   defaultModel,
   DND_SYSTEM_PROMPT,
   DND_TOOLS_PROMPT,
@@ -72,20 +71,19 @@ export const modelProvider = customProvider({
   languageModels,
 });
 
-const getSystemPromptWithTools = async ({ tools, system }: { tools?: CustomTools; system?: string }) => {
-  let finalSystem = system;
-  if (tools && tools.includes(CustomTool.DND)) {
-    finalSystem = DND_SYSTEM_PROMPT + '\n\n' + DND_TOOLS_PROMPT;
-  } else {
-    finalSystem = system ? system : ((await glovedApi.getSystemPrompt())?.data ?? '');
-  }
-  return finalSystem;
+/**
+ * Retrieves the system prompt from the gloved API if no custom system prompt is provided.
+ * @param {string} [system] - The custom system prompt to use instead of the gloved API's system prompt.
+ * @returns {Promise<string>} The system prompt to use for the chat.
+ */
+const getSystemPrompt = async (system?: string): Promise<string> => {
+  return system ? system : ((await glovedApi.getSystemPrompt())?.data ?? '');
 };
 
 export async function POST(req: NextRequest) {
   const options: ChatFetchOptions = await req.json();
   console.log('[CHAT] Received chat request', options);
-  let system = await getSystemPromptWithTools({ tools: options.tools, system: options.system });
+  let system = await getSystemPrompt(options.system);
 
   const coreMessages = options.messages.map((msg) => ({
     role: msg.role,
@@ -99,7 +97,6 @@ export async function POST(req: NextRequest) {
   /**
    * Returns a ToolSet object containing the custom tools available in the model.
    * The ToolSet object will be undefined if no custom tools are available in the model.
-   * @param {CustomTools} tools - The custom tools to check.
    * @returns {ToolSet | undefined} The ToolSet object containing the custom tools available in the model.
    */
   const getTools = async (): Promise<void> => {
@@ -129,8 +126,6 @@ export async function POST(req: NextRequest) {
       const model = getModel(modelId);
       return model ? model.tools.includes(tool) : false;
     };
-
-    system += '\n\nYou have access to the following tools:';
 
     /* Add Tools to Tools List */
     if (options.tools.includes(CustomTool.DND) && isValidTool(CustomTool.DND, options.model ?? defaultModel)) {
