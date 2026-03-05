@@ -5,12 +5,14 @@ import React, { memo, useEffect, useState } from 'react';
 import { Tooltip } from '@/components/TooltipSystem';
 import { Button } from '@/components/ui/button';
 import { useAutoResizeTextarea } from '@/hooks/use-autoresize-textarea';
-import { useChatOptions } from '@/hooks/use-chat-options';
+import { useChat } from '@/hooks/use-chat';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { CustomTool, Models } from '@/lib/ai';
 import Constants from '@/lib/constants';
 import { tryCatch, upload } from '@/lib/utils';
 import { useAuth } from '@clerk/nextjs';
+import { SiDungeonsanddragons } from '@icons-pack/react-simple-icons';
 import { ArrowUp, ChevronDown, Paperclip, Square, X } from 'lucide-react';
 import Image from 'next/image';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
@@ -34,7 +36,7 @@ const ChatInput = memo(
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [loading, setLoading] = useState<boolean>(false);
     const [input, setInput] = useLocalStorage('input', '');
-    const { syncEnabled, model, systemPrompt } = useChatOptions();
+    const { syncEnabled, model, systemPrompt, tools, setTools } = useChat();
     const { textareaRef, adjustHeight } = useAutoResizeTextarea({
       minHeight: 60,
       maxHeight: 200,
@@ -45,6 +47,8 @@ const ChatInput = memo(
     const { threadId } = useParams<{ threadId: string }>();
     const searchParams = useSearchParams();
     const query = searchParams.get('q');
+
+    const selectedModel = Models.find((m) => m.value === model) ?? null;
 
     const userIdIfSyncEnabled = syncEnabled && auth.userId ? auth.userId : undefined;
 
@@ -86,7 +90,15 @@ const ChatInput = memo(
           const prompt = input;
           setInput('');
           adjustHeight(true);
-          await createMessage(threadId, query || prompt, model, systemPrompt?.trim(), attachments, userIdIfSyncEnabled);
+          await createMessage({
+            threadId,
+            userContent: query || prompt,
+            model,
+            systemPrompt: systemPrompt?.trim(),
+            attachments,
+            userId: userIdIfSyncEnabled,
+            tools,
+          });
         } catch (e) {
           toast.error('Failed to generate message');
           setLoading(false);
@@ -97,7 +109,15 @@ const ChatInput = memo(
         const prompt = input;
         setInput('');
         adjustHeight(true);
-        await createMessage(threadId, prompt, model, systemPrompt?.trim(), attachments, userIdIfSyncEnabled);
+        await createMessage({
+          threadId,
+          userContent: prompt,
+          model,
+          systemPrompt: systemPrompt?.trim(),
+          attachments,
+          userId: userIdIfSyncEnabled,
+          tools,
+        });
         setLoading(false);
       }
     };
@@ -173,7 +193,7 @@ const ChatInput = memo(
           <div className='pointer-events-none z-10'>
             <div className='pointer-events-auto'>
               <div
-                className={`border-reflect bg-start-[#2a2a2ae0] relative rounded-t-[20px] bg-chat-input-background bg-[linear-gradient(15deg,var(--min)_50%,var(--max))] bg-gradient-to-b from-[var(--min)] via-[var(--max)] to-[var(--min)] p-2 pb-0 opacity-100 backdrop-blur-lg ![--c:--chat-input-gradient]`}
+                className={`border-reflect bg-start-[#2a2a2ae0] relative rounded-t-[20px] bg-chat-input-background bg-[linear-gradient(15deg,var(--min)_50%,var(--max))] from-[var(--min)] via-[var(--max)] to-[var(--min)] p-2 pb-0 opacity-100 backdrop-blur-lg ![--c:--chat-input-gradient]`}
               >
                 <form
                   onSubmit={handleSubmit}
@@ -289,7 +309,7 @@ const ChatInput = memo(
                             type='button'
                             onClick={(e) => {
                               e.preventDefault();
-                              stopGeneration();
+                              stopGeneration('Stop button clicked! Stopping stream...');
                               setLoading(false);
                             }}
                             className='border-reflect button-reflect relative inline-flex h-9 w-9 items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-[rgb(162,59,103)] bg-primary/20 p-2 text-sm font-semibold text-pink-50 shadow transition-colors hover:bg-[#d56698] hover:bg-pink-800/70 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring active:bg-[rgb(162,59,103)] active:bg-pink-800/40 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-[rgb(162,59,103)] disabled:hover:bg-primary/20 disabled:active:bg-[rgb(162,59,103)] disabled:active:bg-primary/20 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
@@ -302,6 +322,33 @@ const ChatInput = memo(
                       <div className='flex flex-col gap-2 md:flex-row md:items-center'>
                         <div className='z-50 ml-[-7px] flex items-center gap-1'>
                           <ModelDropdown />
+                          {selectedModel?.tools?.includes(CustomTool.DND_TOOLS) ?
+                            <Button
+                              title={`${tools?.includes(CustomTool.DND_TOOLS) ? 'Disable' : 'Enable'} D&D Mode`}
+                              variant='ghost'
+                              type='button'
+                              className={`${tools?.includes(CustomTool.DND_TOOLS) ? 'bg-muted/40 hover:bg-muted/80' : 'bg-muted/0 hover:bg-muted/10'} -mb-1.5 inline-flex h-auto items-center justify-center gap-2 whitespace-nowrap rounded-full border border-solid border-secondary-foreground/10 px-3 py-1.5 pl-2 pr-2.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-foreground/50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0`}
+                              onClick={() => {
+                                const currentTools = tools;
+                                setTools((prev) => {
+                                  if (currentTools?.includes(CustomTool.DND_TOOLS)) {
+                                    console.log('[CHAT] D&D Mode Disabled');
+                                    return prev?.filter((t) => t !== CustomTool.DND_TOOLS);
+                                  } else {
+                                    console.log('[CHAT] D&D Mode Enabled');
+                                    return [...(prev ?? []), CustomTool.DND_TOOLS];
+                                  }
+                                });
+                              }}
+                            >
+                              <SiDungeonsanddragons className='size-4' />
+                              {isMobile ?
+                                tools?.includes(CustomTool.DND_TOOLS) ?
+                                  'D&D'
+                                : 'D&D'
+                              : 'D&D Mode'}
+                            </Button>
+                          : null}
                         </div>
                       </div>
                     </div>

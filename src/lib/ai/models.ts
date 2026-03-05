@@ -1,7 +1,11 @@
-export type Tools = 'fileTools'[];
-
-export type Features = 'reasoning'[];
-
+export const CustomTool = {
+  DND_TOOLS: 'dnd',
+} as const;
+export type CustomTools = (typeof CustomTool)[keyof typeof CustomTool][];
+export const Feature = {
+  REASONING: 'reasoning',
+} as const;
+export type Features = (typeof Feature)[keyof typeof Feature][];
 export type ModelID = (typeof Models)[number]['value'];
 export type Model = (typeof Models)[number];
 export type ModelProvider = 'google' | 'groq' | 'openrouter';
@@ -18,21 +22,35 @@ export const Models = Object.freeze([
       loggedIn: false,
       admin: false,
     },
-    tools: [] as Tools,
+    tools: [CustomTool.DND_TOOLS] as CustomTools,
     features: [] as Features,
   },
   {
     label: 'GPT OSS 120B',
-    value: 'openai/gpt-oss-120b:free',
-    provider: 'openrouter' as ModelProvider,
+    value: 'openai/gpt-oss-120b',
+    provider: 'groq' as ModelProvider,
     type: 'gpt' as ModelType,
     enabled: true,
-    description: "OpenAI's open source GPT OSS 120B model",
+    description: "OpenAI's open source reasoning model",
     requirements: {
       loggedIn: true,
       admin: false,
     },
-    tools: [] as Tools,
+    tools: [] as CustomTools,
+    features: [] as Features,
+  },
+  {
+    label: 'GPT OSS 20B',
+    value: 'openai/gpt-oss-20b',
+    provider: 'groq' as ModelProvider,
+    type: 'gpt' as ModelType,
+    enabled: true,
+    description: "OpenAI's open source reasoning model",
+    requirements: {
+      loggedIn: false,
+      admin: false,
+    },
+    tools: [CustomTool.DND_TOOLS] as CustomTools,
     features: [] as Features,
   },
   {
@@ -46,7 +64,7 @@ export const Models = Object.freeze([
       loggedIn: true,
       admin: false,
     },
-    tools: [] as Tools,
+    tools: [] as CustomTools,
     features: [] as Features,
   },
   {
@@ -60,7 +78,7 @@ export const Models = Object.freeze([
       loggedIn: true,
       admin: true,
     },
-    tools: [] as Tools,
+    tools: [] as CustomTools,
     features: [] as Features,
   },
   {
@@ -74,7 +92,7 @@ export const Models = Object.freeze([
       loggedIn: true,
       admin: true,
     },
-    tools: [] as Tools,
+    tools: [] as CustomTools,
     features: [] as Features,
   },
   {
@@ -88,7 +106,7 @@ export const Models = Object.freeze([
       loggedIn: true,
       admin: true,
     },
-    tools: [] as Tools,
+    tools: [] as CustomTools,
     features: [] as Features,
   },
   {
@@ -102,8 +120,8 @@ export const Models = Object.freeze([
       loggedIn: true,
       admin: true,
     },
-    tools: [] as Tools,
-    features: ['reasoning'] as Features,
+    tools: [] as CustomTools,
+    features: [Feature.REASONING] as Features,
   },
   {
     label: 'Llama 4 Scout',
@@ -116,8 +134,8 @@ export const Models = Object.freeze([
       loggedIn: true,
       admin: false,
     },
-    tools: [] as Tools,
-    features: ['reasoning'] as Features,
+    tools: [] as CustomTools,
+    features: [Feature.REASONING] as Features,
   },
   {
     label: 'Llama 4 Maverick',
@@ -130,8 +148,8 @@ export const Models = Object.freeze([
       loggedIn: true,
       admin: false,
     },
-    tools: [] as Tools,
-    features: ['reasoning'] as Features,
+    tools: [] as CustomTools,
+    features: [Feature.REASONING] as Features,
   },
   {
     label: 'Llama 3.1-8b',
@@ -144,8 +162,8 @@ export const Models = Object.freeze([
       loggedIn: true,
       admin: true,
     },
-    tools: [] as Tools,
-    features: ['reasoning'] as Features,
+    tools: [] as CustomTools,
+    features: [Feature.REASONING] as Features,
   },
   {
     label: 'Llama 3.3-70b',
@@ -158,50 +176,8 @@ export const Models = Object.freeze([
       loggedIn: true,
       admin: true,
     },
-    tools: [] as Tools,
-    features: ['reasoning'] as Features,
-  },
-  {
-    label: 'Deepseek R1 (OpenRouter)',
-    value: 'deepseek/deepseek-r1-0528:free',
-    provider: 'openrouter' as ModelProvider,
-    type: 'deepseek' as ModelType,
-    enabled: true,
-    description: 'DeepSeek R1 from OpenRouter',
-    requirements: {
-      loggedIn: true,
-      admin: false,
-    },
-    tools: [] as Tools,
-    features: ['reasoning'] as Features,
-  },
-  {
-    label: 'Deepseek R1 (Qwen Distill)',
-    value: 'deepseek-r1-distill-qwen-32b',
-    provider: 'groq' as ModelProvider,
-    type: 'qwen' as ModelType,
-    enabled: true,
-    description: 'DeepSeek R1, distilled on Qwen 32b',
-    requirements: {
-      loggedIn: true,
-      admin: false,
-    },
-    tools: [] as Tools,
-    features: [] as Features,
-  },
-  {
-    label: 'Deepseek R1 (Llama Distill)',
-    value: 'deepseek-r1-distill-llama-70b',
-    provider: 'groq' as ModelProvider,
-    type: 'llama' as ModelType,
-    enabled: true,
-    description: 'DeepSeek R1, distilled on Llama 3.3 70b',
-    requirements: {
-      loggedIn: true,
-      admin: false,
-    },
-    tools: [] as Tools,
-    features: ['reasoning'] as Features,
+    tools: [] as CustomTools,
+    features: [Feature.REASONING] as Features,
   },
   {
     label: 'Groq Compound',
@@ -214,7 +190,7 @@ export const Models = Object.freeze([
       loggedIn: true,
       admin: true,
     },
-    tools: [] as Tools,
+    tools: [] as CustomTools,
     features: [] as Features,
   },
 ] as const);

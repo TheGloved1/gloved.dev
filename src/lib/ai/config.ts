@@ -1,5 +1,3 @@
-import { Message } from '@/lib/dexie';
-import { ModelID } from './models';
 const temperature = 0.95;
 const maxOutputTokens = 4096;
 const frequencyPenalty = 0.95;
@@ -46,11 +44,4 @@ export const safetySettings: SafetySettings = [
     threshold: 'BLOCK_NONE',
   },
 ];
-
 export const defaultModel = 'moonshotai/kimi-k2-instruct-0905' as const;
-
-export type ChatFetchOptions = {
-  model?: ModelID;
-  system?: string;
-  messages: Message[];
-};

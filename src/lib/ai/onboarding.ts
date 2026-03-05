@@ -1,7 +1,26 @@
 import { defaultModel } from '@/lib/ai';
 import { dxdbType } from '@/lib/dexie';
-import { now, sleep } from '@/lib/utils';
+import { now, sleep, tryCatch } from '@/lib/utils';
 
+const shouldPopulateOnboardingThreads = false;
+
+export const onboardingCheck = async (db: dxdbType) => {
+  if (shouldPopulateOnboardingThreads) {
+    const populate = await tryCatch(populateOnboardingThreads(db));
+    if (populate.error) {
+      console.log('[DEXIE] Failed to populate onboarding threads!');
+    } else {
+      console.log('[DEXIE] Successfully populated onboarding threads!');
+    }
+  } else {
+    console.log('[DEXIE] Populating onboarding threads is disabled!');
+  }
+};
+
+/**
+ * Populates the onboarding threads with initial messages.
+ * @param db The dexie database instance.
+ */
 export async function populateOnboardingThreads(db: dxdbType) {
   await db.threads.bulkPut([
     {

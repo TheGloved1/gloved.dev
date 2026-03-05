@@ -1,7 +1,11 @@
 'use client';
+import { Button } from '@/components/ui/button';
+import { useChat } from '@/hooks/use-chat';
 import { useLocalStorage } from '@/hooks/use-local-storage';
+import { CustomTool } from '@/lib/ai';
+import { SiDungeonsanddragons } from '@icons-pack/react-simple-icons';
 import { Code, GraduationCap, Newspaper, Sparkles } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ChatInput from './_components/ChatInput';
 
 const activeTabStyle =
@@ -10,36 +14,51 @@ const inactiveTabStyle =
   'max-sm:size-16 max-sm:flex-col flex h-9 items-center justify-center gap-1 whitespace-nowrap rounded-xl bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground shadow outline-1 outline-secondary/70 backdrop-blur-xl transition-colors hover:bg-pink-600/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-primary data-[selected=false]:bg-secondary/30 data-[selected=false]:text-secondary-foreground/90 data-[selected=false]:outline data-[selected=false]:hover:bg-secondary sm:gap-2 sm:rounded-full [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0';
 
 const tabs = {
-  default: [
+  Default: [
     'How does AI work?',
     'Are black holes real?',
     'How many Rs are in the word "strawberry"?',
     'What is the meaning of life?',
   ],
-  create: [
+  'D&D': [
+    'Generate a random D&D character',
+    'What are the best spells for a wizard?',
+    'How do I play D&D?',
+    'What D&D tools do you have access to?',
+  ],
+  Create: [
     'Write a short story about a robot discovering emotions',
     'Help me outline a sci-fi novel set in a post-apocalyptic world',
     'Create a character profile for a complex villain with sympathetic motives',
     'Give me 5 creative writing prompts for flash fiction',
   ],
-  explore: [
+  Explore: [
     'Good books for fans of Rick Rubin',
     'Countries ranked by number of corgis',
     'Most successful companies in the world',
     'How much does Agent cost?',
   ],
-  code: [
+  Code: [
     'Write code to invert a binary search tree in Python',
     "What's the difference between Promise.all and Promise.allSettled?",
     "Explain React's useEffect cleanup function",
     'Best practices for error handling in async/await',
   ],
-  learn: [
+  Learn: [
     'Beginner guide to TypeScript',
     'Explain the CAP theorem in distributed systems',
     'Why is AI so expensive?',
     'What are black holes?',
   ],
+};
+
+const tabIcons = {
+  Default: Sparkles,
+  'D&D': SiDungeonsanddragons,
+  Create: Sparkles,
+  Explore: Newspaper,
+  Code: Code,
+  Learn: GraduationCap,
 };
 
 type Tab = keyof typeof tabs;
@@ -63,9 +82,10 @@ const randomWelcomeMessages: string[] = [
 const getRandomWelcomeMessage = () => randomWelcomeMessages[Math.floor(Math.random() * randomWelcomeMessages.length)];
 
 export default function Page(): React.JSX.Element {
-  const [currentTab, setCurrentTab] = useState<Tab>('default');
+  const [welcomeMessage] = useState(getRandomWelcomeMessage);
+  const [currentTab, setCurrentTab] = useState<Tab>('Default');
   const [input, setInput] = useLocalStorage('input', '');
-  const [welcomeMessage] = useState(getRandomWelcomeMessage());
+  const { tools } = useChat();
 
   const isActiveTab = (tab: Tab) => tab === currentTab;
 
@@ -73,13 +93,27 @@ export default function Page(): React.JSX.Element {
     if (tab !== currentTab) {
       setCurrentTab(tab);
     } else {
-      setCurrentTab('default');
+      setCurrentTab('Default');
     }
   };
 
   const getTabStyles = (tab: Tab) => {
     return isActiveTab(tab) ? activeTabStyle : inactiveTabStyle;
   };
+
+  const getTabIcon = (tab: Tab): React.JSX.Element => {
+    const Icon = tabIcons[tab];
+    return <Icon className='size-4' />;
+  };
+
+  useEffect(() => {
+    if (!tools?.includes('dnd') && currentTab === 'D&D') {
+      // Use setTimeout to avoid setState during render
+      setTimeout(() => {
+        setCurrentTab('Default');
+      }, 0);
+    }
+  }, [tools, currentTab]);
 
   return (
     <main className='relative flex w-full flex-1 flex-col'>
@@ -98,38 +132,21 @@ export default function Page(): React.JSX.Element {
                   id='suggestions'
                   className='flex flex-row flex-wrap gap-2.5 max-sm:justify-evenly sm:text-xs md:text-sm'
                 >
-                  <button
-                    className={getTabStyles('create')}
-                    data-selected={isActiveTab('create')}
-                    onClick={() => handleTabClick('create')}
-                  >
-                    <Sparkles className='size-4' />
-                    <div>Create</div>
-                  </button>
-                  <button
-                    className={getTabStyles('explore')}
-                    data-selected={isActiveTab('explore')}
-                    onClick={() => handleTabClick('explore')}
-                  >
-                    <Newspaper className='size-4' />
-                    <div>Explore</div>
-                  </button>
-                  <button
-                    className={getTabStyles('code')}
-                    data-selected={isActiveTab('code')}
-                    onClick={() => handleTabClick('code')}
-                  >
-                    <Code className='size-4' />
-                    <div>Code</div>
-                  </button>
-                  <button
-                    className={getTabStyles('learn')}
-                    data-selected={isActiveTab('learn')}
-                    onClick={() => handleTabClick('learn')}
-                  >
-                    <GraduationCap className='size-4' />
-                    <div>Learn</div>
-                  </button>
+                  {(Object.entries(tabs) as [Tab, string[]][]).map(([tab]): React.ReactNode => {
+                    if (tab === 'Default') return null;
+                    if (tab === 'D&D' && tools && !tools.includes(CustomTool.DND_TOOLS)) return null;
+                    return (
+                      <Button
+                        key={tab}
+                        className={getTabStyles(tab)}
+                        data-selected={isActiveTab(tab)}
+                        onClick={() => handleTabClick(tab)}
+                      >
+                        {getTabIcon(tab)}
+                        <div>{tab.charAt(0).toUpperCase() + tab.slice(1)}</div>
+                      </Button>
+                    );
+                  })}
                 </div>
                 <div className='flex flex-col text-foreground'>
                   {tabs[currentTab].map((item, index) => (

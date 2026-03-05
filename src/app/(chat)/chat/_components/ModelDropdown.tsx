@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useAdmin } from '@/hooks/use-admin';
-import { useChatOptions } from '@/hooks/use-chat-options';
+import { useChat } from '@/hooks/use-chat';
 import { useDebounce } from '@/hooks/use-debounce';
 import { defaultModel, Model, Models } from '@/lib/ai';
 import { fuzzySearch } from '@/lib/utils';
@@ -19,7 +19,7 @@ export default function ModelDropdown() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [selectedModel, setSelectedModel] = useState<Model>(Models[0]);
-  const { model, setModel } = useChatOptions();
+  const { model, setModel } = useChat();
   const [theme] = useLocalStorage<Theme>('theme', themes.dark);
   const debouncedSearchQuery = useDebounce(searchQuery, 150);
   const admins = useAdmin();

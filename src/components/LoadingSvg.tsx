@@ -1,6 +1,6 @@
-export default function LoadingSvg() {
+export default function LoadingSvg({ className }: { className?: string }) {
   return (
-    <div className='flex size-12 items-center justify-center'>
+    <div className={'flex size-12 items-center justify-center' + (className ? ' ' + className : '')}>
       <svg
         version='1.1'
         id='L5'

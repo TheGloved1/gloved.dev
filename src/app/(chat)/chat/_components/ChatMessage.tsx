@@ -3,7 +3,7 @@ import ErrorAlert from '@/components/ErrorAlert';
 import LoadingSvg from '@/components/LoadingSvg';
 import Markdown from '@/components/Markdown';
 import { Button } from '@/components/ui/button';
-import { useChatOptions } from '@/hooks/use-chat-options';
+import { useChat } from '@/hooks/use-chat';
 import { useTextToSpeech } from '@/hooks/use-tts';
 import { dxdb, Message, updateMessage } from '@/lib/dexie';
 import { tryCatch } from '@/lib/utils';
@@ -33,7 +33,7 @@ function ChatMessage({ message }: { message: Message }) {
   const [isHovered, setIsHovered] = useState<boolean>(false);
   const [showReasoning, setShowReasoning] = useState<boolean>(false);
   const { threadId } = useParams<{ threadId: string }>();
-  const { syncEnabled, model, systemPrompt } = useChatOptions();
+  const { syncEnabled, model, systemPrompt, tools } = useChat();
   const tts = useTextToSpeech();
   const auth = useAuth();
   const syncUserIdIfEnabled = syncEnabled && auth.userId ? auth.userId : undefined;
@@ -127,9 +127,16 @@ function ChatMessage({ message }: { message: Message }) {
                 title='Send'
                 onClick={async () => {
                   await handleEditMessage(message);
-                  const oldInput = input;
+                  const newContent = input;
                   setInput(null);
-                  await updateMessage(message, oldInput, model, systemPrompt, syncUserIdIfEnabled);
+                  await updateMessage({
+                    message,
+                    newContent,
+                    model,
+                    systemPrompt,
+                    tools,
+                    userId: syncUserIdIfEnabled,
+                  });
                 }}
               >
                 <Send className='-mb-0.5 -ml-0.5 !size-5' />
@@ -160,13 +167,7 @@ function ChatMessage({ message }: { message: Message }) {
                 </div>
               : null
             : null}
-            <Markdown
-              className={
-                'prose prose-sm prose-neutral prose-invert max-w-none text-foreground prose-pre:m-0 prose-pre:bg-transparent prose-pre:p-0'
-              }
-            >
-              {message.content}
-            </Markdown>
+            {renderMessageContent(message)}
           </>
         }
         {message.role === 'user' && input === null && (
@@ -178,7 +179,14 @@ function ChatMessage({ message }: { message: Message }) {
               title='Retry'
               onClick={async () => {
                 await handleEditMessage(message);
-                await updateMessage(message, message.content, model, systemPrompt, syncUserIdIfEnabled);
+                await updateMessage({
+                  message,
+                  newContent: message.content,
+                  model,
+                  systemPrompt,
+                  tools,
+                  userId: syncUserIdIfEnabled,
+                });
               }}
             >
               <RefreshCcw className='-mb-0.5 -ml-0.5 !size-5' />
@@ -258,6 +266,96 @@ function ChatMessage({ message }: { message: Message }) {
     </div>
   );
 }
+
+const renderMessageContent = (message: Message): React.ReactNode => {
+  if (!message.tools || message.tools.length === 0) {
+    return (
+      <Markdown
+        className={
+          'prose prose-sm prose-neutral prose-invert max-w-none text-foreground prose-pre:m-0 prose-pre:bg-transparent prose-pre:p-0'
+        }
+      >
+        {message.content}
+      </Markdown>
+    );
+  }
+
+  // Sort tools by 'after' position to maintain order
+  const sortedTools = [...message.tools].sort((a, b) => (a.after || 0) - (b.after || 0));
+
+  const segments: React.ReactNode[] = [];
+  let lastIndex = 0;
+
+  // Add content segments with tool outputs
+  sortedTools.forEach((tool, index) => {
+    const toolAfter = tool.after || 0;
+
+    // Add content before this tool
+    if (toolAfter > lastIndex) {
+      const contentSegment = message.content.slice(lastIndex, toolAfter);
+      if (contentSegment.trim()) {
+        segments.push(
+          <Markdown
+            key={`content-${index}`}
+            className={
+              'prose prose-sm prose-neutral prose-invert max-w-none text-foreground prose-pre:m-0 prose-pre:bg-transparent prose-pre:p-0'
+            }
+          >
+            {contentSegment}
+          </Markdown>,
+        );
+      }
+    }
+
+    // Add tool output
+    if (tool.status === 'running') {
+      segments.push(
+        <div key={`tool-${index}`} className='mb-4 mt-2'>
+          <details className='rounded-lg border border-border bg-muted/50 p-3 font-mono text-foreground shadow-[0_4px_6px_rgba(0,0,0,0.1)]'>
+            <summary className='cursor-pointer rounded p-1 font-bold text-muted-foreground transition-colors hover:bg-muted'>
+              <div className='flex items-center'>
+                🔧 {tool.name} <LoadingSvg className='ml-2 size-6' />
+              </div>
+            </summary>
+            <div className='mt-2'></div>
+          </details>
+        </div>,
+      );
+    } else if (tool.status === 'done' && tool.result) {
+      segments.push(
+        <div key={`tool-${index}`} className='mb-4 mt-2'>
+          <details className='rounded-lg border border-border bg-muted/50 p-3 font-mono text-foreground shadow-[0_4px_6px_rgba(0,0,0,0.1)]'>
+            <summary className='flex cursor-pointer items-center rounded p-1 font-bold text-muted-foreground transition-colors hover:bg-muted'>
+              🔧 {tool.name}
+            </summary>
+            <Markdown>{`\`\`\`json\n\n${JSON.stringify(tool.result, null, 2)}\n\`\`\``}</Markdown>
+          </details>
+        </div>,
+      );
+    }
+
+    lastIndex = toolAfter;
+  });
+
+  // Add remaining content after last tool
+  if (lastIndex < message.content.length) {
+    const remainingContent = message.content.slice(lastIndex);
+    if (remainingContent.trim()) {
+      segments.push(
+        <Markdown
+          key='content-final'
+          className={
+            'prose prose-sm prose-neutral prose-invert max-w-none text-foreground prose-pre:m-0 prose-pre:bg-transparent prose-pre:p-0'
+          }
+        >
+          {remainingContent}
+        </Markdown>,
+      );
+    }
+  }
+
+  return <>{segments}</>;
+};
 
 export default memo(ChatMessage, (prevProps, nextProps) => {
   if (!equal(prevProps.message, nextProps.message)) return false;

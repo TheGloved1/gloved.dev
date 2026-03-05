@@ -30,7 +30,7 @@ function ParticleText({
   fontFamily = 'sans-serif',
   fontWeight = 'bold',
   particleSize = 1,
-  particleCount = 7000,
+  particleCount = 6000,
   baseColor = 'white',
   hoverColor = '#00DCFF',
   backgroundColor = 'transparent',

@@ -4,12 +4,13 @@
  * database with remote data.
  */
 import { deleteUserDataAction, exportThreadAction, syncAction } from '@/lib/actions';
-import { populateOnboardingThreads } from '@/lib/ai/onboarding';
+import { aiGenerate, ApiMessage, checkEmbeddings, CustomTools, ModelID, onboardingCheck } from '@/lib/ai';
 import { now, sleep, tryCatch } from '@/lib/utils';
 import Dexie, { type EntityTable } from 'dexie';
 import { toast } from 'sonner';
 import { z } from 'zod';
-import { ChatFetchOptions, ModelID } from './ai';
+
+const EMBEDDING_ENABLED = false;
 
 export const threadSchema = z.object({
   id: z.string(),
@@ -17,6 +18,13 @@ export const threadSchema = z.object({
   created_at: z.string(),
   updated_at: z.string(),
   last_message_at: z.string(),
+  embeddings: z
+    .object({
+      values: z.array(z.array(z.number())),
+      last_embedded_message_id: z.string().describe('ID of the oldest message before the embedded ones'),
+      system_memory: z.string().describe('System context for the thread made from embeddings vectors'),
+    })
+    .optional(),
   status: z.enum(['streaming', 'done', 'error', 'deleted']),
 });
 
@@ -31,6 +39,17 @@ export const messageSchema = z.object({
   created_at: z.string(),
   updated_at: z.string(),
   status: z.enum(['streaming', 'done', 'error', 'deleted']),
+  tools: z
+    .array(
+      z.object({
+        name: z.string().describe('Name of the tool that was called'),
+        status: z.enum(['running', 'done']).describe('Status of the tool'),
+        result: z.any().describe('Result returned by the tool').optional(),
+        after: z.number().describe('The character index in the message where the tool was called').optional(),
+      }),
+    )
+    .optional()
+    .describe('Array of tools called during the message'),
 });
 
 export type Thread = z.infer<typeof threadSchema>;
@@ -48,26 +67,21 @@ export type Message = z.infer<typeof messageSchema>;
 class Database extends Dexie {
   threads!: EntityTable<Thread, 'id'>;
   messages!: EntityTable<Message, 'id'>;
-
   constructor() {
     super('chatdb');
-    this.version(6).stores({
-      threads: '++id, title, created_at, updated_at, last_message_at, status',
+    this.version(7).stores({
+      threads: '++id, title, created_at, updated_at, last_message_at, embeddings, status',
       messages:
-        '++id, threadId, content, model, role, attachments, reasoning, updated_at, status, [threadId+created_at], [threadId+status]',
+        '++id, threadId, content, model, role, attachments, reasoning, updated_at, status, tools, [threadId+created_at], [threadId+status]',
     });
 
     this.on('ready', async (obj) => {
       console.log('[DEXIE] Ready');
     });
 
-    // Population function for onboarding threads is broken
-    /* this.on('populate', async () => {
-      const populate = await tryCatch(populateOnboardingThreads(this));
-      if (populate.error) {
-        console.log('[DEXIE] Failed to populate onboarding threads');
-      }
-    }); */
+    this.on('populate', async () => {
+      onboardingCheck(this);
+    });
 
     this.threads.hook('creating', (primKey, obj) => {
       // console.log('[DEXIE] Creating thread', obj);
@@ -176,16 +190,27 @@ class Database extends Dexie {
   }
 
   /**
-   * Fetches all messages for a given thread, sorted by creation date.
+   * Fetches the latest 100 messages for a given thread, sorted by creation date.
    * @param threadId The ID of the thread to fetch messages for.
-   * @returns An array of all messages in the thread, excluding deleted messages.
+   * @returns An array of the latest 100 messages in the thread, excluding deleted messages.
    */
   async getThreadMessages(threadId: string) {
     return await this.messages
       .where('threadId')
       .equals(threadId)
       .and((msg) => msg.status !== 'deleted')
+      .limit(100)
       .sortBy('created_at');
+  }
+
+  /**
+   * Fetches the embeddings for a given thread.
+   * @param threadId The ID of the thread to fetch embeddings for.
+   * @returns The embeddings for the thread, or undefined if the thread has no embeddings or does not exist.
+   */
+  async getThreadEmbeddings(threadId: string) {
+    const thread = await this.threads.get(threadId);
+    return thread?.embeddings;
   }
 
   /**
@@ -235,7 +260,7 @@ class Database extends Dexie {
       }
     }
     await sleep(500);
-    await populateOnboardingThreads(this);
+    await onboardingCheck(this);
   }
 
   /**
@@ -324,6 +349,67 @@ export async function checkSync(userId: string) {
 }
 
 /**
+ * Smart message fetching that respects embedding thresholds.
+ * Fetches recent messages normally, uses embedding similarity for older messages when available.
+ * @param threadId The ID of the thread to fetch messages for.
+ * @returns Promise resolving to array of messages.
+ */
+export async function getThreadMessagesSmart(threadId: string) {
+  console.log('[DEXIE] Smart message fetching for thread:', threadId);
+
+  const thread = await dxdb.threads.get(threadId);
+
+  if (!thread?.embeddings?.last_embedded_message_id) {
+    console.log('[DEXIE] No embeddings found, fetching all messages');
+    // No embeddings - fetch all messages normally
+    return dxdb.messages.where('threadId').equals(threadId).toArray();
+  }
+
+  console.log('[DEXIE] Found embedding threshold, fetching recent messages');
+  // Fetch recent messages (after the embedding threshold)
+  const recentMessages = await dxdb.messages
+    .where('threadId')
+    .equals(threadId)
+    .and((message) => message.id > thread.embeddings!.last_embedded_message_id)
+    .toArray();
+
+  console.log('[DEXIE] Fetched', recentMessages.length, 'recent messages');
+  return recentMessages;
+}
+
+/**
+ * Fetches the embeddings for a given channel ID.
+ * @param channelId The channel ID to fetch embeddings for.
+ * @returns A Promise that resolves with the embeddings for the channel, or `undefined` if there is an error.
+ */
+export async function getEmbeddings(channelId: string) {
+  console.log('[DEXIE] Getting embeddings for channel:', channelId);
+  const thread = await tryCatch(dxdb.threads.get(channelId));
+  if (thread.error || !thread.data) {
+    console.error('[DEXIE] Error getting embeddings for channel:', channelId, thread.error);
+    return;
+  }
+  return thread.data.embeddings;
+}
+
+/**
+ * Checks if embeddings should be used and generates system memory from embeddings.
+ * @param userMessage The message to check embeddings for.
+ * @returns Promise resolving to boolean indicating if embeddings were used.
+ */
+export async function checkMessageThreadEmbeddings(userMessage: Message): Promise<boolean> {
+  console.log('[DEXIE] Checking embeddings for message in thread:', userMessage.threadId);
+
+  try {
+    // Import dynamically to avoid circular dependencies
+    return await checkEmbeddings(userMessage);
+  } catch (error) {
+    console.error('[DEXIE] Error checking embeddings:', error);
+    return false;
+  }
+}
+
+/**
  * Process a stream of data from the chat server, updating the local database as new content is received.
  * @param response The stream of data to process.
  * @param messageId The ID of the message to update in the database, if applicable.
@@ -335,6 +421,7 @@ export async function processStream(response: ReadableStream<Uint8Array>, messag
   const decoder = new TextDecoder();
   let done = false;
   let messageContent = '';
+  let reasoningContent = '';
   let buffer = '';
 
   while (!done) {
@@ -363,21 +450,23 @@ export async function processStream(response: ReadableStream<Uint8Array>, messag
         }
         break;
       }
-      let evt: any = null;
+      let eventStreamDelta: any = null;
       try {
-        evt = JSON.parse(payload);
+        eventStreamDelta = JSON.parse(payload);
       } catch {
         continue;
       }
-      const type = evt?.type as string | undefined;
+      const type = eventStreamDelta?.type as string | undefined;
       if (!type) continue;
 
       if (type === 'data-status') {
-        const dataStatus = evt as {
+        const dataStatus = eventStreamDelta as {
           type: 'data-status';
           data: {
-            status: 'streaming' | 'done' | 'error';
+            status: 'streaming' | 'done' | 'error' | 'tool-call' | 'tool-done';
             error?: string;
+            tool?: string;
+            result?: object;
           };
         };
         const status = dataStatus.data.status;
@@ -389,7 +478,63 @@ export async function processStream(response: ReadableStream<Uint8Array>, messag
               : status === 'done' ? 'done'
               : undefined,
           });
+          if (status === 'tool-call' && dataStatus.data.tool) {
+            const toolCall = {
+              status: 'running',
+              name: dataStatus.data.tool,
+            } as const;
+            if (messageId) {
+              const message = await dxdb.messages.get(messageId);
+              const existingTools = message?.tools || [];
+              // Check if this tool is already running and update it, otherwise add new
+              const toolIndex = existingTools.findIndex((t) => t.name === toolCall.name && t.status === 'running');
+              if (toolIndex >= 0) {
+                existingTools[toolIndex] = toolCall;
+              } else {
+                existingTools.push(toolCall);
+              }
+              await dxdb.messages.update(messageId, {
+                updated_at: now(),
+                tools: existingTools,
+              });
+            }
+          }
+          if (status === 'tool-done' && dataStatus.data.tool && dataStatus.data.result) {
+            const toolOutput = {
+              status: 'done',
+              name: dataStatus.data.tool,
+              result: dataStatus.data.result,
+              after: messageContent.length,
+            } as const;
+            if (messageId) {
+              const message = await dxdb.messages.get(messageId);
+              const existingTools = message?.tools || [];
+              // Find and update the running tool with the same name
+              const toolIndex = existingTools.findIndex((t) => t.name === toolOutput.name && t.status === 'running');
+              if (toolIndex >= 0) {
+                existingTools[toolIndex] = toolOutput;
+              } else {
+                existingTools.push(toolOutput);
+              }
+              await dxdb.messages.update(messageId, {
+                updated_at: now(),
+                tools: existingTools,
+              });
+            }
+          }
         }
+      } else if (type === 'reasoning-delta') {
+        const delta = (eventStreamDelta?.delta ?? '') as string;
+        if (delta) {
+          reasoningContent += delta;
+          if (messageId) {
+            await dxdb.messages.update(messageId, {
+              updated_at: now(),
+              reasoning: reasoningContent,
+            });
+          }
+        }
+      } else if (type === 'text-end') {
       } else if (type === 'start' || type === 'start-step' || type === 'text-start') {
         if (messageId) {
           await dxdb.messages.update(messageId, {
@@ -398,7 +543,7 @@ export async function processStream(response: ReadableStream<Uint8Array>, messag
           });
         }
       } else if (type === 'text-delta') {
-        const delta = (evt?.delta ?? '') as string;
+        const delta = (eventStreamDelta?.delta ?? '') as string;
         if (delta) {
           messageContent += delta;
           if (messageId) {
@@ -408,7 +553,6 @@ export async function processStream(response: ReadableStream<Uint8Array>, messag
             });
           }
         }
-      } else if (type === 'text-end') {
       } else if (type === 'finish-step') {
       } else if (type === 'finish') {
         done = true;
@@ -421,9 +565,9 @@ export async function processStream(response: ReadableStream<Uint8Array>, messag
         break;
       } else if (type === 'error') {
         const errMsg =
-          typeof evt?.errorText === 'string' ?
-            evt.errorText
-          : ((evt?.error?.message as string | undefined) ?? 'Unknown error');
+          typeof eventStreamDelta?.errorText === 'string' ?
+            eventStreamDelta.errorText
+          : ((eventStreamDelta?.error?.message as string | undefined) ?? 'Unknown error');
         if (messageId) {
           await dxdb.messages.update(messageId, {
             updated_at: now(),
@@ -447,12 +591,9 @@ export async function processStream(response: ReadableStream<Uint8Array>, messag
 }
 
 let chatAbortController = new AbortController();
-/**
- * Stop any existing streams and cancel any ongoing chat generation.
- * @param reason An optional reason to pass to the AbortController.
- */
+
 export function stopGeneration(reason?: string) {
-  chatAbortController.abort(reason || 'Cancelling any existing streams...');
+  chatAbortController.abort(reason || 'Stopping Chat Stream...');
   chatAbortController = new AbortController();
 }
 
@@ -467,16 +608,27 @@ export function stopGeneration(reason?: string) {
  * @param systemPrompt An optional system prompt to send with the message.
  * @param attachments An optional array of attachments to send with the message.
  * @param userId The ID of the user to use for syncing to db.
+ * @param tools A function that retu
  * @returns The ID of the message that was sent.
  */
-export async function createMessage(
-  threadId: string,
-  userContent: string,
-  model: ModelID,
-  systemPrompt?: string,
-  attachments?: string[],
-  userId?: string,
-) {
+export async function createMessage({
+  threadId,
+  userContent,
+  model,
+  systemPrompt,
+  attachments,
+  userId,
+  tools,
+}: {
+  threadId: string;
+  userContent: string;
+  model: ModelID;
+  systemPrompt?: string;
+  attachments?: string[];
+  userId?: string;
+  tools?: CustomTools;
+}) {
+  console.log('[CHAT] Getting tools', tools);
   // Stop any existing streams
   stopGeneration('Creating message, canceling any existing streams');
 
@@ -498,27 +650,24 @@ export async function createMessage(
     model,
   });
 
-  const chatFetchOptions: ChatFetchOptions = {
-    model,
-    system: systemPrompt,
-    messages: allMessages,
-  };
-
   const signal = chatAbortController.signal;
 
+  // Get thread to check for system memory from embeddings
+  const thread = await dxdb.threads.get(threadId);
+  let system = systemPrompt ? systemPrompt.trim() : '';
+
+  // Add system memory from embeddings if it exists
+  if (thread?.embeddings?.system_memory) {
+    system += '\n\n' + thread.embeddings.system_memory;
+    console.log('[CHAT] Added system memory from embeddings for thread:', threadId);
+  }
+
+  const messages = allMessages.map((m) => ({ role: m.role, content: m.content }));
+
   try {
-    const { data, error } = await tryCatch(
-      fetch('/api/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(chatFetchOptions),
-        signal,
-      }),
-    );
+    const { data, error } = await aiGenerate({ model, system, messages, tools }, signal);
     if (error) return;
-    const reader = data.body as ReadableStream<Uint8Array>;
+    const reader = data.body;
     if (!reader) return;
 
     // Call the helper function to process the stream
@@ -530,6 +679,22 @@ export async function createMessage(
   }
 
   await generateTitle(threadId);
+
+  if (EMBEDDING_ENABLED) {
+    // Check embeddings and generate system memory after message is processed
+    const userMessage = {
+      id: '', // We don't need the ID for checkEmbeddings
+      threadId,
+      content: userContent,
+      role: 'user' as const,
+      model,
+      created_at: now(),
+      updated_at: now(),
+      status: 'done' as const,
+    };
+    await checkMessageThreadEmbeddings(userMessage);
+  }
+
   if (userId) {
     await dxdb.exportThread(threadId, userId);
   }
@@ -546,13 +711,22 @@ export async function createMessage(
  * @param systemPrompt An optional system prompt to send with the message.
  * @returns The ID of the new assistant message.
  */
-export async function updateMessage(
-  message: Message,
-  newContent: string,
-  model: ModelID,
-  systemPrompt?: string,
-  userId?: string,
-) {
+export async function updateMessage({
+  message,
+  newContent,
+  model,
+  systemPrompt,
+  userId,
+  tools,
+}: {
+  message: Message;
+  newContent: string;
+  model: ModelID;
+  systemPrompt?: string;
+  userId?: string;
+  tools?: CustomTools | undefined;
+}) {
+  console.log('[CHAT] Getting tools', tools);
   // Stop any existing streams
   stopGeneration('Updating message, canceling any existing streams');
 
@@ -570,23 +744,20 @@ export async function updateMessage(
 
   const signal = chatAbortController.signal;
 
-  const chatFetchOptions: ChatFetchOptions = {
-    model,
-    system: systemPrompt,
-    messages: allMessages,
-  };
+  // Get thread to check for system memory from embeddings
+  const thread = await dxdb.threads.get(message.threadId);
+  let system = systemPrompt ? systemPrompt.trim() : '';
+
+  // Add system memory from embeddings if it exists
+  if (thread?.embeddings?.system_memory) {
+    system += '\n\n' + thread.embeddings.system_memory;
+    console.log('[CHAT] Added system memory from embeddings for thread:', message.threadId);
+  }
+
+  const messages = allMessages.map((m) => ({ role: m.role, content: m.content }));
 
   try {
-    const { data, error } = await tryCatch(
-      fetch('/api/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(chatFetchOptions),
-        signal,
-      }),
-    );
+    const { data, error } = await aiGenerate({ model, system, messages, tools }, signal);
     if (error) return;
     const reader = data.body as ReadableStream<Uint8Array>;
     if (!reader) return;
@@ -598,6 +769,16 @@ export async function updateMessage(
   }
 
   await generateTitle(message.threadId);
+
+  if (EMBEDDING_ENABLED) {
+    // Check embeddings and generate system memory after message is processed
+    const userMessage = {
+      ...message,
+      content: newContent,
+      updated_at: now(),
+    };
+    await checkMessageThreadEmbeddings(userMessage);
+  }
 
   if (userId) {
     dxdb.exportThread(message.threadId, userId);
@@ -619,26 +800,15 @@ export async function generateTitle(threadId: string) {
     role: 'user',
     content: 'Generate a short, concise title for this thread so far.',
   };
-  const messages: { role: string; content: string }[] = [
+  const messages: ApiMessage[] = [
     ...allMessages.map((m) => ({ role: m.role, content: m.content })),
-    newMessage,
+    newMessage as ApiMessage,
   ];
   const model: ModelID = 'moonshotai/kimi-k2-instruct-0905';
+  const system =
+    'You are a short title generator, do not generate any text except for the title. Only include alphanumeric characters and spaces. You can not output any markdown formatting or special characters. You can only output characters from the english alphabet. For example, "Hello World" is a valid title, but "**Hello World!**" is not.';
   try {
-    const { data, error } = await tryCatch(
-      fetch('/api/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          system:
-            'You are a short title generator, do not generate any text except for the title. Only include alphanumeric characters and spaces. You can not output any markdown formatting or special characters. You can only output characters from the english alphabet. For example, "Hello World" is a valid title, but "**Hello World!**" is not.',
-          messages: messages,
-          model: model,
-        }),
-      }),
-    );
+    const { data, error } = await aiGenerate({ model, system, messages });
     if (error) return toast.error('Failed to generate title!');
     if (!data.body) return toast.error('Failed to generate title!');
     const title = await processStream(data.body);

@@ -145,5 +145,6 @@ export function useEventListener(...args: any[]) {
     return cleanup.current;
   }, [event, target, options]);
 
+  // eslint-disable-next-line react-hooks/refs
   return cleanup.current;
 }

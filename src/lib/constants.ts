@@ -5,7 +5,7 @@ const Constants = {
   DESC: 'A personal website for my projects and interests. Built with Next.js' as const,
   ICON: '/logo.png' as const,
   API: GLOVED_API_URL,
-  GITHUB_URL: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app' as const,
+  GITHUB_URL: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/' as const,
   FILE_SIZE_LIMIT_MB: 2.5 as const,
   MAX_FILE_SIZE: 2.5 * 1024 * 1024,
   Home: {

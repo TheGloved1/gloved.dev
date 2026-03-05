@@ -1,4 +1,4 @@
-import { defaultModel, ModelID, ModelList } from '@/lib/ai';
+import { CustomTools, defaultModel, ModelID, ModelList } from '@/lib/ai';
 import { useLocalStorage } from './use-local-storage';
 import { useMount } from './use-mount';
 
@@ -7,8 +7,8 @@ import { useMount } from './use-mount';
  * @param model - The model to check.
  * @returns True if the model is valid, false otherwise.
  */
-function isValidModel(model: string | null): model is ModelID {
-  return model !== null && ModelList.includes(model as ModelID);
+function isValidModel(model: string | undefined | null): model is ModelID {
+  return model !== undefined && model !== null && ModelList.includes(model as ModelID);
 }
 
 /**
@@ -20,17 +20,21 @@ function isValidModel(model: string | null): model is ModelID {
  *   - setSystemPrompt: A function to update the systemPrompt value.
  *   - model: The model to use for generating the response.
  *   - setModel: A function to update the model value.
+ *   - tools: An optional array of custom tools.
+ *   - setTools: A function to update the tools value.
  *
  * The hook returns the values of the options and the setter functions to update
  * the values.
  */
-export function useChatOptions() {
+export function useChat() {
   const [syncEnabled, setSyncEnabled] = useLocalStorage('syncEnabled', false);
   const [systemPrompt, setSystemPrompt] = useLocalStorage<string | undefined>('systemPrompt', undefined);
   const [model, setModel] = useLocalStorage<ModelID>('model', defaultModel);
+  const [tools, setTools] = useLocalStorage<CustomTools | undefined>('tools', undefined);
 
   useMount(() => {
     if (!isValidModel(model)) {
+      console.log('[CHAT] Invalid model, setting to default');
       setModel(defaultModel);
     }
   });
@@ -42,19 +46,7 @@ export function useChatOptions() {
     setSystemPrompt,
     model,
     setModel,
+    tools,
+    setTools,
   };
-}
-
-/**
- * Retrieves the current chat options from local storage.
- * @returns options - An object containing the current chat options.
- *   - syncEnabled: A boolean indicating whether or not to enable syncing.
- *   - systemPrompt: An optional string with the system prompt.
- *   - model: The model to use for generating the response.
- */
-export function getChatOptions() {
-  const syncEnabled = localStorage.getItem('syncEnabled') === 'true';
-  const systemPrompt = localStorage.getItem('systemPrompt')?.trim();
-  const model = localStorage.getItem('model');
-  return { syncEnabled, systemPrompt, model: isValidModel(model) ? model : defaultModel };
 }

@@ -1,6 +1,9 @@
 'use server';
 import { env } from '@/env';
 import { Message, Thread } from '@/lib/dexie';
+import { createOpenRouter } from '@openrouter/ai-sdk-provider';
+import { embed, embedMany } from 'ai';
+import { generateChunks } from './ai';
 import glovedApi from './glovedapi';
 import {
   addAdmin,
@@ -104,3 +107,34 @@ export async function getShortenedUrlAction(id: string) {
 export async function getAllUserShortenedUrlsAction(userId: string) {
   return await getAllUserShortenedUrls(userId);
 }
+
+const openrouter = createOpenRouter({ apiKey: env.OPENROUTER });
+const embedModel = openrouter.textEmbeddingModel('nvidia/llama-nemotron-embed-vl-1b-v2:free');
+
+/**
+ * Generates embeddings for each line in the provided string value.
+ * @param value The string value to generate embeddings for.
+ * @returns A promise that resolves to an array of objects containing the embedding and the corresponding content.
+ */
+export const generateEmbeddings = async (value: string): Promise<Array<{ embedding: number[]; content: string }>> => {
+  const chunks = generateChunks(value);
+  const { embeddings } = await embedMany({
+    model: embedModel,
+    values: chunks,
+  });
+  return embeddings.map((e: number[], i: number) => ({ content: chunks[i], embedding: e }));
+};
+
+/**
+ * Generates a single embedding for a given string value.
+ * @param value The string value to generate an embedding for.
+ * @returns A promise that resolves to the generated embedding as a number array.
+ */
+export const generateEmbedding = async (value: string): Promise<number[]> => {
+  const input = value.replaceAll('\\n', ' ');
+  const { embedding } = await embed({
+    model: embedModel,
+    value: input,
+  });
+  return embedding;
+};

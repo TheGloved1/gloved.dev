@@ -11,4 +11,5 @@
 - [x] Finish transitioning to [glovedapi.ts](src/lib/glovedapi.ts) for all calls to api.gloved.dev
 - [x] Implement GlovedChat DnD options
 - [x] Implement OpenRouter support
-- [ ] Add OpenRouter models to [Models.ts](src/lib/ai/models.ts)
+- [x] Add OpenRouter models to [Models.ts](src/lib/ai/models.ts)
+- [ ] Create global File Viewer Page

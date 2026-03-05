@@ -1,3 +1,6 @@
+import { tool } from 'ai';
+import { z } from 'zod';
+
 export const DND_SYSTEM_PROMPT = `You are a master Dungeon Master and storyteller for Dungeons & Dragons across all editions, specializing in creating epic, unique, and unforgettable campaigns. Your expertise spans all aspects of D&D including world-building, character development, encounter design, and narrative construction, with deep knowledge of every edition's unique mechanics and flavor.
 
 ## Core Philosophy
@@ -277,3 +280,757 @@ Design antagonists that:
 **World Design**: Living settings, character-driven stories, epic scope
 
 Remember: You are not just running a game - you are crafting an epic story that will become a legend. Every session should feel like a chapter in an unforgettable fantasy novel where the players are the heroes. Your goal is to create campaigns that players will remember and talk about for years to come, regardless of which D&D edition they choose to play.`;
+
+// D&D Character Classes
+const DND_CLASSES = [
+  'Barbarian',
+  'Bard',
+  'Cleric',
+  'Druid',
+  'Fighter',
+  'Monk',
+  'Paladin',
+  'Ranger',
+  'Rogue',
+  'Sorcerer',
+  'Warlock',
+  'Wizard',
+] as const;
+
+// D&D Races
+const DND_RACES = ['Human', 'Elf', 'Dwarf', 'Halfling', 'Gnome', 'Dragonborn', 'Tiefling', 'Half-Elf', 'Half-Orc'] as const;
+
+// D&D Abilities
+const DND_ABILITIES = {
+  Strength: 'STR',
+  Dexterity: 'DEX',
+  Constitution: 'CON',
+  Intelligence: 'INT',
+  Wisdom: 'WIS',
+  Charisma: 'CHA',
+} as const;
+
+// D&D Skills with their associated abilities
+const DND_SKILLS = {
+  Athletics: 'STR',
+  Acrobatics: 'DEX',
+  Sleight_of_Hand: 'DEX',
+  Stealth: 'DEX',
+  Arcana: 'INT',
+  History: 'INT',
+  Investigation: 'INT',
+  Nature: 'INT',
+  Religion: 'INT',
+  Animal_Handling: 'WIS',
+  Insight: 'WIS',
+  Medicine: 'WIS',
+  Perception: 'WIS',
+  Survival: 'WIS',
+  Deception: 'CHA',
+  Intimidation: 'CHA',
+  Performance: 'CHA',
+  Persuasion: 'CHA',
+} as const;
+
+// D&D Spell Schools
+const SPELL_SCHOOLS = [
+  'Abjuration',
+  'Conjuration',
+  'Divination',
+  'Enchantment',
+  'Evocation',
+  'Illusion',
+  'Necromancy',
+  'Transmutation',
+] as const;
+
+/**
+ * Calculate ability modifier from ability score
+ */
+function getAbilityModifier(score: number): number {
+  return Math.floor((score - 10) / 2);
+}
+
+/**
+ * Calculate proficiency bonus by character level
+ */
+function getProficiencyBonus(level: number): number {
+  return Math.ceil(level / 4) + 1;
+}
+
+/**
+ * Roll dice with notation (e.g., "2d6+3", "1d20", "4d8")
+ */
+function rollDice(notation: string): number {
+  const match = notation.match(/(\d+)d(\d+)(?:\s*([+-]\s*\d+))?/);
+  if (!match) return 0;
+
+  const [, numDice, dieSize, modifier] = match;
+  let total = 0;
+
+  for (let i = 0; i < parseInt(numDice); i++) {
+    total += Math.floor(Math.random() * parseInt(dieSize)) + 1;
+  }
+
+  if (modifier) {
+    total += parseInt(modifier.replace(/\s/g, ''));
+  }
+
+  return total;
+}
+
+/**
+ * Tool to get D&D class information
+ */
+export const getDndClassInfo = tool({
+  description:
+    'Get detailed information about a D&D 5th Edition class including features, hit die, primary stats, and progression',
+  inputSchema: z.object({
+    className: z.enum(DND_CLASSES).describe('The D&D class to get information for'),
+    level: z.number().min(1).max(20).optional().describe('Character level for level-specific features'),
+  }),
+  execute: async ({ className, level = 1 }) => {
+    const classData = {
+      Barbarian: {
+        hitDie: 'd12',
+        primaryAbilities: ['STR'],
+        savingThrows: ['STR', 'CON'],
+        features: ['Rage', 'Unarmored Defense'],
+        equipment: ['Greataxe', 'Handaxe', "Explorer's Pack"],
+      },
+      Bard: {
+        hitDie: 'd8',
+        primaryAbilities: ['CHA'],
+        savingThrows: ['DEX', 'CHA'],
+        features: ['Bardic Inspiration', 'Jack of All Trades'],
+        equipment: ['Rapier', 'Lute', "Explorer's Pack"],
+      },
+      Cleric: {
+        hitDie: 'd8',
+        primaryAbilities: ['WIS'],
+        savingThrows: ['WIS', 'CHA'],
+        features: ['Divine Domain', 'Channel Divinity'],
+        equipment: ['Mace', 'Shield', "Explorer's Pack"],
+      },
+      Druid: {
+        hitDie: 'd8',
+        primaryAbilities: ['WIS'],
+        savingThrows: ['INT', 'WIS'],
+        features: ['Wild Shape', 'Druidic'],
+        equipment: ['Scimitar', "Explorer's Pack"],
+      },
+      Fighter: {
+        hitDie: 'd10',
+        primaryAbilities: ['STR', 'DEX'],
+        savingThrows: ['STR', 'CON'],
+        features: ['Fighting Style', 'Second Wind'],
+        equipment: ['Longsword', 'Shield', "Explorer's Pack"],
+      },
+      Monk: {
+        hitDie: 'd8',
+        primaryAbilities: ['DEX', 'WIS'],
+        savingThrows: ['STR', 'DEX'],
+        features: ['Unarmored Defense', 'Martial Arts'],
+        equipment: ['Shortsword', "Explorer's Pack"],
+      },
+      Paladin: {
+        hitDie: 'd10',
+        primaryAbilities: ['STR', 'CHA'],
+        savingThrows: ['WIS', 'CHA'],
+        features: ['Divine Sense', 'Lay on Hands'],
+        equipment: ['Longsword', 'Shield', "Explorer's Pack"],
+      },
+      Ranger: {
+        hitDie: 'd10',
+        primaryAbilities: ['STR', 'DEX', 'WIS'],
+        savingThrows: ['STR', 'DEX'],
+        features: ['Favored Enemy', 'Natural Explorer'],
+        equipment: ['Longbow', 'Shortsword', "Explorer's Pack"],
+      },
+      Rogue: {
+        hitDie: 'd8',
+        primaryAbilities: ['DEX'],
+        savingThrows: ['DEX', 'INT'],
+        features: ['Sneak Attack', "Thieves' Cant"],
+        equipment: ['Rapier', 'Shortbow', "Thieves' Tools"],
+      },
+      Sorcerer: {
+        hitDie: 'd6',
+        primaryAbilities: ['CHA'],
+        savingThrows: ['CON', 'CHA'],
+        features: ['Sorcerous Origin', 'Metamagic'],
+        equipment: ['Dagger', 'Component Pouch', "Explorer's Pack"],
+      },
+      Warlock: {
+        hitDie: 'd8',
+        primaryAbilities: ['CHA'],
+        savingThrows: ['WIS', 'CHA'],
+        features: ['Otherworldly Patron', 'Pact Magic'],
+        equipment: ['Dagger', 'Component Pouch', "Explorer's Pack"],
+      },
+      Wizard: {
+        hitDie: 'd6',
+        primaryAbilities: ['INT'],
+        savingThrows: ['INT', 'WIS'],
+        features: ['Arcane Recovery', 'Spellcasting'],
+        equipment: ['Quarterstaff', 'Component Pouch', "Explorer's Pack"],
+      },
+    };
+
+    const info = classData[className as keyof typeof classData];
+    const proficiencyBonus = getProficiencyBonus(level);
+
+    return {
+      className,
+      level,
+      hitDie: info.hitDie,
+      primaryAbilities: info.primaryAbilities,
+      savingThrows: info.savingThrows,
+      features: info.features,
+      equipment: info.equipment,
+      proficiencyBonus,
+      hpAtFirstLevel: parseInt(info.hitDie.substring(1)) + getAbilityModifier(10), // Assuming average CON
+    };
+  },
+});
+
+/**
+ * Tool to calculate D&D skill checks
+ */
+export const calculateSkillCheck = tool({
+  description: 'Calculate a D&D skill check with ability modifier, proficiency bonus, and roll result',
+  inputSchema: z.object({
+    skill: z.enum(Object.keys(DND_SKILLS) as [keyof typeof DND_SKILLS]).describe('The skill to check'),
+    abilityScore: z.number().min(1).max(20).describe('The ability score for the associated ability'),
+    level: z.number().min(1).max(20).describe('Character level for proficiency bonus'),
+    proficient: z.boolean().optional().describe('Whether the character is proficient in this skill'),
+    expertise: z.boolean().optional().describe('Whether the character has expertise (double proficiency)'),
+    advantage: z.boolean().optional().describe('Whether the roll has advantage'),
+    disadvantage: z.boolean().optional().describe('Whether the roll has disadvantage'),
+  }),
+  execute: async ({
+    skill,
+    abilityScore,
+    level,
+    proficient = false,
+    expertise = false,
+    advantage = false,
+    disadvantage = false,
+  }) => {
+    const ability = DND_SKILLS[skill];
+    const abilityMod = getAbilityModifier(abilityScore);
+    const proficiencyBonus = getProficiencyBonus(level);
+
+    let skillBonus = abilityMod;
+    if (expertise) {
+      skillBonus += proficiencyBonus * 2;
+    } else if (proficient) {
+      skillBonus += proficiencyBonus;
+    }
+
+    // Roll with advantage/disadvantage
+    const roll1 = rollDice('1d20');
+    const roll2 = rollDice('1d20');
+    let finalRoll;
+
+    if (advantage && !disadvantage) {
+      finalRoll = Math.max(roll1, roll2);
+    } else if (disadvantage && !advantage) {
+      finalRoll = Math.min(roll1, roll2);
+    } else {
+      finalRoll = roll1;
+    }
+
+    const total = finalRoll + skillBonus;
+    const isCritical = finalRoll === 20;
+    const isFumble = finalRoll === 1;
+
+    return {
+      skill,
+      ability,
+      abilityScore,
+      abilityMod,
+      proficiencyBonus,
+      skillBonus,
+      rolls: advantage || disadvantage ? [roll1, roll2] : [roll1],
+      finalRoll,
+      total,
+      isCritical,
+      isFumble,
+      hasAdvantage: advantage && !disadvantage,
+      hasDisadvantage: disadvantage && !advantage,
+    };
+  },
+});
+
+/**
+ * Tool to generate D&D character
+ */
+export const generateDndCharacter = tool({
+  description: 'Generate a random D&D 5th Edition character with race, class, ability scores, and basic equipment',
+  inputSchema: z.object({
+    level: z.number().min(1).max(20).optional().describe('Character level (default: 1)'),
+    className: z.enum(DND_CLASSES).optional().describe('Specific class to generate (random if not specified)'),
+    race: z.enum(DND_RACES).optional().describe('Specific race to generate (random if not specified)'),
+    name: z.string().optional().describe('Character name (random if not specified)'),
+  }),
+  execute: async ({ level = 1, className, race, name }) => {
+    // Generate random selections if not specified
+    const selectedClass = className || DND_CLASSES[Math.floor(Math.random() * DND_CLASSES.length)];
+    const selectedRace = race || DND_RACES[Math.floor(Math.random() * DND_RACES.length)];
+
+    // Generate ability scores using standard array (15, 14, 13, 12, 10, 8)
+    const scores = [15, 14, 13, 12, 10, 8];
+    const shuffledScores = scores.sort(() => Math.random() - 0.5);
+
+    const abilities = {
+      STR: shuffledScores[0],
+      DEX: shuffledScores[1],
+      CON: shuffledScores[2],
+      INT: shuffledScores[3],
+      WIS: shuffledScores[4],
+      CHA: shuffledScores[5],
+    };
+
+    // Generate random name if not provided
+    const firstNames = ['Aria', 'Bram', 'Cora', 'Dax', 'Elara', 'Finn', 'Gwen', 'Hugo', 'Iris', 'Jax'];
+    const lastNames = ['Blackwood', 'Ironforge', 'Moonwhisper', 'Stormwind', 'Thorn', 'Swift'];
+    const generatedName =
+      name ||
+      `${firstNames[Math.floor(Math.random() * firstNames.length)]} ${lastNames[Math.floor(Math.random() * lastNames.length)]}`;
+
+    // Calculate HP
+    const classData = {
+      Barbarian: {
+        hitDie: 'd12',
+        equipment: ['Greataxe', 'Handaxe', "Explorer's Pack"],
+        features: ['Rage', 'Unarmored Defense'],
+      },
+      Bard: {
+        hitDie: 'd8',
+        equipment: ['Rapier', 'Lute', "Explorer's Pack"],
+        features: ['Bardic Inspiration', 'Jack of All Trades'],
+      },
+      Cleric: {
+        hitDie: 'd8',
+        equipment: ['Mace', 'Shield', "Explorer's Pack"],
+        features: ['Divine Domain', 'Channel Divinity'],
+      },
+      Druid: { hitDie: 'd8', equipment: ['Scimitar', "Explorer's Pack"], features: ['Wild Shape', 'Druidic'] },
+      Fighter: {
+        hitDie: 'd10',
+        equipment: ['Longsword', 'Shield', "Explorer's Pack"],
+        features: ['Fighting Style', 'Second Wind'],
+      },
+      Monk: { hitDie: 'd8', equipment: ['Shortsword', "Explorer's Pack"], features: ['Unarmored Defense', 'Martial Arts'] },
+      Paladin: {
+        hitDie: 'd10',
+        equipment: ['Longsword', 'Shield', "Explorer's Pack"],
+        features: ['Divine Sense', 'Lay on Hands'],
+      },
+      Ranger: {
+        hitDie: 'd10',
+        equipment: ['Longbow', 'Shortsword', "Explorer's Pack"],
+        features: ['Favored Enemy', 'Natural Explorer'],
+      },
+      Rogue: {
+        hitDie: 'd8',
+        equipment: ['Rapier', 'Shortbow', "Thieves' Tools"],
+        features: ['Sneak Attack', "Thieves' Cant"],
+      },
+      Sorcerer: {
+        hitDie: 'd6',
+        equipment: ['Dagger', 'Component Pouch', "Explorer's Pack"],
+        features: ['Sorcerous Origin', 'Metamagic'],
+      },
+      Warlock: {
+        hitDie: 'd8',
+        equipment: ['Dagger', 'Component Pouch', "Explorer's Pack"],
+        features: ['Otherworldly Patron', 'Pact Magic'],
+      },
+      Wizard: {
+        hitDie: 'd6',
+        equipment: ['Quarterstaff', 'Component Pouch', "Explorer's Pack"],
+        features: ['Arcane Recovery', 'Spellcasting'],
+      },
+    };
+    const classInfo = classData[selectedClass as keyof typeof classData];
+    const conMod = getAbilityModifier(abilities.CON);
+    const hp =
+      parseInt(classInfo.hitDie.substring(1)) +
+      conMod +
+      (level - 1) * (parseInt(classInfo.hitDie.substring(1)) / 2 + conMod);
+
+    return {
+      name: generatedName,
+      race: selectedRace,
+      class: selectedClass,
+      level,
+      abilities,
+      abilityModifiers: Object.fromEntries(
+        Object.entries(abilities).map(([key, value]) => [key, getAbilityModifier(value)]),
+      ),
+      hp: Math.floor(hp),
+      proficiencyBonus: getProficiencyBonus(level),
+      equipment: classInfo.equipment,
+      features: classInfo.features,
+    };
+  },
+});
+
+/**
+ * Tool to get D&D spell information
+ */
+export const getSpellInfo = tool({
+  description: 'Get information about D&D 5th Edition spells by name, level, or school',
+  inputSchema: z.object({
+    spellName: z.string().optional().describe('Specific spell name to look up'),
+    level: z.number().min(0).max(9).optional().describe('Spell level to filter by (0-9)'),
+    school: z.enum(SPELL_SCHOOLS).optional().describe('Spell school to filter by'),
+    className: z.enum(DND_CLASSES).optional().describe('Class to get spell list for'),
+  }),
+  execute: async ({ spellName, level, school, className }) => {
+    // Basic spell database (in a real implementation, this would come from a comprehensive database)
+    const spells = [
+      {
+        name: 'Fireball',
+        level: 3,
+        school: 'Evocation',
+        classes: ['Wizard', 'Sorcerer'],
+        description: 'A fiery explosion deals 8d6 fire damage.',
+      },
+      {
+        name: 'Cure Wounds',
+        level: 1,
+        school: 'Evocation',
+        classes: ['Cleric', 'Druid', 'Paladin', 'Ranger'],
+        description: 'Heal 1d8 + spellcasting ability modifier damage.',
+      },
+      {
+        name: 'Magic Missile',
+        level: 1,
+        school: 'Evocation',
+        classes: ['Wizard', 'Sorcerer'],
+        description: 'Three darts of force deal 1d4+1 damage each.',
+      },
+      {
+        name: 'Shield',
+        level: 1,
+        school: 'Abjuration',
+        classes: ['Wizard', 'Sorcerer'],
+        description: 'Increase AC by 5 against one attack.',
+      },
+      {
+        name: 'Invisibility',
+        level: 2,
+        school: 'Illusion',
+        classes: ['Wizard', 'Sorcerer', 'Bard'],
+        description: 'Become invisible until you attack or cast a spell.',
+      },
+      {
+        name: 'Lightning Bolt',
+        level: 3,
+        school: 'Evocation',
+        classes: ['Wizard', 'Sorcerer'],
+        description: 'Line of lightning deals 8d6 damage.',
+      },
+      {
+        name: 'Teleport',
+        level: 7,
+        school: 'Conjuration',
+        classes: ['Wizard', 'Sorcerer'],
+        description: 'Transport yourself and others instantly.',
+      },
+      {
+        name: 'Detect Magic',
+        level: 1,
+        school: 'Divination',
+        classes: ['Wizard', 'Cleric', 'Druid', 'Paladin'],
+        description: 'Sense the presence of magic within 30 feet.',
+      },
+      {
+        name: 'Mage Armor',
+        level: 1,
+        school: 'Abjuration',
+        classes: ['Wizard', 'Sorcerer'],
+        description: 'Base AC becomes 13 + Dexterity modifier.',
+      },
+      {
+        name: 'Haste',
+        level: 3,
+        school: 'Transmutation',
+        classes: ['Wizard', 'Sorcerer'],
+        description: 'Target gains extra action and speed.',
+      },
+    ];
+
+    let filteredSpells = spells;
+
+    if (spellName) {
+      filteredSpells = spells.filter((spell) => spell.name.toLowerCase().includes(spellName!.toLowerCase()));
+    }
+
+    if (level !== undefined) {
+      filteredSpells = filteredSpells.filter((spell) => spell.level === level);
+    }
+
+    if (school) {
+      filteredSpells = filteredSpells.filter((spell) => spell.school === school);
+    }
+
+    if (className) {
+      filteredSpells = filteredSpells.filter((spell) => spell.classes.includes(className));
+    }
+
+    return {
+      spells: filteredSpells,
+      count: filteredSpells.length,
+      filters: { spellName, level, school, className },
+    };
+  },
+});
+
+/**
+ * Tool to simulate D&D combat encounter
+ */
+export const simulateCombatEncounter = tool({
+  description: 'Simulate a D&D combat encounter between characters and monsters',
+  inputSchema: z.object({
+    partyLevel: z.number().min(1).max(20).describe('Average party level'),
+    partySize: z.number().min(1).max(8).describe('Number of player characters'),
+    difficulty: z.enum(['Easy', 'Medium', 'Hard', 'Deadly']).describe('Encounter difficulty'),
+    monsterTypes: z.array(z.string()).optional().describe('Specific monster types to include'),
+    terrain: z.string().optional().describe('Terrain type for the encounter'),
+  }),
+  execute: async ({ partyLevel, partySize, difficulty, monsterTypes = [], terrain = 'Open field' }) => {
+    // Calculate encounter XP budget based on DMG guidelines
+    const xpThresholds = {
+      Easy: { 1: 25, 2: 50, 3: 75, 4: 125, 5: 250 },
+      Medium: { 1: 50, 2: 100, 3: 150, 4: 250, 5: 500 },
+      Hard: { 1: 75, 2: 150, 3: 225, 4: 375, 5: 750 },
+      Deadly: { 1: 100, 2: 200, 3: 400, 4: 500, 5: 1100 },
+    };
+
+    const baseXP = (xpThresholds[difficulty] as any)[Math.min(partyLevel, 5)] || 100;
+    const totalXPBudget = baseXP * partySize;
+
+    // Simple monster database
+    const monsters = [
+      { name: 'Goblin', cr: 0.25, hp: 7, ac: 15, attack: '+4', damage: '1d6+2', xp: 50 },
+      { name: 'Orc', cr: 0.5, hp: 15, ac: 13, attack: '+5', damage: '1d8+3', xp: 100 },
+      { name: 'Bandit', cr: 0.125, hp: 11, ac: 12, attack: '+3', damage: '1d6+1', xp: 25 },
+      { name: 'Wolf', cr: 0.25, hp: 11, ac: 13, attack: '+3', damage: '1d6+1', xp: 50 },
+      { name: 'Skeleton', cr: 0.25, hp: 13, ac: 13, attack: '+4', damage: '1d6+2', xp: 50 },
+      { name: 'Zombie', cr: 0.25, hp: 22, ac: 8, attack: '+3', damage: '1d6+1', xp: 50 },
+    ];
+
+    let selectedMonsters = monsters;
+    if (monsterTypes.length > 0) {
+      selectedMonsters = monsters.filter((m) =>
+        monsterTypes.some((type) => m.name.toLowerCase().includes(type.toLowerCase())),
+      );
+    }
+
+    // Build encounter within XP budget
+    const encounter = [];
+    let remainingXP = totalXPBudget;
+
+    while (remainingXP > 0) {
+      const affordableMonsters = selectedMonsters.filter((m) => m.xp <= remainingXP);
+      if (affordableMonsters.length === 0) break;
+
+      const monster = affordableMonsters[Math.floor(Math.random() * affordableMonsters.length)];
+      encounter.push({ ...monster, id: encounter.length + 1 });
+      remainingXP -= monster.xp;
+    }
+
+    // Calculate initiative order
+    const initiativeOrder = encounter
+      .map((monster) => ({
+        ...monster,
+        initiative: rollDice('1d20') + (monster.name === 'Wolf' ? 2 : 0), // Wolves have +2 DEX
+      }))
+      .sort((a, b) => b.initiative - a.initiative);
+
+    return {
+      encounter: {
+        partyLevel,
+        partySize,
+        difficulty,
+        terrain,
+        xpBudget: totalXPBudget,
+        actualXP: encounter.reduce((sum, m) => sum + m.xp, 0),
+        monsters: encounter,
+        initiativeOrder,
+        description: `${encounter.length} ${encounter.map((m) => m.name).join(', ')} appear in the ${terrain}!`,
+      },
+    };
+  },
+});
+
+/**
+ * Tool to roll dice with various D&D notations
+ */
+export const rollDiceTool = tool({
+  description: 'Roll dice using D&D notation (e.g., 2d6+3, 1d20, 4d8) with optional modifiers',
+  inputSchema: z.object({
+    notation: z.string().describe('Dice notation in format like "2d6+3", "1d20", "4d8"'),
+    count: z.number().min(1).max(10).optional().describe('Number of times to roll (default: 1)'),
+    description: z.string().optional().describe('Description of what the roll is for'),
+  }),
+  execute: async ({ notation, count = 1, description }) => {
+    const result = rollDice(notation);
+
+    // If only rolling once, return simple result
+    if (count === 1) {
+      return {
+        notation,
+        count,
+        description,
+        roll: result,
+      };
+    }
+
+    // For multiple rolls, return array
+    const rolls = [];
+    let totalSum = 0;
+
+    for (let i = 0; i < count; i++) {
+      const rollResult = rollDice(notation);
+      rolls.push(rollResult);
+      totalSum += rollResult;
+    }
+
+    return {
+      notation,
+      count,
+      description,
+      rolls,
+      totalSum,
+      average: totalSum / count,
+      min: Math.min(...rolls),
+      max: Math.max(...rolls),
+    };
+  },
+});
+
+export const dndTools = {
+  getDndClassInfo,
+  simulateCombatEncounter,
+  rollDice: rollDiceTool,
+  generateDndCharacter,
+  getSpellInfo,
+  calculateSkillCheck,
+} as const;
+
+/**
+ * System prompt fragment for teaching AI about D&D tools
+ */
+export const DND_TOOLS_PROMPT = `You have access to Dungeons & Dragons 5th Edition tools to help players and Dungeon Masters. Use these tools to provide accurate D&D information and perform game mechanics.
+
+## Available D&D Tools:
+
+### 1. getDndClassInfo
+**Purpose**: Get detailed information about D&D 5th Edition classes
+**When to use**: When players ask about class features, abilities, or want to compare classes
+**Parameters**: 
+- className (required): One of [Barbarian, Bard, Cleric, Druid, Fighter, Monk, Paladin, Ranger, Rogue, Sorcerer, Warlock, Wizard]
+- level (optional): Character level for level-specific features (1-20)
+
+**Example Usage**: 
+- "Tell me about Fighter class features"
+- "What does a Level 5 Wizard get?"
+- "Compare Barbarian and Paladin"
+
+### 2. calculateSkillCheck
+**Purpose**: Calculate D&D skill checks with proper modifiers and dice rolls
+**When to use**: When players need to make skill checks, ability checks, or want to know their chances
+**Parameters**:
+- skill (required): Skill name [Athletics, Acrobatics, Sleight_of_Hand, Stealth, Arcana, History, Investigation, Nature, Religion, Animal_Handling, Insight, Medicine, Perception, Survival, Deception, Intimidation, Performance, Persuasion]
+- abilityScore (required): The ability score for the associated ability (1-20)
+- level (required): Character level for proficiency bonus (1-20)
+- proficient (optional): Whether character is proficient in this skill
+- expertise (optional): Whether character has expertise (double proficiency)
+- advantage (optional): Whether roll has advantage
+- disadvantage (optional): Whether roll has disadvantage
+
+**Example Usage**:
+- "I want to make a Perception check, my Wisdom is 16, I'm level 5 and proficient"
+- "Roll a Stealth check with advantage, DEX 14, level 3 rogue"
+- "What's my bonus for Arcana with INT 18, level 7, proficient?"
+
+### 3. generateDndCharacter
+**Purpose**: Generate random D&D characters with complete stats
+**When to use**: When players need new characters, NPCs, or want character ideas
+**Parameters**:
+- level (optional): Character level (default: 1)
+- className (optional): Specific class to generate
+- race (optional): Specific race to generate [Human, Elf, Dwarf, Halfling, Gnome, Dragonborn, Tiefling, Half-Elf, Half-Orc]
+- name (optional): Character name
+
+**Example Usage**:
+- "Generate a random level 3 character"
+- "Create a Dwarf Fighter named Thorin"
+- "I need a new character, level 5 Elf"
+
+### 4. getSpellInfo
+**Purpose**: Look up D&D spell information
+**When to use**: When players ask about spells, want spell lists, or need spell details
+**Parameters**:
+- spellName (optional): Specific spell name to search
+- level (optional): Filter by spell level (0-9, where 0 = cantrips)
+- school (optional): Filter by school [Abjuration, Conjuration, Divination, Enchantment, Evocation, Illusion, Necromancy, Transmutation]
+- className (optional): Get spells available to specific class
+
+**Example Usage**:
+- "Tell me about Fireball spell"
+- "What level 2 Evocation spells are there?"
+- "Show me Wizard cantrips"
+- "Find healing spells for Cleric"
+
+### 5. simulateCombatEncounter
+**Purpose**: Create balanced combat encounters for parties
+**When to use**: When DMs need encounter ideas, want balanced fights, or encounter suggestions
+**Parameters**:
+- partyLevel (required): Average party level (1-20)
+- partySize (required): Number of player characters (1-8)
+- difficulty (required): Encounter difficulty [Easy, Medium, Hard, Deadly]
+- monsterTypes (optional): Specific monster types to include
+- terrain (optional): Terrain type for encounter
+
+**Example Usage**:
+- "Create a Medium encounter for 4 level 3 players"
+- "I need a Hard encounter with goblins for level 2 party of 3"
+- "Deadly encounter in a forest for level 5 party of 5"
+
+### 6. rollDiceTool
+**Purpose**: Roll dice using standard D&D notation
+**When to use**: For any dice rolls, damage rolls, or randomization needs
+**Parameters**:
+- notation (required): Dice notation like "2d6+3", "1d20", "4d8"
+- count (optional): Number of times to roll (default: 1)
+- description (optional): What the roll is for
+
+**Example Usage**:
+- "Roll 2d6+3 for greatsword damage"
+- "Roll a d20 for attack"
+- "Roll 4d6 and drop lowest for stats"
+
+## Best Practices:
+
+1. **Always use tools for D&D mechanics** - Don't guess rules or make up calculations
+2. **Ask for missing required parameters** - If a player doesn't provide needed info, ask them
+3. **Explain results clearly** - Break down what dice rolls mean and modifiers applied
+4. **Use appropriate difficulty levels** - For encounters, consider party capabilities
+5. **Provide context** - Explain why certain bonuses apply or what features mean
+6. **Be creative but accurate** - Use tools for mechanics, add flavor and storytelling
+
+## Common Scenarios:
+
+- **Character Creation**: Use generateDndCharacter + getDndClassInfo
+- **Combat**: Use calculateSkillCheck for attacks/saves, rollDiceTool for damage, simulateCombatEncounter for planning
+- **Exploration**: Use calculateSkillCheck for perception/stealth, getSpellInfo for utility spells
+- **Social**: Use calculateSkillCheck for persuasion/deception/intimidation
+- **Leveling Up**: Use getDndClassInfo with new level, recalculate HP and abilities
+
+Remember: You are a D&D assistant. Use these tools to provide accurate, helpful information while maintaining the spirit of the game. Encourage creativity while ensuring rules are followed correctly.`;
