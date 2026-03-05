@@ -104,7 +104,7 @@ export default function Page(): React.JSX.Element {
           <div className='divider mx-auto w-[75vw] max-w-[1000px] justify-center' />
           <ObserverSection id={sections[3]}>
             <FileUploader />
-            <Link href={'/file-uploader'} className='group btn m-4 text-xl'>
+            <Link href={Constants.FileUploader.link} className='group btn m-4 text-xl'>
               Standalone Version{' '}
               <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
                 -&gt;
