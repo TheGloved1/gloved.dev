@@ -72,10 +72,20 @@ export const modelProvider = customProvider({
   languageModels,
 });
 
+const getSystemPromptWithTools = async ({ tools, system }: { tools?: CustomTools; system?: string }) => {
+  let finalSystem = system;
+  if (tools && tools.includes(CustomTool.DND)) {
+    finalSystem = DND_SYSTEM_PROMPT + '\n\n' + DND_TOOLS_PROMPT;
+  } else {
+    finalSystem = system ? system : ((await glovedApi.getSystemPrompt())?.data ?? '');
+  }
+  return finalSystem;
+};
+
 export async function POST(req: NextRequest) {
   const options: ChatFetchOptions = await req.json();
   console.log('[CHAT] Received chat request', options);
-  let system = options.system ? options.system.trim() : ((await glovedApi.getSystemPrompt())?.data ?? '');
+  let system = await getSystemPromptWithTools({ tools: options.tools, system: options.system });
 
   const coreMessages = options.messages.map((msg) => ({
     role: msg.role,
@@ -84,16 +94,17 @@ export async function POST(req: NextRequest) {
 
   const model = modelProvider.languageModel(options.model ?? defaultModel);
 
+  let tools: ToolSet | undefined;
+
   /**
    * Returns a ToolSet object containing the custom tools available in the model.
    * The ToolSet object will be undefined if no custom tools are available in the model.
    * @param {CustomTools} tools - The custom tools to check.
    * @returns {ToolSet | undefined} The ToolSet object containing the custom tools available in the model.
    */
-  const getTools = (tools?: CustomTools): ToolSet | undefined => {
-    const allTools: ToolSet = {};
-    if (!tools || tools.length === 0) {
-      return undefined;
+  const getTools = async (): Promise<void> => {
+    if (!options.tools || options.tools.length === 0) {
+      return;
     }
 
     /**
@@ -122,24 +133,18 @@ export async function POST(req: NextRequest) {
     system += '\n\nYou have access to the following tools:';
 
     /* Add Tools to Tools List */
-    if (tools.includes(CustomTool.DND) && isValidTool(CustomTool.DND, options.model ?? defaultModel)) {
+    if (options.tools.includes(CustomTool.DND) && isValidTool(CustomTool.DND, options.model ?? defaultModel)) {
+      console.log('[CHAT] Adding D&D tools to tools list...');
       Object.entries(dndTools).forEach(([key, tool]) => {
-        allTools[key] = tool;
+        tools = { ...tools, [key]: tool };
       });
-      system = DND_SYSTEM_PROMPT + '\n' + DND_TOOLS_PROMPT;
-      console.log('[CHAT] System prompt with D&D tools:', system);
+      console.log('[CHAT] Setting system prompt with D&D tools...');
+      system = DND_SYSTEM_PROMPT + '\n\n' + DND_TOOLS_PROMPT;
     }
     /* End of Add Tools to Tools List */
-
-    if (Object.keys(allTools).length === 0) {
-      console.log('[CHAT] No tools available');
-      return undefined;
-    } else {
-      console.log('[CHAT] Tools:', allTools);
-      console.log('[CHAT] System Prompt with Tools:', system);
-      return allTools;
-    }
   };
+
+  await getTools();
 
   const stream = createUIMessageStream({
     execute: ({ writer }) => {
@@ -148,11 +153,15 @@ export async function POST(req: NextRequest) {
         data: { status: 'streaming' },
       });
 
+      console.log('[CHAT] Starting chat stream...');
+      console.log('[CHAT] Active tools:', tools ? Object.keys(tools).join(', ') : 'none');
+      console.log('[CHAT] System prompt:', system);
+
       const result = streamText({
         system,
         model,
         messages: coreMessages,
-        tools: getTools(options.tools),
+        tools,
         stopWhen: stepCountIs(5),
         temperature: modelConfig.temperature,
         maxOutputTokens: modelConfig.maxOutputTokens,
