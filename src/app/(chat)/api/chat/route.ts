@@ -73,16 +73,16 @@ export const modelProvider = customProvider({
 });
 
 export async function POST(req: NextRequest) {
-  const parsed: ChatFetchOptions = await req.json();
-  console.log('[CHAT] Received chat request', parsed);
-  let system = parsed.system ? parsed.system.trim() : ((await glovedApi.getSystemPrompt())?.data ?? '');
+  const options: ChatFetchOptions = await req.json();
+  console.log('[CHAT] Received chat request', options);
+  let system = options.system ? options.system.trim() : ((await glovedApi.getSystemPrompt())?.data ?? '');
 
-  const coreMessages = parsed.messages.map((msg) => ({
+  const coreMessages = options.messages.map((msg) => ({
     role: msg.role,
     content: formatMessageContent(msg.content, msg.attachments),
   })) as ModelMessage[];
 
-  const model = modelProvider.languageModel(parsed.model ?? defaultModel);
+  const model = modelProvider.languageModel(options.model ?? defaultModel);
 
   /**
    * Returns a ToolSet object containing the custom tools available in the model.
@@ -110,34 +110,35 @@ export async function POST(req: NextRequest) {
     /**
      * Checks if a given custom tool is available in the selected model.
      * @param {CustomTool} tool - The custom tool to check.
+     * @param {ModelID} modelId - The id of the model to check.
      * @returns {boolean} True if the tool is available, false otherwise.
      */
-    const isToolAvailable = (tool: (typeof CustomTool)[keyof typeof CustomTool]): boolean => {
-      console.log('[CHAT] Checking if tool', tool, 'is available for model', parsed.model ?? defaultModel);
-      const model = getModel(parsed.model ?? defaultModel);
+    const isValidTool = (tool: CustomTool, modelId: ModelID): boolean => {
+      console.log('[CHAT] Checking if tool', tool, 'is available for model', modelId);
+      const model = getModel(modelId);
       return model ? model.tools.includes(tool) : false;
     };
 
     system += '\n\nYou have access to the following tools:';
 
     /* Add Tools to Tools List */
-    if (tools.includes(CustomTool.DND) && isToolAvailable(CustomTool.DND)) {
-      console.log('[CHAT] Adding D&D tools');
+    if (tools.includes(CustomTool.DND) && isValidTool(CustomTool.DND, options.model ?? defaultModel)) {
       Object.entries(dndTools).forEach(([key, tool]) => {
         allTools[key] = tool;
       });
       system = DND_SYSTEM_PROMPT + '\n' + DND_TOOLS_PROMPT;
+      console.log('[CHAT] System prompt with D&D tools:', system);
     }
     /* End of Add Tools to Tools List */
 
     if (Object.keys(allTools).length === 0) {
       console.log('[CHAT] No tools available');
       return undefined;
+    } else {
+      console.log('[CHAT] Tools:', allTools);
+      console.log('[CHAT] System Prompt with Tools:', system);
+      return allTools;
     }
-
-    console.log('[CHAT] Tools:', allTools);
-    console.log('[CHAT] System Prompt with Tools:', system);
-    return allTools;
   };
 
   const stream = createUIMessageStream({
@@ -151,7 +152,7 @@ export async function POST(req: NextRequest) {
         system,
         model,
         messages: coreMessages,
-        tools: getTools(parsed.tools),
+        tools: getTools(options.tools),
         stopWhen: stepCountIs(5),
         temperature: modelConfig.temperature,
         maxOutputTokens: modelConfig.maxOutputTokens,
@@ -160,20 +161,20 @@ export async function POST(req: NextRequest) {
         abortSignal: req.signal,
         experimental_transform: smoothStream({ delayInMs: null }),
         onStepFinish: ({ toolCalls, toolResults }) => {
-          for (const toolCall of toolCalls || []) {
+          for (const toolCall of toolCalls) {
             writer.write({
               type: 'data-status',
               data: { status: 'tool-call', tool: toolCall.toolName },
             });
           }
-          for (const toolResult of toolResults || []) {
+          for (const toolResult of toolResults) {
             writer.write({
               type: 'data-status',
               data: { status: 'tool-done', tool: toolResult.toolName, result: toolResult.output },
             });
           }
         },
-        onChunk: ({ chunk }) => {},
+        // onChunk: ({ chunk }) => {},
         onFinish: ({ usage }) => {
           writer.write({
             type: 'data-status',
