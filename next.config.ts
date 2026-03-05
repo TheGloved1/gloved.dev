@@ -34,6 +34,30 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  redirects: async () => {
+    // Array to store all redirects
+    const redirects: Array<{
+      source: string;
+      destination: string;
+      permanent: boolean;
+    }> = [];
+
+    // Redirect old file-uploader route to new files route
+    redirects.push({
+      source: '/file-uploader',
+      destination: '/files',
+      permanent: true,
+    });
+
+    // Add more redirects here as needed
+    // redirects.push({
+    //   source: '/old-route',
+    //   destination: '/new-route',
+    //   permanent: true,
+    // });
+
+    return redirects;
+  },
 };
 
 export default nextConfig;
