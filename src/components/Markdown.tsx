@@ -1,5 +1,6 @@
 import { ClassAttributes, HTMLAttributes } from 'react';
 import Markdown, { Components, ExtraProps, Options } from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 import CodeBlock from './CodeBlock';
 
@@ -45,7 +46,7 @@ export default function CustomMarkdown({
 }: Options & { className?: string }): React.JSX.Element {
   return (
     <div className={className || undefined}>
-      <Markdown remarkPlugins={[remarkGfm]} components={components} {...props}>
+      <Markdown rehypePlugins={[rehypeRaw]} remarkPlugins={[remarkGfm]} components={components} {...props}>
         {children}
       </Markdown>
     </div>
