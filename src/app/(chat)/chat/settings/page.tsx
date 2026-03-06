@@ -16,7 +16,7 @@ import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import { usePreviousLocal } from '@/hooks/use-previous-local';
-import { DND_SYSTEM_PROMPT } from '@/lib/ai/dnd';
+import { DND_SYSTEM_PROMPT } from '@/lib/ai';
 import { dxdb } from '@/lib/dexie';
 import { tryCatch } from '@/lib/utils';
 import { useAuth } from '@clerk/nextjs';

@@ -50,13 +50,19 @@ function findPageFiles(dir: string, baseDir: string = APP_DIR): string[] {
 function generatePagePath(filePath: string, baseDir: string): string {
   const relativePath = relative(baseDir, filePath);
   const pathWithoutExt = relativePath.replace(extname(relativePath), '');
-  const pathWithoutPage = pathWithoutExt.replace('/page', '');
 
-  if (pathWithoutPage === '') {
+  const pathWithoutPage = pathWithoutExt.replace(/[/\\]page$/, '');
+
+  // Remove route group directories like (chat), (auth), etc.
+  const cleanPath = pathWithoutPage.replace(/[/\\]\([^)]+\)/g, '');
+
+  // Handle root page - if cleanPath is 'page' or empty, return '/'
+  if (cleanPath === '' || cleanPath === 'page') {
     return '/';
   }
 
-  return `/${pathWithoutPage.replace(/\\/g, '/')}`;
+  const finalPath = `/${cleanPath.replace(/\\/g, '/')}`;
+  return finalPath;
 }
 
 function generateGithubUrl(pagePath: string, relativePath: string): string {

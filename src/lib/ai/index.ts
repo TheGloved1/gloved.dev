@@ -2,10 +2,10 @@ import { tryCatch } from '../utils';
 import { CustomTools, ModelID } from './models';
 
 export * from './config';
-export * from './dnd';
 export * from './embeddings';
 export * from './models';
 export * from './onboarding';
+export * from './tools';
 
 /**
  * Generic type to extract the return type of a tool's execute function
