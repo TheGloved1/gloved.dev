@@ -96,7 +96,7 @@ export default function FileItem({ file, onDelete, className }: FileItemProps): 
       {!isMobile && (
         <div
           className={cn(
-            'group relative rounded-2xl border border-border/20 bg-gradient-to-br from-background to-background/95 p-4 backdrop-blur-sm transition-all duration-300 hover:scale-[1.02] hover:border-border/40 hover:shadow-2xl md:p-6 lg:p-8',
+            'group relative rounded-2xl border border-border/20 bg-gradient-to-br from-background to-background/95 p-2 backdrop-blur-sm transition-all duration-300 hover:scale-[1.02] hover:border-border/40 hover:shadow-lg md:p-4 lg:p-6',
             file.isTemp && 'border-orange-200/50 from-orange-50/30 to-orange-50/10',
             className,
           )}
@@ -128,14 +128,14 @@ export default function FileItem({ file, onDelete, className }: FileItemProps): 
                 >
                   {file.name}
                 </h3>
-                <div className='flex items-center gap-2 text-xs text-muted-foreground md:gap-3 md:text-sm'>
+                <div className='flex items-center gap-2 text-xs text-muted-foreground'>
                   <div className='flex items-center gap-1'>
                     <HardDrive className='h-3 w-3 flex-shrink-0 md:h-3.5 md:w-3.5' />
-                    <span className='min-w-[2.5rem] text-xs sm:min-w-[3rem] md:text-sm'>{file.size}</span>
+                    <span className='min-w-[2.5rem] text-xs sm:min-w-[3rem]'>{file.size.replaceAll(' ', '')}</span>
                   </div>
                   <div className='flex items-center gap-1'>
                     <Calendar className='h-3 w-3 flex-shrink-0 md:h-3.5 md:w-3.5' />
-                    <span className='hidden text-xs sm:inline md:text-sm'>{formatDate(file.createdAt)}</span>
+                    <span className='hidden text-xs sm:inline'>{formatDate(file.createdAt)}</span>
                   </div>
                 </div>
               </div>
@@ -314,12 +314,12 @@ export default function FileItem({ file, onDelete, className }: FileItemProps): 
 
       {/* Preview Dialog */}
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
-        <DialogContent className='max-h-[90vh] max-w-4xl overflow-y-auto'>
-          <DialogHeader>
-            <DialogTitle className='font-display flex items-center gap-4 text-xl'>
+        <DialogContent className='max-h-[95vh] w-full max-w-6xl overflow-y-auto'>
+          <DialogHeader className='space-y-2 sm:space-y-4'>
+            <DialogTitle className='font-display flex items-center gap-2 text-lg sm:gap-4 sm:text-xl'>
               <div
                 className={cn(
-                  'flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl shadow-sm',
+                  'flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg shadow-sm sm:h-10 sm:w-10 sm:rounded-xl md:h-12 md:w-12',
                   file.isTemp ?
                     'bg-gradient-to-br from-orange-400 to-orange-500 text-white shadow-orange-500/20'
                   : 'bg-gradient-to-br from-blue-400 to-blue-500 text-white shadow-blue-500/20',
@@ -328,50 +328,52 @@ export default function FileItem({ file, onDelete, className }: FileItemProps): 
                 {getFileTypeIcon(file.name)}
               </div>
               <div className='min-w-0 flex-1'>
-                <div className='truncate text-lg font-semibold' title={file.name}>
+                <div className='truncate text-sm font-semibold sm:text-base md:text-lg' title={file.name}>
                   {file.name}
                 </div>
                 {file.isTemp && (
-                  <div className='text-sm text-orange-600 dark:text-orange-400'>Temporary file (expires in 24 hours)</div>
+                  <div className='text-xs text-orange-600 dark:text-orange-400 sm:text-sm'>
+                    Temporary file (expires in 24 hours)
+                  </div>
                 )}
               </div>
             </DialogTitle>
-            <DialogDescription className='flex flex-wrap gap-6 text-sm'>
-              <div className='flex items-center gap-2'>
-                <HardDrive className='h-4 w-4' />
-                <span className='font-medium'>{file.size}</span>
+            <DialogDescription className='flex flex-wrap gap-3 text-xs sm:gap-6 sm:text-sm'>
+              <div className='flex items-center gap-1 sm:gap-2'>
+                <HardDrive className='h-3 w-3 sm:h-4 sm:w-4' />
+                <span className='text-xs font-medium sm:text-sm'>{file.size}</span>
               </div>
-              <div className='flex items-center gap-2'>
-                <Calendar className='h-4 w-4' />
-                <span className='font-medium'>{formatDate(file.createdAt)}</span>
+              <div className='flex items-center gap-1 sm:gap-2'>
+                <Calendar className='h-3 w-3 sm:h-4 sm:w-4' />
+                <span className='text-xs font-medium sm:text-sm'>{formatDate(file.createdAt)}</span>
               </div>
             </DialogDescription>
           </DialogHeader>
 
-          <div className='mt-6'>
+          <div className='mt-4 sm:mt-6'>
             {/* Preview Content */}
             <div className='flex items-center justify-center'>
               {isImage && (
-                <div className='relative overflow-hidden rounded-2xl border-2 border-border/20 shadow-2xl'>
+                <div className='relative max-h-[60vh] max-w-[90vw] overflow-hidden rounded-lg border border-border/20 shadow-lg sm:rounded-xl sm:shadow-2xl'>
                   <Image
-                    width={isMobile ? 300 : 600}
-                    height={isMobile ? 300 : 600}
+                    width={isMobile ? 200 : 400}
+                    height={isMobile ? 200 : 400}
                     src={previewUrl}
                     alt={file.name}
-                    className='h-auto max-w-full object-contain'
+                    className='h-auto max-h-[50vh] max-w-full object-contain'
                   />
                 </div>
               )}
               {isVideo && (
-                <div className='w-full max-w-3xl overflow-hidden rounded-2xl border-2 border-border/20 shadow-2xl'>
-                  <VideoPreview className='w-full' src={previewUrl} />
+                <div className='max-h-[60vh] w-full max-w-[90vw] overflow-hidden rounded-lg border border-border/20 shadow-lg sm:rounded-xl sm:shadow-2xl'>
+                  <VideoPreview className='h-auto max-h-[50vh] w-full' src={previewUrl} />
                 </div>
               )}
               {!isImage && !isVideo && (
-                <div className='flex flex-col items-center gap-6 rounded-2xl border-2 border-dashed border-border/40 p-12'>
+                <div className='flex max-w-[90vw] flex-col items-center gap-4 rounded-lg border-2 border-dashed border-border/40 p-6 sm:gap-6 sm:rounded-xl sm:p-8 md:p-12'>
                   <div
                     className={cn(
-                      'flex h-20 w-20 items-center justify-center rounded-2xl',
+                      'flex h-12 w-12 items-center justify-center rounded-lg sm:h-16 sm:w-16 sm:rounded-xl md:h-20 md:w-20',
                       file.isTemp ?
                         'bg-gradient-to-br from-orange-400 to-orange-500 text-white shadow-orange-500/20'
                       : 'bg-gradient-to-br from-blue-400 to-blue-500 text-white shadow-blue-500/20',
@@ -379,20 +381,28 @@ export default function FileItem({ file, onDelete, className }: FileItemProps): 
                   >
                     {getFileTypeIcon(file.name)}
                   </div>
-                  <p className='text-center font-medium text-muted-foreground'>Preview not available for this file type</p>
+                  <p className='text-center text-xs font-medium text-muted-foreground sm:text-sm'>
+                    Preview not available for this file type
+                  </p>
                 </div>
               )}
             </div>
 
             {/* Dialog Actions */}
-            <div className='mt-8 flex flex-col gap-3 sm:flex-row'>
-              <Button onClick={handleCopyUrl} className='h-12 flex-1 font-semibold' variant='outline'>
-                <Copy className='mr-2 h-5 w-5' />
-                Copy URL
+            <div className='mt-6 flex flex-col gap-2 sm:mt-8 sm:flex-row sm:gap-3'>
+              <Button
+                onClick={handleCopyUrl}
+                className='h-10 flex-1 text-sm font-semibold sm:h-12 sm:text-base'
+                variant='outline'
+              >
+                <Copy className='mr-1 h-4 w-4 sm:mr-2 sm:h-5 sm:w-5' />
+                <span className='hidden sm:inline'>Copy URL</span>
+                <span className='sm:hidden'>Copy</span>
               </Button>
-              <Button onClick={handleDownload} className='h-12 flex-1 font-semibold'>
-                <Download className='mr-2 h-5 w-5' />
-                Download
+              <Button onClick={handleDownload} className='h-10 flex-1 text-sm font-semibold sm:h-12 sm:text-base'>
+                <Download className='mr-1 h-4 w-4 sm:mr-2 sm:h-5 sm:w-5' />
+                <span className='hidden sm:inline'>Download</span>
+                <span className='sm:hidden'>Get</span>
               </Button>
             </div>
           </div>
