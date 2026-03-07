@@ -42,10 +42,11 @@ export const messageSchema = z.object({
   tools: z
     .array(
       z.object({
+        id: z.string().describe('ID of the tool call'),
         name: z.string().describe('Name of the tool that was called'),
-        status: z.enum(['running', 'done']).describe('Status of the tool'),
+        status: z.enum(['running', 'done', 'error']).describe('Status of the tool'),
+        after: z.number().describe('The character index in the message where the tool was called'),
         result: z.any().describe('Result returned by the tool').optional(),
-        after: z.number().describe('The character index in the message where the tool was called').optional(),
       }),
     )
     .optional()
@@ -465,8 +466,9 @@ export async function processStream(response: ReadableStream<Uint8Array>, messag
           data: {
             status: 'streaming' | 'done' | 'error' | 'tool-call' | 'tool-done';
             error?: string;
-            tool?: string;
-            result?: object;
+            toolName?: string;
+            toolResult?: object;
+            toolCallId?: string;
           };
         };
         const status = dataStatus.data.status;
@@ -478,16 +480,18 @@ export async function processStream(response: ReadableStream<Uint8Array>, messag
               : status === 'done' ? 'done'
               : undefined,
           });
-          if (status === 'tool-call' && dataStatus.data.tool) {
+          if (status === 'tool-call' && dataStatus.data.toolName) {
             const toolCall = {
+              id: dataStatus.data.toolCallId || crypto.randomUUID(),
               status: 'running',
-              name: dataStatus.data.tool,
+              name: dataStatus.data.toolName,
+              after: messageContent.length,
             } as const;
             if (messageId) {
               const message = await dxdb.messages.get(messageId);
               const existingTools = message?.tools || [];
               // Check if this tool is already running and update it, otherwise add new
-              const toolIndex = existingTools.findIndex((t) => t.name === toolCall.name && t.status === 'running');
+              const toolIndex = existingTools.findIndex((t) => t.id === toolCall.id && t.status === 'running');
               if (toolIndex >= 0) {
                 existingTools[toolIndex] = toolCall;
               } else {
@@ -499,18 +503,19 @@ export async function processStream(response: ReadableStream<Uint8Array>, messag
               });
             }
           }
-          if (status === 'tool-done' && dataStatus.data.tool && dataStatus.data.result) {
+          if (status === 'tool-done' && dataStatus.data.toolName && dataStatus.data.toolResult) {
             const toolOutput = {
+              id: dataStatus.data.toolCallId || crypto.randomUUID(),
               status: 'done',
-              name: dataStatus.data.tool,
-              result: dataStatus.data.result,
+              name: dataStatus.data.toolName,
+              result: dataStatus.data.toolResult,
               after: messageContent.length,
             } as const;
             if (messageId) {
               const message = await dxdb.messages.get(messageId);
               const existingTools = message?.tools || [];
               // Find and update the running tool with the same name
-              const toolIndex = existingTools.findIndex((t) => t.name === toolOutput.name && t.status === 'running');
+              const toolIndex = existingTools.findIndex((t) => t.id === toolOutput.id && t.status === 'running');
               if (toolIndex >= 0) {
                 existingTools[toolIndex] = toolOutput;
               } else {
@@ -526,7 +531,7 @@ export async function processStream(response: ReadableStream<Uint8Array>, messag
       } else if (type === 'reasoning-delta') {
         const delta = (eventStreamDelta?.delta ?? '') as string;
         if (delta) {
-          reasoningContent += delta;
+          reasoningContent += '\n\n' + delta;
           if (messageId) {
             await dxdb.messages.update(messageId, {
               updated_at: now(),

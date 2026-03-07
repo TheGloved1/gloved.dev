@@ -36,7 +36,7 @@ export const Models = Object.freeze([
       loggedIn: true,
       admin: false,
     },
-    tools: [] as CustomTools,
+    tools: [CustomTool.DND] as CustomTools,
     features: [] as Features,
   },
   {

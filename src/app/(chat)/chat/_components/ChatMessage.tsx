@@ -72,17 +72,18 @@ function ChatMessage({ message }: { message: Message }) {
   }, [checkForOldAttachmentLinks]);
 
   if (message.status === 'error') return <ErrorAlert>{`Error: Something went wrong, please try again.`}</ErrorAlert>;
-  if (
+  const showLoadingIndicator =
     message.content.trim() === '' &&
     !message.attachments &&
     (!message.reasoning || message.reasoning.trim() === '') &&
-    message.status === 'streaming'
-  )
+    message.status === 'streaming';
+  if (showLoadingIndicator) {
     return (
       <div key={message.id} id={message.id}>
         <LoadingSvg />
       </div>
     );
+  }
 
   return (
     <div
@@ -281,14 +282,14 @@ const renderMessageContent = (message: Message): React.ReactNode => {
   }
 
   // Sort tools by 'after' position to maintain order
-  const sortedTools = [...message.tools].sort((a, b) => (a.after || 0) - (b.after || 0));
+  const sortedTools = [...message.tools].sort((a, b) => a.after - b.after);
 
   const segments: React.ReactNode[] = [];
   let lastIndex = 0;
 
   // Add content segments with tool outputs
   sortedTools.forEach((tool, index) => {
-    const toolAfter = tool.after || 0;
+    const toolAfter = tool.after;
 
     // Add content before this tool
     if (toolAfter > lastIndex) {
@@ -313,9 +314,7 @@ const renderMessageContent = (message: Message): React.ReactNode => {
         <div key={`tool-${index}`} className='mb-4 mt-2'>
           <details className='rounded-lg border border-border bg-muted/50 p-3 font-mono text-foreground shadow-[0_4px_6px_rgba(0,0,0,0.1)]'>
             <summary className='cursor-pointer rounded p-1 font-bold text-muted-foreground transition-colors hover:bg-muted'>
-              <div className='flex items-center'>
-                🔧 {tool.name} <LoadingSvg className='ml-2 size-6' />
-              </div>
+              🔧 {tool.name}
             </summary>
             <div className='mt-2'></div>
           </details>
@@ -332,6 +331,18 @@ const renderMessageContent = (message: Message): React.ReactNode => {
           </details>
         </div>,
       );
+    } else if (message.status === 'streaming' && sortedTools.length > 0) {
+      const lastTool = sortedTools[sortedTools.length - 1];
+      const lastToolAfter = lastTool.after || 0;
+
+      // If the last tool is at the end of the content, show loading indicator
+      if (lastToolAfter >= message.content.length && tool.status === 'done') {
+        segments.push(
+          <div key='streaming-loading' className='ml-2 inline-block'>
+            <LoadingSvg className='size-4' />
+          </div>,
+        );
+      }
     }
 
     lastIndex = toolAfter;

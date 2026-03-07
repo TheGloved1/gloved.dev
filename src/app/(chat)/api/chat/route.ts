@@ -168,13 +168,18 @@ export async function POST(req: NextRequest) {
           for (const toolCall of toolCalls) {
             writer.write({
               type: 'data-status',
-              data: { status: 'tool-call', tool: toolCall.toolName },
+              data: { status: 'tool-call', toolName: toolCall.toolName, toolCallId: toolCall.toolCallId },
             });
           }
           for (const toolResult of toolResults) {
             writer.write({
               type: 'data-status',
-              data: { status: 'tool-done', tool: toolResult.toolName, result: toolResult.output },
+              data: {
+                status: 'tool-done',
+                toolName: toolResult.toolName,
+                toolCallId: toolResult.toolCallId,
+                toolResult: toolResult.output,
+              },
             });
           }
         },

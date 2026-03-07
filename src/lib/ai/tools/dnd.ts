@@ -1,6 +1,670 @@
 import { tool } from 'ai';
 import { z } from 'zod';
 
+// D&D 5e API base URL
+const DND_API_BASE = 'https://www.dnd5eapi.co';
+
+// TypeScript types for D&D 5e API responses
+interface APIReference {
+  index: string;
+  name: string;
+  url: string;
+}
+
+interface APIChoice {
+  desc: string;
+  choose: number;
+  type: string;
+  from: {
+    option_set_type: string;
+    options: any[];
+  };
+}
+
+interface ClassLevel {
+  level: number;
+  ability_score_bonuses: number;
+  prof_bonus: number;
+  features: APIReference[];
+  class_specific: Record<string, any>;
+  index: string;
+  class: APIReference;
+  url: string;
+  updated_at: string;
+}
+
+interface DndClass {
+  index: string;
+  name: string;
+  hit_die: number;
+  proficiency_choices: APIChoice[];
+  proficiencies: APIReference[];
+  saving_throws: APIReference[];
+  starting_equipment: any[];
+  starting_equipment_options: APIChoice[];
+  class_levels: string;
+  multi_classing: {
+    prerequisite_options: any;
+    proficiencies: APIReference[];
+  };
+  subclasses: APIReference[];
+  url: string;
+  updated_at: string;
+}
+
+interface Spell {
+  index: string;
+  name: string;
+  desc: string[];
+  higher_level: string[];
+  range: string;
+  components: string[];
+  material?: string;
+  ritual: boolean;
+  duration: string;
+  concentration: boolean;
+  casting_time: string;
+  level: number;
+  damage?: {
+    damage_type: APIReference;
+    damage_at_slot_level: Record<string, string>;
+  };
+  dc?: {
+    dc_type: APIReference;
+    dc_success: string;
+  };
+  area_of_effect?: {
+    type: string;
+    size: number;
+  };
+  school: APIReference;
+  classes: APIReference[];
+  subclasses: APIReference[];
+  url: string;
+  updated_at: string;
+}
+
+interface Feature {
+  index: string;
+  name: string;
+  desc: string[];
+  url: string;
+  updated_at: string;
+}
+
+const DND_API_ROOT_RESPONSE = {
+  'ability-scores': '/api/2014/ability-scores',
+  alignments: '/api/2014/alignments',
+  backgrounds: '/api/2014/backgrounds',
+  classes: '/api/2014/classes',
+  conditions: '/api/2014/conditions',
+  'damage-types': '/api/2014/damage-types',
+  equipment: '/api/2014/equipment',
+  'equipment-categories': '/api/2014/equipment-categories',
+  feats: '/api/2014/feats',
+  features: '/api/2014/features',
+  languages: '/api/2014/languages',
+  'magic-items': '/api/2014/magic-items',
+  'magic-schools': '/api/2014/magic-schools',
+  monsters: '/api/2014/monsters',
+  proficiencies: '/api/2014/proficiencies',
+  races: '/api/2014/races',
+  'rule-sections': '/api/2014/rule-sections',
+  rules: '/api/2014/rules',
+  skills: '/api/2014/skills',
+  spells: '/api/2014/spells',
+  subclasses: '/api/2014/subclasses',
+  subraces: '/api/2014/subraces',
+  traits: '/api/2014/traits',
+  'weapon-properties': '/api/2014/weapon-properties',
+};
+
+// Simple cache for API responses
+const apiCache = new Map<string, any>();
+
+/**
+ * Fetch data from D&D 5e API with caching and type safety
+ */
+async function fetchFromApi<T = any>(endpoint: string): Promise<T> {
+  const cacheKey = `${DND_API_BASE}${endpoint}`;
+
+  if (apiCache.has(cacheKey)) {
+    return apiCache.get(cacheKey);
+  }
+
+  try {
+    const response = await fetch(cacheKey);
+    if (!response.ok) {
+      throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+    }
+    const data = (await response.json()) as T;
+    apiCache.set(cacheKey, data);
+    return data;
+  } catch (error) {
+    console.error(`Error fetching from D&D API: ${endpoint}`, error);
+    throw error;
+  }
+}
+
+/**
+ * Tool to get D&D spell information
+ */
+export const getSpellInfo = tool({
+  description:
+    'Get detailed information about a D&D 5th Edition spell including description, casting time, range, components, and duration',
+  inputSchema: z.object({
+    spellName: z.string().describe('The name of the spell to look up'),
+    level: z.number().min(0).max(9).optional().describe('Filter spells by level (0-9)'),
+    school: z.string().optional().describe('Filter spells by school of magic'),
+  }),
+  execute: async ({ spellName, level, school }) => {
+    try {
+      // If searching for a specific spell by name
+      if (spellName && !level && !school) {
+        const spellData = await fetchFromApi<Spell>(`/api/2014/spells/${spellName.toLowerCase().replace(/\s+/g, '-')}`);
+        return {
+          name: spellData.name,
+          level: spellData.level,
+          school: spellData.school?.name,
+          castingTime: spellData.casting_time,
+          range: spellData.range,
+          components: spellData.components,
+          duration: spellData.duration,
+          description: spellData.desc,
+          higherLevel: spellData.higher_level,
+          classes: spellData.classes?.map((cls) => cls.name) || [],
+          url: spellData.url,
+        };
+      }
+
+      // Otherwise, search spells with filters
+      let searchEndpoint = '/api/2014/spells';
+      const params = new URLSearchParams();
+
+      if (level !== undefined) params.append('level', level.toString());
+      if (school) params.append('school', school);
+      if (spellName) params.append('name', spellName);
+
+      if (params.toString()) {
+        searchEndpoint += `?${params.toString()}`;
+      }
+
+      const spellsData = await fetchFromApi(searchEndpoint);
+      const spells = Array.isArray(spellsData) ? spellsData : spellsData.results || [];
+
+      // Fetch detailed information for each spell (limited to first 10 for performance)
+      const detailedSpells = await Promise.all(
+        spells
+          .slice(0, 10)
+          .map((spell: any) =>
+            fetchFromApi<Spell>(`/api/2014/spells/${spell.index || spell.name.toLowerCase().replace(/\s+/g, '-')}`),
+          ),
+      );
+
+      return {
+        count: spells.length,
+        spells: detailedSpells.map((spell) => ({
+          name: spell.name,
+          level: spell.level,
+          school: spell.school?.name,
+          castingTime: spell.casting_time,
+          range: spell.range,
+          components: spell.components,
+          duration: spell.duration,
+          description: spell.desc?.[0] || spell.desc,
+          classes: spell.classes?.map((cls: APIReference) => cls.name) || [],
+        })),
+      };
+    } catch (error) {
+      throw new Error(`Failed to fetch spell information: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  },
+});
+
+// API endpoint tools for general resource access
+export const getAbilityScores = tool({
+  description: 'Get information about D&D ability scores (STR, DEX, CON, INT, WIS, CHA)',
+  inputSchema: z.object({
+    score: z.string().optional().describe('Specific ability score to get (str, dex, con, int, wis, cha)'),
+  }),
+  execute: async ({ score }) => {
+    try {
+      if (score) {
+        return await fetchFromApi(`/api/2014/ability-scores/${score.toLowerCase()}`);
+      }
+      return await fetchFromApi('/api/2014/ability-scores');
+    } catch (error) {
+      throw new Error(`Failed to fetch ability scores: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  },
+});
+
+export const getAlignments = tool({
+  description: 'Get information about D&D alignments (Lawful Good, Chaotic Evil, etc.)',
+  inputSchema: z.object({
+    alignment: z.string().optional().describe('Specific alignment to get'),
+  }),
+  execute: async ({ alignment }) => {
+    try {
+      if (alignment) {
+        return await fetchFromApi(`/api/2014/alignments/${alignment.toLowerCase().replace(/\s+/g, '-')}`);
+      }
+      return await fetchFromApi('/api/2014/alignments');
+    } catch (error) {
+      throw new Error(`Failed to fetch alignments: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  },
+});
+
+export const getBackgrounds = tool({
+  description: 'Get information about D&D character backgrounds',
+  inputSchema: z.object({
+    background: z.string().optional().describe('Specific background to get'),
+  }),
+  execute: async ({ background }) => {
+    try {
+      if (background) {
+        return await fetchFromApi(`/api/2014/backgrounds/${background.toLowerCase().replace(/\s+/g, '-')}`);
+      }
+      return await fetchFromApi('/api/2014/backgrounds');
+    } catch (error) {
+      throw new Error(`Failed to fetch backgrounds: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  },
+});
+
+export const getConditions = tool({
+  description: 'Get information about D&D conditions (blinded, charmed, frightened, etc.)',
+  inputSchema: z.object({
+    condition: z.string().optional().describe('Specific condition to get'),
+  }),
+  execute: async ({ condition }) => {
+    try {
+      if (condition) {
+        return await fetchFromApi(`/api/2014/conditions/${condition.toLowerCase().replace(/\s+/g, '-')}`);
+      }
+      return await fetchFromApi('/api/2014/conditions');
+    } catch (error) {
+      throw new Error(`Failed to fetch conditions: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  },
+});
+
+export const getDamageTypes = tool({
+  description: 'Get information about D&D damage types (fire, cold, lightning, etc.)',
+  inputSchema: z.object({
+    damageType: z.string().optional().describe('Specific damage type to get'),
+  }),
+  execute: async ({ damageType }) => {
+    try {
+      if (damageType) {
+        return await fetchFromApi(`/api/2014/damage-types/${damageType.toLowerCase().replace(/\s+/g, '-')}`);
+      }
+      return await fetchFromApi('/api/2014/damage-types');
+    } catch (error) {
+      throw new Error(`Failed to fetch damage types: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  },
+});
+
+export const getEquipment = tool({
+  description: 'Get information about D&D equipment, weapons, armor, and items',
+  inputSchema: z.object({
+    equipment: z.string().optional().describe('Specific equipment to get'),
+  }),
+  execute: async ({ equipment }) => {
+    try {
+      if (equipment) {
+        return await fetchFromApi(`/api/2014/equipment/${equipment.toLowerCase().replace(/\s+/g, '-')}`);
+      }
+      return await fetchFromApi('/api/2014/equipment');
+    } catch (error) {
+      throw new Error(`Failed to fetch equipment: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  },
+});
+
+export const getEquipmentCategories = tool({
+  description: 'Get information about D&D equipment categories (weapons, armor, tools, etc.)',
+  inputSchema: z.object({
+    category: z.string().optional().describe('Specific equipment category to get'),
+  }),
+  execute: async ({ category }) => {
+    try {
+      if (category) {
+        return await fetchFromApi(`/api/2014/equipment-categories/${category.toLowerCase().replace(/\s+/g, '-')}`);
+      }
+      return await fetchFromApi('/api/2014/equipment-categories');
+    } catch (error) {
+      throw new Error(`Failed to fetch equipment categories: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  },
+});
+
+export const getFeats = tool({
+  description: 'Get information about D&D feats',
+  inputSchema: z.object({
+    feat: z.string().optional().describe('Specific feat to get'),
+  }),
+  execute: async ({ feat }) => {
+    try {
+      if (feat) {
+        return await fetchFromApi(`/api/2014/feats/${feat.toLowerCase().replace(/\s+/g, '-')}`);
+      }
+      return await fetchFromApi('/api/2014/feats');
+    } catch (error) {
+      throw new Error(`Failed to fetch feats: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  },
+});
+
+export const getFeatures = tool({
+  description: 'Get information about D&D class features',
+  inputSchema: z.object({
+    feature: z.string().optional().describe('Specific feature to get'),
+  }),
+  execute: async ({ feature }) => {
+    try {
+      if (feature) {
+        return await fetchFromApi(`/api/2014/features/${feature.toLowerCase().replace(/\s+/g, '-')}`);
+      }
+      return await fetchFromApi('/api/2014/features');
+    } catch (error) {
+      throw new Error(`Failed to fetch features: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  },
+});
+
+export const getLanguages = tool({
+  description: 'Get information about D&D languages',
+  inputSchema: z.object({
+    language: z.string().optional().describe('Specific language to get'),
+  }),
+  execute: async ({ language }) => {
+    try {
+      if (language) {
+        return await fetchFromApi(`/api/2014/languages/${language.toLowerCase().replace(/\s+/g, '-')}`);
+      }
+      return await fetchFromApi('/api/2014/languages');
+    } catch (error) {
+      throw new Error(`Failed to fetch languages: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  },
+});
+
+export const getMagicItems = tool({
+  description: 'Get information about D&D magic items',
+  inputSchema: z.object({
+    item: z.string().optional().describe('Specific magic item to get'),
+  }),
+  execute: async ({ item }) => {
+    try {
+      if (item) {
+        return await fetchFromApi(`/api/2014/magic-items/${item.toLowerCase().replace(/\s+/g, '-')}`);
+      }
+      return await fetchFromApi('/api/2014/magic-items');
+    } catch (error) {
+      throw new Error(`Failed to fetch magic items: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  },
+});
+
+export const getMagicSchools = tool({
+  description: 'Get information about D&D schools of magic',
+  inputSchema: z.object({
+    school: z.string().optional().describe('Specific magic school to get'),
+  }),
+  execute: async ({ school }) => {
+    try {
+      if (school) {
+        return await fetchFromApi(`/api/2014/magic-schools/${school.toLowerCase().replace(/\s+/g, '-')}`);
+      }
+      return await fetchFromApi('/api/2014/magic-schools');
+    } catch (error) {
+      throw new Error(`Failed to fetch magic schools: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  },
+});
+
+export const getMonsters = tool({
+  description: 'Get information about D&D monsters',
+  inputSchema: z.object({
+    monster: z.string().optional().describe('Specific monster to get'),
+    challenge: z.number().optional().describe('Filter by challenge rating'),
+    type: z.string().optional().describe('Filter by monster type'),
+  }),
+  execute: async ({ monster, challenge, type }) => {
+    try {
+      if (monster) {
+        return await fetchFromApi(`/api/2014/monsters/${monster.toLowerCase().replace(/\s+/g, '-')}`);
+      }
+
+      let searchEndpoint = '/api/2014/monsters';
+      const params = new URLSearchParams();
+
+      if (challenge !== undefined) params.append('challenge_rating', challenge.toString());
+      if (type) params.append('type', type);
+
+      if (params.toString()) {
+        searchEndpoint += `?${params.toString()}`;
+      }
+
+      return await fetchFromApi(searchEndpoint);
+    } catch (error) {
+      throw new Error(`Failed to fetch monsters: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  },
+});
+
+export const getProficiencies = tool({
+  description: 'Get information about D&D proficiencies',
+  inputSchema: z.object({
+    proficiency: z.string().optional().describe('Specific proficiency to get'),
+    type: z.string().optional().describe('Filter by proficiency type'),
+  }),
+  execute: async ({ proficiency, type }) => {
+    try {
+      if (proficiency) {
+        return await fetchFromApi(`/api/2014/proficiencies/${proficiency.toLowerCase().replace(/\s+/g, '-')}`);
+      }
+
+      let searchEndpoint = '/api/2014/proficiencies';
+      const params = new URLSearchParams();
+
+      if (type) params.append('type', type);
+
+      if (params.toString()) {
+        searchEndpoint += `?${params.toString()}`;
+      }
+
+      return await fetchFromApi(searchEndpoint);
+    } catch (error) {
+      throw new Error(`Failed to fetch proficiencies: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  },
+});
+
+export const getRaces = tool({
+  description: 'Get information about D&D races',
+  inputSchema: z.object({
+    race: z.string().optional().describe('Specific race to get'),
+  }),
+  execute: async ({ race }) => {
+    try {
+      if (race) {
+        return await fetchFromApi(`/api/2014/races/${race.toLowerCase().replace(/\s+/g, '-')}`);
+      }
+      return await fetchFromApi('/api/2014/races');
+    } catch (error) {
+      throw new Error(`Failed to fetch races: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  },
+});
+
+export const getSkills = tool({
+  description: 'Get information about D&D skills',
+  inputSchema: z.object({
+    skill: z.string().optional().describe('Specific skill to get'),
+  }),
+  execute: async ({ skill }) => {
+    try {
+      if (skill) {
+        return await fetchFromApi(`/api/2014/skills/${skill.toLowerCase().replace(/\s+/g, '-')}`);
+      }
+      return await fetchFromApi('/api/2014/skills');
+    } catch (error) {
+      throw new Error(`Failed to fetch skills: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  },
+});
+
+export const getSubclasses = tool({
+  description: 'Get information about D&D subclasses',
+  inputSchema: z.object({
+    subclass: z.string().optional().describe('Specific subclass to get'),
+    class: z.string().optional().describe('Filter by parent class'),
+  }),
+  execute: async ({ subclass, class: parentClass }) => {
+    try {
+      if (subclass) {
+        return await fetchFromApi(`/api/2014/subclasses/${subclass.toLowerCase().replace(/\s+/g, '-')}`);
+      }
+
+      let searchEndpoint = '/api/2014/subclasses';
+      const params = new URLSearchParams();
+
+      if (parentClass) params.append('class', parentClass);
+
+      if (params.toString()) {
+        searchEndpoint += `?${params.toString()}`;
+      }
+
+      return await fetchFromApi(searchEndpoint);
+    } catch (error) {
+      throw new Error(`Failed to fetch subclasses: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  },
+});
+
+export const getSubraces = tool({
+  description: 'Get information about D&D subraces',
+  inputSchema: z.object({
+    subrace: z.string().optional().describe('Specific subrace to get'),
+    race: z.string().optional().describe('Filter by parent race'),
+  }),
+  execute: async ({ subrace, race }) => {
+    try {
+      if (subrace) {
+        return await fetchFromApi(`/api/2014/subraces/${subrace.toLowerCase().replace(/\s+/g, '-')}`);
+      }
+
+      let searchEndpoint = '/api/2014/subraces';
+      const params = new URLSearchParams();
+
+      if (race) params.append('race', race);
+
+      if (params.toString()) {
+        searchEndpoint += `?${params.toString()}`;
+      }
+
+      return await fetchFromApi(searchEndpoint);
+    } catch (error) {
+      throw new Error(`Failed to fetch subraces: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  },
+});
+
+export const getTraits = tool({
+  description: 'Get information about D&D racial traits',
+  inputSchema: z.object({
+    trait: z.string().optional().describe('Specific trait to get'),
+    race: z.string().optional().describe('Filter by race'),
+  }),
+  execute: async ({ trait, race }) => {
+    try {
+      if (trait) {
+        return await fetchFromApi(`/api/2014/traits/${trait.toLowerCase().replace(/\s+/g, '-')}`);
+      }
+
+      let searchEndpoint = '/api/2014/traits';
+      const params = new URLSearchParams();
+
+      if (race) params.append('race', race);
+
+      if (params.toString()) {
+        searchEndpoint += `?${params.toString()}`;
+      }
+
+      return await fetchFromApi(searchEndpoint);
+    } catch (error) {
+      throw new Error(`Failed to fetch traits: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  },
+});
+
+export const getWeaponProperties = tool({
+  description: 'Get information about D&D weapon properties',
+  inputSchema: z.object({
+    property: z.string().optional().describe('Specific weapon property to get'),
+  }),
+  execute: async ({ property }) => {
+    try {
+      if (property) {
+        return await fetchFromApi(`/api/2014/weapon-properties/${property.toLowerCase().replace(/\s+/g, '-')}`);
+      }
+      return await fetchFromApi('/api/2014/weapon-properties');
+    } catch (error) {
+      throw new Error(`Failed to fetch weapon properties: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  },
+});
+
+export const getRules = tool({
+  description: 'Get information about D&D rules and rule sections',
+  inputSchema: z.object({
+    rule: z.string().optional().describe('Specific rule to get'),
+    section: z.string().optional().describe('Specific rule section to get'),
+  }),
+  execute: async ({ rule, section }) => {
+    try {
+      if (rule) {
+        return await fetchFromApi(`/api/2014/rules/${rule.toLowerCase().replace(/\s+/g, '-')}`);
+      }
+      if (section) {
+        return await fetchFromApi(`/api/2014/rule-sections/${section.toLowerCase().replace(/\s+/g, '-')}`);
+      }
+      return await fetchFromApi('/api/2014/rules');
+    } catch (error) {
+      throw new Error(`Failed to fetch rules: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  },
+});
+
+// General API endpoint tool for any endpoint
+export const getApiResource = tool({
+  description:
+    "Get any D&D API resource by endpoint. Use this for exploring the API or when other tools don't cover a specific need.",
+  inputSchema: z.object({
+    endpoint: z.string().describe('API endpoint (e.g., "classes", "spells", "monsters")'),
+    index: z.string().optional().describe('Specific resource index (optional)'),
+    subPath: z.string().optional().describe('Additional sub-path (e.g., "levels", "features", "spells")'),
+  }),
+  execute: async ({ endpoint, index, subPath }) => {
+    try {
+      let path = `/api/2014/${endpoint}`;
+      if (index) {
+        path += `/${index}`;
+      }
+      if (subPath) {
+        path += `/${subPath}`;
+      }
+      return await fetchFromApi(path);
+    } catch (error) {
+      throw new Error(`Failed to fetch API resource: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  },
+});
+
 export const DND_SYSTEM_PROMPT = `You are a master Dungeon Master and storyteller for Dungeons & Dragons across all editions, specializing in creating epic, unique, and unforgettable campaigns. Your expertise spans all aspects of D&D including world-building, character development, encounter design, and narrative construction, with deep knowledge of every edition's unique mechanics and flavor.
 
 ## Core Philosophy
@@ -363,7 +1027,7 @@ function getProficiencyBonus(level: number): number {
  */
 function rollDice(notation: string): number {
   const match = notation.match(/(\d+)d(\d+)(?:\s*([+-]\s*\d+))?/);
-  if (!match) return 0;
+  if (!match) throw new Error(`Invalid dice notation: ${notation}. Expected format like "2d6+3" or "1d20"`);
 
   const [, numDice, dieSize, modifier] = match;
   let total = 0;
@@ -390,107 +1054,62 @@ export const getDndClassInfo = tool({
     level: z.number().min(1).max(20).optional().describe('Character level for level-specific features'),
   }),
   execute: async ({ className, level = 1 }) => {
-    const classData = {
-      Barbarian: {
-        hitDie: 'd12',
-        primaryAbilities: ['STR'],
-        savingThrows: ['STR', 'CON'],
-        features: ['Rage', 'Unarmored Defense'],
-        equipment: ['Greataxe', 'Handaxe', "Explorer's Pack"],
-      },
-      Bard: {
-        hitDie: 'd8',
-        primaryAbilities: ['CHA'],
-        savingThrows: ['DEX', 'CHA'],
-        features: ['Bardic Inspiration', 'Jack of All Trades'],
-        equipment: ['Rapier', 'Lute', "Explorer's Pack"],
-      },
-      Cleric: {
-        hitDie: 'd8',
-        primaryAbilities: ['WIS'],
-        savingThrows: ['WIS', 'CHA'],
-        features: ['Divine Domain', 'Channel Divinity'],
-        equipment: ['Mace', 'Shield', "Explorer's Pack"],
-      },
-      Druid: {
-        hitDie: 'd8',
-        primaryAbilities: ['WIS'],
-        savingThrows: ['INT', 'WIS'],
-        features: ['Wild Shape', 'Druidic'],
-        equipment: ['Scimitar', "Explorer's Pack"],
-      },
-      Fighter: {
-        hitDie: 'd10',
-        primaryAbilities: ['STR', 'DEX'],
-        savingThrows: ['STR', 'CON'],
-        features: ['Fighting Style', 'Second Wind'],
-        equipment: ['Longsword', 'Shield', "Explorer's Pack"],
-      },
-      Monk: {
-        hitDie: 'd8',
-        primaryAbilities: ['DEX', 'WIS'],
-        savingThrows: ['STR', 'DEX'],
-        features: ['Unarmored Defense', 'Martial Arts'],
-        equipment: ['Shortsword', "Explorer's Pack"],
-      },
-      Paladin: {
-        hitDie: 'd10',
-        primaryAbilities: ['STR', 'CHA'],
-        savingThrows: ['WIS', 'CHA'],
-        features: ['Divine Sense', 'Lay on Hands'],
-        equipment: ['Longsword', 'Shield', "Explorer's Pack"],
-      },
-      Ranger: {
-        hitDie: 'd10',
-        primaryAbilities: ['STR', 'DEX', 'WIS'],
-        savingThrows: ['STR', 'DEX'],
-        features: ['Favored Enemy', 'Natural Explorer'],
-        equipment: ['Longbow', 'Shortsword', "Explorer's Pack"],
-      },
-      Rogue: {
-        hitDie: 'd8',
-        primaryAbilities: ['DEX'],
-        savingThrows: ['DEX', 'INT'],
-        features: ['Sneak Attack', "Thieves' Cant"],
-        equipment: ['Rapier', 'Shortbow', "Thieves' Tools"],
-      },
-      Sorcerer: {
-        hitDie: 'd6',
-        primaryAbilities: ['CHA'],
-        savingThrows: ['CON', 'CHA'],
-        features: ['Sorcerous Origin', 'Metamagic'],
-        equipment: ['Dagger', 'Component Pouch', "Explorer's Pack"],
-      },
-      Warlock: {
-        hitDie: 'd8',
-        primaryAbilities: ['CHA'],
-        savingThrows: ['WIS', 'CHA'],
-        features: ['Otherworldly Patron', 'Pact Magic'],
-        equipment: ['Dagger', 'Component Pouch', "Explorer's Pack"],
-      },
-      Wizard: {
-        hitDie: 'd6',
-        primaryAbilities: ['INT'],
-        savingThrows: ['INT', 'WIS'],
-        features: ['Arcane Recovery', 'Spellcasting'],
-        equipment: ['Quarterstaff', 'Component Pouch', "Explorer's Pack"],
-      },
-    };
+    try {
+      // Fetch class data from API with proper typing
+      const classData = await fetchFromApi<DndClass>(`/api/2014/classes/${className.toLowerCase()}`);
 
-    const info = classData[className as keyof typeof classData];
-    const proficiencyBonus = getProficiencyBonus(level);
+      // Fetch class levels for level-specific features
+      const levelData = await fetchFromApi<ClassLevel[]>(`/api/2014/classes/${className.toLowerCase()}/levels`);
 
-    return {
-      className,
-      level,
-      hitDie: info.hitDie,
-      primaryAbilities: info.primaryAbilities,
-      savingThrows: info.savingThrows,
-      features: info.features,
-      equipment: info.equipment,
-      proficiencyBonus,
-      hpAtFirstLevel: parseInt(info.hitDie.substring(1)) + getAbilityModifier(10), // Assuming average CON
-    };
+      // Get features for the specified level
+      const levelFeatures = levelData
+        .filter((levelInfo) => levelInfo.level <= level)
+        .flatMap((levelInfo) => levelInfo.features || []);
+
+      // Fetch detailed feature information
+      const featuresPromises = levelFeatures.map((feature) => fetchFromApi<Feature>(`/api/2014/features/${feature.index}`));
+      const featuresDetails = await Promise.all(featuresPromises);
+
+      // Fetch starting equipment
+      const equipmentData = await fetchFromApi(`/api/2014/classes/${className.toLowerCase()}/starting-equipment`);
+
+      // Handle equipment data - it might be an object with different structure
+      let equipment = [];
+      if (Array.isArray(equipmentData)) {
+        equipment = equipmentData.map((item: any) => item.equipment?.name || item.item?.name || item);
+      } else if (equipmentData && typeof equipmentData === 'object') {
+        // Handle case where API returns object with different structure
+        if (equipmentData.starting_equipment && Array.isArray(equipmentData.starting_equipment)) {
+          equipment = equipmentData.starting_equipment.map((item: any) => item.equipment?.name || item.item?.name || item);
+        }
+        // Fallback to some basic equipment if API structure is unexpected
+        if (equipment.length === 0) {
+          equipment = ['Basic Equipment'];
+        }
+      } else {
+        equipment = ['Basic Equipment'];
+      }
+
+      const proficiencyBonus = getProficiencyBonus(level);
+
+      return {
+        className,
+        level,
+        hitDie: classData.hit_die,
+        primaryAbilities: [], // API doesn't provide this directly, would need to be inferred
+        savingThrows: classData.saving_throws?.map((save) => save.name) || [],
+        features: featuresDetails.map((feature) => feature.name),
+        equipment,
+        proficiencyBonus,
+        hpAtFirstLevel: classData.hit_die + getAbilityModifier(10), // Assuming average CON
+        subclasses: classData.subclasses?.map((sub) => sub.name) || [],
+        url: classData.url,
+      };
+    } catch (error) {
+      throw new Error(
+        `Failed to fetch class information for ${className}: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+    }
   },
 });
 
@@ -567,226 +1186,84 @@ export const calculateSkillCheck = tool({
  * Tool to generate D&D character
  */
 export const generateDndCharacter = tool({
-  description: 'Generate a random D&D 5th Edition character with race, class, ability scores, and basic equipment',
+  description:
+    'Generate a random D&D 5th Edition character with race, class, ability scores, and equipment. The AI should generate a creative name for the character.',
   inputSchema: z.object({
+    name: z.string().describe('Character name - AI should generate a creative, fantasy-appropriate name'),
     level: z.number().min(1).max(20).optional().describe('Character level (default: 1)'),
     className: z.enum(DND_CLASSES).optional().describe('Specific class to generate (random if not specified)'),
     race: z.enum(DND_RACES).optional().describe('Specific race to generate (random if not specified)'),
-    name: z.string().optional().describe('Character name (random if not specified)'),
   }),
-  execute: async ({ level = 1, className, race, name }) => {
-    // Generate random selections if not specified
-    const selectedClass = className || DND_CLASSES[Math.floor(Math.random() * DND_CLASSES.length)];
-    const selectedRace = race || DND_RACES[Math.floor(Math.random() * DND_RACES.length)];
+  execute: async ({ name, level = 1, className, race }) => {
+    try {
+      // Generate random selections if not specified
+      const selectedClass = className || DND_CLASSES[Math.floor(Math.random() * DND_CLASSES.length)];
+      const selectedRace = race || DND_RACES[Math.floor(Math.random() * DND_RACES.length)];
 
-    // Generate ability scores using standard array (15, 14, 13, 12, 10, 8)
-    const scores = [15, 14, 13, 12, 10, 8];
-    const shuffledScores = scores.sort(() => Math.random() - 0.5);
+      // Generate ability scores using standard array (15, 14, 13, 12, 10, 8)
+      const scores = [15, 14, 13, 12, 10, 8];
+      const shuffledScores = scores.sort(() => Math.random() - 0.5);
 
-    const abilities = {
-      STR: shuffledScores[0],
-      DEX: shuffledScores[1],
-      CON: shuffledScores[2],
-      INT: shuffledScores[3],
-      WIS: shuffledScores[4],
-      CHA: shuffledScores[5],
-    };
+      const abilities = {
+        STR: shuffledScores[0],
+        DEX: shuffledScores[1],
+        CON: shuffledScores[2],
+        INT: shuffledScores[3],
+        WIS: shuffledScores[4],
+        CHA: shuffledScores[5],
+      };
 
-    // Generate random name if not provided
-    const firstNames = ['Aria', 'Bram', 'Cora', 'Dax', 'Elara', 'Finn', 'Gwen', 'Hugo', 'Iris', 'Jax'];
-    const lastNames = ['Blackwood', 'Ironforge', 'Moonwhisper', 'Stormwind', 'Thorn', 'Swift'];
-    const generatedName =
-      name ||
-      `${firstNames[Math.floor(Math.random() * firstNames.length)]} ${lastNames[Math.floor(Math.random() * lastNames.length)]}`;
+      // Use the AI-generated name
+      const generatedName = name;
 
-    // Calculate HP
-    const classData = {
-      Barbarian: {
-        hitDie: 'd12',
-        equipment: ['Greataxe', 'Handaxe', "Explorer's Pack"],
-        features: ['Rage', 'Unarmored Defense'],
-      },
-      Bard: {
-        hitDie: 'd8',
-        equipment: ['Rapier', 'Lute', "Explorer's Pack"],
-        features: ['Bardic Inspiration', 'Jack of All Trades'],
-      },
-      Cleric: {
-        hitDie: 'd8',
-        equipment: ['Mace', 'Shield', "Explorer's Pack"],
-        features: ['Divine Domain', 'Channel Divinity'],
-      },
-      Druid: { hitDie: 'd8', equipment: ['Scimitar', "Explorer's Pack"], features: ['Wild Shape', 'Druidic'] },
-      Fighter: {
-        hitDie: 'd10',
-        equipment: ['Longsword', 'Shield', "Explorer's Pack"],
-        features: ['Fighting Style', 'Second Wind'],
-      },
-      Monk: { hitDie: 'd8', equipment: ['Shortsword', "Explorer's Pack"], features: ['Unarmored Defense', 'Martial Arts'] },
-      Paladin: {
-        hitDie: 'd10',
-        equipment: ['Longsword', 'Shield', "Explorer's Pack"],
-        features: ['Divine Sense', 'Lay on Hands'],
-      },
-      Ranger: {
-        hitDie: 'd10',
-        equipment: ['Longbow', 'Shortsword', "Explorer's Pack"],
-        features: ['Favored Enemy', 'Natural Explorer'],
-      },
-      Rogue: {
-        hitDie: 'd8',
-        equipment: ['Rapier', 'Shortbow', "Thieves' Tools"],
-        features: ['Sneak Attack', "Thieves' Cant"],
-      },
-      Sorcerer: {
-        hitDie: 'd6',
-        equipment: ['Dagger', 'Component Pouch', "Explorer's Pack"],
-        features: ['Sorcerous Origin', 'Metamagic'],
-      },
-      Warlock: {
-        hitDie: 'd8',
-        equipment: ['Dagger', 'Component Pouch', "Explorer's Pack"],
-        features: ['Otherworldly Patron', 'Pact Magic'],
-      },
-      Wizard: {
-        hitDie: 'd6',
-        equipment: ['Quarterstaff', 'Component Pouch', "Explorer's Pack"],
-        features: ['Arcane Recovery', 'Spellcasting'],
-      },
-    };
-    const classInfo = classData[selectedClass as keyof typeof classData];
-    const conMod = getAbilityModifier(abilities.CON);
-    const hp =
-      parseInt(classInfo.hitDie.substring(1)) +
-      conMod +
-      (level - 1) * (parseInt(classInfo.hitDie.substring(1)) / 2 + conMod);
+      // Get class information from API with proper typing
+      const classData = await fetchFromApi<DndClass>(`/api/2014/classes/${selectedClass.toLowerCase()}`);
+      const equipmentData = await fetchFromApi(`/api/2014/classes/${selectedClass.toLowerCase()}/starting-equipment`);
+      const levelData = await fetchFromApi<ClassLevel[]>(`/api/2014/classes/${selectedClass.toLowerCase()}/levels`);
 
-    return {
-      name: generatedName,
-      race: selectedRace,
-      class: selectedClass,
-      level,
-      abilities,
-      abilityModifiers: Object.fromEntries(
-        Object.entries(abilities).map(([key, value]) => [key, getAbilityModifier(value)]),
-      ),
-      hp: Math.floor(hp),
-      proficiencyBonus: getProficiencyBonus(level),
-      equipment: classInfo.equipment,
-      features: classInfo.features,
-    };
-  },
-});
+      // Get features for the specified level
+      const levelFeatures = levelData
+        .filter((levelInfo) => levelInfo.level <= level)
+        .flatMap((levelInfo) => levelInfo.features || []);
 
-/**
- * Tool to get D&D spell information
- */
-export const getSpellInfo = tool({
-  description: 'Get information about D&D 5th Edition spells by name, level, or school',
-  inputSchema: z.object({
-    spellName: z.string().optional().describe('Specific spell name to look up'),
-    level: z.number().min(0).max(9).optional().describe('Spell level to filter by (0-9)'),
-    school: z.enum(SPELL_SCHOOLS).optional().describe('Spell school to filter by'),
-    className: z.enum(DND_CLASSES).optional().describe('Class to get spell list for'),
-  }),
-  execute: async ({ spellName, level, school, className }) => {
-    // Basic spell database (in a real implementation, this would come from a comprehensive database)
-    const spells = [
-      {
-        name: 'Fireball',
-        level: 3,
-        school: 'Evocation',
-        classes: ['Wizard', 'Sorcerer'],
-        description: 'A fiery explosion deals 8d6 fire damage.',
-      },
-      {
-        name: 'Cure Wounds',
-        level: 1,
-        school: 'Evocation',
-        classes: ['Cleric', 'Druid', 'Paladin', 'Ranger'],
-        description: 'Heal 1d8 + spellcasting ability modifier damage.',
-      },
-      {
-        name: 'Magic Missile',
-        level: 1,
-        school: 'Evocation',
-        classes: ['Wizard', 'Sorcerer'],
-        description: 'Three darts of force deal 1d4+1 damage each.',
-      },
-      {
-        name: 'Shield',
-        level: 1,
-        school: 'Abjuration',
-        classes: ['Wizard', 'Sorcerer'],
-        description: 'Increase AC by 5 against one attack.',
-      },
-      {
-        name: 'Invisibility',
-        level: 2,
-        school: 'Illusion',
-        classes: ['Wizard', 'Sorcerer', 'Bard'],
-        description: 'Become invisible until you attack or cast a spell.',
-      },
-      {
-        name: 'Lightning Bolt',
-        level: 3,
-        school: 'Evocation',
-        classes: ['Wizard', 'Sorcerer'],
-        description: 'Line of lightning deals 8d6 damage.',
-      },
-      {
-        name: 'Teleport',
-        level: 7,
-        school: 'Conjuration',
-        classes: ['Wizard', 'Sorcerer'],
-        description: 'Transport yourself and others instantly.',
-      },
-      {
-        name: 'Detect Magic',
-        level: 1,
-        school: 'Divination',
-        classes: ['Wizard', 'Cleric', 'Druid', 'Paladin'],
-        description: 'Sense the presence of magic within 30 feet.',
-      },
-      {
-        name: 'Mage Armor',
-        level: 1,
-        school: 'Abjuration',
-        classes: ['Wizard', 'Sorcerer'],
-        description: 'Base AC becomes 13 + Dexterity modifier.',
-      },
-      {
-        name: 'Haste',
-        level: 3,
-        school: 'Transmutation',
-        classes: ['Wizard', 'Sorcerer'],
-        description: 'Target gains extra action and speed.',
-      },
-    ];
+      // Calculate HP
+      const conMod = getAbilityModifier(abilities.CON);
+      const hp = classData.hit_die + conMod + (level - 1) * (classData.hit_die / 2 + conMod);
 
-    let filteredSpells = spells;
+      // Handle equipment data - it might be an object with different structure
+      let equipment = [];
+      if (Array.isArray(equipmentData)) {
+        equipment = equipmentData.map((item: any) => item.equipment?.name || item.item?.name || item);
+      } else if (equipmentData && typeof equipmentData === 'object') {
+        // Handle case where API returns object with different structure
+        if (equipmentData.starting_equipment && Array.isArray(equipmentData.starting_equipment)) {
+          equipment = equipmentData.starting_equipment.map((item: any) => item.equipment?.name || item.item?.name || item);
+        }
+        // Fallback to some basic equipment if API structure is unexpected
+        if (equipment.length === 0) {
+          equipment = ['Basic Equipment'];
+        }
+      } else {
+        equipment = ['Basic Equipment'];
+      }
 
-    if (spellName) {
-      filteredSpells = spells.filter((spell) => spell.name.toLowerCase().includes(spellName!.toLowerCase()));
+      return {
+        name: generatedName,
+        race: selectedRace,
+        class: selectedClass,
+        level,
+        abilities,
+        abilityModifiers: Object.fromEntries(
+          Object.entries(abilities).map(([key, value]) => [key, getAbilityModifier(value)]),
+        ),
+        hp: Math.floor(hp),
+        proficiencyBonus: getProficiencyBonus(level),
+        equipment,
+        features: levelFeatures.map((feature: any) => feature.name),
+      };
+    } catch (error) {
+      throw new Error(`Failed to generate character: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
-
-    if (level !== undefined) {
-      filteredSpells = filteredSpells.filter((spell) => spell.level === level);
-    }
-
-    if (school) {
-      filteredSpells = filteredSpells.filter((spell) => spell.school === school);
-    }
-
-    if (className) {
-      filteredSpells = filteredSpells.filter((spell) => spell.classes.includes(className));
-    }
-
-    return {
-      spells: filteredSpells,
-      count: filteredSpells.length,
-      filters: { spellName, level, school, className },
-    };
   },
 });
 
@@ -874,7 +1351,7 @@ export const simulateCombatEncounter = tool({
 export const rollDiceTool = tool({
   description: 'Roll dice using D&D notation (e.g., 2d6+3, 1d20, 4d8) with optional modifiers',
   inputSchema: z.object({
-    notation: z.string().describe('Dice notation in format like "2d6+3", "1d20", "4d8"'),
+    notation: z.string().describe('Dice notation in format like "2d6+3", "1d20", "4d8" (must follow D&D rules)'),
     count: z.number().min(1).max(10).optional().describe('Number of times to roll (default: 1)'),
     description: z.string().optional().describe('Description of what the roll is for'),
   }),
@@ -921,116 +1398,141 @@ export const dndTools = {
   generateDndCharacter,
   getSpellInfo,
   calculateSkillCheck,
+  // New API endpoint tools
+  getAbilityScores,
+  getAlignments,
+  getBackgrounds,
+  getConditions,
+  getDamageTypes,
+  getEquipment,
+  getEquipmentCategories,
+  getFeats,
+  getFeatures,
+  getLanguages,
+  getMagicItems,
+  getMagicSchools,
+  getMonsters,
+  getProficiencies,
+  getRaces,
+  getSkills,
+  getSubclasses,
+  getSubraces,
+  getTraits,
+  getWeaponProperties,
+  getRules,
+  // General API tool
+  getApiResource,
 } as const;
 
 /**
  * System prompt fragment for teaching AI about D&D tools
  */
-export const DND_TOOLS_PROMPT = `You have access to Dungeons & Dragons 5th Edition tools to help players and Dungeon Masters. Use these tools to provide accurate D&D information and perform game mechanics.
+export const DND_TOOLS_PROMPT = `You have access to Dungeons & Dragons 5th Edition tools with LIVE API data. These tools fetch real D&D information from the official 5e API.
 
-## Available D&D Tools:
+## CRITICAL: How to Use These Tools
 
-### 1. getDndClassInfo
-**Purpose**: Get detailed information about D&D 5th Edition classes
-**When to use**: When players ask about class features, abilities, or want to compare classes
-**Parameters**: 
-- className (required): One of [Barbarian, Bard, Cleric, Druid, Fighter, Monk, Paladin, Ranger, Rogue, Sorcerer, Warlock, Wizard]
-- level (optional): Character level for level-specific features (1-20)
+### CORE D&D TOOLS
 
-**Example Usage**: 
-- "Tell me about Fighter class features"
-- "What does a Level 5 Wizard get?"
-- "Compare Barbarian and Paladin"
+#### 1. getDndClassInfo (API-POWERED)
+**When to use**: ANY question about D&D classes, features, progression
+**Required Arguments**:
+- className: EXACT class name from [Barbarian, Bard, Cleric, Druid, Fighter, Monk, Paladin, Ranger, Rogue, Sorcerer, Warlock, Wizard]
+- level: Character level (1-20, optional, defaults to 1)
 
-### 2. calculateSkillCheck
-**Purpose**: Calculate D&D skill checks with proper modifiers and dice rolls
-**When to use**: When players need to make skill checks, ability checks, or want to know their chances
-**Parameters**:
-- skill (required): Skill name [Athletics, Acrobatics, Sleight_of_Hand, Stealth, Arcana, History, Investigation, Nature, Religion, Animal_Handling, Insight, Medicine, Perception, Survival, Deception, Intimidation, Performance, Persuasion]
-- abilityScore (required): The ability score for the associated ability (1-20)
-- level (required): Character level for proficiency bonus (1-20)
-- proficient (optional): Whether character is proficient in this skill
-- expertise (optional): Whether character has expertise (double proficiency)
-- advantage (optional): Whether roll has advantage
-- disadvantage (optional): Whether roll has disadvantage
+**Examples**:
+- "Tell me about Fighter" → className: "Fighter"
+- "What does a level 5 Wizard get?" → className: "Wizard", level: 5
 
-**Example Usage**:
-- "I want to make a Perception check, my Wisdom is 16, I'm level 5 and proficient"
-- "Roll a Stealth check with advantage, DEX 14, level 3 rogue"
-- "What's my bonus for Arcana with INT 18, level 7, proficient?"
+#### 2. getSpellInfo (API-POWERED)
+**When to use**: ANY spell questions
+**Arguments**:
+- spellName: Specific spell name OR leave empty to search
+- level: Filter by spell level (0-9, optional)
+- school: Filter by magic school (optional)
 
-### 3. generateDndCharacter
-**Purpose**: Generate random D&D characters with complete stats
-**When to use**: When players need new characters, NPCs, or want character ideas
-**Parameters**:
-- level (optional): Character level (default: 1)
-- className (optional): Specific class to generate
-- race (optional): Specific race to generate [Human, Elf, Dwarf, Halfling, Gnome, Dragonborn, Tiefling, Half-Elf, Half-Orc]
-- name (optional): Character name
+**Examples**:
+- "Tell me about Fireball" → spellName: "Fireball"
+- "What level 2 spells exist?" → level: 2
+- "Show me Evocation spells" → school: "Evocation"
 
-**Example Usage**:
-- "Generate a random level 3 character"
-- "Create a Dwarf Fighter named Thorin"
-- "I need a new character, level 5 Elf"
+#### 3. generateDndCharacter (UPDATED)
+**When to use**: Create characters with REAL API data
+**Required Arguments**:
+- name: AI should generate a creative, fantasy-appropriate name (e.g., "Theron Ironforge", "Luna Shadowleaf", "Kaelen Stormwind")
+**Optional**: level, className, race
 
-### 4. getSpellInfo
-**Purpose**: Look up D&D spell information
-**When to use**: When players ask about spells, want spell lists, or need spell details
-**Parameters**:
-- spellName (optional): Specific spell name to search
-- level (optional): Filter by spell level (0-9, where 0 = cantrips)
-- school (optional): Filter by school [Abjuration, Conjuration, Divination, Enchantment, Evocation, Illusion, Necromancy, Transmutation]
-- className (optional): Get spells available to specific class
+**Examples**:
+- "Generate a character" → name: "Theron Ironforge" (AI creates name)
+- "Create a level 5 Fighter" → name: "Gareth Stonehammer", className: "Fighter", level: 5
+- "Make an Elf Wizard" → name: "Elara Moonwhisper", className: "Wizard", race: "Elf"
 
-**Example Usage**:
-- "Tell me about Fireball spell"
-- "What level 2 Evocation spells are there?"
-- "Show me Wizard cantrips"
-- "Find healing spells for Cleric"
+#### 4. calculateSkillCheck
+**Required**: skill, abilityScore, level
+**Optional**: proficient, expertise, advantage, disadvantage
 
-### 5. simulateCombatEncounter
-**Purpose**: Create balanced combat encounters for parties
-**When to use**: When DMs need encounter ideas, want balanced fights, or encounter suggestions
-**Parameters**:
-- partyLevel (required): Average party level (1-20)
-- partySize (required): Number of player characters (1-8)
-- difficulty (required): Encounter difficulty [Easy, Medium, Hard, Deadly]
-- monsterTypes (optional): Specific monster types to include
-- terrain (optional): Terrain type for encounter
+#### 5. simulateCombatEncounter  
+**Required**: partyLevel, partySize, difficulty
 
-**Example Usage**:
-- "Create a Medium encounter for 4 level 3 players"
-- "I need a Hard encounter with goblins for level 2 party of 3"
-- "Deadly encounter in a forest for level 5 party of 5"
+#### 6. rollDice
+**Required**: notation (e.g., "2d6+3", "1d20")
 
-### 6. rollDice
-**Purpose**: Roll dice using standard D&D notation
-**When to use**: For any dice rolls, damage rolls, or randomization needs
-**Parameters**:
-- notation (required): Dice notation like "2d6+3", "1d20", "4d8"
-- count (optional): Number of times to roll (default: 1)
-- description (optional): What the roll is for
+### API RESOURCE TOOLS (Complete D&D Database Access)
 
-**Example Usage**:
-- "Roll 2d6+3 for greatsword damage"
-- "Roll a d20 for attack"
-- "Roll 4d6 and drop lowest for stats"
+#### Character Data Tools
+- **getAbilityScores**: Get ability scores (STR, DEX, CON, INT, WIS, CHA)
+- **getAlignments**: Get alignments (Lawful Good, Chaotic Evil, etc.)
+- **getBackgrounds**: Get character backgrounds
+- **getLanguages**: Get languages (Common, Elvish, Dwarvish, etc.)
+- **getRaces**: Get races (Human, Elf, Dwarf, etc.)
+- **getSubraces**: Get subraces (High Elf, Hill Dwarf, etc.)
+- **getTraits**: Get racial traits
 
-## Best Practices:
+#### Class & Feature Tools
+- **getFeatures**: Get class features
+- **getSubclasses**: Get subclasses (Champion, Lore Master, etc.)
+- **getProficiencies**: Get proficiencies (weapon, armor, skill, etc.)
 
-1. **Always use tools for D&D mechanics** - Don't guess rules or make up calculations
-2. **Ask for missing required parameters** - If a player doesn't provide needed info, ask them
-3. **Explain results clearly** - Break down what dice rolls mean and modifiers applied
-4. **Use appropriate difficulty levels** - For encounters, consider party capabilities
-5. **Provide context** - Explain why certain bonuses apply or what features mean
-6. **Be creative but accurate** - Use tools for mechanics, add flavor and storytelling
+#### Equipment & Item Tools
+- **getEquipment**: Get equipment, weapons, armor, items
+- **getEquipmentCategories**: Get equipment categories (weapons, armor, tools)
+- **getMagicItems**: Get magic items
+- **getWeaponProperties**: Get weapon properties (Finesse, Heavy, etc.)
 
-## Common Scenarios:
+#### Magic & Spell Tools
+- **getMagicSchools**: Get schools of magic (Evocation, Illusion, etc.)
 
-- **Character Creation**: Use generateDndCharacter + getDndClassInfo
-- **Combat**: Use calculateSkillCheck for attacks/saves, rollDice for damage, simulateCombatEncounter for planning
-- **Exploration**: Use calculateSkillCheck for perception/stealth, getSpellInfo for utility spells
-- **Social**: Use calculateSkillCheck for persuasion/deception/intimidation
-- **Leveling Up**: Use getDndClassInfo with new level, recalculate HP and abilities
+#### Monster & Combat Tools
+- **getMonsters**: Get monsters (supports CR and type filtering)
+- **getConditions**: Get conditions (blinded, charmed, frightened, etc.)
+- **getDamageTypes**: Get damage types (fire, cold, lightning, etc.)
 
-Remember: You are a D&D assistant. Use these tools to provide accurate, helpful information while maintaining the spirit of the game. Encourage creativity while ensuring rules are followed correctly.`;
+#### Rules & Reference Tools
+- **getRules**: Get rules and rule sections
+- **getFeats**: Get feats
+
+#### General API Tool
+- **getApiResource**: Access ANY endpoint directly. Use for exploration or when other tools don't cover specific needs.
+  **Arguments**: endpoint (required), index (optional), subPath (optional)
+  **Examples**:
+  - "Get all classes" → endpoint: "classes"
+  - "Get Fighter levels" → endpoint: "classes", index: "fighter", subPath: "levels"
+  - "Get specific spell" → endpoint: "spells", index: "fireball"
+
+## IMPORTANT NOTES:
+- These tools use LIVE API data - no more hardcoded information
+- Class names must be EXACT matches from the list above
+- Spell names should be specific (e.g., "Fireball" not "fire spells")
+- Always provide required parameters, ask if missing
+- API data includes features, equipment, subclasses, and more
+- Use getApiResource for exploring sub-endpoints and discovering new data
+
+## Workflow:
+Character Creation → generateDndCharacter + getDndClassInfo + getRaces + getBackgrounds
+Combat → calculateSkillCheck + rollDice + simulateCombatEncounter + getMonsters + getConditions
+Spells → getSpellInfo + getMagicSchools
+Classes → getDndClassInfo + getSubclasses + getFeatures
+Equipment → getEquipment + getEquipmentCategories + getMagicItems
+Rules → getRules + getFeats
+Exploration → getApiResource (discover any API endpoint)
+
+USE THESE TOOLS for ALL D&D mechanics - they provide accurate, up-to-date information!`;
