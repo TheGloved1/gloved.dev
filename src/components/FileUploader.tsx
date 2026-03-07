@@ -1,6 +1,8 @@
 'use client';
 import ErrorAlert from '@/components/ErrorAlert';
-import FileButton from '@/components/FileButton';
+import FileFilters from '@/components/FileFilters';
+import FileItem from '@/components/FileItem';
+import UploadZone from '@/components/UploadZone';
 import Loading from '@/components/loading';
 import { env } from '@/env';
 import { useDebounce } from '@/hooks/use-debounce';
@@ -9,12 +11,10 @@ import glovedApi, { type FileInfo } from '@/lib/glovedapi';
 import { fuzzySearch, tryCatch } from '@/lib/utils';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { type AxiosProgressEvent } from 'axios';
-import { RefreshCcw, Search } from 'lucide-react';
-import React, { useEffect, useRef, useState } from 'react';
+import { AlertTriangle, FolderOpen, RefreshCcw, Upload } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 import { DeleteConfirmDialog } from './DeleteConfirmDialog';
 import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
 
 const fetchFiles = async () => {
   const result = await glovedApi.listFiles();
@@ -56,13 +56,38 @@ export default function FileUploader(): React.JSX.Element {
   const [fileToDelete, setFileToDelete] = useState<FileInfo | null>(null);
   const [uploadRequestController, setUploadRequestController] = useState<AbortController | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [activeFilter, setActiveFilter] = useState<string>('all');
   const debouncedSearchQuery = useDebounce<string>(searchQuery, 300);
-  const inputButton = useRef<HTMLInputElement>(null);
 
   const filesQuery = useQuery({ queryKey: ['files'], queryFn: fetchFiles, initialData: [] });
 
-  // Filter files based on search query
-  const filteredFiles = fuzzySearch(filesQuery.data, debouncedSearchQuery, ['name']);
+  // Filter files based on search query and active filter
+  const filteredFiles = React.useMemo(() => {
+    let filtered = fuzzySearch(filesQuery.data, debouncedSearchQuery, ['name']);
+
+    // Apply additional filters
+    switch (activeFilter) {
+      case 'permanent':
+        filtered = filtered.filter((file) => !file.isTemp);
+        break;
+      case 'temporary':
+        filtered = filtered.filter((file) => file.isTemp);
+        break;
+      case 'images':
+        filtered = filtered.filter((file) => /\.(jpeg|jpg|gif|png|webp|svg)$/i.test(file.name));
+        break;
+      case 'videos':
+        filtered = filtered.filter((file) => /\.(mp4|webm|ogg|mov|avi)$/i.test(file.name));
+        break;
+      case 'documents':
+        filtered = filtered.filter((file) => /\.(pdf|doc|docx|txt|md)$/i.test(file.name));
+        break;
+      default:
+        break;
+    }
+
+    return filtered;
+  }, [filesQuery.data, debouncedSearchQuery, activeFilter]);
 
   const deleteMutation = useMutation({
     mutationFn: ({ filename, isTemp }: { filename: string; isTemp: boolean }) => deleteFileApi(filename, isTemp),
@@ -109,9 +134,6 @@ export default function FileUploader(): React.JSX.Element {
       queryClient.invalidateQueries({ queryKey: ['files'] });
       setUploadProgress(0);
       setUploadRequestController(null);
-      if (inputButton.current) {
-        inputButton.current.value = '';
-      }
     },
   });
 
@@ -160,17 +182,8 @@ export default function FileUploader(): React.JSX.Element {
     setFileToDelete(null);
   }
 
-  async function uploadFile(event: React.ChangeEvent<HTMLInputElement>): Promise<void> {
+  async function uploadFile(file: File, isTemp: boolean): Promise<void> {
     try {
-      const files = event.target.files;
-      if (!files || files.length === 0) {
-        console.error('No files found in FileInput!');
-        setAlert('No files found in FileInput!');
-        return;
-      }
-      const file = files[0];
-      if (!file) return;
-
       uploadMutation.mutate(file);
       setAlert('');
     } catch (error) {
@@ -181,125 +194,109 @@ export default function FileUploader(): React.JSX.Element {
 
   return (
     <>
-      <div className='container flex w-full flex-col items-center justify-center self-center rounded-xl border-4 border-white bg-gray-700/50 p-4 text-[0.5rem] md:text-[1rem]'>
-        <h1 className='font-bold'>{'GlovedFiles'}</h1>
-        <p className='text-[0.5rem] md:text-sm'>{"(Don't download random files off the internet)"}</p>
-        <br />
-
-        <Label htmlFor='uploadBtn' className='mt-2 pt-2'>
-          {'Upload File'}
-        </Label>
-        <div className='form-control'>
-          <label className='label m-2 cursor-pointer rounded-xl bg-gray-600 p-2 text-black hover:bg-gray-700'>
-            <span className='label-text text-balance'>{'Temporary file (24h)'}</span>
-            <span className='w-2'></span>
-            <input type='checkbox' checked={isTemp} onChange={(e) => setIsTemp(e.target.checked)} className='checkbox' />
-          </label>
-        </div>
-        <Input
-          id='uploadBtn'
-          ref={inputButton}
-          className='max-w-80 rounded-xl hover:animate-pulse'
-          type='file'
-          onChange={uploadFile}
-        />
-
-        {uploadProgress > 0 && uploadProgress < 100 && (
-          <div className='mt-2 flex w-full flex-col items-center justify-center gap-2'>
-            <progress className='progress progress-primary w-full' value={uploadProgress} max='100' />
-            <p className='text-center'>{`Uploading: ${uploadProgress}%`}</p>
-            <Button variant='destructive' onClick={handleCancelUpload}>
-              Cancel
-            </Button>
+      <div className='container mx-auto max-w-6xl space-y-6 p-4'>
+        {/* Header */}
+        <div className='space-y-2 text-center'>
+          <div className='flex items-center justify-center gap-3'>
+            <FolderOpen className='h-8 w-8 text-primary' />
+            <h1 className='text-3xl font-bold text-foreground'>GlovedFiles</h1>
           </div>
-        )}
+          <p className='text-muted-foreground'>File sharing with temporary and permanent storage options</p>
+        </div>
 
-        <h2 className='place-items-center content-center justify-center pb-4 pt-4 text-center'>
-          {'Download Files '}
-          <Button
-            variant='outline'
-            onClick={() => queryClient.invalidateQueries({ queryKey: ['files'] })}
-            title='Refresh Files'
-          >
-            <RefreshCcw className='h-4 w-4' /> Refresh
-          </Button>
-        </h2>
-        <h3 className='rounded-2xl bg-gray-500 bg-opacity-50 px-2 py-1 text-sm underline'>
-          {'(Click file to Copy or Download)'}
-        </h3>
-
-        {/* Search Input */}
-        <div className='my-2 w-full max-w-md'>
-          <div className='relative'>
-            <Search className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400' />
-            <Input
-              type='text'
-              placeholder='Search files...'
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className='w-full pl-10'
+        {/* Upload Section */}
+        <div className='grid gap-6 lg:grid-cols-2'>
+          <div className='space-y-4'>
+            <h2 className='flex items-center gap-2 text-xl font-semibold'>
+              <Upload className='h-5 w-5' />
+              Upload Files
+            </h2>
+            <UploadZone
+              onUpload={uploadFile}
+              uploadProgress={uploadProgress}
+              isUploading={uploadMutation.isPending}
+              onCancelUpload={handleCancelUpload}
             />
           </div>
+
+          {/* Stats Section */}
+          <div className='space-y-4'>
+            <h2 className='flex items-center gap-2 text-xl font-semibold'>
+              <RefreshCcw className='h-5 w-5' />
+              File Statistics
+            </h2>
+            <div className='grid gap-4 sm:grid-cols-2'>
+              <div className='rounded-lg border p-4'>
+                <div className='text-2xl font-bold text-primary'>{filesQuery.data.filter((f) => !f.isTemp).length}</div>
+                <div className='text-sm text-muted-foreground'>Permanent Files</div>
+              </div>
+              <div className='rounded-lg border p-4'>
+                <div className='text-2xl font-bold text-orange-600'>{filesQuery.data.filter((f) => f.isTemp).length}</div>
+                <div className='text-sm text-muted-foreground'>Temporary Files</div>
+              </div>
+            </div>
+            <Button
+              variant='outline'
+              onClick={() => queryClient.invalidateQueries({ queryKey: ['files'] })}
+              className='w-full'
+            >
+              <RefreshCcw className='mr-2 h-4 w-4' />
+              Refresh Files
+            </Button>
+          </div>
         </div>
 
-        {filesQuery.isLoading && <Loading />}
-        {!filesQuery.isLoading && filteredFiles.length > 0 && (
-          <>
-            {filteredFiles.some((file) => file.isTemp) && <h4>Permanent Files</h4>}
-            <ul className='flex max-h-48 w-[100%] min-w-48 max-w-96 resize-x flex-col flex-wrap overflow-x-scroll rounded-xl border-2 border-white p-[.2rem] md:max-h-60 md:max-w-[600px] lg:max-h-72 lg:max-w-[800px]'>
-              {filesQuery.isError ?
-                <div className='alert alert-error'>An error occurred while fetching files.</div>
-              : filteredFiles
-                  .filter((file) => !file.isTemp)
-                  .map((file) => (
-                    <li className='flex w-64 flex-row p-1 text-[.2rem]' key={file.name}>
-                      <FileButton file={file} />
-                      <Button
-                        variant='destructive'
-                        disabled={false}
-                        onClick={() => {
-                          setFileToDelete(file);
-                        }}
-                        title={`Delete file ${filteredFiles.filter((f) => !f.isTemp).findIndex((f) => f.name === file.name) + 1} of ${filteredFiles.filter((f) => !f.isTemp).length}`}
-                      >
-                        {'X'}
-                      </Button>
-                    </li>
-                  ))
-              }
-            </ul>
+        {/* Filters and Search */}
+        <FileFilters
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          onFilterChange={setActiveFilter}
+          files={filesQuery.data}
+        />
 
-            {filteredFiles.some((file) => file.isTemp) && (
-              <>
-                <h4>Temporary Files</h4>
-                <ul className='flex max-h-48 min-w-48 max-w-96 resize-x flex-col flex-wrap overflow-x-scroll rounded-xl border-2 border-white p-[.2rem] md:max-h-60 lg:max-h-72'>
-                  {filteredFiles
-                    .filter((file) => file.isTemp)
-                    .map((file) => (
-                      <li className='flex w-64 flex-row p-1 text-[.2rem]' key={file.name}>
-                        <FileButton file={file} />
-                        <Button
-                          variant={'destructive'}
-                          disabled={false}
-                          onClick={() => {
-                            setFileToDelete(file);
-                          }}
-                          title={`Delete file ${filteredFiles.filter((f) => f.isTemp).findIndex((f) => f.name === file.name) + 1} of ${filteredFiles.filter((f) => f.isTemp).length}`}
-                        >
-                          {'X'}
-                        </Button>
-                      </li>
-                    ))}
-                </ul>
-              </>
-            )}
-          </>
-        )}
-        {!filesQuery.isLoading && filteredFiles.length === 0 && debouncedSearchQuery && (
-          <li>{`No files found matching "${debouncedSearchQuery}"`}</li>
-        )}
-        {!filesQuery.isLoading && filteredFiles.length === 0 && !debouncedSearchQuery && <li>{'No files found'}</li>}
+        {/* Files List */}
+        <div className='space-y-4'>
+          <div className='flex items-center justify-between'>
+            <h2 className='flex items-center gap-2 text-xl font-semibold'>
+              <FolderOpen className='h-5 w-5' />
+              Files
+            </h2>
+            <div className='text-sm text-muted-foreground'>
+              Showing {filteredFiles.length} of {filesQuery.data.length} files
+            </div>
+          </div>
+
+          {filesQuery.isLoading && <Loading />}
+
+          {filesQuery.isError && (
+            <div className='rounded-lg border border-destructive/50 bg-destructive/10 p-4'>
+              <div className='flex items-center gap-2 text-destructive'>
+                <AlertTriangle className='h-5 w-5' />
+                <span>An error occurred while fetching files.</span>
+              </div>
+            </div>
+          )}
+
+          {!filesQuery.isLoading && !filesQuery.isError && filteredFiles.length > 0 && (
+            <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-3'>
+              {filteredFiles.map((file) => (
+                <FileItem key={file.name} file={file} onDelete={setFileToDelete} />
+              ))}
+            </div>
+          )}
+
+          {!filesQuery.isLoading && !filesQuery.isError && filteredFiles.length === 0 && (
+            <div className='rounded-lg border border-dashed p-8 text-center'>
+              <FolderOpen className='mx-auto h-12 w-12 text-muted-foreground' />
+              <h3 className='mt-4 text-lg font-semibold'>No files found</h3>
+              <p className='mt-2 text-muted-foreground'>
+                {debouncedSearchQuery ? `No files match "${debouncedSearchQuery}"` : 'No files have been uploaded yet'}
+              </p>
+            </div>
+          )}
+        </div>
       </div>
+
       {alert !== '' && <ErrorAlert>{alert}</ErrorAlert>}
       {fileToDelete && (
         <DeleteConfirmDialog

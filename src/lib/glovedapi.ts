@@ -24,14 +24,14 @@ export interface FileInfo {
   name: string;
   isTemp: boolean;
   createdAt: string;
-  size: number;
+  size: string; // already formatted size string (e.g., "1.2 MB")
   ext: string;
 }
 
 export interface GalleryFileInfo {
   name: string;
   createdAt: string;
-  size: number;
+  size: string; // already formatted size string (e.g., "1.2 MB")
 }
 
 export interface BlobUploadResponse {
