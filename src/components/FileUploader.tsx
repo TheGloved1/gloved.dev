@@ -3,12 +3,13 @@ import ErrorAlert from '@/components/ErrorAlert';
 import FileButton from '@/components/FileButton';
 import Loading from '@/components/loading';
 import { env } from '@/env';
+import { useDebounce } from '@/hooks/use-debounce';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import glovedApi, { type FileInfo } from '@/lib/glovedapi';
-import { tryCatch } from '@/lib/utils';
+import { fuzzySearch, tryCatch } from '@/lib/utils';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { type AxiosProgressEvent } from 'axios';
-import { RefreshCcw } from 'lucide-react';
+import { RefreshCcw, Search } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 import { DeleteConfirmDialog } from './DeleteConfirmDialog';
 import { Button } from './ui/button';
@@ -54,9 +55,14 @@ export default function FileUploader(): React.JSX.Element {
   const [isTemp, setIsTemp] = useState<boolean>(false);
   const [fileToDelete, setFileToDelete] = useState<FileInfo | null>(null);
   const [uploadRequestController, setUploadRequestController] = useState<AbortController | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const debouncedSearchQuery = useDebounce<string>(searchQuery, 300);
   const inputButton = useRef<HTMLInputElement>(null);
 
   const filesQuery = useQuery({ queryKey: ['files'], queryFn: fetchFiles, initialData: [] });
+
+  // Filter files based on search query
+  const filteredFiles = fuzzySearch(filesQuery.data, debouncedSearchQuery, ['name']);
 
   const deleteMutation = useMutation({
     mutationFn: ({ filename, isTemp }: { filename: string; isTemp: boolean }) => deleteFileApi(filename, isTemp),
@@ -222,14 +228,28 @@ export default function FileUploader(): React.JSX.Element {
           {'(Click file to Copy or Download)'}
         </h3>
 
+        {/* Search Input */}
+        <div className='my-2 w-full max-w-md'>
+          <div className='relative'>
+            <Search className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400' />
+            <Input
+              type='text'
+              placeholder='Search files...'
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className='w-full pl-10'
+            />
+          </div>
+        </div>
+
         {filesQuery.isLoading && <Loading />}
-        {!filesQuery.isLoading && filesQuery.data.length > 0 && (
+        {!filesQuery.isLoading && filteredFiles.length > 0 && (
           <>
-            {filesQuery.data.some((file) => file.isTemp) && <h4>Permanent Files</h4>}
+            {filteredFiles.some((file) => file.isTemp) && <h4>Permanent Files</h4>}
             <ul className='flex max-h-48 w-[100%] min-w-48 max-w-96 resize-x flex-col flex-wrap overflow-x-scroll rounded-xl border-2 border-white p-[.2rem] md:max-h-60 md:max-w-[600px] lg:max-h-72 lg:max-w-[800px]'>
               {filesQuery.isError ?
                 <div className='alert alert-error'>An error occurred while fetching files.</div>
-              : filesQuery.data
+              : filteredFiles
                   .filter((file) => !file.isTemp)
                   .map((file) => (
                     <li className='flex w-64 flex-row p-1 text-[.2rem]' key={file.name}>
@@ -240,7 +260,7 @@ export default function FileUploader(): React.JSX.Element {
                         onClick={() => {
                           setFileToDelete(file);
                         }}
-                        title={`Delete file ${filesQuery.data.filter((f) => !f.isTemp).findIndex((f) => f.name === file.name) + 1} of ${filesQuery.data.filter((f) => !f.isTemp).length}`}
+                        title={`Delete file ${filteredFiles.filter((f) => !f.isTemp).findIndex((f) => f.name === file.name) + 1} of ${filteredFiles.filter((f) => !f.isTemp).length}`}
                       >
                         {'X'}
                       </Button>
@@ -249,11 +269,11 @@ export default function FileUploader(): React.JSX.Element {
               }
             </ul>
 
-            {filesQuery.data.some((file) => file.isTemp) && (
+            {filteredFiles.some((file) => file.isTemp) && (
               <>
                 <h4>Temporary Files</h4>
                 <ul className='flex max-h-48 min-w-48 max-w-96 resize-x flex-col flex-wrap overflow-x-scroll rounded-xl border-2 border-white p-[.2rem] md:max-h-60 lg:max-h-72'>
-                  {filesQuery.data
+                  {filteredFiles
                     .filter((file) => file.isTemp)
                     .map((file) => (
                       <li className='flex w-64 flex-row p-1 text-[.2rem]' key={file.name}>
@@ -264,7 +284,7 @@ export default function FileUploader(): React.JSX.Element {
                           onClick={() => {
                             setFileToDelete(file);
                           }}
-                          title={`Delete file ${filesQuery.data.filter((f) => f.isTemp).findIndex((f) => f.name === file.name) + 1} of ${filesQuery.data.filter((f) => f.isTemp).length}`}
+                          title={`Delete file ${filteredFiles.filter((f) => f.isTemp).findIndex((f) => f.name === file.name) + 1} of ${filteredFiles.filter((f) => f.isTemp).length}`}
                         >
                           {'X'}
                         </Button>
@@ -275,7 +295,10 @@ export default function FileUploader(): React.JSX.Element {
             )}
           </>
         )}
-        {!filesQuery.isLoading && filesQuery.data.length === 0 && <li>{'No files found'}</li>}
+        {!filesQuery.isLoading && filteredFiles.length === 0 && debouncedSearchQuery && (
+          <li>{`No files found matching "${debouncedSearchQuery}"`}</li>
+        )}
+        {!filesQuery.isLoading && filteredFiles.length === 0 && !debouncedSearchQuery && <li>{'No files found'}</li>}
       </div>
       {alert !== '' && <ErrorAlert>{alert}</ErrorAlert>}
       {fileToDelete && (
