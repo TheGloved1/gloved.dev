@@ -3,18 +3,18 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { type FileInfo } from '@/lib/glovedapi';
 import { cn } from '@/lib/utils';
-import { Calendar, Clock, Filter, HardDrive, Search, X } from 'lucide-react';
+import { Calendar, Clock, Filter, Search, X } from 'lucide-react';
 import { useCallback, useState } from 'react';
 
 interface FileFiltersProps {
   searchQuery: string;
   onSearchChange: (query: string) => void;
-  onFilterChange: (filter: FilterType) => void;
+  onFilterChange: (filters: string[]) => void;
   files: FileInfo[];
   className?: string;
 }
 
-type FilterType = 'all' | 'permanent' | 'temporary' | 'images' | 'videos' | 'documents';
+type FilterType = 'permanent' | 'temporary' | 'images' | 'videos' | 'documents';
 
 const getFileType = (fileName: string): string => {
   const extension = fileName.split('.').pop()?.toLowerCase();
@@ -39,16 +39,10 @@ export default function FileFilters({
   files,
   className,
 }: FileFiltersProps): React.JSX.Element {
-  const [activeFilter, setActiveFilter] = useState<FilterType>('all');
+  const [activeFilters, setActiveFilters] = useState<string[]>([]);
   const [showFilters, setShowFilters] = useState(false);
 
   const filterOptions: { type: FilterType; label: string; icon: React.ReactNode; count: number }[] = [
-    {
-      type: 'all',
-      label: 'All Files',
-      icon: <HardDrive className='h-4 w-4' />,
-      count: files.length,
-    },
     {
       type: 'permanent',
       label: 'Permanent',
@@ -83,10 +77,14 @@ export default function FileFilters({
 
   const handleFilterChange = useCallback(
     (filterType: FilterType) => {
-      setActiveFilter(filterType);
-      onFilterChange(filterType);
+      // Toggle filter: if clicking same Filter, turn off; otherwise turn on
+      const newFilters =
+        activeFilters.includes(filterType) ? activeFilters.filter((f) => f !== filterType) : [...activeFilters, filterType];
+
+      setActiveFilters(newFilters);
+      onFilterChange(newFilters);
     },
-    [onFilterChange],
+    [onFilterChange, activeFilters],
   );
 
   const clearSearch = useCallback(() => {
@@ -96,26 +94,34 @@ export default function FileFilters({
   const getFilteredFiles = useCallback(() => {
     let filtered = files;
 
-    // Apply type filter
-    switch (activeFilter) {
-      case 'permanent':
-        filtered = filtered.filter((f) => !f.isTemp);
-        break;
-      case 'temporary':
-        filtered = filtered.filter((f) => f.isTemp);
-        break;
-      case 'images':
-        filtered = filtered.filter((f) => getFileType(f.name) === 'images');
-        break;
-      case 'videos':
-        filtered = filtered.filter((f) => getFileType(f.name) === 'videos');
-        break;
-      case 'documents':
-        filtered = filtered.filter((f) => getFileType(f.name) === 'documents');
-        break;
-      default:
-        break;
+    // Apply type filters
+    if (activeFilters.length === 0) {
+      // No filters active, show all files
+      return filtered;
     }
+
+    filtered = filtered.filter((file) => {
+      // Check if file matches any active filter
+      const fileType = getFileType(file.name);
+
+      if (activeFilters.includes('permanent') && !file.isTemp) {
+        return true;
+      }
+      if (activeFilters.includes('temporary') && file.isTemp) {
+        return true;
+      }
+      if (activeFilters.includes('images') && fileType === 'images') {
+        return true;
+      }
+      if (activeFilters.includes('videos') && fileType === 'videos') {
+        return true;
+      }
+      if (activeFilters.includes('documents') && fileType === 'documents') {
+        return true;
+      }
+
+      return false;
+    });
 
     // Apply search filter
     if (searchQuery.trim()) {
@@ -123,7 +129,7 @@ export default function FileFilters({
     }
 
     return filtered;
-  }, [files, activeFilter, searchQuery]);
+  }, [files, activeFilters, searchQuery]);
 
   const filteredCount = getFilteredFiles().length;
 
@@ -158,16 +164,7 @@ export default function FileFilters({
         <Button variant='outline' size='sm' onClick={() => setShowFilters(!showFilters)} className='flex items-center gap-2'>
           <Filter className='h-4 w-4' />
           Filters
-          {activeFilter !== 'all' && (
-            <span className='ml-1 inline-flex h-5 items-center rounded-md bg-secondary px-2 py-1 text-xs font-medium text-secondary-foreground'>
-              {filterOptions.find((f) => f.type === activeFilter)?.label}
-            </span>
-          )}
         </Button>
-
-        <div className='text-sm text-muted-foreground'>
-          {filteredCount} of {files.length} files
-        </div>
       </div>
 
       {/* Filter Options */}
@@ -178,7 +175,7 @@ export default function FileFilters({
             {filterOptions.map((option) => (
               <Button
                 key={option.type}
-                variant={activeFilter === option.type ? 'default' : 'outline'}
+                variant={activeFilters.includes(option.type) ? 'default' : 'outline'}
                 size='sm'
                 onClick={() => handleFilterChange(option.type)}
                 className='flex items-center justify-start gap-2'
@@ -191,7 +188,7 @@ export default function FileFilters({
                 <span
                   className={cn(
                     'inline-flex items-center rounded-md px-2 py-1 text-xs font-medium',
-                    activeFilter === option.type ?
+                    activeFilters.includes(option.type) ?
                       'bg-secondary text-secondary-foreground'
                     : 'border border-input bg-background text-foreground',
                   )}
@@ -203,8 +200,8 @@ export default function FileFilters({
           </div>
 
           {/* Clear Filters */}
-          {activeFilter !== 'all' && (
-            <Button variant='ghost' size='sm' onClick={() => handleFilterChange('all')} className='w-full'>
+          {activeFilters.length > 0 && (
+            <Button variant='ghost' size='sm' onClick={() => setActiveFilters([])} className='w-full'>
               <X className='mr-2 h-4 w-4' />
               Clear all filters
             </Button>
@@ -213,22 +210,25 @@ export default function FileFilters({
       )}
 
       {/* Active Filters Summary */}
-      {(activeFilter !== 'all' || searchQuery) && (
+      {(activeFilters.length > 0 || searchQuery) && (
         <div className='flex flex-wrap gap-2'>
-          {activeFilter !== 'all' && (
-            <span className='inline-flex items-center gap-1 rounded-md bg-secondary px-2 py-1 text-xs font-medium text-secondary-foreground'>
-              {filterOptions.find((f) => f.type === activeFilter)?.icon}
-              {filterOptions.find((f) => f.type === activeFilter)?.label}
+          {activeFilters.map((filter) => (
+            <span
+              key={filter}
+              className='inline-flex items-center gap-1 rounded-md bg-secondary px-2 py-1 text-xs font-medium text-secondary-foreground'
+            >
+              {filterOptions.find((f) => f.type === filter)?.icon}
+              {filterOptions.find((f) => f.type === filter)?.label}
               <Button
                 variant='ghost'
                 size='sm'
-                onClick={() => handleFilterChange('all')}
+                onClick={() => handleFilterChange(filter as FilterType)}
                 className='ml-1 h-4 w-4 p-0 hover:bg-transparent'
               >
                 <X className='h-3 w-3' />
               </Button>
             </span>
-          )}
+          ))}
           {searchQuery && (
             <span className='inline-flex items-center gap-1 rounded-md bg-secondary px-2 py-1 text-xs font-medium text-secondary-foreground'>
               Search: &quot;{searchQuery}&quot;

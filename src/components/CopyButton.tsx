@@ -57,3 +57,54 @@ export default function CopyButton({
     </div>
   );
 }
+
+/**
+ * Copy button that only renders the icon (Copy or Check)
+ * Uses ghost variant by default and has smaller size
+ */
+export function CopyButtonIcon({
+  copyAction,
+  btnClassName,
+  iconClassName,
+}: {
+  copyAction: () => void;
+  btnClassName?: string;
+  iconClassName?: string;
+}): React.JSX.Element {
+  const [copied, setCopied] = useState(false);
+  const handleCopy = async () => {
+    copyAction();
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const activeClass = 'scale-100 opacity-100';
+  const inactiveClass = 'scale-0 opacity-0';
+
+  const defaultBtnClassName = 'h-7 w-7 rounded-lg transition-colors hover:bg-accent/80 md:h-9 md:w-9';
+  const defaultIconClassName = 'h-3.5 w-3.5 md:h-4 md:w-4';
+
+  return (
+    <Button
+      variant='ghost'
+      size='sm'
+      onClick={() => {
+        handleCopy();
+      }}
+      className={btnClassName ? btnClassName : defaultBtnClassName}
+    >
+      <div className={cn('relative', iconClassName ? iconClassName : defaultIconClassName)}>
+        <Copy
+          className={cn(
+            `ease-snappy absolute inset-0 !size-4 pr-[0.075rem] transition-all duration-200 ${!copied ? activeClass : inactiveClass}`,
+          )}
+        />
+        <Check
+          className={cn(
+            `ease-snappy absolute inset-0 !size-4 pr-[0.075rem] text-green-500 transition-all duration-200 ${copied ? activeClass : inactiveClass}`,
+          )}
+        />
+      </div>
+    </Button>
+  );
+}

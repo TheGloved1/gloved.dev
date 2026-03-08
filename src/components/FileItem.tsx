@@ -78,7 +78,7 @@ export default function FileItem({ file, onDelete, className }: FileItemProps): 
     try {
       await navigator.clipboard.writeText(previewUrl);
       setIsCopied(true);
-      setTimeout(() => setIsCopied(false), 2000);
+      setTimeout(() => setIsCopied(false), 1000);
       setShowDialog(false);
     } catch (error) {
       console.error('Failed to copy URL:', error);

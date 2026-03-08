@@ -56,38 +56,62 @@ export default function FileUploader(): React.JSX.Element {
   const [fileToDelete, setFileToDelete] = useState<FileInfo | null>(null);
   const [uploadRequestController, setUploadRequestController] = useState<AbortController | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [activeFilter, setActiveFilter] = useState<string>('all');
+  const [activeFilters, setActiveFilters] = useState<string[]>([]);
   const debouncedSearchQuery = useDebounce<string>(searchQuery, 300);
+
+  const getFileType = (fileName: string): string => {
+    const extension = fileName.split('.').pop()?.toLowerCase();
+
+    if (['jpeg', 'jpg', 'gif', 'png', 'webp', 'svg'].includes(extension || '')) {
+      return 'images';
+    }
+    if (['mp4', 'webm', 'ogg', 'mov', 'avi'].includes(extension || '')) {
+      return 'videos';
+    }
+    if (['pdf', 'doc', 'docx', 'txt', 'md'].includes(extension || '')) {
+      return 'documents';
+    }
+
+    return 'other';
+  };
 
   const filesQuery = useQuery({ queryKey: ['files'], queryFn: fetchFiles, initialData: [] });
 
-  // Filter files based on search query and active filter
+  // Filter files based on search query and active filters
   const filteredFiles = React.useMemo(() => {
     let filtered = fuzzySearch(filesQuery.data, debouncedSearchQuery, ['name']);
 
     // Apply additional filters
-    switch (activeFilter) {
-      case 'permanent':
-        filtered = filtered.filter((file) => !file.isTemp);
-        break;
-      case 'temporary':
-        filtered = filtered.filter((file) => file.isTemp);
-        break;
-      case 'images':
-        filtered = filtered.filter((file) => /\.(jpeg|jpg|gif|png|webp|svg)$/i.test(file.name));
-        break;
-      case 'videos':
-        filtered = filtered.filter((file) => /\.(mp4|webm|ogg|mov|avi)$/i.test(file.name));
-        break;
-      case 'documents':
-        filtered = filtered.filter((file) => /\.(pdf|doc|docx|txt|md)$/i.test(file.name));
-        break;
-      default:
-        break;
+    if (activeFilters.length === 0) {
+      // No filters active, show all files
+      return filtered;
     }
 
+    filtered = filtered.filter((file) => {
+      // Check if file matches any active filter
+      const fileType = getFileType(file.name);
+
+      if (activeFilters.includes('permanent') && !file.isTemp) {
+        return true;
+      }
+      if (activeFilters.includes('temporary') && file.isTemp) {
+        return true;
+      }
+      if (activeFilters.includes('images') && fileType === 'images') {
+        return true;
+      }
+      if (activeFilters.includes('videos') && fileType === 'videos') {
+        return true;
+      }
+      if (activeFilters.includes('documents') && fileType === 'documents') {
+        return true;
+      }
+
+      return false;
+    });
+
     return filtered;
-  }, [filesQuery.data, debouncedSearchQuery, activeFilter]);
+  }, [filesQuery.data, debouncedSearchQuery, activeFilters]);
 
   const deleteMutation = useMutation({
     mutationFn: ({ filename, isTemp }: { filename: string; isTemp: boolean }) => deleteFileApi(filename, isTemp),
@@ -250,7 +274,7 @@ export default function FileUploader(): React.JSX.Element {
         <FileFilters
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
-          onFilterChange={setActiveFilter}
+          onFilterChange={setActiveFilters}
           files={filesQuery.data}
         />
 
