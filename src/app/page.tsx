@@ -129,7 +129,7 @@ export default function Page(): React.JSX.Element {
             style={{ animationDelay: animationDelay(index, apps.length) }}
           >
             <Link
-              className='brutal-shadow-sm hover:brutal-shadow group relative flex h-full w-full flex-col justify-center gap-4 border-2 border-white/10 bg-white/5 p-6 transition-all duration-300 hover:border-fuchsia-500/50 hover:bg-fuchsia-500/10'
+              className='hover:brutal-shadow group relative flex h-full w-full flex-col justify-center gap-4 border-2 border-white/10 bg-white/5 p-6 transition-all duration-300 hover:border-fuchsia-500/50 hover:bg-fuchsia-500/10'
               href={app.link}
               prefetch
             >
