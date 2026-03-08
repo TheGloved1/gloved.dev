@@ -6,6 +6,7 @@ import glovedApi, { type FileInfo } from '@/lib/glovedapi';
 import { cn } from '@/lib/utils';
 import {
   Calendar,
+  Check,
   Copy,
   Download,
   Eye,
@@ -65,6 +66,7 @@ export default function FileItem({ file, onDelete, className }: FileItemProps): 
   const [isHovered, setIsHovered] = useState(false);
   const [showDialog, setShowDialog] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
 
   const fileUrl = glovedApi.getFileDownloadUrl(file.name);
   const previewUrl = glovedApi.getFileViewUrl(file.name);
@@ -75,6 +77,8 @@ export default function FileItem({ file, onDelete, className }: FileItemProps): 
   const handleCopyUrl = async () => {
     try {
       await navigator.clipboard.writeText(previewUrl);
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 2000);
       setShowDialog(false);
     } catch (error) {
       console.error('Failed to copy URL:', error);
@@ -170,10 +174,23 @@ export default function FileItem({ file, onDelete, className }: FileItemProps): 
               variant='ghost'
               size='sm'
               onClick={handleCopyUrl}
-              className='h-7 w-7 rounded-lg transition-colors hover:bg-accent/80 md:h-9 md:w-9'
+              className='flex h-7 w-7 items-center justify-center rounded-lg transition-colors hover:bg-accent/80 md:h-9 md:w-9'
               aria-label={`Copy URL for ${file.name}`}
             >
-              <Copy className='h-3.5 w-3.5 md:h-4 md:w-4' />
+              <div className='relative flex items-center justify-center'>
+                <Copy
+                  className={cn(
+                    'h-3.5 w-3.5 transition-all duration-200 md:h-4 md:w-4',
+                    isCopied ? 'scale-0 opacity-0' : 'scale-100 opacity-100',
+                  )}
+                />
+                <Check
+                  className={cn(
+                    'absolute inset-0 flex h-3.5 w-3.5 items-center justify-center text-green-500 transition-all duration-200 md:h-4 md:w-4',
+                    isCopied ? 'scale-100 opacity-100' : 'scale-0 opacity-0',
+                  )}
+                />
+              </div>
             </Button>
 
             <Button
