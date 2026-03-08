@@ -125,11 +125,6 @@ export default function FileFilters({
         >
           <Filter className='h-4 w-4' />
           <span className='ml-2 hidden sm:inline'>Filters</span>
-          {showFilters && (
-            <span className='ml-2 flex h-5 w-5 items-center justify-center rounded-full border-fuchsia-500/50 bg-fuchsia-500/10 text-xs font-semibold text-fuchsia-400'>
-              {activeFilters.length}
-            </span>
-          )}
         </Button>
       </div>
 
@@ -143,67 +138,89 @@ export default function FileFilters({
         >
           <Filter className='h-4 w-4' />
           <span className='sm:hidden'>Filters</span>
-          <span className='hidden sm:inline'>Filter Options</span>
-          {showFilters && (
-            <span className='flex h-5 w-5 items-center justify-center rounded-full border-fuchsia-500/50 bg-fuchsia-500/10 text-xs font-semibold text-fuchsia-400'>
-              {activeFilters.length}
-            </span>
-          )}
+          <span className='hidden sm:inline'>Filters</span>
         </Button>
       </div>
 
       {/* Filter Options */}
       {showFilters && (
-        <div className='space-y-3 border border-fuchsia-500/30 bg-fuchsia-500/5 p-4'>
-          <h4 className='font-display text-sm font-semibold uppercase tracking-wide text-white'>Filter by type</h4>
-          <div className='grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6'>
-            {filterOptions.map((option) => (
-              <div key={option.type}>
+        <div className='relative'>
+          {/* Backdrop */}
+          <div className='fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden' onClick={() => setShowFilters(false)} />
+
+          {/* Filter Panel */}
+          <div className='absolute right-0 top-0 z-50 w-80 border border-fuchsia-500/20 bg-black/90 shadow-2xl backdrop-blur-md lg:relative lg:right-auto lg:top-auto lg:w-full lg:border lg:bg-fuchsia-500/5 lg:shadow-none lg:backdrop-blur-none'>
+            <div className='space-y-6 p-6'>
+              {/* Header */}
+              <div className='flex items-center justify-between'>
+                <h3 className='font-display text-lg font-semibold uppercase tracking-wide text-white'>Filters</h3>
                 <Button
-                  variant={activeFilters.includes(option.type) ? 'default' : 'outline'}
+                  variant='ghost'
                   size='sm'
-                  onClick={() => handleFilterChange(option.type)}
-                  className={cn(
-                    'font-mono-industrial flex items-center justify-start gap-2 text-xs',
-                    activeFilters.includes(option.type) ?
-                      'brutal-shadow-sm border-fuchsia-500 bg-fuchsia-500 text-white'
-                    : 'border-fuchsia-500/50 bg-fuchsia-500/10 text-white/70 hover:border-fuchsia-500 hover:bg-fuchsia-500/10 hover:text-white',
-                  )}
-                  disabled={option.count === 0}
+                  onClick={() => setShowFilters(false)}
+                  className='h-8 w-8 border border-white/10 bg-white/5 p-0 text-white/70 hover:border-fuchsia-500 hover:bg-fuchsia-500/10 hover:text-fuchsia-400 lg:hidden'
                 >
-                  <span className='flex items-center gap-1'>
-                    {option.icon}
-                    <span>{option.label}</span>
-                  </span>
-                  <span
-                    className={cn(
-                      'inline-flex items-center justify-center rounded px-2 py-1 text-xs font-medium',
-                      activeFilters.includes(option.type) ?
-                        'border border-fuchsia-500/50 bg-fuchsia-500/20 text-white'
-                      : 'border border-fuchsia-500/30 bg-fuchsia-500/10 text-white/50',
-                    )}
-                  >
-                    {option.count}
-                  </span>
+                  <X className='h-4 w-4' />
                 </Button>
               </div>
-            ))}
-          </div>
 
-          {/* Clear Filters */}
-          {activeFilters.length > 0 && (
-            <div>
-              <Button
-                variant='ghost'
-                size='sm'
-                onClick={() => setActiveFilters([])}
-                className='brutal-shadow-sm w-full border-fuchsia-500/50 bg-fuchsia-500/10 text-fuchsia-400 hover:border-fuchsia-500 hover:bg-fuchsia-500/10'
-              >
-                <X className='mr-2 h-4 w-4' />
-                Clear all filters
-              </Button>
+              {/* Filter Grid */}
+              <div className='space-y-4'>
+                <h4 className='font-mono-industrial text-xs font-medium uppercase tracking-wider text-white/60'>
+                  File Type
+                </h4>
+                <div className='flex flex-wrap gap-2'>
+                  {filterOptions.map((option) => (
+                    <button
+                      key={option.type}
+                      onClick={() => handleFilterChange(option.type)}
+                      disabled={option.count === 0}
+                      className={cn(
+                        'group relative flex items-center gap-2 rounded-md border px-3 py-2 text-sm transition-all duration-200',
+                        activeFilters.includes(option.type) ?
+                          'border-fuchsia-500 bg-fuchsia-500/10 text-fuchsia-400 shadow-md shadow-fuchsia-500/20'
+                        : 'border-white/10 bg-white/5 text-white/70 hover:border-fuchsia-500/50 hover:bg-fuchsia-500/5 hover:text-white',
+                        option.count === 0 && 'cursor-not-allowed opacity-40',
+                      )}
+                    >
+                      <div className='text-sm'>{option.icon}</div>
+                      <div className='font-mono-industrial text-xs font-medium'>{option.label}</div>
+                      <div
+                        className={cn(
+                          'rounded px-1.5 py-0.5 text-xs font-semibold',
+                          activeFilters.includes(option.type) ?
+                            'bg-fuchsia-500/20 text-fuchsia-300'
+                          : 'bg-white/10 text-white/60',
+                        )}
+                      >
+                        {option.count}
+                      </div>
+
+                      {/* Active indicator */}
+                      {activeFilters.includes(option.type) && (
+                        <div className='absolute -right-1 -top-1 h-2 w-2 rounded-full bg-fuchsia-500 shadow-md shadow-fuchsia-500/40' />
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className='flex flex-col gap-3 border-t border-white/10 pt-4'>
+                {activeFilters.length > 0 && (
+                  <Button
+                    variant='outline'
+                    size='sm'
+                    onClick={() => setActiveFilters([])}
+                    className='w-full border-fuchsia-500/50 bg-fuchsia-500/10 text-fuchsia-400 hover:border-fuchsia-500 hover:bg-fuchsia-500/20 hover:text-fuchsia-300'
+                  >
+                    <X className='mr-2 h-4 w-4' />
+                    Clear {activeFilters.length} filter{activeFilters.length !== 1 ? 's' : ''}
+                  </Button>
+                )}
+              </div>
             </div>
-          )}
+          </div>
         </div>
       )}
 
@@ -211,21 +228,30 @@ export default function FileFilters({
       {(activeFilters.length > 0 || searchQuery) && (
         <div className='flex flex-wrap gap-2'>
           {activeFilters.map((filter) => (
-            <span
-              key={filter}
-              className='font-mono-industrial inline-flex items-center gap-1 border border-fuchsia-500/50 bg-fuchsia-500/10 px-2 py-1 text-xs font-medium text-fuchsia-400'
-            >
-              {filterOptions.find((f) => f.type === filter)?.icon}
-              {filterOptions.find((f) => f.type === filter)?.label}
-              <Button
-                variant='ghost'
-                size='sm'
+            <div key={filter}>
+              {/* Mobile: Clickable whole pill */}
+              <button
                 onClick={() => handleFilterChange(filter)}
-                className='brutal-shadow-sm ml-1 h-4 w-4 border border-fuchsia-500/30 bg-fuchsia-500/10 p-0 text-fuchsia-400 hover:border-fuchsia-500 hover:bg-fuchsia-500/10 hover:text-white'
+                className='font-mono-industrial inline-flex items-center gap-1 border border-fuchsia-500/50 bg-fuchsia-500/10 px-2 py-1 text-xs font-medium text-fuchsia-400 transition-colors duration-200 hover:border-fuchsia-500 hover:bg-fuchsia-500/20 lg:hidden'
               >
-                <X className='h-3 w-3' />
-              </Button>
-            </span>
+                {filterOptions.find((f) => f.type === filter)?.icon}
+                {filterOptions.find((f) => f.type === filter)?.label}
+              </button>
+
+              {/* Desktop: Pill with X button */}
+              <span className='font-mono-industrial hidden items-center gap-1 border border-fuchsia-500/50 bg-fuchsia-500/10 px-2 py-1 text-xs font-medium text-fuchsia-400 lg:inline-flex'>
+                {filterOptions.find((f) => f.type === filter)?.icon}
+                {filterOptions.find((f) => f.type === filter)?.label}
+                <Button
+                  variant='ghost'
+                  size='sm'
+                  onClick={() => handleFilterChange(filter)}
+                  className='ml-1 h-4 w-4 border border-fuchsia-500/30 bg-fuchsia-500/10 p-0 text-fuchsia-400 hover:border-fuchsia-500 hover:bg-fuchsia-500/10 hover:text-white'
+                >
+                  <X className='h-3 w-3' />
+                </Button>
+              </span>
+            </div>
           ))}
           {searchQuery && (
             <span className='font-mono-industrial inline-flex items-center gap-1 border border-fuchsia-500/50 bg-fuchsia-500/10 px-2 py-1 text-xs font-medium text-fuchsia-400'>
@@ -234,7 +260,7 @@ export default function FileFilters({
                 variant='ghost'
                 size='sm'
                 onClick={clearSearch}
-                className='brutal-shadow-sm ml-1 h-4 w-4 border border-fuchsia-500/30 bg-fuchsia-500/10 p-0 text-fuchsia-400 hover:border-fuchsia-500 hover:bg-fuchsia-500/10 hover:text-white'
+                className='ml-1 h-4 w-4 border border-fuchsia-500/30 bg-fuchsia-500/10 p-0 text-fuchsia-400 hover:border-fuchsia-500 hover:bg-fuchsia-500/10 hover:text-white'
               >
                 <X className='h-3 w-3' />
               </Button>
