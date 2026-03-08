@@ -61,6 +61,7 @@ export default function FileUploader(): React.JSX.Element {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const debouncedSearchQuery = useDebounce<string>(searchQuery, 300);
   const itemsPerPage = useResponsiveItemsPerPage();
 
@@ -238,6 +239,12 @@ export default function FileUploader(): React.JSX.Element {
     setFileToDelete(null);
   }
 
+  const handleRefresh = () => {
+    setIsRefreshing(true);
+    filesQuery.refetch();
+    setTimeout(() => setIsRefreshing(false), 500);
+  };
+
   async function uploadFile(file: File, isTemp: boolean): Promise<void> {
     try {
       uploadMutation.mutate(file);
@@ -309,10 +316,16 @@ export default function FileUploader(): React.JSX.Element {
               <Button
                 variant='ghost'
                 size='sm'
-                onClick={() => filesQuery.refetch()}
+                onClick={handleRefresh}
                 className='brutal-shadow-sm border border-white/10 bg-white/5 text-white hover:border-fuchsia-500 hover:bg-fuchsia-500/10 hover:text-fuchsia-400'
               >
-                <RefreshCw className='h-4 w-4' />
+                <motion.div
+                  initial={{ rotate: 0 }}
+                  animate={isRefreshing ? { rotate: 360 } : {}}
+                  transition={{ duration: 0.5, ease: 'easeIn' }}
+                >
+                  <RefreshCw className='h-4 w-4' />
+                </motion.div>
               </Button>
             </div>
 
