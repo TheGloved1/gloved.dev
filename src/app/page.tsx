@@ -264,7 +264,7 @@ export default function Page(): React.JSX.Element {
         <div className='fixed inset-0 -z-10 bg-[#0a0a0a]'></div>
         {/* Old Heading */}
         {isMobile ?
-          <h1 className='font-display text-5xl font-extrabold uppercase tracking-tight text-white sm:text-[5rem]'>
+          <h1 className='font-display text-xl font-extrabold uppercase tracking-tight text-white'>
             <span className='glitch-text'>GLOVED</span>
             <span className='text-fuchsia-500'>.</span>
             <span className='glitch-text'>DEV</span>
