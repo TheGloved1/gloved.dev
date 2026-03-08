@@ -1,6 +1,7 @@
 'use client';
 import FileFilters from '@/app/files/_components/FileFilters';
 import FileItem from '@/app/files/_components/FileItem';
+import PaginationControls from '@/app/files/_components/PaginationControls';
 import UploadZone from '@/app/files/_components/UploadZone';
 import ErrorAlert from '@/components/ErrorAlert';
 import Loading from '@/components/loading';
@@ -17,15 +18,6 @@ import { AlertTriangle, FolderOpen, RefreshCw } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { DeleteConfirmDialog } from '../../../components/DeleteConfirmDialog';
 import { Button } from '../../../components/ui/button';
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from '../../../components/ui/pagination';
 
 const fetchFiles = async () => {
   const result = await glovedApi.listFiles();
@@ -306,83 +298,32 @@ export default function FileUploader(): React.JSX.Element {
           transition={{ delay: 0.3 }}
           className='space-y-6'
         >
-          <div className='flex items-center justify-between'>
-            <h2 className='font-display flex items-center gap-3 text-2xl font-bold uppercase tracking-wide text-white'>
-              <div className='flex h-8 w-8 items-center justify-center border border-fuchsia-500/30 bg-fuchsia-500/10'>
-                <FolderOpen className='h-4 w-4 text-fuchsia-400' />
-              </div>
-              Files
+          <div className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
+            <div className='flex flex-row items-center gap-4'>
+              <h2 className='font-display flex items-center gap-3 text-2xl font-bold uppercase tracking-wide text-white'>
+                <div className='flex h-8 w-8 items-center justify-center border border-fuchsia-500/30 bg-fuchsia-500/10'>
+                  <FolderOpen className='h-4 w-4 text-fuchsia-400' />
+                </div>
+                Files
+              </h2>
               <Button
                 variant='ghost'
                 size='sm'
                 onClick={() => filesQuery.refetch()}
-                className='brutal-shadow-sm ml-2 border border-white/10 bg-white/5 text-white hover:border-fuchsia-500 hover:bg-fuchsia-500/10 hover:text-fuchsia-400'
+                className='brutal-shadow-sm border border-white/10 bg-white/5 text-white hover:border-fuchsia-500 hover:bg-fuchsia-500/10 hover:text-fuchsia-400'
               >
                 <RefreshCw className='h-4 w-4' />
               </Button>
-            </h2>
+            </div>
 
             {/* Pagination display */}
-            {paginationData.totalPages > 1 && (
-              <Pagination className='mx-auto w-full'>
-                <PaginationContent>
-                  <PaginationItem>
-                    <PaginationPrevious
-                      onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                      className={
-                        currentPage === 1 ?
-                          'pointer-events-none opacity-50'
-                        : 'cursor-pointer border border-white/10 bg-white/5 text-white hover:border-fuchsia-500 hover:bg-fuchsia-500/10 hover:text-fuchsia-400'
-                      }
-                    />
-                  </PaginationItem>
-
-                  {/* Generate page numbers */}
-                  {Array.from({ length: paginationData.totalPages }, (_, i) => i + 1).map((page) => {
-                    // Show first page, last page, current page, and pages around current
-                    if (
-                      page === 1 ||
-                      page === paginationData.totalPages ||
-                      (page >= currentPage - 1 && page <= currentPage + 1)
-                    ) {
-                      return (
-                        <PaginationItem key={page}>
-                          <PaginationLink
-                            onClick={() => setCurrentPage(page)}
-                            isActive={page === currentPage}
-                            className={`${page === currentPage ? 'border-fuchsia-500 bg-fuchsia-500/10 text-fuchsia-400' : 'cursor-pointer border border-white/10 bg-white/5 text-white hover:border-fuchsia-500 hover:bg-fuchsia-500/10 hover:text-fuchsia-400'}`}
-                          >
-                            {page}
-                          </PaginationLink>
-                        </PaginationItem>
-                      );
-                    }
-
-                    // Show ellipsis for gaps
-                    if (page === currentPage - 2 || page === currentPage + 2) {
-                      return (
-                        <PaginationItem key={page}>
-                          <PaginationEllipsis className='text-white/50' />
-                        </PaginationItem>
-                      );
-                    }
-
-                    return null;
-                  })}
-
-                  <PaginationItem>
-                    <PaginationNext
-                      onClick={() => setCurrentPage((prev) => Math.min(prev + 1, paginationData.totalPages))}
-                      className={
-                        currentPage === paginationData.totalPages ?
-                          'pointer-events-none opacity-50'
-                        : 'cursor-pointer border border-white/10 bg-white/5 text-white hover:border-fuchsia-500 hover:bg-fuchsia-500/10 hover:text-fuchsia-400'
-                      }
-                    />
-                  </PaginationItem>
-                </PaginationContent>
-              </Pagination>
-            )}
+            <div className='flex justify-center'>
+              <PaginationControls
+                currentPage={currentPage}
+                totalPages={paginationData.totalPages}
+                onPageChange={setCurrentPage}
+              />
+            </div>
 
             <div className='font-mono-industrial text-sm text-white/50'>
               {filteredFiles.length > 0 ?
