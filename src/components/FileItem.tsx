@@ -1,6 +1,6 @@
 'use client';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useIsMobile } from '@/hooks/use-mobile';
 import glovedApi, { type FileInfo } from '@/lib/glovedapi';
 import { cn } from '@/lib/utils';
@@ -355,7 +355,7 @@ export default function FileItem({ file, onDelete, className }: FileItemProps): 
                 )}
               </div>
             </DialogTitle>
-            <DialogDescription className='flex flex-wrap gap-3 text-xs sm:gap-6 sm:text-sm'>
+            <div className='flex flex-wrap gap-3 text-xs text-muted-foreground sm:gap-6 sm:text-sm'>
               <div className='flex items-center gap-1 sm:gap-2'>
                 <HardDrive className='h-3 w-3 sm:h-4 sm:w-4' />
                 <span className='text-xs font-medium sm:text-sm'>{file.size}</span>
@@ -364,7 +364,7 @@ export default function FileItem({ file, onDelete, className }: FileItemProps): 
                 <Calendar className='h-3 w-3 sm:h-4 sm:w-4' />
                 <span className='text-xs font-medium sm:text-sm'>{formatDate(file.createdAt)}</span>
               </div>
-            </DialogDescription>
+            </div>
           </DialogHeader>
 
           <div className='mt-4 sm:mt-6'>

@@ -131,8 +131,6 @@ export default function FileFilters({
     return filtered;
   }, [files, activeFilters, searchQuery]);
 
-  const filteredCount = getFilteredFiles().length;
-
   return (
     <div className={cn('space-y-4', className)}>
       {/* Search Bar */}
