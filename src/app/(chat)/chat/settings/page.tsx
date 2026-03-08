@@ -1,5 +1,4 @@
 'use client';
-import { Tooltip } from '@/components/TooltipSystem';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,7 +15,6 @@ import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import { usePreviousLocal } from '@/hooks/use-previous-local';
-import { DND_SYSTEM_PROMPT } from '@/lib/ai';
 import { dxdb } from '@/lib/dexie';
 import { tryCatch } from '@/lib/utils';
 import { useAuth } from '@clerk/nextjs';
@@ -36,18 +34,8 @@ export default function Page() {
     'previousSystemPrompt',
     systemPrompt,
   );
-  const [dndMode, setDndMode] = useState(false);
   const router = useRouter();
   const auth = useAuth();
-
-  useEffect(() => {
-    if (systemPrompt === DND_SYSTEM_PROMPT) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setDndMode(true);
-    } else {
-      setDndMode(false);
-    }
-  }, [systemPrompt, previousSystemPrompt]);
 
   const handleDelete = async () => {
     await dxdb.deleteAllData(auth.userId);
@@ -83,21 +71,6 @@ export default function Page() {
     const { error } = await tryCatch(dxdb.export());
     if (error) return toast.error('Failed to export data');
     toast.success('Data exported');
-  };
-
-  const handleDndModeToggle = (enabled: boolean) => {
-    if (enabled) {
-      // Set DND system prompt
-      setSystemPrompt(DND_SYSTEM_PROMPT);
-    } else {
-      // Restore old system prompt if it exists, otherwise set to empty string
-      if (previousSystemPrompt && previousSystemPrompt !== DND_SYSTEM_PROMPT) {
-        setSystemPrompt(previousSystemPrompt);
-      } else {
-        // Set to empty string if there was no old prompt
-        setSystemPrompt('');
-      }
-    }
   };
 
   const handleSyncNow = useCallback(async () => {
@@ -154,22 +127,6 @@ export default function Page() {
                   className='flex max-h-[400px] min-h-[175px] w-full max-w-[600px] rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-sm placeholder:text-muted focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 sm:min-h-[150px] md:min-h-[100px] md:text-sm'
                 />
                 <Button onClick={() => setSystemPrompt('')}>Clear</Button>
-                <div className='mt-4 flex flex-row items-center gap-2'>
-                  <label
-                    className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
-                    htmlFor='dnd-mode'
-                  >
-                    Enable D&D Mode
-                  </label>
-                  <Tooltip content='Give the AI knowledge of Dungeons and Dragons'>
-                    <Switch
-                      className='bg-foreground'
-                      id='dnd-mode'
-                      checked={dndMode}
-                      onCheckedChange={handleDndModeToggle}
-                    />
-                  </Tooltip>
-                </div>
               </div>
             </TabsContent>
             <TabsContent value='sync'>
