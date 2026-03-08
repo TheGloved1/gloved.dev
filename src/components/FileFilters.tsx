@@ -91,46 +91,6 @@ export default function FileFilters({
     onSearchChange('');
   }, [onSearchChange]);
 
-  const getFilteredFiles = useCallback(() => {
-    let filtered = files;
-
-    // Apply type filters
-    if (activeFilters.length === 0) {
-      // No filters active, show all files
-      return filtered;
-    }
-
-    filtered = filtered.filter((file) => {
-      // Check if file matches any active filter
-      const fileType = getFileType(file.name);
-
-      if (activeFilters.includes('permanent') && !file.isTemp) {
-        return true;
-      }
-      if (activeFilters.includes('temporary') && file.isTemp) {
-        return true;
-      }
-      if (activeFilters.includes('images') && fileType === 'images') {
-        return true;
-      }
-      if (activeFilters.includes('videos') && fileType === 'videos') {
-        return true;
-      }
-      if (activeFilters.includes('documents') && fileType === 'documents') {
-        return true;
-      }
-
-      return false;
-    });
-
-    // Apply search filter
-    if (searchQuery.trim()) {
-      filtered = filtered.filter((f) => f.name.toLowerCase().includes(searchQuery.toLowerCase()));
-    }
-
-    return filtered;
-  }, [files, activeFilters, searchQuery]);
-
   return (
     <div className={cn('space-y-4', className)}>
       {/* Search Bar */}
