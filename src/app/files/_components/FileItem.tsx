@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
-import VideoPreview from './VideoPreview';
+import VideoPreview from '../../../components/VideoPreview';
 
 interface FileItemProps {
   file: FileInfo;
@@ -100,8 +100,10 @@ export default function FileItem({ file, onDelete, className }: FileItemProps): 
       {!isMobile && (
         <div
           className={cn(
-            'group relative rounded-2xl border border-border/20 bg-gradient-to-br from-background to-background/95 p-2 backdrop-blur-sm transition-all duration-300 hover:scale-[1.02] hover:border-border/40 hover:shadow-lg md:p-4 lg:p-6',
-            file.isTemp && 'border-orange-200/50 from-orange-50/30 to-orange-50/10',
+            'group relative border transition-all duration-300',
+            'border-white/10 bg-white/5 p-4 backdrop-blur-sm hover:border-fuchsia-500/50 hover:bg-fuchsia-500/5',
+            file.isTemp && 'border-orange-500/30 bg-orange-500/5 hover:border-orange-500/50 hover:bg-orange-500/10',
+            'brutal-shadow-sm',
             className,
           )}
           onMouseEnter={() => setIsHovered(true)}
@@ -110,15 +112,15 @@ export default function FileItem({ file, onDelete, className }: FileItemProps): 
           aria-label={`File: ${file.name}, Size: ${file.size}, Uploaded: ${formatDate(file.createdAt)}`}
         >
           {/* File Header */}
-          <div className='mb-2 flex items-start justify-between gap-2 md:gap-4'>
-            <div className='flex min-w-0 flex-1 items-center gap-2 md:gap-4'>
+          <div className='mb-3 flex items-start justify-between gap-4'>
+            <div className='flex min-w-0 flex-1 items-center gap-4'>
               {/* File Icon */}
               <div
                 className={cn(
-                  'flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-lg shadow-sm transition-all duration-300 md:h-8 md:w-8 md:rounded-xl lg:h-10 lg:w-10',
+                  'flex h-10 w-10 flex-shrink-0 items-center justify-center border transition-all duration-300',
                   file.isTemp ?
-                    'bg-gradient-to-br from-orange-400 to-orange-500 text-white shadow-orange-500/20'
-                  : 'bg-gradient-to-br from-blue-400 to-blue-500 text-white shadow-blue-500/20',
+                    'border-orange-500/50 bg-orange-500/10 text-orange-400'
+                  : 'border-fuchsia-500/50 bg-fuchsia-500/10 text-fuchsia-400',
                 )}
               >
                 {getFileTypeIcon(file.name)}
@@ -127,19 +129,19 @@ export default function FileItem({ file, onDelete, className }: FileItemProps): 
               {/* File Info */}
               <div className='min-w-0 flex-1'>
                 <h3
-                  className='font-display mb-1 truncate text-sm font-semibold text-foreground md:text-base lg:text-lg'
+                  className='font-display glitch-text mb-1 truncate text-sm font-semibold uppercase tracking-wide text-white'
                   title={file.name}
                 >
                   {file.name}
                 </h3>
-                <div className='flex items-center gap-2 text-xs text-muted-foreground'>
+                <div className='font-mono-industrial flex items-center gap-4 text-xs text-white/50'>
                   <div className='flex items-center gap-1'>
-                    <HardDrive className='h-3 w-3 flex-shrink-0 md:h-3.5 md:w-3.5' />
-                    <span className='min-w-[2.5rem] text-xs sm:min-w-[3rem]'>{file.size.replaceAll(' ', '')}</span>
+                    <HardDrive className='h-3 w-3 flex-shrink-0' />
+                    <span className='min-w-[3rem]'>{file.size.replaceAll(' ', '')}</span>
                   </div>
                   <div className='flex items-center gap-1'>
-                    <Calendar className='h-3 w-3 flex-shrink-0 md:h-3.5 md:w-3.5' />
-                    <span className='hidden text-xs sm:inline'>{formatDate(file.createdAt)}</span>
+                    <Calendar className='h-3 w-3 flex-shrink-0' />
+                    <span>{formatDate(file.createdAt)}</span>
                   </div>
                 </div>
               </div>
@@ -147,8 +149,8 @@ export default function FileItem({ file, onDelete, className }: FileItemProps): 
 
             {/* Temporary Badge */}
             {file.isTemp && (
-              <div className='flex-shrink-0 rounded-full border border-orange-200 bg-gradient-to-r from-orange-100 to-orange-50 px-2 py-1 md:px-3 md:py-1.5'>
-                <span className='text-xs font-semibold text-orange-700'>24h</span>
+              <div className='flex-shrink-0 rounded-full border border-orange-500/50 bg-orange-500/10 px-2 py-1'>
+                <span className='font-mono-industrial text-xs font-semibold text-orange-400'>24h</span>
               </div>
             )}
           </div>
@@ -156,7 +158,7 @@ export default function FileItem({ file, onDelete, className }: FileItemProps): 
           {/* Action Buttons - Desktop */}
           <div
             className={cn(
-              'flex items-center gap-1 transition-opacity duration-300 md:gap-2',
+              'flex items-center gap-2 transition-opacity duration-300',
               isHovered ? 'opacity-100' : 'opacity-0',
             )}
           >
@@ -164,29 +166,31 @@ export default function FileItem({ file, onDelete, className }: FileItemProps): 
               variant='ghost'
               size='sm'
               onClick={() => setShowDialog(true)}
-              className='h-7 w-7 rounded-lg transition-colors hover:bg-accent/80 md:h-9 md:w-9'
+              className='brutal-shadow-sm group relative h-8 w-8 overflow-hidden border border-fuchsia-500/40 bg-fuchsia-500/10 text-white hover:border-fuchsia-500 hover:bg-fuchsia-500/10 hover:text-fuchsia-400'
               aria-label={`Preview ${file.name}`}
             >
-              <Eye className='h-3.5 w-3.5 md:h-4 md:w-4' />
+              <div className='absolute inset-0 left-0 right-0 top-0 h-full w-full bg-gradient-to-r from-fuchsia-500/40 via-fuchsia-500/40 to-transparent opacity-0 transition-all duration-300'></div>
+              <Eye className='relative z-10 h-4 w-4' />
             </Button>
 
             <Button
               variant='ghost'
               size='sm'
               onClick={handleCopyUrl}
-              className='flex h-7 w-7 items-center justify-center rounded-lg transition-colors hover:bg-accent/80 md:h-9 md:w-9'
+              className='brutal-shadow-sm group relative h-8 w-8 overflow-hidden border border-fuchsia-500/40 bg-fuchsia-500/10 text-white hover:border-fuchsia-500 hover:bg-fuchsia-500/10 hover:text-fuchsia-400'
               aria-label={`Copy URL for ${file.name}`}
             >
+              <div className='absolute inset-0 left-0 right-0 top-0 h-full w-full bg-gradient-to-r from-fuchsia-500/40 via-fuchsia-500/40 to-transparent opacity-0 transition-all duration-300'></div>
               <div className='relative flex items-center justify-center'>
                 <Copy
                   className={cn(
-                    'h-3.5 w-3.5 transition-all duration-200 md:h-4 md:w-4',
+                    'h-4 w-4 transition-all duration-200',
                     isCopied ? 'scale-0 opacity-0' : 'scale-100 opacity-100',
                   )}
                 />
                 <Check
                   className={cn(
-                    'absolute inset-0 flex h-3.5 w-3.5 items-center justify-center text-green-500 transition-all duration-200 md:h-4 md:w-4',
+                    'absolute inset-0 flex h-4 w-4 items-center justify-center text-green-400 transition-all duration-200',
                     isCopied ? 'scale-100 opacity-100' : 'scale-0 opacity-0',
                   )}
                 />
@@ -197,20 +201,22 @@ export default function FileItem({ file, onDelete, className }: FileItemProps): 
               variant='ghost'
               size='sm'
               onClick={handleDownload}
-              className='h-7 w-7 rounded-lg transition-colors hover:bg-accent/80 md:h-9 md:w-9'
+              className='brutal-shadow-sm group relative h-8 w-8 overflow-hidden border border-fuchsia-500/40 bg-fuchsia-500/10 text-white hover:border-fuchsia-500 hover:bg-fuchsia-500/10 hover:text-fuchsia-400'
               aria-label={`Download ${file.name}`}
             >
-              <Download className='h-3.5 w-3.5 md:h-4 md:w-4' />
+              <div className='absolute inset-0 left-0 right-0 top-0 h-full w-full bg-gradient-to-r from-fuchsia-500/40 via-fuchsia-500/40 to-transparent opacity-0 transition-all duration-300'></div>
+              <Download className='relative z-10 h-4 w-4' />
             </Button>
 
             <Button
               variant='ghost'
               size='sm'
               onClick={() => onDelete(file)}
-              className='h-7 w-7 rounded-lg text-destructive transition-colors hover:bg-destructive/10 hover:text-destructive md:h-9 md:w-9'
+              className='brutal-shadow-sm group relative h-8 w-8 overflow-hidden border border-fuchsia-500/40 bg-fuchsia-500/10 text-white hover:border-fuchsia-500 hover:bg-fuchsia-500/10 hover:text-fuchsia-400'
               aria-label={`Delete ${file.name}`}
             >
-              <Trash2 className='h-3.5 w-3.5 md:h-4 md:w-4' />
+              <div className='absolute inset-0 left-0 right-0 top-0 h-full w-full bg-gradient-to-r from-fuchsia-500/40 via-fuchsia-500/40 to-transparent opacity-0 transition-all duration-300'></div>
+              <Trash2 className='relative z-10 h-4 w-4' />
             </Button>
           </div>
         </div>
@@ -220,30 +226,35 @@ export default function FileItem({ file, onDelete, className }: FileItemProps): 
       {isMobile && (
         <div
           className={cn(
-            'group w-full rounded-lg border border-border/20 bg-gradient-to-br from-background to-background/95 p-2 backdrop-blur-sm transition-all duration-300 hover:border-border/40 hover:shadow-md md:rounded-xl md:p-3 md:hover:shadow-lg',
-            file.isTemp && 'border-orange-200/50 from-orange-50/30 to-orange-50/10',
+            'group w-full border transition-all duration-300',
+            'border-white/10 bg-white/5 p-3 backdrop-blur-sm hover:border-fuchsia-500/50 hover:bg-fuchsia-500/5',
+            file.isTemp && 'border-orange-500/30 bg-orange-500/5 hover:border-orange-500/50 hover:bg-orange-500/10',
+            'brutal-shadow-sm',
             className,
           )}
           role='article'
           aria-label={`File: ${file.name}, Size: ${file.size}, Uploaded: ${formatDate(file.createdAt)}`}
         >
           {/* Mobile Header */}
-          <div className='mb-1 flex items-center justify-between gap-1 md:mb-2 md:gap-2'>
-            <div className='flex min-w-0 flex-1 items-center gap-1 md:gap-2'>
+          <div className='mb-2 flex items-center justify-between gap-2'>
+            <div className='flex min-w-0 flex-1 items-center gap-2'>
               {/* File Icon */}
               <div
                 className={cn(
-                  'flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-lg shadow-sm md:h-8 md:w-8',
+                  'flex h-8 w-8 flex-shrink-0 items-center justify-center border transition-all duration-300',
                   file.isTemp ?
-                    'bg-gradient-to-br from-orange-400 to-orange-500 text-white'
-                  : 'bg-gradient-to-br from-blue-400 to-blue-500 text-white',
+                    'border-orange-500/50 bg-orange-500/10 text-orange-400'
+                  : 'border-fuchsia-500/50 bg-fuchsia-500/10 text-fuchsia-400',
                 )}
               >
                 {getFileTypeIcon(file.name)}
               </div>
 
               {/* File Name */}
-              <h3 className='font-display truncate text-xs font-semibold text-foreground md:text-sm' title={file.name}>
+              <h3
+                className='font-display text-glitch truncate text-sm font-semibold uppercase tracking-wide text-white'
+                title={file.name}
+              >
                 {file.name}
               </h3>
             </div>
@@ -253,29 +264,29 @@ export default function FileItem({ file, onDelete, className }: FileItemProps): 
               variant='ghost'
               size='sm'
               onClick={() => setShowMobileMenu(!showMobileMenu)}
-              className='h-6 w-6 flex-shrink-0 rounded-lg p-0 md:h-8 md:w-8'
+              className='brutal-shadow-sm h-8 w-8 flex-shrink-0 border border-fuchsia-500/50 bg-fuchsia-500/10 p-0 text-white hover:border-fuchsia-500 hover:bg-fuchsia-500/10 hover:text-fuchsia-400'
               aria-label='More options'
             >
-              <MoreVertical className='h-3 w-3 md:h-4 md:w-4' />
+              <MoreVertical className='h-4 w-4' />
             </Button>
           </div>
 
           {/* Mobile File Details */}
-          <div className='mb-1 flex items-center justify-between text-xs text-muted-foreground md:mb-2'>
+          <div className='font-mono-industrial mb-2 flex items-center justify-between text-xs text-white/50'>
             <div className='flex items-center gap-1'>
-              <HardDrive className='h-2.5 w-2.5 flex-shrink-0 md:h-3 md:w-3' />
-              <span className='text-xs'>{file.size}</span>
+              <HardDrive className='h-3 w-3 flex-shrink-0' />
+              <span>{file.size}</span>
             </div>
             {file.isTemp && (
-              <div className='rounded-full bg-orange-100 px-1.5 py-0.5 text-xs font-medium text-orange-700 md:px-2 md:py-0.5'>
-                24h
+              <div className='rounded-full border border-orange-500/50 bg-orange-500/10 px-2 py-1'>
+                <span className='text-xs font-semibold text-orange-400'>24h</span>
               </div>
             )}
           </div>
 
           {/* Mobile Actions */}
           {showMobileMenu && (
-            <div className='flex gap-0.5 rounded-lg border border-border/20 bg-muted/50 p-1.5 md:gap-1 md:p-2'>
+            <div className='flex gap-2 border border-white/10 bg-white/5 p-2'>
               <Button
                 variant='outline'
                 size='sm'
@@ -283,10 +294,10 @@ export default function FileItem({ file, onDelete, className }: FileItemProps): 
                   setShowDialog(true);
                   setShowMobileMenu(false);
                 }}
-                className='h-6 flex-1 px-1 text-xs md:h-8 md:px-2'
+                className='brutal-shadow-sm flex-1 border border-white/20 bg-white/5 px-2 text-xs text-white hover:border-fuchsia-500 hover:bg-fuchsia-500/10 hover:text-fuchsia-400'
               >
-                <Eye className='mr-0.5 h-2.5 w-2.5 md:mr-1 md:h-3 md:w-3' />
-                <span className='hidden sm:inline'>Preview</span>
+                <Eye className='mr-1 h-3 w-3' />
+                <span>Preview</span>
               </Button>
               <Button
                 variant='outline'
@@ -295,10 +306,10 @@ export default function FileItem({ file, onDelete, className }: FileItemProps): 
                   handleCopyUrl();
                   setShowMobileMenu(false);
                 }}
-                className='h-6 flex-1 px-1 text-xs md:h-8 md:px-2'
+                className='brutal-shadow-sm flex-1 border border-white/20 bg-white/5 px-2 text-xs text-white hover:border-fuchsia-500 hover:bg-fuchsia-500/10 hover:text-fuchsia-400'
               >
-                <Copy className='mr-0.5 h-2.5 w-2.5 md:mr-1 md:h-3 md:w-3' />
-                <span className='hidden sm:inline'>Copy</span>
+                <Copy className='mr-1 h-3 w-3' />
+                <span>Copy</span>
               </Button>
               <Button
                 variant='outline'
@@ -307,22 +318,22 @@ export default function FileItem({ file, onDelete, className }: FileItemProps): 
                   handleDownload();
                   setShowMobileMenu(false);
                 }}
-                className='h-6 flex-1 px-1 text-xs md:h-8 md:px-2'
+                className='brutal-shadow-sm flex-1 border border-white/20 bg-white/5 px-2 text-xs text-white hover:border-fuchsia-500 hover:bg-fuchsia-500/10 hover:text-fuchsia-400'
               >
-                <Download className='mr-0.5 h-2.5 w-2.5 md:mr-1 md:h-3 md:w-3' />
-                <span className='hidden sm:inline'>Download</span>
+                <Download className='mr-1 h-3 w-3' />
+                <span>Download</span>
               </Button>
               <Button
-                variant='destructive'
+                variant='outline'
                 size='sm'
                 onClick={() => {
                   onDelete(file);
                   setShowMobileMenu(false);
                 }}
-                className='h-6 flex-1 px-1 text-xs md:h-8 md:px-2'
+                className='brutal-shadow-sm flex-1 border border-red-500/50 bg-red-500/10 px-2 text-xs text-red-400 hover:border-red-500 hover:bg-red-500/10 hover:text-red-400'
               >
-                <Trash2 className='mr-0.5 h-2.5 w-2.5 md:mr-1 md:h-3 md:w-3' />
-                <span className='hidden sm:inline'>Delete</span>
+                <Trash2 className='mr-1 h-3 w-3' />
+                <span>Delete</span>
               </Button>
             </div>
           )}
@@ -331,34 +342,35 @@ export default function FileItem({ file, onDelete, className }: FileItemProps): 
 
       {/* Preview Dialog */}
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
-        <DialogContent className='max-h-[95vh] w-full max-w-6xl overflow-y-auto'>
-          <DialogHeader className='space-y-2 sm:space-y-4'>
-            <DialogTitle className='font-display flex items-center gap-2 text-lg sm:gap-4 sm:text-xl'>
+        <DialogContent className='brutal-shadow max-h-[95vh] w-full max-w-6xl overflow-y-auto border border-white/10 bg-black/90'>
+          <DialogHeader className='space-y-4'>
+            <DialogTitle className='font-display flex items-center gap-4 text-xl uppercase tracking-wide text-white'>
               <div
                 className={cn(
-                  'flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg shadow-sm sm:h-10 sm:w-10 sm:rounded-xl md:h-12 md:w-12',
+                  'flex h-10 w-10 flex-shrink-0 items-center justify-center border transition-all duration-300',
                   file.isTemp ?
-                    'bg-gradient-to-br from-orange-400 to-orange-500 text-white shadow-orange-500/20'
-                  : 'bg-gradient-to-br from-blue-400 to-blue-500 text-white shadow-blue-500/20',
+                    'border-orange-500/50 bg-orange-500/10 text-orange-400'
+                  : 'border-fuchsia-500/50 bg-fuchsia-500/10 text-fuchsia-400',
                 )}
               >
                 {getFileTypeIcon(file.name)}
               </div>
               <div className='min-w-0 flex-1'>
-                <div className='truncate text-sm font-semibold sm:text-base md:text-lg' title={file.name}>
+                <div
+                  className='font-display truncate text-lg font-semibold uppercase tracking-wide text-white'
+                  title={file.name}
+                >
                   {file.name}
                 </div>
                 {file.isTemp && (
-                  <div className='text-xs text-orange-600 dark:text-orange-400 sm:text-sm'>
-                    Temporary file (expires in 24 hours)
-                  </div>
+                  <div className='font-mono-industrial text-xs text-orange-400'>Temporary file (expires in 24 hours)</div>
                 )}
               </div>
             </DialogTitle>
-            <div className='flex flex-wrap gap-3 text-xs text-muted-foreground sm:gap-6 sm:text-sm'>
-              <div className='flex items-center gap-1 sm:gap-2'>
-                <HardDrive className='h-3 w-3 sm:h-4 sm:w-4' />
-                <span className='text-xs font-medium sm:text-sm'>{file.size}</span>
+            <div className='font-mono-industrial flex flex-wrap gap-6 text-sm text-white/50'>
+              <div className='flex items-center gap-2'>
+                <HardDrive className='h-4 w-4' />
+                <span className='text-sm font-medium'>{file.size}</span>
               </div>
               <div className='flex items-center gap-1 sm:gap-2'>
                 <Calendar className='h-3 w-3 sm:h-4 sm:w-4' />

@@ -221,6 +221,16 @@ export function fuzzySearch<T extends Record<string, any>>(
 }
 
 /**
+ * Calculate the animation delay for a given index.
+ * The animation delay speeds up over time using exponential decay.
+ * This creates a cascading effect that gets faster with each subsequent item.
+ * @param index The index of the item in the array.
+ * @param total The total number of items in the array.
+ * @returns The animation delay in seconds.
+ */
+export const animationDelay = (index: number, total: number) => `${0.4 + (index / total) * Math.exp(-index * 0.04)}s`;
+
+/**
  * Formats the message content.
  * @param content The content of the message.
  * @param attachments Optional attachments to be included in the message.
