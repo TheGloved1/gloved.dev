@@ -1,4 +1,5 @@
 'use client';
+import { CornerDecorations } from '@/components/CornerDecorations';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -37,6 +38,7 @@ export default function UploadZone({
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [fileName, setFileName] = useState('');
+  const [hovering, setHovering] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -172,11 +174,6 @@ export default function UploadZone({
     return `${fileSize.toFixed(1)} ${units[unitIndex]}`;
   };
 
-  const isValidFile = (file: File): boolean => {
-    // Add file validation logic here if needed
-    return file.size > 0;
-  };
-
   useEffect(() => {
     const handlePasteEvent = (e: ClipboardEvent) => handlePaste(e);
     document.addEventListener('paste', handlePasteEvent);
@@ -196,6 +193,8 @@ export default function UploadZone({
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
+        onMouseEnter={() => setHovering(true)}
+        onMouseLeave={() => setHovering(false)}
         role='button'
         tabIndex={0}
         aria-label='Drop files here or click to upload'
@@ -216,10 +215,7 @@ export default function UploadZone({
         />
 
         {/* Corner decorations */}
-        <div className='absolute left-0 top-0 h-6 w-6 border-l-2 border-t-2 border-fuchsia-500' />
-        <div className='absolute right-0 top-0 h-6 w-6 border-r-2 border-t-2 border-fuchsia-500' />
-        <div className='absolute bottom-0 left-0 h-6 w-6 border-b-2 border-l-2 border-fuchsia-500' />
-        <div className='absolute bottom-0 right-0 h-6 w-6 border-b-2 border-r-2 border-fuchsia-500' />
+        <CornerDecorations hovering={hovering} />
 
         <div className='flex h-full flex-col items-center justify-center p-8'>
           <div
