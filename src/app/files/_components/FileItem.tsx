@@ -14,7 +14,6 @@ import {
   FileText,
   HardDrive,
   Image as ImageIcon,
-  MoreVertical,
   Music,
   Trash2,
   VideoIcon,
@@ -65,7 +64,6 @@ const formatDate = (dateString: string): string => {
 export default function FileItem({ file, onDelete, className }: FileItemProps): React.JSX.Element {
   const [isHovered, setIsHovered] = useState(false);
   const [showDialog, setShowDialog] = useState(false);
-  const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
 
   const fileUrl = glovedApi.getFileDownloadUrl(file.name);
@@ -227,7 +225,7 @@ export default function FileItem({ file, onDelete, className }: FileItemProps): 
         <div
           className={cn(
             'group w-full border transition-all duration-300',
-            'border-white/10 bg-white/5 p-3 backdrop-blur-sm hover:border-fuchsia-500/50 hover:bg-fuchsia-500/5',
+            'border-white/10 bg-white/5 backdrop-blur-sm hover:border-fuchsia-500/50 hover:bg-fuchsia-500/5',
             file.isTemp && 'border-orange-500/30 bg-orange-500/5 hover:border-orange-500/50 hover:bg-orange-500/10',
             'brutal-shadow-sm',
             className,
@@ -242,101 +240,113 @@ export default function FileItem({ file, onDelete, className }: FileItemProps): 
               <div
                 className={cn(
                   'flex h-8 w-8 flex-shrink-0 items-center justify-center border transition-all duration-300',
+                  'xs:h-6 xs:w-6 sm:h-8 sm:w-8', // Responsive icon size
                   file.isTemp ?
                     'border-orange-500/50 bg-orange-500/10 text-orange-400'
                   : 'border-fuchsia-500/50 bg-fuchsia-500/10 text-fuchsia-400',
                 )}
               >
-                {getFileTypeIcon(file.name)}
+                <div className='xs:h-3 xs:w-3 sm:h-4 sm:w-4'>{getFileTypeIcon(file.name)}</div>
               </div>
 
               {/* File Name */}
               <h3
                 className='font-display text-glitch truncate text-sm font-semibold uppercase tracking-wide text-white'
+                style={{
+                  fontSize: 'clamp(0.625rem, 2vw, 0.875rem)', // Responsive font size
+                }}
                 title={file.name}
               >
                 {file.name}
               </h3>
             </div>
-
-            {/* Mobile Menu */}
-            <Button
-              variant='ghost'
-              size='sm'
-              onClick={() => setShowMobileMenu(!showMobileMenu)}
-              className='brutal-shadow-sm h-8 w-8 flex-shrink-0 border border-fuchsia-500/50 bg-fuchsia-500/10 p-0 text-white hover:border-fuchsia-500 hover:bg-fuchsia-500/10 hover:text-fuchsia-400'
-              aria-label='More options'
-            >
-              <MoreVertical className='h-4 w-4' />
-            </Button>
           </div>
 
           {/* Mobile File Details */}
-          <div className='font-mono-industrial mb-2 flex items-center justify-between text-xs text-white/50'>
+          <div
+            className='font-mono-industrial mb-2 flex items-center justify-between text-xs text-white/50'
+            style={{
+              fontSize: 'clamp(0.625rem, 1.5vw, 0.75rem)', // Responsive detail font
+            }}
+          >
             <div className='flex items-center gap-1'>
-              <HardDrive className='h-3 w-3 flex-shrink-0' />
+              <HardDrive className='xs:h-2 xs:w-2 h-3 w-3 flex-shrink-0 sm:h-3 sm:w-3' />
               <span>{file.size}</span>
             </div>
             {file.isTemp && (
-              <div className='rounded-full border border-orange-500/50 bg-orange-500/10 px-2 py-1'>
+              <div
+                className='rounded-full border border-orange-500/50 bg-orange-500/10 px-2 py-1'
+                style={{
+                  padding: 'clamp(0.125rem, 0.5vw, 0.25rem) clamp(0.25rem, 1vw, 0.5rem)',
+                  fontSize: 'clamp(0.5rem, 1.5vw, 0.625rem)',
+                }}
+              >
                 <span className='text-xs font-semibold text-orange-400'>24h</span>
               </div>
             )}
           </div>
 
           {/* Mobile Actions */}
-          {showMobileMenu && (
-            <div className='flex gap-2 border border-white/10 bg-white/5 p-2'>
-              <Button
-                variant='outline'
-                size='sm'
-                onClick={() => {
-                  setShowDialog(true);
-                  setShowMobileMenu(false);
-                }}
-                className='brutal-shadow-sm flex-1 border border-white/20 bg-white/5 px-2 text-xs text-white hover:border-fuchsia-500 hover:bg-fuchsia-500/10 hover:text-fuchsia-400'
-              >
-                <Eye className='mr-1 h-3 w-3' />
-                <span>Preview</span>
-              </Button>
-              <Button
-                variant='outline'
-                size='sm'
-                onClick={() => {
-                  handleCopyUrl();
-                  setShowMobileMenu(false);
-                }}
-                className='brutal-shadow-sm flex-1 border border-white/20 bg-white/5 px-2 text-xs text-white hover:border-fuchsia-500 hover:bg-fuchsia-500/10 hover:text-fuchsia-400'
-              >
-                <Copy className='mr-1 h-3 w-3' />
-                <span>Copy</span>
-              </Button>
-              <Button
-                variant='outline'
-                size='sm'
-                onClick={() => {
-                  handleDownload();
-                  setShowMobileMenu(false);
-                }}
-                className='brutal-shadow-sm flex-1 border border-white/20 bg-white/5 px-2 text-xs text-white hover:border-fuchsia-500 hover:bg-fuchsia-500/10 hover:text-fuchsia-400'
-              >
-                <Download className='mr-1 h-3 w-3' />
-                <span>Download</span>
-              </Button>
-              <Button
-                variant='outline'
-                size='sm'
-                onClick={() => {
-                  onDelete(file);
-                  setShowMobileMenu(false);
-                }}
-                className='brutal-shadow-sm flex-1 border border-red-500/50 bg-red-500/10 px-2 text-xs text-red-400 hover:border-red-500 hover:bg-red-500/10 hover:text-red-400'
-              >
-                <Trash2 className='mr-1 h-3 w-3' />
-                <span>Delete</span>
-              </Button>
-            </div>
-          )}
+          <div
+            className='grid grid-cols-2 gap-1.5 border border-white/10 bg-white/5 p-2'
+            style={{
+              gap: 'clamp(0.25rem, 1vw, 0.375rem)',
+              padding: 'clamp(0.5rem, 1.5vw, 0.5rem)',
+            }}
+          >
+            <Button
+              variant='outline'
+              size='sm'
+              onClick={() => setShowDialog(true)}
+              className='brutal-shadow-sm border border-white/20 bg-white/5 px-1 py-1.5 text-xs text-white hover:border-fuchsia-500 hover:bg-fuchsia-500/10 hover:text-fuchsia-400'
+              style={{
+                padding: 'clamp(0.375rem, 1vw, 0.375rem) clamp(0.5rem, 1.5vw, 0.625rem)',
+                fontSize: 'clamp(0.625rem, 2vw, 0.75rem)',
+              }}
+            >
+              <Eye className='xs:h-2 xs:w-2 h-3 w-3 sm:h-3 sm:w-3' />
+              <span className='xs:inline ml-1 hidden'>View</span>
+            </Button>
+            <Button
+              variant='outline'
+              size='sm'
+              onClick={handleCopyUrl}
+              className='brutal-shadow-sm border border-white/20 bg-white/5 px-1 py-1.5 text-xs text-white hover:border-fuchsia-500 hover:bg-fuchsia-500/10 hover:text-fuchsia-400'
+              style={{
+                padding: 'clamp(0.375rem, 1vw, 0.375rem) clamp(0.5rem, 1.5vw, 0.625rem)',
+                fontSize: 'clamp(0.625rem, 2vw, 0.75rem)',
+              }}
+            >
+              <Copy className='xs:h-2 xs:w-2 h-3 w-3 sm:h-3 sm:w-3' />
+              <span className='xs:inline ml-1 hidden'>Copy</span>
+            </Button>
+            <Button
+              variant='outline'
+              size='sm'
+              onClick={handleDownload}
+              className='brutal-shadow-sm border border-white/20 bg-white/5 px-1 py-1.5 text-xs text-white hover:border-fuchsia-500 hover:bg-fuchsia-500/10 hover:text-fuchsia-400'
+              style={{
+                padding: 'clamp(0.375rem, 1vw, 0.375rem) clamp(0.5rem, 1.5vw, 0.625rem)',
+                fontSize: 'clamp(0.625rem, 2vw, 0.75rem)',
+              }}
+            >
+              <Download className='xs:h-2 xs:w-2 h-3 w-3 sm:h-3 sm:w-3' />
+              <span className='xs:inline ml-1 hidden'>Get</span>
+            </Button>
+            <Button
+              variant='outline'
+              size='sm'
+              onClick={() => onDelete(file)}
+              className='brutal-shadow-sm border border-red-500/50 bg-red-500/10 px-1 py-1.5 text-xs text-red-400 hover:border-red-500 hover:bg-red-500/10 hover:text-red-400'
+              style={{
+                padding: 'clamp(0.375rem, 1vw, 0.375rem) clamp(0.5rem, 1.5vw, 0.625rem)',
+                fontSize: 'clamp(0.625rem, 2vw, 0.75rem)',
+              }}
+            >
+              <Trash2 className='xs:h-2 xs:w-2 h-3 w-3 sm:h-3 sm:w-3' />
+              <span className='xs:inline ml-1 hidden'>Del</span>
+            </Button>
+          </div>
         </div>
       )}
 

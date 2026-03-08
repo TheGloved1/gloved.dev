@@ -305,7 +305,7 @@ export default function FileUploader(): React.JSX.Element {
           transition={{ delay: 0.3 }}
           className='space-y-6'
         >
-          <div className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
+          <div className='flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between'>
             <div className='flex flex-row items-center gap-4'>
               <h2 className='font-display flex items-center gap-3 text-2xl font-bold uppercase tracking-wide text-white'>
                 <div className='flex h-8 w-8 items-center justify-center border border-fuchsia-500/30 bg-fuchsia-500/10'>
@@ -330,7 +330,7 @@ export default function FileUploader(): React.JSX.Element {
             </div>
 
             {/* Pagination display */}
-            <div className='flex justify-center'>
+            <div className='flex flex-1 scale-75 justify-start md:flex-none md:justify-center lg:scale-100'>
               <PaginationControls
                 currentPage={currentPage}
                 totalPages={paginationData.totalPages}
@@ -371,7 +371,7 @@ export default function FileUploader(): React.JSX.Element {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.4 }}
-              className='grid gap-6 md:grid-cols-2 lg:grid-cols-3'
+              className='flex flex-wrap gap-6'
             >
               {paginationData.paginatedFiles.map((file, index) => (
                 <motion.div
@@ -379,6 +379,7 @@ export default function FileUploader(): React.JSX.Element {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: parseFloat(animationDelay(index, paginationData.paginatedFiles.length)) }}
+                  className='w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]'
                 >
                   <FileItem file={file} onDelete={setFileToDelete} />
                 </motion.div>
