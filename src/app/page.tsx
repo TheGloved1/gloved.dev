@@ -1,5 +1,6 @@
 'use client';
 import AdminShow from '@/components/AdminShow';
+import { CornerDecorations } from '@/components/CornerDecorations';
 import { PageVisits } from '@/components/PageVisits';
 import ParticleText from '@/components/ParticleText';
 import ThemeChanger from '@/components/ThemeChanger';
@@ -7,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useIsMobile } from '@/hooks/use-mobile';
 import Constants from '@/lib/constants';
+import { animationDelay } from '@/lib/utils';
 import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs';
 import { SiDiscord, SiGithub } from '@icons-pack/react-simple-icons';
 import {
@@ -28,133 +30,133 @@ import {
 } from 'lucide-react';
 import DefaultPlayer from 'next-video/player';
 import Link from 'next/link';
-import React from 'react';
+import React, { useState } from 'react';
 
-// Import framer-motion for animations
-import { animationDelay } from '@/lib/utils';
-import dynamic from 'next/dynamic';
-const MotionDiv = dynamic(() => import('framer-motion').then((mod) => mod.motion.div), { ssr: false });
+interface AppItem {
+  icon: React.ForwardRefExoticComponent<Omit<LucideProps, 'ref'> & React.RefAttributes<SVGSVGElement>>;
+  title: string;
+  description: string;
+  link: string;
+}
 
+const apps: AppItem[] = [
+  { icon: Home, title: Constants.Home.title, description: Constants.Home.description, link: Constants.Home.link },
+  { icon: MessageCircle, title: Constants.Chat.title, description: Constants.Chat.description, link: Constants.Chat.link },
+  {
+    icon: Upload,
+    title: Constants.FileUploader.title,
+    description: Constants.FileUploader.description,
+    link: Constants.FileUploader.link,
+  },
+  {
+    icon: Scissors,
+    title: Constants.BGRemover.title,
+    description: Constants.BGRemover.description,
+    link: Constants.BGRemover.link,
+  },
+  { icon: Palette, title: Constants.Colors.title, description: Constants.Colors.description, link: Constants.Colors.link },
+  {
+    icon: Cookie,
+    title: Constants.Cookies.title,
+    description: Constants.Cookies.description,
+    link: Constants.Cookies.link,
+  },
+  {
+    icon: CheckSquare,
+    title: Constants.Todos.title,
+    description: Constants.Todos.description,
+    link: Constants.Todos.link,
+  },
+  {
+    icon: Gamepad2,
+    title: Constants.Hangman.title,
+    description: Constants.Hangman.description,
+    link: Constants.Hangman.link,
+  },
+  { icon: Calculator, title: Constants.Calc.title, description: Constants.Calc.description, link: Constants.Calc.link },
+  {
+    icon: Link2,
+    title: Constants.Shortener.title,
+    description: Constants.Shortener.description,
+    link: Constants.Shortener.link,
+  },
+  { icon: BookMarked, title: Constants.Fax.title, description: Constants.Fax.description, link: Constants.Fax.link },
+  {
+    icon: SiGithub,
+    title: Constants.Github.title,
+    description: Constants.Github.description,
+    link: Constants.Github.link,
+  },
+];
+
+const adminApps: AppItem[] = [
+  {
+    icon: Shield,
+    title: Constants.Admin.title,
+    description: Constants.Admin.description,
+    link: Constants.Admin.link,
+  },
+  { icon: Zap, title: Constants.Black.title, description: Constants.Black.description, link: Constants.Black.link },
+  { icon: Palette, title: Constants.White.title, description: Constants.White.description, link: Constants.White.link },
+  {
+    icon: SiDiscord,
+    title: Constants.Discord.title,
+    description: Constants.Discord.description,
+    link: Constants.Discord.link,
+  },
+];
+
+function AppCard({ app, index }: { app: AppItem; index: number }): React.JSX.Element {
+  const [hovering, setHovering] = useState(false);
+  return (
+    <div
+      key={app.link}
+      className='fadeIn basis-full sm:basis-[45%] md:basis-[33%] lg:basis-[30%] xl:basis-[22%]'
+      style={{ animationDelay: animationDelay(index, apps.length) }}
+      onMouseEnter={() => setHovering(true)}
+      onMouseLeave={() => setHovering(false)}
+    >
+      <Link
+        className='hover:brutal-shadow group relative flex h-full w-full flex-col justify-center gap-4 border-2 border-white/10 bg-white/5 p-6 transition-all duration-300 hover:border-fuchsia-500/50 hover:bg-fuchsia-500/10'
+        href={app.link}
+        prefetch
+      >
+        {/* Corner decorations */}
+        <CornerDecorations hovering={hovering} />
+
+        <app.icon className='h-8 w-8 self-center text-fuchsia-400' />
+        <h3 className='font-display text-center text-lg font-bold uppercase tracking-tight text-white'>
+          <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
+            {app.title} {'->'}
+          </span>
+        </h3>
+        <div className='font-mono-industrial text-center text-xs text-white/50'>{app.description}</div>
+
+        {/* Hover effect line */}
+        <div className='absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-fuchsia-500 to-transparent opacity-0 transition-opacity group-hover:opacity-100' />
+      </Link>
+    </div>
+  );
+}
+
+/**
+ * Renders a list of apps with their respective icons, titles, and descriptions.
+ * Each app is rendered as a separate link with a fade-in animation.
+ * The animation delay is calculated based on the index of the app.
+ * @param apps A list of AppItem objects to render.
+ * @returns A JSX element containing the rendered apps.
+ */
+function AppGrid({ apps }: { apps: AppItem[] }): React.JSX.Element {
+  return (
+    <div className='flex max-w-[1600px] flex-wrap justify-center gap-6'>
+      {apps.map((app, index) => (
+        <AppCard key={app.link} app={app} index={index} />
+      ))}
+    </div>
+  );
+}
 export default function Page(): React.JSX.Element {
   const isMobile = useIsMobile();
-
-  interface AppItem {
-    icon: React.ForwardRefExoticComponent<Omit<LucideProps, 'ref'> & React.RefAttributes<SVGSVGElement>>;
-    title: string;
-    description: string;
-    link: string;
-  }
-
-  const apps: AppItem[] = [
-    { icon: Home, title: Constants.Home.title, description: Constants.Home.description, link: Constants.Home.link },
-    { icon: MessageCircle, title: Constants.Chat.title, description: Constants.Chat.description, link: Constants.Chat.link },
-    {
-      icon: Upload,
-      title: Constants.FileUploader.title,
-      description: Constants.FileUploader.description,
-      link: Constants.FileUploader.link,
-    },
-    {
-      icon: Scissors,
-      title: Constants.BGRemover.title,
-      description: Constants.BGRemover.description,
-      link: Constants.BGRemover.link,
-    },
-    { icon: Palette, title: Constants.Colors.title, description: Constants.Colors.description, link: Constants.Colors.link },
-    {
-      icon: Cookie,
-      title: Constants.Cookies.title,
-      description: Constants.Cookies.description,
-      link: Constants.Cookies.link,
-    },
-    {
-      icon: CheckSquare,
-      title: Constants.Todos.title,
-      description: Constants.Todos.description,
-      link: Constants.Todos.link,
-    },
-    {
-      icon: Gamepad2,
-      title: Constants.Hangman.title,
-      description: Constants.Hangman.description,
-      link: Constants.Hangman.link,
-    },
-    { icon: Calculator, title: Constants.Calc.title, description: Constants.Calc.description, link: Constants.Calc.link },
-    {
-      icon: Link2,
-      title: Constants.Shortener.title,
-      description: Constants.Shortener.description,
-      link: Constants.Shortener.link,
-    },
-    { icon: BookMarked, title: Constants.Fax.title, description: Constants.Fax.description, link: Constants.Fax.link },
-    {
-      icon: SiGithub,
-      title: Constants.Github.title,
-      description: Constants.Github.description,
-      link: Constants.Github.link,
-    },
-  ];
-
-  const adminApps: AppItem[] = [
-    {
-      icon: Shield,
-      title: Constants.Admin.title,
-      description: Constants.Admin.description,
-      link: Constants.Admin.link,
-    },
-    { icon: Zap, title: Constants.Black.title, description: Constants.Black.description, link: Constants.Black.link },
-    { icon: Palette, title: Constants.White.title, description: Constants.White.description, link: Constants.White.link },
-    {
-      icon: SiDiscord,
-      title: Constants.Discord.title,
-      description: Constants.Discord.description,
-      link: Constants.Discord.link,
-    },
-  ];
-
-  /**
-   * Renders a list of apps with their respective icons, titles, and descriptions.
-   * Each app is rendered as a separate link with a fade-in animation.
-   * The animation delay is calculated based on the index of the app.
-   * @param apps A list of AppItem objects to render.
-   * @returns A JSX element containing the rendered apps.
-   */
-  function renderApps(apps: AppItem[]): React.JSX.Element {
-    return (
-      <div className='flex max-w-[1600px] flex-wrap justify-center gap-6'>
-        {apps.map((app, index) => (
-          <div
-            key={app.link}
-            className='fadeIn basis-full sm:basis-[45%] md:basis-[33%] lg:basis-[30%] xl:basis-[22%]'
-            style={{ animationDelay: animationDelay(index, apps.length) }}
-          >
-            <Link
-              className='hover:brutal-shadow group relative flex h-full w-full flex-col justify-center gap-4 border-2 border-white/10 bg-white/5 p-6 transition-all duration-300 hover:border-fuchsia-500/50 hover:bg-fuchsia-500/10'
-              href={app.link}
-              prefetch
-            >
-              {/* Corner decorations */}
-              <div className='absolute left-0 top-0 h-4 w-4 border-l-2 border-t-2 border-fuchsia-500/50' />
-              <div className='absolute right-0 top-0 h-4 w-4 border-r-2 border-t-2 border-fuchsia-500/50' />
-              <div className='absolute bottom-0 left-0 h-4 w-4 border-b-2 border-l-2 border-fuchsia-500/50' />
-              <div className='absolute bottom-0 right-0 h-4 w-4 border-b-2 border-r-2 border-fuchsia-500/50' />
-
-              <app.icon className='h-8 w-8 self-center text-fuchsia-400' />
-              <h3 className='font-display text-center text-lg font-bold uppercase tracking-tight text-white'>
-                <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
-                  {app.title} {'->'}
-                </span>
-              </h3>
-              <div className='font-mono-industrial text-center text-xs text-white/50'>{app.description}</div>
-
-              {/* Hover effect line */}
-              <div className='absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-fuchsia-500 to-transparent opacity-0 transition-opacity group-hover:opacity-100' />
-            </Link>
-          </div>
-        ))}
-      </div>
-    );
-  }
 
   return (
     <ThemeChanger>
@@ -269,8 +271,8 @@ export default function Page(): React.JSX.Element {
             <span className='text-fuchsia-500'>.</span>
             <span className='glitch-text'>DEV</span>
           </h1>
-        : <ParticleText text='gloved.dev' size={100} hoverColor='#ec4899' particleCount={8000} edgeComplexity={5} />}
-        {renderApps(apps)}
+        : <ParticleText text='gloved.dev' size={100} hoverColor='#ec4899' edgeComplexity={5} />}
+        <AppGrid apps={apps} />
         <Dialog>
           <DialogTrigger asChild>
             <Button className='font-mono-industrial brutal-shadow-sm border border-fuchsia-500/50 bg-fuchsia-500/10 text-xs hover:bg-fuchsia-500/20'>
@@ -305,7 +307,7 @@ export default function Page(): React.JSX.Element {
             <h2 className='font-display mx-4 text-2xl font-bold uppercase tracking-tight text-white'>{'Admin Stuff'}</h2>
             <div className='flex h-px flex-1 bg-gradient-to-r from-transparent via-fuchsia-500/50 to-transparent' />
           </div>
-          {renderApps(adminApps)}
+          <AppGrid apps={adminApps} />
         </AdminShow>
       </div>
       <div className='mx-auto flex w-[75vw] max-w-[1000px] items-center self-center'>

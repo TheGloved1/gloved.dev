@@ -1,12 +1,14 @@
 'use client';
 
+import { CornerDecorations } from '@/components/CornerDecorations';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
-import { memo } from 'react';
+import { memo, useState } from 'react';
 import { useBGRemover } from './BGRemoverContext';
 
 export const UploadArea = memo(function UploadArea() {
   const { fileInputRef, dragActive, handleFileInput, handleDrag, handleDrop } = useBGRemover();
+  const [isHovering, setIsHovering] = useState(false);
   return (
     <motion.div
       key='upload'
@@ -33,13 +35,12 @@ export const UploadArea = memo(function UploadArea() {
           title={``}
           className='absolute inset-0 z-10 cursor-pointer opacity-0'
           id='file-upload'
+          onMouseEnter={() => setIsHovering(true)}
+          onMouseLeave={() => setIsHovering(false)}
         />
 
         {/* Corner decorations */}
-        <div className='absolute left-0 top-0 h-6 w-6 border-l-2 border-t-2 border-fuchsia-500' />
-        <div className='absolute right-0 top-0 h-6 w-6 border-r-2 border-t-2 border-fuchsia-500' />
-        <div className='absolute bottom-0 left-0 h-6 w-6 border-b-2 border-l-2 border-fuchsia-500' />
-        <div className='absolute bottom-0 right-0 h-6 w-6 border-b-2 border-r-2 border-fuchsia-500' />
+        <CornerDecorations hovering={isHovering} />
 
         <div className='flex h-full flex-col items-center justify-center p-8'>
           <motion.div
