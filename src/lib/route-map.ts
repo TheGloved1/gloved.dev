@@ -83,6 +83,10 @@ export const RouteMap: Record<string, RouteInfo> = {
       relativePath: 'src/app/home/page.tsx',
       githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/home/page.tsx'
     },
+    '/old': {
+      relativePath: 'src/app/old/page.tsx',
+      githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/old/page.tsx'
+    },
     '/': {
       relativePath: 'src/app/page.tsx',
       githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/page.tsx'
