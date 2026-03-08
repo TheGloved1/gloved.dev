@@ -11,7 +11,7 @@ import glovedApi, { type FileInfo } from '@/lib/glovedapi';
 import { fuzzySearch, tryCatch } from '@/lib/utils';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { type AxiosProgressEvent } from 'axios';
-import { AlertTriangle, FolderOpen, RefreshCcw, Upload } from 'lucide-react';
+import { AlertTriangle, FolderOpen, RefreshCw, Upload } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { DeleteConfirmDialog } from './DeleteConfirmDialog';
 import { Button } from './ui/button';
@@ -229,7 +229,7 @@ export default function FileUploader(): React.JSX.Element {
         </div>
 
         {/* Upload Section */}
-        <div className='grid gap-6 lg:grid-cols-2'>
+        <div className='flex flex-col gap-4'>
           <div className='space-y-4'>
             <h2 className='flex items-center gap-2 text-xl font-semibold'>
               <Upload className='h-5 w-5' />
@@ -241,32 +241,6 @@ export default function FileUploader(): React.JSX.Element {
               isUploading={uploadMutation.isPending}
               onCancelUpload={handleCancelUpload}
             />
-          </div>
-
-          {/* Stats Section */}
-          <div className='space-y-4'>
-            <h2 className='flex items-center gap-2 text-xl font-semibold'>
-              <RefreshCcw className='h-5 w-5' />
-              File Statistics
-            </h2>
-            <div className='grid gap-4 sm:grid-cols-2'>
-              <div className='rounded-lg border p-4'>
-                <div className='text-2xl font-bold text-primary'>{filesQuery.data.filter((f) => !f.isTemp).length}</div>
-                <div className='text-sm text-muted-foreground'>Permanent Files</div>
-              </div>
-              <div className='rounded-lg border p-4'>
-                <div className='text-2xl font-bold text-orange-600'>{filesQuery.data.filter((f) => f.isTemp).length}</div>
-                <div className='text-sm text-muted-foreground'>Temporary Files</div>
-              </div>
-            </div>
-            <Button
-              variant='outline'
-              onClick={() => queryClient.invalidateQueries({ queryKey: ['files'] })}
-              className='w-full'
-            >
-              <RefreshCcw className='mr-2 h-4 w-4' />
-              Refresh Files
-            </Button>
           </div>
         </div>
 
@@ -283,7 +257,10 @@ export default function FileUploader(): React.JSX.Element {
           <div className='flex items-center justify-between'>
             <h2 className='flex items-center gap-2 text-xl font-semibold'>
               <FolderOpen className='h-5 w-5' />
-              Files
+              Files{' '}
+              <Button variant='ghost' size='sm' onClick={() => filesQuery.refetch()}>
+                <RefreshCw className='h-4 w-4' />
+              </Button>
             </h2>
             <div className='text-sm text-muted-foreground'>
               Showing {filteredFiles.length} of {filesQuery.data.length} files
