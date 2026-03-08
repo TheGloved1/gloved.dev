@@ -39,7 +39,7 @@ export default function FileFilters({
   files,
   className,
 }: FileFiltersProps): React.JSX.Element {
-  const [activeFilters, setActiveFilters] = useState<string[]>([]);
+  const [activeFilters, setActiveFilters] = useState<FilterType[]>([]);
   const [showFilters, setShowFilters] = useState(false);
 
   const filterOptions: { type: FilterType; label: string; icon: React.ReactNode; count: number }[] = [
@@ -93,35 +93,41 @@ export default function FileFilters({
 
   return (
     <div className={cn('space-y-4', className)}>
-      {/* Search Bar */}
-      <div className='relative'>
-        <Search className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground' />
-        <Input
-          type='text'
-          placeholder='Search files...'
-          value={searchQuery}
-          onChange={(e) => onSearchChange(e.target.value)}
-          className='pl-10 pr-10'
-          aria-label='Search files'
-        />
-        {searchQuery && (
-          <Button
-            variant='ghost'
-            size='sm'
-            onClick={clearSearch}
-            className='absolute right-1 top-1/2 h-6 w-6 -translate-y-1/2 p-0'
-            aria-label='Clear search'
-          >
-            <X className='h-4 w-4' />
-          </Button>
-        )}
-      </div>
+      {/* Search Bar with Filter Button */}
+      <div className='flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-2'>
+        <div className='relative flex-1'>
+          <Search className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground' />
+          <Input
+            type='text'
+            placeholder='Search files...'
+            value={searchQuery}
+            onChange={(e) => onSearchChange(e.target.value)}
+            className='pl-10 pr-10'
+            aria-label='Search files'
+          />
+          {searchQuery && (
+            <Button
+              variant='ghost'
+              size='sm'
+              onClick={clearSearch}
+              className='absolute right-1 top-1/2 h-6 w-6 -translate-y-1/2 p-0'
+              aria-label='Clear search'
+            >
+              <X className='h-4 w-4' />
+            </Button>
+          )}
+        </div>
 
-      {/* Filter Toggle */}
-      <div className='flex items-center justify-between'>
-        <Button variant='outline' size='sm' onClick={() => setShowFilters(!showFilters)} className='flex items-center gap-2'>
+        {/* Filter Toggle */}
+        <Button
+          variant='outline'
+          size='sm'
+          onClick={() => setShowFilters(!showFilters)}
+          className='flex items-center gap-2 sm:w-auto'
+        >
           <Filter className='h-4 w-4' />
-          Filters
+          <span className='hidden sm:inline'>Filters</span>
+          <span className='sm:hidden'>Filters</span>
         </Button>
       </div>
 
@@ -180,7 +186,7 @@ export default function FileFilters({
               <Button
                 variant='ghost'
                 size='sm'
-                onClick={() => handleFilterChange(filter as FilterType)}
+                onClick={() => handleFilterChange(filter)}
                 className='ml-1 h-4 w-4 p-0 hover:bg-transparent'
               >
                 <X className='h-3 w-3' />
@@ -189,7 +195,7 @@ export default function FileFilters({
           ))}
           {searchQuery && (
             <span className='inline-flex items-center gap-1 rounded-md bg-secondary px-2 py-1 text-xs font-medium text-secondary-foreground'>
-              Search: &quot;{searchQuery}&quot;
+              &quot;{searchQuery}&quot;
               <Button variant='ghost' size='sm' onClick={clearSearch} className='ml-1 h-4 w-4 p-0 hover:bg-transparent'>
                 <X className='h-3 w-3' />
               </Button>
