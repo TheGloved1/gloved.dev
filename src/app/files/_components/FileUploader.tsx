@@ -43,8 +43,9 @@ const uploadFileApi = async (
   formData.append('file', file);
   formData.append('temp', isTemp.toString());
   await glovedApi.uploadFile(formData, {
-    signal: signal,
+    signal,
     onUploadProgress,
+    timeout: 0, // No timeout - let uploads complete regardless of size
   });
 };
 
@@ -191,6 +192,21 @@ export default function FileUploader(): React.JSX.Element {
       queryClient.invalidateQueries({ queryKey: ['files'] });
       setUploadProgress(0);
       setUploadRequestController(null);
+    },
+    onError: (error: any) => {
+      setUploadProgress(0);
+      setUploadRequestController(null);
+
+      // Handle different error types
+      if (error.code === 'ECONNABORTED') {
+        setAlert('Upload was cancelled');
+      } else if (error.code === 'ECONNABORTED' || error.message?.includes('timeout')) {
+        setAlert('Upload timed out. File may be too large or connection is slow.');
+      } else if (error.response?.status === 413) {
+        setAlert('File is too large. Please try a smaller file.');
+      } else {
+        setAlert(`Upload failed: ${error.message || 'Unknown error'}`);
+      }
     },
   });
 
