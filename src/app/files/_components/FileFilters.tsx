@@ -3,9 +3,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { type FileInfo } from '@/lib/glovedapi';
 import { cn } from '@/lib/utils';
-import { Calendar, Clock, Filter, Search, X } from 'lucide-react';
+import { Filter, Search, X } from 'lucide-react';
 import { useCallback, useState } from 'react';
-import { getFileType, type FilterType } from './filters';
+import { Filters, type FilterType, getFileType } from './filters';
 
 interface FileFiltersProps {
   searchQuery: string;
@@ -28,48 +28,48 @@ export default function FileFilters({
   const filterOptions: { type: FilterType; label: string; icon: React.ReactNode; count: number }[] = [
     // Upload Type Filters
     {
-      type: 'permanent',
-      label: 'Permanent',
-      icon: <Calendar className='h-4 w-4' />,
+      type: Filters.permanent.value,
+      label: Filters.permanent.label,
+      icon: Filters.permanent.icon,
       count: files.filter((f) => !f.isTemp).length,
     },
     {
-      type: 'temporary',
-      label: 'Temporary',
-      icon: <Clock className='h-4 w-4' />,
+      type: Filters.temporary.value,
+      label: Filters.temporary.label,
+      icon: Filters.temporary.icon,
       count: files.filter((f) => f.isTemp).length,
     },
 
     // File Type Filters
     {
-      type: 'images',
-      label: 'Images',
-      icon: '🖼️',
-      count: files.filter((f) => getFileType(f.name) === 'images').length,
+      type: Filters.images.value,
+      label: Filters.images.label,
+      icon: Filters.images.icon,
+      count: files.filter((f) => getFileType(f.name) === Filters.images.value).length,
     },
     {
-      type: 'videos',
-      label: 'Videos',
-      icon: '🎥',
-      count: files.filter((f) => getFileType(f.name) === 'videos').length,
+      type: Filters.videos.value,
+      label: Filters.videos.label,
+      icon: Filters.videos.icon,
+      count: files.filter((f) => getFileType(f.name) === Filters.videos.value).length,
     },
     {
-      type: 'documents',
-      label: 'Documents',
-      icon: '📄',
-      count: files.filter((f) => getFileType(f.name) === 'documents').length,
+      type: Filters.documents.value,
+      label: Filters.documents.label,
+      icon: Filters.documents.icon,
+      count: files.filter((f) => getFileType(f.name) === Filters.documents.value).length,
     },
     {
-      type: 'compressed',
-      label: 'Compressed',
-      icon: '📦',
-      count: files.filter((f) => getFileType(f.name) === 'compressed').length,
+      type: Filters.compressed.value,
+      label: Filters.compressed.label,
+      icon: Filters.compressed.icon,
+      count: files.filter((f) => getFileType(f.name) === Filters.compressed.value).length,
     },
     {
-      type: 'other',
-      label: 'Other',
-      icon: '💾',
-      count: files.filter((f) => getFileType(f.name) === 'other').length,
+      type: Filters.other.value,
+      label: Filters.other.label,
+      icon: Filters.other.icon,
+      count: files.filter((f) => getFileType(f.name) === Filters.other.value).length,
     },
   ];
 
