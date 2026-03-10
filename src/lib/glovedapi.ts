@@ -79,7 +79,6 @@ export class GlovedApi {
     this.client = axios.create({
       baseURL: this.baseUrl,
       headers: {
-        Accept: 'application/json',
         ...options.defaultHeaders,
       },
       timeout: options.timeout ?? 30000,

@@ -13,6 +13,8 @@ interface UploadZoneProps {
   onUpload: (file: File, isTemp: boolean) => void;
   uploadProgress: number;
   isUploading: boolean;
+  isTemp: boolean;
+  onTempChange?: (isTemp: boolean) => void;
   onCancelUpload: () => void;
   className?: string;
 }
@@ -26,10 +28,11 @@ export default function UploadZone({
   onUpload,
   uploadProgress,
   isUploading,
+  isTemp,
+  onTempChange,
   onCancelUpload,
   className,
 }: UploadZoneProps): React.JSX.Element {
-  const [isTemp, setIsTemp] = useState(false);
   const [dragState, setDragState] = useState<DragState>({
     isDragActive: false,
     isDragReject: false,
@@ -257,31 +260,6 @@ export default function UploadZone({
         )}
       </div>
 
-      {/* Temporary File Toggle */}
-      <div
-        className={cn(
-          'group flex cursor-pointer items-center justify-between border transition-all duration-300',
-          'border-white/10 bg-white/5 p-4 hover:border-fuchsia-500/50 hover:bg-fuchsia-500/5',
-        )}
-        onClick={() => {
-          setIsTemp(!isTemp);
-        }}
-      >
-        <div className='space-y-1'>
-          <Label htmlFor='temp-file' className='font-display text-sm font-medium uppercase tracking-wide text-white'>
-            Temporary File
-          </Label>
-          <p className='font-mono-industrial text-xs text-white/50'>Files will be automatically deleted after 24 hours</p>
-        </div>
-        <Switch
-          className={cn('transition-colors', isTemp ? 'group-hover:bg-fuchsia-500/50' : 'group-hover:bg-white/50')}
-          id='temp-file'
-          checked={isTemp}
-          onCheckedChange={setIsTemp}
-          disabled={isUploading}
-        />
-      </div>
-
       {/* Upload Progress - Full Overlay */}
       {isUploading && (
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm'>
@@ -409,7 +387,15 @@ export default function UploadZone({
                 >
                   Temporary File
                 </Label>
-                <Switch id='temp-file-dialog' checked={isTemp} onCheckedChange={setIsTemp} disabled={isUploading} />
+                <Switch
+                  id='temp-file-dialog'
+                  checked={isTemp}
+                  onCheckedChange={(checked) => {
+                    localStorage.setItem('temp', String(checked));
+                    onTempChange?.(checked);
+                  }}
+                  disabled={isUploading}
+                />
                 <span className='font-mono-industrial text-xs text-white/50'>(auto-delete after 24h)</span>
               </div>
 

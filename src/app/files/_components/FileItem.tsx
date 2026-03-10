@@ -7,10 +7,11 @@ import { cn } from '@/lib/utils';
 import {
   Calendar,
   Check,
+  Clock,
   Copy,
   Download,
   Eye,
-  File,
+  File as FileIcon,
   FileText,
   HardDrive,
   Image as ImageIcon,
@@ -41,13 +42,77 @@ const getFileTypeIcon = (fileName: string) => {
     return <Music className='h-4 w-4' />;
   }
   if (['zip', 'rar', '7z', 'tar', 'gz'].includes(extension || '')) {
-    return <File className='h-4 w-4' />;
+    return <FileIcon className='h-4 w-4' />;
   }
   if (['pdf', 'doc', 'docx', 'txt', 'md'].includes(extension || '')) {
     return <FileText className='h-4 w-4' />;
   }
 
-  return <File className='h-4 w-4' />;
+  return <FileIcon className='h-4 w-4' />;
+};
+
+const getFileType = (fileName: string): string => {
+  const extension = fileName.split('.').pop()?.toLowerCase();
+
+  if (['jpeg', 'jpg', 'gif', 'png', 'webp', 'svg'].includes(extension || '')) {
+    return 'images';
+  }
+  if (['mp4', 'webm', 'ogg', 'mov', 'avi'].includes(extension || '')) {
+    return 'videos';
+  }
+  if (['pdf', 'doc', 'docx', 'txt', 'md'].includes(extension || '')) {
+    return 'documents';
+  }
+
+  return 'other';
+};
+
+const getFileFilters = (file: FileInfo): { type: string; label: string; icon: React.ReactNode; color: string }[] => {
+  const filters: { type: string; label: string; icon: React.ReactNode; color: string }[] = [];
+
+  // Temporary/Permanent filter
+  if (file.isTemp) {
+    filters.push({
+      type: 'temporary',
+      label: '24h',
+      icon: <Clock className='h-3 w-3' />,
+      color: 'border-orange-500/30 bg-orange-500/10 text-orange-400',
+    });
+  } else {
+    filters.push({
+      type: 'permanent',
+      label: 'Permanent',
+      icon: <Calendar className='h-3 w-3' />,
+      color: 'border-blue-500/30 bg-blue-500/10 text-blue-400',
+    });
+  }
+
+  // File type filters
+  const fileType = getFileType(file.name);
+  if (fileType === 'images') {
+    filters.push({
+      type: 'images',
+      label: 'Image',
+      icon: <span className='text-xs leading-none'>🖼️</span>,
+      color: 'border-green-500/30 bg-green-500/10 text-green-400',
+    });
+  } else if (fileType === 'videos') {
+    filters.push({
+      type: 'videos',
+      label: 'Video',
+      icon: <span className='text-xs leading-none'>🎥</span>,
+      color: 'border-purple-500/30 bg-purple-500/10 text-purple-400',
+    });
+  } else if (fileType === 'documents') {
+    filters.push({
+      type: 'documents',
+      label: 'Document',
+      icon: <span className='text-xs leading-none'>📄</span>,
+      color: 'border-yellow-500/30 bg-yellow-500/10 text-yellow-400',
+    });
+  }
+
+  return filters;
 };
 
 const formatDate = (dateString: string): string => {
@@ -153,69 +218,90 @@ export default function FileItem({ file, onDelete, className }: FileItemProps): 
             )}
           </div>
 
-          {/* Action Buttons - Desktop */}
-          <div
-            className={cn(
-              'flex items-center gap-2 transition-opacity duration-300',
-              isHovered ? 'opacity-100' : 'opacity-0',
-            )}
-          >
-            <Button
-              variant='ghost'
-              size='sm'
-              onClick={() => setShowDialog(true)}
-              className='brutal-shadow-sm group relative h-8 w-8 overflow-hidden border border-fuchsia-500/40 bg-fuchsia-500/10 text-white hover:border-fuchsia-500 hover:bg-fuchsia-500/10 hover:text-fuchsia-400'
-              aria-label={`Preview ${file.name}`}
+          {/* Action Buttons and Filter Tags Container - Desktop Only */}
+          <div className='flex flex-col gap-3 md:flex-row md:items-start md:justify-between md:gap-4'>
+            {/* Action Buttons - Left Side on Large Screens, Left Side on Small Screens */}
+            <div
+              className={cn(
+                'flex items-center gap-2 transition-opacity duration-300',
+                isHovered ? 'opacity-100' : 'opacity-0',
+                'md:order-1', // Always first on medium and up
+              )}
             >
-              <div className='absolute inset-0 left-0 right-0 top-0 h-full w-full bg-gradient-to-r from-fuchsia-500/40 via-fuchsia-500/40 to-transparent opacity-0 transition-all duration-300'></div>
-              <Eye className='relative z-10 h-4 w-4' />
-            </Button>
+              <Button
+                variant='ghost'
+                size='sm'
+                onClick={() => setShowDialog(true)}
+                className='brutal-shadow-sm group relative h-8 w-8 overflow-hidden border border-fuchsia-500/40 bg-fuchsia-500/10 text-white hover:border-fuchsia-500 hover:bg-fuchsia-500/10 hover:text-fuchsia-400'
+                aria-label={`Preview ${file.name}`}
+              >
+                <div className='absolute inset-0 left-0 right-0 top-0 h-full w-full bg-gradient-to-r from-fuchsia-500/40 via-fuchsia-500/40 to-transparent opacity-0 transition-all duration-300'></div>
+                <Eye className='relative z-10 h-4 w-4' />
+              </Button>
 
-            <Button
-              variant='ghost'
-              size='sm'
-              onClick={handleCopyUrl}
-              className='brutal-shadow-sm group relative h-8 w-8 overflow-hidden border border-fuchsia-500/40 bg-fuchsia-500/10 text-white hover:border-fuchsia-500 hover:bg-fuchsia-500/10 hover:text-fuchsia-400'
-              aria-label={`Copy URL for ${file.name}`}
-            >
-              <div className='absolute inset-0 left-0 right-0 top-0 h-full w-full bg-gradient-to-r from-fuchsia-500/40 via-fuchsia-500/40 to-transparent opacity-0 transition-all duration-300'></div>
-              <div className='relative flex items-center justify-center'>
-                <Copy
+              <Button
+                variant='ghost'
+                size='sm'
+                onClick={handleCopyUrl}
+                className='brutal-shadow-sm group relative h-8 w-8 overflow-hidden border border-fuchsia-500/40 bg-fuchsia-500/10 text-white hover:border-fuchsia-500 hover:bg-fuchsia-500/10 hover:text-fuchsia-400'
+                aria-label={`Copy URL for ${file.name}`}
+              >
+                <div className='absolute inset-0 left-0 right-0 top-0 h-full w-full bg-gradient-to-r from-fuchsia-500/40 via-fuchsia-500/40 to-transparent opacity-0 transition-all duration-300'></div>
+                <div className='relative flex items-center justify-center'>
+                  <Copy
+                    className={cn(
+                      'h-4 w-4 transition-all duration-200',
+                      isCopied ? 'scale-0 opacity-0' : 'scale-100 opacity-100',
+                    )}
+                  />
+                  <Check
+                    className={cn(
+                      'absolute inset-0 flex h-4 w-4 items-center justify-center text-green-400 transition-all duration-200',
+                      isCopied ? 'scale-100 opacity-100' : 'scale-0 opacity-0',
+                    )}
+                  />
+                </div>
+              </Button>
+
+              <Button
+                variant='ghost'
+                size='sm'
+                onClick={handleDownload}
+                className='brutal-shadow-sm group relative h-8 w-8 overflow-hidden border border-fuchsia-500/40 bg-fuchsia-500/10 text-white hover:border-fuchsia-500 hover:bg-fuchsia-500/10 hover:text-fuchsia-400'
+                aria-label={`Download ${file.name}`}
+              >
+                <div className='absolute inset-0 left-0 right-0 top-0 h-full w-full bg-gradient-to-r from-fuchsia-500/40 via-fuchsia-500/40 to-transparent opacity-0 transition-all duration-300'></div>
+                <Download className='relative z-10 h-4 w-4' />
+              </Button>
+
+              <Button
+                variant='ghost'
+                size='sm'
+                onClick={() => onDelete(file)}
+                className='brutal-shadow-sm group relative h-8 w-8 overflow-hidden border border-fuchsia-500/40 bg-fuchsia-500/10 text-white hover:border-fuchsia-500 hover:bg-fuchsia-500/10 hover:text-fuchsia-400'
+                aria-label={`Delete ${file.name}`}
+              >
+                <div className='absolute inset-0 left-0 right-0 top-0 h-full w-full bg-gradient-to-r from-fuchsia-500/40 via-fuchsia-500/40 to-transparent opacity-0 transition-all duration-300'></div>
+                <Trash2 className='relative z-10 h-4 w-4' />
+              </Button>
+            </div>
+
+            {/* Filter Tags - Right Side on Large Screens, Left Side on Small Screens */}
+            <div className='flex flex-wrap gap-1.5 md:order-2'>
+              {getFileFilters(file).map((filter) => (
+                <div
+                  key={filter.type}
                   className={cn(
-                    'h-4 w-4 transition-all duration-200',
-                    isCopied ? 'scale-0 opacity-0' : 'scale-100 opacity-100',
+                    'inline-flex items-center justify-center rounded-md border p-1.5 transition-all duration-200',
+                    filter.color,
+                    'hover:scale-105',
                   )}
-                />
-                <Check
-                  className={cn(
-                    'absolute inset-0 flex h-4 w-4 items-center justify-center text-green-400 transition-all duration-200',
-                    isCopied ? 'scale-100 opacity-100' : 'scale-0 opacity-0',
-                  )}
-                />
-              </div>
-            </Button>
-
-            <Button
-              variant='ghost'
-              size='sm'
-              onClick={handleDownload}
-              className='brutal-shadow-sm group relative h-8 w-8 overflow-hidden border border-fuchsia-500/40 bg-fuchsia-500/10 text-white hover:border-fuchsia-500 hover:bg-fuchsia-500/10 hover:text-fuchsia-400'
-              aria-label={`Download ${file.name}`}
-            >
-              <div className='absolute inset-0 left-0 right-0 top-0 h-full w-full bg-gradient-to-r from-fuchsia-500/40 via-fuchsia-500/40 to-transparent opacity-0 transition-all duration-300'></div>
-              <Download className='relative z-10 h-4 w-4' />
-            </Button>
-
-            <Button
-              variant='ghost'
-              size='sm'
-              onClick={() => onDelete(file)}
-              className='brutal-shadow-sm group relative h-8 w-8 overflow-hidden border border-fuchsia-500/40 bg-fuchsia-500/10 text-white hover:border-fuchsia-500 hover:bg-fuchsia-500/10 hover:text-fuchsia-400'
-              aria-label={`Delete ${file.name}`}
-            >
-              <div className='absolute inset-0 left-0 right-0 top-0 h-full w-full bg-gradient-to-r from-fuchsia-500/40 via-fuchsia-500/40 to-transparent opacity-0 transition-all duration-300'></div>
-              <Trash2 className='relative z-10 h-4 w-4' />
-            </Button>
+                  title={filter.label}
+                >
+                  <span className='text-xs'>{filter.icon}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       )}

@@ -41,7 +41,8 @@ const uploadFileApi = async (
 ) => {
   const formData = new FormData();
   formData.append('file', file);
-  formData.append('temp', isTemp.toString());
+  formData.append('temp', String(isTemp));
+  console.log('Uploading file:', file.name, 'temp:', isTemp);
   await glovedApi.uploadFile(formData, {
     signal,
     onUploadProgress,
@@ -95,26 +96,30 @@ export default function FileUploader(): React.JSX.Element {
     }
 
     filtered = filtered.filter((file) => {
-      // Check if file matches any active filter
+      // Check if file matches ALL active filters
       const fileType = getFileType(file.name);
 
-      if (activeFilters.includes('permanent') && !file.isTemp) {
-        return true;
-      }
-      if (activeFilters.includes('temporary') && file.isTemp) {
-        return true;
-      }
-      if (activeFilters.includes('images') && fileType === 'images') {
-        return true;
-      }
-      if (activeFilters.includes('videos') && fileType === 'videos') {
-        return true;
-      }
-      if (activeFilters.includes('documents') && fileType === 'documents') {
-        return true;
+      // For each active filter, check if the file matches it
+      for (const filter of activeFilters) {
+        if (filter === 'permanent' && file.isTemp) {
+          return false; // File is temporary but filter is for permanent
+        }
+        if (filter === 'temporary' && !file.isTemp) {
+          return false; // File is permanent but filter is for temporary
+        }
+        if (filter === 'images' && fileType !== 'images') {
+          return false; // File is not an image but filter is for images
+        }
+        if (filter === 'videos' && fileType !== 'videos') {
+          return false; // File is not a video but filter is for videos
+        }
+        if (filter === 'documents' && fileType !== 'documents') {
+          return false; // File is not a document but filter is for documents
+        }
       }
 
-      return false;
+      // If we didn't return false, the file matches all active filters
+      return true;
     });
 
     return filtered;
@@ -299,6 +304,8 @@ export default function FileUploader(): React.JSX.Element {
               onUpload={uploadFile}
               uploadProgress={uploadProgress}
               isUploading={uploadMutation.isPending}
+              isTemp={isTemp}
+              onTempChange={setIsTemp}
               onCancelUpload={handleCancelUpload}
             />
           </div>
