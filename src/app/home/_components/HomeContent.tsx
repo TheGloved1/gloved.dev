@@ -112,7 +112,7 @@ export default function HomeContent(): React.JSX.Element {
       <div className='grid-pattern' />
       <div className='fixed left-0 right-0 top-0 z-[1000] backdrop-blur-sm'>
         <div className='border-b border-fuchsia-500/30 bg-[#0a0a0a]/80'>
-          <div className='flex items-center justify-between px-4 py-3'>
+          <div className='relative flex items-center justify-between px-4 py-3'>
             <div className='flex items-center gap-2'>
               <Link href={'/'}>
                 <Button className='brutal-shadow-sm border border-fuchsia-500/50 bg-fuchsia-500/10 text-xs hover:bg-fuchsia-500/20'>
@@ -121,7 +121,7 @@ export default function HomeContent(): React.JSX.Element {
                 </Button>
               </Link>
             </div>
-            <div className='hidden items-center gap-1 md:flex'>
+            <div className='absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 items-center gap-1 md:flex'>
               {sections.map((section, index) => (
                 <motion.div
                   key={section.id}

@@ -282,34 +282,71 @@ export default function UploadZone({
         />
       </div>
 
-      {/* Upload Progress */}
+      {/* Upload Progress - Full Overlay */}
       {isUploading && (
-        <div className='space-y-3 border border-fuchsia-500/30 bg-fuchsia-500/5 p-4'>
-          <div className='flex items-center justify-between'>
-            <div className='flex items-center space-x-2'>
-              <div className='glow-line h-2 w-2 animate-pulse rounded-full bg-fuchsia-500' />
-              <span className='font-mono-industrial text-sm font-medium text-white'>UPLOADING...</span>
+        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm'>
+          <div className='brutal-shadow-lg mx-4 w-full max-w-md space-y-6 rounded-2xl border border-fuchsia-500/30 bg-fuchsia-500/5 p-8'>
+            {/* Animated Icon */}
+            <div className='flex justify-center'>
+              <div className='relative'>
+                <div className='flex h-16 w-16 items-center justify-center rounded-full border-2 border-fuchsia-500/30 bg-fuchsia-500/10'>
+                  <Upload className='h-8 w-8 animate-pulse text-fuchsia-400' />
+                </div>
+                {/* Rotating ring */}
+                <div className='absolute inset-0 flex h-16 w-16 items-center justify-center'>
+                  <div className='h-14 w-14 animate-spin rounded-full border-2 border-transparent border-t-fuchsia-500' />
+                </div>
+              </div>
             </div>
-            <span className='font-mono-industrial text-sm text-fuchsia-400'>{uploadProgress}%</span>
-          </div>
 
-          <div className='h-2 w-full overflow-hidden rounded-full bg-white/10'>
-            <div
-              className='h-full bg-gradient-to-r from-purple-600 to-purple-800 transition-all duration-300 ease-out'
-              style={{ width: `${uploadProgress}%` }}
-            />
-          </div>
+            {/* Progress Info */}
+            <div className='space-y-4 text-center'>
+              <h2 className='font-display text-2xl font-bold uppercase tracking-tight text-white'>UPLOADING FILE</h2>
 
-          <div className='flex justify-end'>
-            <Button
-              variant='outline'
-              size='sm'
-              onClick={handleCancel}
-              className='brutal-shadow-sm border-fuchsia-500/50 bg-fuchsia-500/10 text-fuchsia-400 hover:border-fuchsia-500 hover:bg-fuchsia-500/10 hover:text-fuchsia-400'
-            >
-              <X className='mr-2 h-4 w-4' />
-              Cancel
-            </Button>
+              <div className='space-y-2'>
+                <div className='flex items-center justify-between text-sm'>
+                  <span className='font-mono-industrial text-white/80'>Progress</span>
+                  <span className='font-mono-industrial font-bold text-fuchsia-400'>{uploadProgress}%</span>
+                </div>
+
+                {/* Large Progress Bar */}
+                <div className='h-4 w-full overflow-hidden rounded-full border border-white/20 bg-white/10'>
+                  <div
+                    className='relative h-full overflow-hidden bg-gradient-to-r from-fuchsia-500 to-purple-600 transition-all duration-300 ease-out'
+                    style={{ width: `${uploadProgress}%` }}
+                  >
+                    {/* Animated shimmer effect */}
+                    <div className='absolute inset-0 animate-pulse bg-gradient-to-r from-transparent via-white/20 to-transparent' />
+                  </div>
+                </div>
+
+                <p className='font-mono-industrial text-xs text-white/50'>
+                  Please wait while your file is being uploaded...
+                </p>
+              </div>
+
+              {/* File Info */}
+              {selectedFile && (
+                <div className='rounded-lg border border-white/10 bg-white/5 p-3'>
+                  <p className='font-mono-industrial truncate text-xs text-white'>{selectedFile.name}</p>
+                  <p className='font-mono-industrial mt-1 text-xs text-fuchsia-400/70'>
+                    {formatFileSize(selectedFile.size)}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Cancel Button */}
+            <div className='flex justify-center'>
+              <Button
+                variant='outline'
+                onClick={handleCancel}
+                className='brutal-shadow-sm border-red-500/50 bg-red-500/10 text-red-400 transition-all duration-300 hover:border-red-500 hover:bg-red-500/20 hover:text-red-300'
+              >
+                <X className='mr-2 h-4 w-4' />
+                Cancel Upload
+              </Button>
+            </div>
           </div>
         </div>
       )}

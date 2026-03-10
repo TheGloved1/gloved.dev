@@ -15,11 +15,11 @@ import DefaultPlayer from 'next-video/player';
 import Link from 'next/link';
 import React, { useState } from 'react';
 
-function AppCard({ app, index }: { app: AppItem; index: number }): React.JSX.Element {
+function AppCard({ key, app, index }: { key?: string; app: AppItem; index: number }): React.JSX.Element {
   const [hovering, setHovering] = useState(false);
   return (
     <div
-      key={app.link}
+      key={key || app.link}
       className='fadeIn basis-full sm:basis-[45%] md:basis-[33%] lg:basis-[30%] xl:basis-[22%]'
       style={{ animationDelay: animationDelay(index, apps.length) }}
       onMouseEnter={() => setHovering(true)}
