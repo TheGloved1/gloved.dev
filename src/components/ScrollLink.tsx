@@ -5,10 +5,10 @@ type ScrollLinkProps = {
   children: React.ReactNode;
   href: string;
   onClick?: () => void;
-} & React.ComponentPropsWithoutRef<'button'>;
+} & React.ComponentPropsWithoutRef<'div'>;
 
 export default function ScrollLink({ children, href, onClick, ...props }: ScrollLinkProps): React.JSX.Element {
-  function handleScroll(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+  function handleScroll(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
     e.preventDefault();
     const element = document.getElementById(href.replace('#', ''));
     if (element) {
@@ -27,8 +27,8 @@ export default function ScrollLink({ children, href, onClick, ...props }: Scroll
   }
 
   return (
-    <button onClick={(e) => handleScroll(e)} {...props}>
+    <div onClick={(e) => handleScroll(e)} {...props} role='button' tabIndex={0}>
       {children}
-    </button>
+    </div>
   );
 }

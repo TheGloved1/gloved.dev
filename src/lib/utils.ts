@@ -228,7 +228,8 @@ export function fuzzySearch<T extends Record<string, any>>(
  * @param total The total number of items in the array.
  * @returns The animation delay in seconds.
  */
-export const animationDelay = (index: number, total: number) => `${0.4 + (index / total) * Math.exp(-index * 0.04)}s`;
+export const animationDelay = (index: number, total: number, addSeconds: boolean = true) =>
+  `${0.4 + (index / total) * Math.exp(-index * 0.04)}${addSeconds ? 's' : ''}`;
 
 /**
  * Formats the message content.
