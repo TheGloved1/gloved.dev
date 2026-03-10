@@ -4,116 +4,17 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { useIsMobile } from '@/hooks/use-mobile';
 import glovedApi, { type FileInfo } from '@/lib/glovedapi';
 import { cn } from '@/lib/utils';
-import {
-  Calendar,
-  Check,
-  Clock,
-  Copy,
-  Download,
-  Eye,
-  File as FileIcon,
-  FileText,
-  HardDrive,
-  Image as ImageIcon,
-  Music,
-  Trash2,
-  VideoIcon,
-} from 'lucide-react';
+import { Calendar, Check, Copy, Download, Eye, HardDrive, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
 import VideoPreview from '../../../components/VideoPreview';
+import { createFileFilters, getFileTypeIcon } from './filters';
 
 interface FileItemProps {
   file: FileInfo;
   onDelete: (file: FileInfo) => void;
   className?: string;
 }
-
-const getFileTypeIcon = (fileName: string) => {
-  const extension = fileName.split('.').pop()?.toLowerCase();
-
-  if (['jpeg', 'jpg', 'gif', 'png', 'webp', 'svg'].includes(extension || '')) {
-    return <ImageIcon className='h-4 w-4' />;
-  }
-  if (['mp4', 'webm', 'ogg', 'mov', 'avi'].includes(extension || '')) {
-    return <VideoIcon className='h-4 w-4' />;
-  }
-  if (['mp3', 'wav', 'flac'].includes(extension || '')) {
-    return <Music className='h-4 w-4' />;
-  }
-  if (['zip', 'rar', '7z', 'tar', 'gz'].includes(extension || '')) {
-    return <FileIcon className='h-4 w-4' />;
-  }
-  if (['pdf', 'doc', 'docx', 'txt', 'md'].includes(extension || '')) {
-    return <FileText className='h-4 w-4' />;
-  }
-
-  return <FileIcon className='h-4 w-4' />;
-};
-
-const getFileType = (fileName: string): string => {
-  const extension = fileName.split('.').pop()?.toLowerCase();
-
-  if (['jpeg', 'jpg', 'gif', 'png', 'webp', 'svg'].includes(extension || '')) {
-    return 'images';
-  }
-  if (['mp4', 'webm', 'ogg', 'mov', 'avi'].includes(extension || '')) {
-    return 'videos';
-  }
-  if (['pdf', 'doc', 'docx', 'txt', 'md'].includes(extension || '')) {
-    return 'documents';
-  }
-
-  return 'other';
-};
-
-const getFileFilters = (file: FileInfo): { type: string; label: string; icon: React.ReactNode; color: string }[] => {
-  const filters: { type: string; label: string; icon: React.ReactNode; color: string }[] = [];
-
-  // Temporary/Permanent filter
-  if (file.isTemp) {
-    filters.push({
-      type: 'temporary',
-      label: '24h',
-      icon: <Clock className='h-3 w-3' />,
-      color: 'border-orange-500/30 bg-orange-500/10 text-orange-400',
-    });
-  } else {
-    filters.push({
-      type: 'permanent',
-      label: 'Permanent',
-      icon: <Calendar className='h-3 w-3' />,
-      color: 'border-blue-500/30 bg-blue-500/10 text-blue-400',
-    });
-  }
-
-  // File type filters
-  const fileType = getFileType(file.name);
-  if (fileType === 'images') {
-    filters.push({
-      type: 'images',
-      label: 'Image',
-      icon: <span className='text-xs leading-none'>🖼️</span>,
-      color: 'border-green-500/30 bg-green-500/10 text-green-400',
-    });
-  } else if (fileType === 'videos') {
-    filters.push({
-      type: 'videos',
-      label: 'Video',
-      icon: <span className='text-xs leading-none'>🎥</span>,
-      color: 'border-purple-500/30 bg-purple-500/10 text-purple-400',
-    });
-  } else if (fileType === 'documents') {
-    filters.push({
-      type: 'documents',
-      label: 'Document',
-      icon: <span className='text-xs leading-none'>📄</span>,
-      color: 'border-yellow-500/30 bg-yellow-500/10 text-yellow-400',
-    });
-  }
-
-  return filters;
-};
 
 const getTemporaryFileExpiry = (createdAt: string): string => {
   const created = new Date(createdAt);
@@ -310,7 +211,7 @@ export default function FileItem({ file, onDelete, className }: FileItemProps): 
 
             {/* Filter Tags - Right Side on Large Screens, Left Side on Small Screens */}
             <div className='flex flex-wrap gap-1.5 md:order-2'>
-              {getFileFilters(file).map((filter) => (
+              {createFileFilters(file).map((filter) => (
                 <div
                   key={filter.type}
                   className={cn(

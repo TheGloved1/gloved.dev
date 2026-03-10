@@ -4,7 +4,6 @@ import FileItem from '@/app/files/_components/FileItem';
 import PaginationControls from '@/app/files/_components/PaginationControls';
 import UploadZone from '@/app/files/_components/UploadZone';
 import ErrorAlert from '@/components/ErrorAlert';
-import Loading from '@/components/loading';
 import { env } from '@/env';
 import { useDebounce } from '@/hooks/use-debounce';
 import { useLocalStorage } from '@/hooks/use-local-storage';
@@ -18,6 +17,8 @@ import { AlertTriangle, FolderOpen, RefreshCw } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { DeleteConfirmDialog } from '../../../components/DeleteConfirmDialog';
 import { Button } from '../../../components/ui/button';
+import Loading from '../loading';
+import { getFileType } from './filters';
 
 const fetchFiles = async () => {
   const result = await glovedApi.listFiles();
@@ -67,22 +68,6 @@ export default function FileUploader(): React.JSX.Element {
   const debouncedSearchQuery = useDebounce<string>(searchQuery, 300);
   const itemsPerPage = useResponsiveItemsPerPage();
 
-  const getFileType = (fileName: string): string => {
-    const extension = fileName.split('.').pop()?.toLowerCase();
-
-    if (['jpeg', 'jpg', 'gif', 'png', 'webp', 'svg'].includes(extension || '')) {
-      return 'images';
-    }
-    if (['mp4', 'webm', 'ogg', 'mov', 'avi'].includes(extension || '')) {
-      return 'videos';
-    }
-    if (['pdf', 'doc', 'docx', 'txt', 'md'].includes(extension || '')) {
-      return 'documents';
-    }
-
-    return 'other';
-  };
-
   const filesQuery = useQuery({ queryKey: ['files'], queryFn: fetchFiles, initialData: [] });
 
   // Filter files based on search query and active filters
@@ -96,29 +81,30 @@ export default function FileUploader(): React.JSX.Element {
     }
 
     filtered = filtered.filter((file) => {
-      // Check if file matches ALL active filters
       const fileType = getFileType(file.name);
 
-      // For each active filter, check if the file matches it
-      for (const filter of activeFilters) {
-        if (filter === 'permanent' && file.isTemp) {
-          return false; // File is temporary but filter is for permanent
-        }
-        if (filter === 'temporary' && !file.isTemp) {
-          return false; // File is permanent but filter is for temporary
-        }
-        if (filter === 'images' && fileType !== 'images') {
-          return false; // File is not an image but filter is for images
-        }
-        if (filter === 'videos' && fileType !== 'videos') {
-          return false; // File is not a video but filter is for videos
-        }
-        if (filter === 'documents' && fileType !== 'documents') {
-          return false; // File is not a document but filter is for documents
-        }
+      // Separate filters into upload type and file type groups
+      const uploadTypeFilters = activeFilters.filter((f) => f === 'permanent' || f === 'temporary');
+      const fileTypeFilters = activeFilters.filter((f) => f !== 'permanent' && f !== 'temporary');
+
+      // Check upload type filters (OR logic - can match any upload type filter)
+      if (uploadTypeFilters.length > 0) {
+        const matchesUploadType = uploadTypeFilters.some((filter) => {
+          if (filter === 'permanent') return !file.isTemp;
+          if (filter === 'temporary') return file.isTemp;
+          return false;
+        });
+        if (!matchesUploadType) return false;
       }
 
-      // If we didn't return false, the file matches all active filters
+      // Check file type filters (OR logic - can match any file type filter)
+      if (fileTypeFilters.length > 0) {
+        const matchesFileType = fileTypeFilters.some((filter) => {
+          return fileType === filter;
+        });
+        if (!matchesFileType) return false;
+      }
+
       return true;
     });
 

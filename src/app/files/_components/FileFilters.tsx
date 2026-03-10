@@ -5,6 +5,7 @@ import { type FileInfo } from '@/lib/glovedapi';
 import { cn } from '@/lib/utils';
 import { Calendar, Clock, Filter, Search, X } from 'lucide-react';
 import { useCallback, useState } from 'react';
+import { getFileType, type FilterType } from './filters';
 
 interface FileFiltersProps {
   searchQuery: string;
@@ -13,24 +14,6 @@ interface FileFiltersProps {
   files: FileInfo[];
   className?: string;
 }
-
-type FilterType = 'permanent' | 'temporary' | 'images' | 'videos' | 'documents';
-
-const getFileType = (fileName: string): string => {
-  const extension = fileName.split('.').pop()?.toLowerCase();
-
-  if (['jpeg', 'jpg', 'gif', 'png', 'webp', 'svg'].includes(extension || '')) {
-    return 'images';
-  }
-  if (['mp4', 'webm', 'ogg', 'mov', 'avi'].includes(extension || '')) {
-    return 'videos';
-  }
-  if (['pdf', 'doc', 'docx', 'txt', 'md'].includes(extension || '')) {
-    return 'documents';
-  }
-
-  return 'other';
-};
 
 export default function FileFilters({
   searchQuery,
@@ -43,6 +26,7 @@ export default function FileFilters({
   const [showFilters, setShowFilters] = useState(false);
 
   const filterOptions: { type: FilterType; label: string; icon: React.ReactNode; count: number }[] = [
+    // Upload Type Filters
     {
       type: 'permanent',
       label: 'Permanent',
@@ -55,6 +39,8 @@ export default function FileFilters({
       icon: <Clock className='h-4 w-4' />,
       count: files.filter((f) => f.isTemp).length,
     },
+
+    // File Type Filters
     {
       type: 'images',
       label: 'Images',
@@ -72,6 +58,18 @@ export default function FileFilters({
       label: 'Documents',
       icon: '📄',
       count: files.filter((f) => getFileType(f.name) === 'documents').length,
+    },
+    {
+      type: 'compressed',
+      label: 'Compressed',
+      icon: '📦',
+      count: files.filter((f) => getFileType(f.name) === 'compressed').length,
+    },
+    {
+      type: 'other',
+      label: 'Other',
+      icon: '💾',
+      count: files.filter((f) => getFileType(f.name) === 'other').length,
     },
   ];
 
@@ -167,10 +165,48 @@ export default function FileFilters({
               {/* Filter Grid */}
               <div className='space-y-4'>
                 <h4 className='font-mono-industrial text-xs font-medium uppercase tracking-wider text-white/60'>
+                  Upload Type
+                </h4>
+                <div className='flex flex-wrap gap-2'>
+                  {filterOptions.slice(0, 2).map((option) => (
+                    <button
+                      key={option.type}
+                      onClick={() => handleFilterChange(option.type)}
+                      disabled={option.count === 0}
+                      className={cn(
+                        'group relative flex items-center gap-2 rounded-md border px-3 py-2 text-sm transition-all duration-200',
+                        activeFilters.includes(option.type) ?
+                          'border-fuchsia-500 bg-fuchsia-500/10 text-fuchsia-400 shadow-md shadow-fuchsia-500/20'
+                        : 'border-white/10 bg-white/5 text-white/70 hover:border-fuchsia-500/50 hover:bg-fuchsia-500/5 hover:text-white',
+                        option.count === 0 && 'cursor-not-allowed opacity-40',
+                      )}
+                    >
+                      <div className='text-sm'>{option.icon}</div>
+                      <div className='font-mono-industrial text-xs font-medium'>{option.label}</div>
+                      <div
+                        className={cn(
+                          'rounded px-1.5 py-0.5 text-xs font-semibold',
+                          activeFilters.includes(option.type) ?
+                            'bg-fuchsia-500/20 text-fuchsia-300'
+                          : 'bg-white/10 text-white/60',
+                        )}
+                      >
+                        {option.count}
+                      </div>
+
+                      {/* Active indicator */}
+                      {activeFilters.includes(option.type) && (
+                        <div className='absolute -right-1 -top-1 h-2 w-2 rounded-full bg-fuchsia-500 shadow-md shadow-fuchsia-500/40' />
+                      )}
+                    </button>
+                  ))}
+                </div>
+
+                <h4 className='font-mono-industrial mt-4 text-xs font-medium uppercase tracking-wider text-white/60'>
                   File Type
                 </h4>
                 <div className='flex flex-wrap gap-2'>
-                  {filterOptions.map((option) => (
+                  {filterOptions.slice(2).map((option) => (
                     <button
                       key={option.type}
                       onClick={() => handleFilterChange(option.type)}
