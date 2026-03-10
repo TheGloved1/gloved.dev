@@ -236,7 +236,7 @@ export default function UploadZone({
           </div>
 
           <div className='text-center'>
-            <h2 className='font-display glitch-text text-2xl font-bold uppercase tracking-tight lg:text-3xl'>
+            <h2 className='font-display text-2xl font-bold uppercase tracking-tight lg:text-3xl'>
               {dragState.isDragActive ? 'DROP YOUR FILE' : 'UPLOAD FILE'}
             </h2>
             <p className='font-mono-industrial mt-3 text-xs text-white/50'>

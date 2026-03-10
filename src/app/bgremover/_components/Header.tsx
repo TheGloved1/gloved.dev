@@ -9,9 +9,9 @@ export function Header() {
         <div className='flex items-center gap-4'>
           <div className='glow-line h-2 w-2 bg-fuchsia-500' />
           <h1 className='font-display text-xl font-bold uppercase tracking-tight lg:text-2xl'>
-            <span className='glitch-text'>BG</span>
+            <span className=''>BG</span>
             <span className='text-fuchsia-500'>_</span>
-            <span className='glitch-text'>REMOVER</span>
+            <span className=''>REMOVER</span>
           </h1>
           <Link href='/'>
             <span className='font-mono-industrial hidden text-[10px] tracking-[0.2em] text-white/30 hover:text-white lg:inline'>

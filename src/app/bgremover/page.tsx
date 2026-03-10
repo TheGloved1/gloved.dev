@@ -73,7 +73,7 @@ function BGRemoverContent() {
           }
         }
 
-        .glitch-text:hover {
+        .:hover {
           animation: glitch 0.3s ease infinite;
         }
 

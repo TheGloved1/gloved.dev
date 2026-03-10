@@ -23,91 +23,6 @@ const sections = [
 export default function HomeContent(): React.JSX.Element {
   return (
     <ThemeChanger>
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `
-            @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap');
-            
-            .font-display {
-              font-family: 'Syne', sans-serif;
-            }
-            
-            .font-mono-industrial {
-              font-family: 'Space Grotesk', monospace;
-            }
-            
-            .noise-overlay {
-              position: fixed;
-              top: 0;
-              left: 0;
-              width: 100vw;
-              height: 100vh;
-              pointer-events: none;
-              z-index: 9999;
-              opacity: 0.03;
-              background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-              background-size: cover;
-              background-repeat: no-repeat;
-            }
-            
-            .grid-pattern {
-              background-image:
-                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-              background-size: 60px 60px;
-              background-position: 0 0, 0 0;
-              background-repeat: repeat;
-              position: fixed;
-              top: 0;
-              left: 0;
-              width: 100vw;
-              height: 100vh;
-              pointer-events: none;
-              z-index: 1;
-            }
-            
-            .glow-line {
-              box-shadow:
-                0 0 20px rgba(236, 72, 153, 0.5),
-                0 0 40px rgba(236, 72, 153, 0.2);
-            }
-            
-            .brutal-shadow {
-              box-shadow: 6px 6px 0 rgba(236, 72, 153, 0.8);
-            }
-            
-            .brutal-shadow-sm {
-              box-shadow: 3px 3px 0 rgba(236, 72, 153, 0.6);
-            }
-            
-            @keyframes glitch {
-              0%,
-              100% {
-                transform: translate(0);
-              }
-              20% {
-                transform: translate(-2px, 2px);
-              }
-              40% {
-                transform: translate(-2px, -2px);
-              }
-              60% {
-                transform: translate(2px, 2px);
-              }
-              80% {
-                transform: translate(2px, -2px);
-              }
-            }
-            
-            .glitch-text:hover {
-              animation: glitch 0.3s ease infinite;
-            }
-            
-            .fadeIn { opacity: 0; animation: fadeIn 0.5s ease-out forwards; } 
-            @keyframes fadeIn { to { opacity: 1; } }
-          `,
-        }}
-      />
       <div className='noise-overlay' />
       <div className='grid-pattern' />
       <div className='fixed left-0 right-0 top-0 z-[1000] backdrop-blur-sm'>
@@ -142,7 +57,7 @@ export default function HomeContent(): React.JSX.Element {
               ))}
             </div>
             <div className='flex items-center gap-2'>
-              <h1 className='font-display glitch-text p-2 text-lg font-extrabold tracking-tight text-white'>
+              <h1 className='font-display p-2 text-lg font-extrabold tracking-tight text-white'>
                 gloved<span className='text-fuchsia-500'>.</span>dev
               </h1>
               <div className='md:hidden'>
@@ -170,7 +85,7 @@ export default function HomeContent(): React.JSX.Element {
                 <div className='flex h-12 w-12 items-center justify-center border border-fuchsia-500/30 bg-fuchsia-500/10'>
                   <Home className='h-6 w-6 text-fuchsia-400' />
                 </div>
-                <h1 className='font-display glitch-text text-4xl font-bold uppercase tracking-tight text-white'>Welcome</h1>
+                <h1 className='font-display text-4xl font-bold uppercase tracking-tight text-white'>Welcome</h1>
               </div>
               <p className='font-display text-xl font-extrabold text-white'>{'Welcome to my website!'}</p>
               <p className='font-mono-industrial text-lg text-white/70'>{'Here you can find my various projects'}</p>
@@ -199,7 +114,7 @@ export default function HomeContent(): React.JSX.Element {
                 <div className='flex h-12 w-12 items-center justify-center border border-fuchsia-500/30 bg-fuchsia-500/10'>
                   <User className='h-6 w-6 text-fuchsia-400' />
                 </div>
-                <h1 className='font-display glitch-text text-4xl font-bold uppercase tracking-tight text-white'>Robotics</h1>
+                <h1 className='font-display text-4xl font-bold uppercase tracking-tight text-white'>Robotics</h1>
               </div>
               <div className='space-y-2'>
                 <p className='font-mono-industrial text-lg'>
@@ -254,7 +169,7 @@ export default function HomeContent(): React.JSX.Element {
                 <div className='flex h-12 w-12 items-center justify-center border border-fuchsia-500/30 bg-fuchsia-500/10'>
                   <SiGithub className='h-6 w-6 text-fuchsia-400' />
                 </div>
-                <h1 className='font-display glitch-text text-4xl font-bold uppercase tracking-tight text-white'>Github</h1>
+                <h1 className='font-display text-4xl font-bold uppercase tracking-tight text-white'>Github</h1>
               </div>
               <div className='brutal-shadow-sm rounded-lg border border-fuchsia-500/30 bg-fuchsia-500/10 p-8'>
                 <GitUser name='TheGloved1' />
@@ -282,7 +197,7 @@ export default function HomeContent(): React.JSX.Element {
                 <div className='flex h-12 w-12 items-center justify-center border border-fuchsia-500/30 bg-fuchsia-500/10'>
                   <Upload className='h-6 w-6 text-fuchsia-400' />
                 </div>
-                <h1 className='font-display glitch-text text-4xl font-bold uppercase tracking-tight text-white'>Projects</h1>
+                <h1 className='font-display text-4xl font-bold uppercase tracking-tight text-white'>Projects</h1>
               </div>
               <div className='mx-auto max-w-2xl'>
                 <div className='flex flex-wrap justify-center gap-3'>

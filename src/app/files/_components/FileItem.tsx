@@ -214,7 +214,7 @@ export default function FileItem({ file, onDelete, className }: FileItemProps): 
               {/* File Info */}
               <div className='min-w-0 flex-1'>
                 <h3
-                  className='font-display glitch-text mb-1 truncate text-sm font-semibold uppercase tracking-wide text-white'
+                  className='font-display mb-1 truncate text-sm font-semibold uppercase tracking-wide text-white'
                   title={file.name}
                 >
                   {file.name}
