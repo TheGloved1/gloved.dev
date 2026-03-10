@@ -115,6 +115,28 @@ const getFileFilters = (file: FileInfo): { type: string; label: string; icon: Re
   return filters;
 };
 
+const getTemporaryFileExpiry = (createdAt: string): string => {
+  const created = new Date(createdAt);
+  const now = new Date();
+  const expiryTime = new Date(created.getTime() + 24 * 60 * 60 * 1000); // 24 hours from creation
+  const timeRemaining = expiryTime.getTime() - now.getTime();
+
+  if (timeRemaining <= 0) {
+    return 'Expired';
+  }
+
+  const hoursRemaining = Math.floor(timeRemaining / (1000 * 60 * 60));
+  const minutesRemaining = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+
+  if (hoursRemaining >= 1) {
+    return `expires in ${hoursRemaining} hour${hoursRemaining > 1 ? 's' : ''}`;
+  } else if (minutesRemaining >= 1) {
+    return `expires in ${minutesRemaining} minute${minutesRemaining > 1 ? 's' : ''}`;
+  } else {
+    return 'expires in under a minute';
+  }
+};
+
 const formatDate = (dateString: string): string => {
   const date = new Date(dateString);
   return date.toLocaleDateString('en-US', {
@@ -459,7 +481,9 @@ export default function FileItem({ file, onDelete, className }: FileItemProps): 
                   {file.name}
                 </div>
                 {file.isTemp && (
-                  <div className='font-mono-industrial text-xs text-orange-400'>Temporary file (expires in 24 hours)</div>
+                  <div className='font-mono-industrial text-xs text-orange-400'>
+                    {getTemporaryFileExpiry(file.createdAt)}
+                  </div>
                 )}
               </div>
             </DialogTitle>
