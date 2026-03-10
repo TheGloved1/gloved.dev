@@ -285,7 +285,7 @@ export default function FileUploader(): React.JSX.Element {
             <div className='flex h-12 w-12 items-center justify-center border border-fuchsia-500/30 bg-fuchsia-500/10'>
               <FolderOpen className='h-6 w-6 text-fuchsia-400' />
             </div>
-            <h1 className='font-display glitch-text text-4xl font-bold uppercase tracking-tight text-white'>GlovedFiles</h1>
+            <h1 className='font-display text-4xl font-bold uppercase tracking-tight text-white'>GlovedFiles</h1>
           </div>
           <p className='font-mono-industrial mt-4 text-sm text-white/50'>
             File sharing with temporary and permanent storage options
