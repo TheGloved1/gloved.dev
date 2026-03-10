@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
-import { FileIcon, Upload, X } from 'lucide-react';
+import { CheckCircle2, FileIcon, Upload, X } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 interface UploadZoneProps {
@@ -355,12 +355,15 @@ export default function UploadZone({
       {selectedFile && !isUploading && (
         <div className='flex items-center justify-between border border-fuchsia-500/30 bg-fuchsia-500/5 p-4'>
           <div className='flex items-center space-x-3'>
-            <div className='glow-line h-5 w-5 text-fuchsia-400' />
+            <CheckCircle2 className='h-5 w-5 text-fuchsia-400' />
             <div>
               <p className='font-mono-industrial text-sm font-medium text-white'>{selectedFile.name}</p>
               <p className='font-mono-industrial text-xs text-fuchsia-400/70'>{formatFileSize(selectedFile.size)}</p>
             </div>
           </div>
+          <Button variant='outline' onClick={() => setSelectedFile(null)} className='border-red-500/50 bg-red-500/10'>
+            <X className='h-2 w-2 text-red-400' />
+          </Button>
         </div>
       )}
 
