@@ -1,42 +1,47 @@
 import { type FileInfo } from '@/lib/glovedapi';
-import { Calendar, Clock, FileIcon, FileText, HardDrive, ImageIcon, Music, VideoIcon } from 'lucide-react';
+import { Calendar, Clock, FileIcon, FileText, HardDrive, ImageIcon, VideoIcon } from 'lucide-react';
 
-export const getFileType = (fileName: string): string => {
+export const FileTypes: Record<string, string[]> = {
+  images: ['jpeg', 'jpg', 'gif', 'png', 'webp', 'svg', 'heif', 'heifs', 'heic', 'heics', 'avci', 'avcs', 'hif'],
+  videos: ['mp4', 'webm', 'ogg', 'mov', 'avi', 'mkv'],
+  documents: ['pdf', 'doc', 'docx', 'txt', 'md'],
+  compressed: ['zip', 'rar', '7z', 'tar', 'gz'],
+  other: [],
+};
+
+export const getFileType = (fileName: string) => {
   const extension = fileName.split('.').pop()?.toLowerCase();
 
-  if (['jpeg', 'jpg', 'gif', 'png', 'webp', 'svg'].includes(extension || '')) {
-    return 'images';
+  if (FileTypes.images.includes(extension || '')) {
+    return 'images' as const;
   }
-  if (['mp4', 'webm', 'ogg', 'mov', 'avi'].includes(extension || '')) {
-    return 'videos';
+  if (FileTypes.videos.includes(extension || '')) {
+    return 'videos' as const;
   }
-  if (['pdf', 'doc', 'docx', 'txt', 'md'].includes(extension || '')) {
-    return 'documents';
+  if (FileTypes.documents.includes(extension || '')) {
+    return 'documents' as const;
   }
-  if (['zip', 'rar', '7z', 'tar', 'gz'].includes(extension || '')) {
-    return 'compressed';
+  if (FileTypes.compressed.includes(extension || '')) {
+    return 'compressed' as const;
   }
 
-  return 'other';
+  return 'other' as const;
 };
 
 export const getFileTypeIcon = (fileName: string): React.ReactNode => {
   const extension = fileName.split('.').pop()?.toLowerCase();
 
-  if (['jpeg', 'jpg', 'gif', 'png', 'webp', 'svg'].includes(extension || '')) {
+  if (FileTypes.images.includes(extension || '')) {
     return <ImageIcon className='h-4 w-4' />;
   }
-  if (['mp4', 'webm', 'ogg', 'mov', 'avi'].includes(extension || '')) {
+  if (FileTypes.videos.includes(extension || '')) {
     return <VideoIcon className='h-4 w-4' />;
   }
-  if (['mp3', 'wav', 'flac'].includes(extension || '')) {
-    return <Music className='h-4 w-4' />;
-  }
-  if (['zip', 'rar', '7z', 'tar', 'gz'].includes(extension || '')) {
-    return <FileIcon className='h-4 w-4' />;
-  }
-  if (['pdf', 'doc', 'docx', 'txt', 'md'].includes(extension || '')) {
+  if (FileTypes.documents.includes(extension || '')) {
     return <FileText className='h-4 w-4' />;
+  }
+  if (FileTypes.compressed.includes(extension || '')) {
+    return <FileIcon className='h-4 w-4' />;
   }
 
   return <HardDrive className='h-4 w-4' />;

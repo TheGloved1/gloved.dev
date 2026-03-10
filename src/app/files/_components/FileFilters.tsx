@@ -242,8 +242,8 @@ export default function FileFilters({
               </div>
 
               {/* Actions */}
-              <div className='flex flex-col gap-3 border-t border-white/10 pt-4'>
-                {activeFilters.length > 0 && (
+              {activeFilters.length > 0 && (
+                <div className='flex flex-col gap-3 border-t border-white/10 pt-4'>
                   <Button
                     variant='outline'
                     size='sm'
@@ -253,8 +253,8 @@ export default function FileFilters({
                     <X className='mr-2 h-4 w-4' />
                     Clear {activeFilters.length} filter{activeFilters.length !== 1 ? 's' : ''}
                   </Button>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

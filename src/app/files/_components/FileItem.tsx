@@ -8,7 +8,7 @@ import { Calendar, Check, Copy, Download, Eye, HardDrive, Trash2 } from 'lucide-
 import Image from 'next/image';
 import { useState } from 'react';
 import VideoPreview from '../../../components/VideoPreview';
-import { createFileFilters, getFileTypeIcon } from './filters';
+import { createFileFilters, getFileType, getFileTypeIcon } from './filters';
 
 interface FileItemProps {
   file: FileInfo;
@@ -57,8 +57,9 @@ export default function FileItem({ file, onDelete, className }: FileItemProps): 
   const fileUrl = glovedApi.getFileDownloadUrl(file.name);
   const previewUrl = glovedApi.getFileViewUrl(file.name);
   const isMobile = useIsMobile();
-  const isImage = file.name.match(/\.(jpeg|jpg|gif|png|webp)$/i);
-  const isVideo = file.name.match(/\.(mp4|webm|ogg|mov|avi)$/i);
+  const fileType = getFileType(file.name);
+  const isImage = fileType === 'images';
+  const isVideo = fileType === 'videos';
 
   const handleCopyUrl = async () => {
     try {
