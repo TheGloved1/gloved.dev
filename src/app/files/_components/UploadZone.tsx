@@ -347,7 +347,7 @@ export default function UploadZone({
 
       {/* Confirm Upload Dialog */}
       <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-        <DialogContent className='brutal-shadow max-h-[95vh] w-full max-w-md overflow-y-auto border border-fuchsia-500/30 bg-fuchsia-500/5'>
+        <DialogContent className='brutal-shadow max-h-[95vh] w-full max-w-md overflow-y-auto border border-fuchsia-500/30 bg-fuchsia-500/15'>
           <DialogHeader className='space-y-4'>
             <DialogTitle className='font-display text-lg font-bold uppercase tracking-wide text-white'>
               Confirm Upload
