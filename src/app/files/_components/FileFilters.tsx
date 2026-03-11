@@ -3,9 +3,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { type FileInfo } from '@/lib/glovedapi';
 import { cn } from '@/lib/utils';
-import { Filter, Search, X } from 'lucide-react';
+import { FilterIcon, Search, X } from 'lucide-react';
 import { useCallback, useState } from 'react';
-import { Filters, type FilterType, getFileType } from './filters';
+import { Filters, type Filter, type FilterValue } from './filters';
 
 interface FileFiltersProps {
   searchQuery: string;
@@ -15,6 +15,29 @@ interface FileFiltersProps {
   className?: string;
 }
 
+type GetFilterOptionsReturnType = {
+  type: Filter['type'];
+  value: Filter['value'];
+  label: Filter['label'];
+  icon: Filter['icon'];
+  count: number;
+};
+
+const getFilterOptions = (files: FileInfo[]): GetFilterOptionsReturnType[] => {
+  return [
+    // File Type Filters
+    ...Object.entries(Filters).flatMap(([_, filter]) => {
+      return {
+        type: filter.type,
+        value: filter.value,
+        label: filter.label,
+        icon: filter.icon,
+        count: filter.getCount(files),
+      };
+    }),
+  ];
+};
+
 export default function FileFilters({
   searchQuery,
   onSearchChange,
@@ -22,65 +45,13 @@ export default function FileFilters({
   files,
   className,
 }: FileFiltersProps): React.JSX.Element {
-  const [activeFilters, setActiveFilters] = useState<FilterType[]>([]);
+  const [activeFilters, setActiveFilters] = useState<FilterValue[]>([]);
   const [showFilters, setShowFilters] = useState(false);
 
-  const filterOptions: { type: FilterType; label: string; icon: React.ReactNode; count: number }[] = [
-    // Upload Type Filters
-    {
-      type: Filters.permanent.value,
-      label: Filters.permanent.label,
-      icon: Filters.permanent.icon,
-      count: files.filter((f) => !f.isTemp).length,
-    },
-    {
-      type: Filters.temporary.value,
-      label: Filters.temporary.label,
-      icon: Filters.temporary.icon,
-      count: files.filter((f) => f.isTemp).length,
-    },
-
-    // File Type Filters
-    {
-      type: Filters.images.value,
-      label: Filters.images.label,
-      icon: Filters.images.icon,
-      count: files.filter((f) => getFileType(f.name) === Filters.images.value).length,
-    },
-    {
-      type: Filters.videos.value,
-      label: Filters.videos.label,
-      icon: Filters.videos.icon,
-      count: files.filter((f) => getFileType(f.name) === Filters.videos.value).length,
-    },
-    {
-      type: Filters.audio.value,
-      label: Filters.audio.label,
-      icon: Filters.audio.icon,
-      count: files.filter((f) => getFileType(f.name) === Filters.audio.value).length,
-    },
-    {
-      type: Filters.documents.value,
-      label: Filters.documents.label,
-      icon: Filters.documents.icon,
-      count: files.filter((f) => getFileType(f.name) === Filters.documents.value).length,
-    },
-    {
-      type: Filters.compressed.value,
-      label: Filters.compressed.label,
-      icon: Filters.compressed.icon,
-      count: files.filter((f) => getFileType(f.name) === Filters.compressed.value).length,
-    },
-    {
-      type: Filters.other.value,
-      label: Filters.other.label,
-      icon: Filters.other.icon,
-      count: files.filter((f) => getFileType(f.name) === Filters.other.value).length,
-    },
-  ];
+  const filterOptions = getFilterOptions(files);
 
   const handleFilterChange = useCallback(
-    (filterType: FilterType) => {
+    (filterType: FilterValue) => {
       // Toggle filter: if clicking same Filter, turn off; otherwise turn on
       const newFilters =
         activeFilters.includes(filterType) ? activeFilters.filter((f) => f !== filterType) : [...activeFilters, filterType];
@@ -127,7 +98,7 @@ export default function FileFilters({
           onClick={() => setShowFilters(!showFilters)}
           className='brutal-shadow-sm hidden border border-white/10 bg-white/5 text-white hover:border-fuchsia-500 hover:bg-fuchsia-500/10 hover:text-fuchsia-400 lg:flex'
         >
-          <Filter className='h-4 w-4' />
+          <FilterIcon className='h-4 w-4' />
           <span className='ml-2 hidden sm:inline'>Filters</span>
         </Button>
       </div>
@@ -140,7 +111,7 @@ export default function FileFilters({
           onClick={() => setShowFilters(!showFilters)}
           className='brutal-shadow-sm flex items-center gap-2 border border-white/10 bg-white/5 text-white hover:border-fuchsia-500 hover:bg-fuchsia-500/10 hover:text-fuchsia-400 sm:w-auto'
         >
-          <Filter className='h-4 w-4' />
+          <FilterIcon className='h-4 w-4' />
           <span className='sm:hidden'>Filters</span>
           <span className='hidden sm:inline'>Filters</span>
         </Button>
@@ -176,12 +147,12 @@ export default function FileFilters({
                 <div className='flex flex-wrap gap-2'>
                   {filterOptions.slice(0, 2).map((option) => (
                     <button
-                      key={option.type}
-                      onClick={() => handleFilterChange(option.type)}
+                      key={option.value}
+                      onClick={() => handleFilterChange(option.value)}
                       disabled={option.count === 0}
                       className={cn(
                         'group relative flex items-center gap-2 rounded-md border px-3 py-2 text-sm transition-all duration-200',
-                        activeFilters.includes(option.type) ?
+                        activeFilters.includes(option.value) ?
                           'border-fuchsia-500 bg-fuchsia-500/10 text-fuchsia-400 shadow-md shadow-fuchsia-500/20'
                         : 'border-white/10 bg-white/5 text-white/70 hover:border-fuchsia-500/50 hover:bg-fuchsia-500/5 hover:text-white',
                         option.count === 0 && 'cursor-not-allowed opacity-40',
@@ -192,7 +163,7 @@ export default function FileFilters({
                       <div
                         className={cn(
                           'rounded px-1.5 py-0.5 text-xs font-semibold',
-                          activeFilters.includes(option.type) ?
+                          activeFilters.includes(option.value) ?
                             'bg-fuchsia-500/20 text-fuchsia-300'
                           : 'bg-white/10 text-white/60',
                         )}
@@ -201,7 +172,7 @@ export default function FileFilters({
                       </div>
 
                       {/* Active indicator */}
-                      {activeFilters.includes(option.type) && (
+                      {activeFilters.includes(option.value) && (
                         <div className='absolute -right-1 -top-1 h-2 w-2 rounded-full bg-fuchsia-500 shadow-md shadow-fuchsia-500/40' />
                       )}
                     </button>
@@ -214,12 +185,12 @@ export default function FileFilters({
                 <div className='flex flex-wrap gap-2'>
                   {filterOptions.slice(2).map((option) => (
                     <button
-                      key={option.type}
-                      onClick={() => handleFilterChange(option.type)}
+                      key={option.value}
+                      onClick={() => handleFilterChange(option.value)}
                       disabled={option.count === 0}
                       className={cn(
                         'group relative flex items-center gap-2 rounded-md border px-3 py-2 text-sm transition-all duration-200',
-                        activeFilters.includes(option.type) ?
+                        activeFilters.includes(option.value) ?
                           'border-fuchsia-500 bg-fuchsia-500/10 text-fuchsia-400 shadow-md shadow-fuchsia-500/20'
                         : 'border-white/10 bg-white/5 text-white/70 hover:border-fuchsia-500/50 hover:bg-fuchsia-500/5 hover:text-white',
                         option.count === 0 && 'cursor-not-allowed opacity-40',
@@ -230,7 +201,7 @@ export default function FileFilters({
                       <div
                         className={cn(
                           'rounded px-1.5 py-0.5 text-xs font-semibold',
-                          activeFilters.includes(option.type) ?
+                          activeFilters.includes(option.value) ?
                             'bg-fuchsia-500/20 text-fuchsia-300'
                           : 'bg-white/10 text-white/60',
                         )}
@@ -239,7 +210,7 @@ export default function FileFilters({
                       </div>
 
                       {/* Active indicator */}
-                      {activeFilters.includes(option.type) && (
+                      {activeFilters.includes(option.value) && (
                         <div className='absolute -right-1 -top-1 h-2 w-2 rounded-full bg-fuchsia-500 shadow-md shadow-fuchsia-500/40' />
                       )}
                     </button>
@@ -276,14 +247,14 @@ export default function FileFilters({
                 onClick={() => handleFilterChange(filter)}
                 className='font-mono-industrial inline-flex items-center gap-1 border border-fuchsia-500/50 bg-fuchsia-500/10 px-2 py-1 text-xs font-medium text-fuchsia-400 transition-colors duration-200 hover:border-fuchsia-500 hover:bg-fuchsia-500/20 lg:hidden'
               >
-                {filterOptions.find((f) => f.type === filter)?.icon}
-                {filterOptions.find((f) => f.type === filter)?.label}
+                {filterOptions.find((f) => f.value === filter)?.icon}
+                {filterOptions.find((f) => f.value === filter)?.label}
               </button>
 
               {/* Desktop: Pill with X button */}
               <span className='font-mono-industrial hidden items-center gap-1 border border-fuchsia-500/50 bg-fuchsia-500/10 px-2 py-1 text-xs font-medium text-fuchsia-400 lg:inline-flex'>
-                {filterOptions.find((f) => f.type === filter)?.icon}
-                {filterOptions.find((f) => f.type === filter)?.label}
+                {filterOptions.find((f) => f.value === filter)?.icon}
+                {filterOptions.find((f) => f.value === filter)?.label}
                 <Button
                   variant='ghost'
                   size='sm'
