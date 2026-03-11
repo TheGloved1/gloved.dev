@@ -15,11 +15,11 @@ import DefaultPlayer from 'next-video/player';
 import Link from 'next/link';
 import React, { useState } from 'react';
 
-function AppCard({ key, app, index }: { key?: string; app: AppItem; index: number }): React.JSX.Element {
+function AppCard({ app, index }: { app: AppItem; index: number }): React.JSX.Element {
   const [hovering, setHovering] = useState(false);
   return (
     <div
-      key={key || app.link}
+      key={app.title}
       className='fadeIn basis-full sm:basis-[45%] md:basis-[33%] lg:basis-[30%] xl:basis-[22%]'
       style={{ animationDelay: animationDelay(index, apps.length) }}
       onMouseEnter={() => setHovering(true)}
@@ -36,7 +36,7 @@ function AppCard({ key, app, index }: { key?: string; app: AppItem; index: numbe
         <app.icon className='h-8 w-8 self-center text-fuchsia-400' />
         <h3 className='font-display text-center text-lg font-bold uppercase tracking-tight text-white'>
           <span className='inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none'>
-            {app.title} {'->'}
+            {app.title} {'▶'}
           </span>
         </h3>
         <div className='font-mono-industrial text-center text-xs text-white/50'>{app.description}</div>

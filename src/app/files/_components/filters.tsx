@@ -1,52 +1,41 @@
 import { type FileInfo } from '@/lib/glovedapi';
-import { FileIcon, FileText, HardDrive, ImageIcon, VideoIcon } from 'lucide-react';
-
-export const FileTypes: Record<string, string[]> = {
-  images: ['jpeg', 'jpg', 'gif', 'png', 'webp', 'svg', 'heif', 'heifs', 'heic', 'heics', 'avci', 'avcs', 'hif'],
-  videos: ['mp4', 'webm', 'ogg', 'mov', 'avi', 'mkv'],
-  documents: ['pdf', 'doc', 'docx', 'txt', 'md', 'html'],
-  compressed: ['zip', 'rar', '7z', 'tar', 'gz', 'mrpack'],
-  other: [],
-};
 
 export const getFileType = (fileName: string) => {
   const extension = fileName.split('.').pop()?.toLowerCase();
 
-  if (FileTypes.images.includes(extension || '')) {
-    return 'images' as const;
-  }
-  if (FileTypes.videos.includes(extension || '')) {
-    return 'videos' as const;
-  }
-  if (FileTypes.documents.includes(extension || '')) {
-    return 'documents' as const;
-  }
-  if (FileTypes.compressed.includes(extension || '')) {
-    return 'compressed' as const;
-  }
+  if (!extension) return 'other' as const;
 
-  return 'other' as const;
+  if (Filters.images.fileTypes.includes(extension as any)) {
+    return 'images' as const;
+  } else if (Filters.videos.fileTypes.includes(extension as any)) {
+    return 'videos' as const;
+  } else if (Filters.documents.fileTypes.includes(extension as any)) {
+    return 'documents' as const;
+  } else if (Filters.compressed.fileTypes.includes(extension as any)) {
+    return 'compressed' as const;
+  } else return 'other' as const;
 };
 
 export const getFileTypeIcon = (fileName: string): React.ReactNode => {
   const extension = fileName.split('.').pop()?.toLowerCase();
 
-  if (FileTypes.images.includes(extension || '')) {
-    return <ImageIcon className='h-4 w-4' />;
-  }
-  if (FileTypes.videos.includes(extension || '')) {
-    return <VideoIcon className='h-4 w-4' />;
-  }
-  if (FileTypes.documents.includes(extension || '')) {
-    return <FileText className='h-4 w-4' />;
-  }
-  if (FileTypes.compressed.includes(extension || '')) {
-    return <FileIcon className='h-4 w-4' />;
-  }
-
-  return <HardDrive className='h-4 w-4' />;
+  if (Filters.images.fileTypes.includes(extension as any)) {
+    return Filters.images.icon;
+  } else if (Filters.videos.fileTypes.includes(extension as any)) {
+    return Filters.videos.icon;
+  } else if (Filters.documents.fileTypes.includes(extension as any)) {
+    return Filters.documents.icon;
+  } else if (Filters.compressed.fileTypes.includes(extension as any)) {
+    return Filters.compressed.icon;
+  } else return Filters.other.icon;
 };
 
+/**
+ * Creates an array of file filters based on the given FileInfo.
+ * The filters include Temporary/Permanent and File Type filters.
+ * @param file The FileInfo object to create filters for.
+ * @returns An array of file filters with type, label, icon, and color properties.
+ */
 export const createFileFilters = (
   file: FileInfo,
 ): { type: string; label: string; icon: React.ReactNode; color: string }[] => {
@@ -71,46 +60,18 @@ export const createFileFilters = (
 
   // File type filters
   const fileType = getFileType(file.name);
-  if (fileType === 'images') {
+  const fileFilter = Filters[fileType];
+  if (fileFilter) {
     filters.push({
-      type: Filters.images.value,
-      label: Filters.images.label,
-      icon: Filters.images.icon,
-      color: Filters.images.color,
-    });
-  } else if (fileType === 'videos') {
-    filters.push({
-      type: Filters.videos.value,
-      label: Filters.videos.label,
-      icon: Filters.videos.icon,
-      color: Filters.videos.color,
-    });
-  } else if (fileType === 'documents') {
-    filters.push({
-      type: Filters.documents.value,
-      label: Filters.documents.label,
-      icon: Filters.documents.icon,
-      color: Filters.documents.color,
-    });
-  } else if (fileType === 'compressed') {
-    filters.push({
-      type: Filters.compressed.value,
-      label: Filters.compressed.label,
-      icon: Filters.compressed.icon,
-      color: Filters.compressed.color,
-    });
-  } else {
-    filters.push({
-      type: Filters.other.value,
-      label: Filters.other.label,
-      icon: Filters.other.icon,
-      color: Filters.other.color,
+      type: fileFilter.value,
+      label: fileFilter.label,
+      icon: fileFilter.icon,
+      color: fileFilter.color,
     });
   }
 
   return filters;
 };
-
 export const Filters = {
   permanent: {
     label: 'Permanent',
@@ -129,30 +90,35 @@ export const Filters = {
     value: 'images',
     icon: <span className='text-xs leading-none'>🖼️</span>,
     color: 'border-green-500/30 bg-green-500/10 text-green-400',
+    fileTypes: ['jpeg', 'jpg', 'gif', 'png', 'webp', 'svg', 'heif', 'heifs', 'heic', 'heics', 'avci', 'avcs', 'hif'],
   },
   videos: {
     label: 'Videos',
     value: 'videos',
     icon: <span className='text-xs leading-none'>🎥</span>,
     color: 'border-purple-500/30 bg-purple-500/10 text-purple-400',
+    fileTypes: ['mp4', 'webm', 'ogg', 'mov', 'avi', 'mkv'],
   },
   documents: {
     label: 'Documents',
     value: 'documents',
     icon: <span className='text-xs leading-none'>📄</span>,
     color: 'border-yellow-500/30 bg-yellow-500/10 text-yellow-400',
+    fileTypes: ['pdf', 'doc', 'docx', 'txt', 'md', 'html'],
   },
   compressed: {
     label: 'Compressed',
     value: 'compressed',
     icon: <span className='text-xs leading-none'>📦</span>,
     color: 'border-red-500/30 bg-red-500/10 text-red-400',
+    fileTypes: ['zip', 'rar', '7z', 'tar', 'gz', 'mrpack'],
   },
   other: {
     label: 'Other',
     value: 'other',
     icon: <span className='text-xs leading-none'>📁</span>,
     color: 'border-gray-500/30 bg-gray-500/10 text-gray-400',
+    fileTypes: [],
   },
 } as const;
 export type FilterType = (typeof Filters)[keyof typeof Filters]['value'];
