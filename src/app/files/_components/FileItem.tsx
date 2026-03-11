@@ -60,6 +60,7 @@ export default function FileItem({ file, onDelete, className }: FileItemProps): 
   const fileType = getFileType(file.name);
   const isImage = fileType === 'images';
   const isVideo = fileType === 'videos';
+  const isAudio = fileType === 'audio';
 
   const handleCopyUrl = async () => {
     try {
@@ -420,7 +421,12 @@ export default function FileItem({ file, onDelete, className }: FileItemProps): 
                   <VideoPreview className='h-auto max-h-[50vh] w-full' src={previewUrl} />
                 </div>
               )}
-              {!isImage && !isVideo && (
+              {isAudio && (
+                <div className='max-h-[60vh] w-full max-w-[90vw] overflow-hidden rounded-lg border border-border/20 shadow-lg sm:rounded-xl sm:shadow-2xl'>
+                  <audio className='w-full' src={previewUrl} controls />
+                </div>
+              )}
+              {!isImage && !isVideo && !isAudio && (
                 <div className='flex max-w-[90vw] flex-col items-center gap-4 rounded-lg border-2 border-dashed border-border/40 p-6 sm:gap-6 sm:rounded-xl sm:p-8 md:p-12'>
                   <div
                     className={cn(

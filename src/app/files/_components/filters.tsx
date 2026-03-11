@@ -9,6 +9,8 @@ export const getFileType = (fileName: string) => {
     return 'images' as const;
   } else if (Filters.videos.fileTypes.includes(extension as any)) {
     return 'videos' as const;
+  } else if (Filters.audio.fileTypes.includes(extension as any)) {
+    return 'audio' as const;
   } else if (Filters.documents.fileTypes.includes(extension as any)) {
     return 'documents' as const;
   } else if (Filters.compressed.fileTypes.includes(extension as any)) {
@@ -23,6 +25,8 @@ export const getFileTypeIcon = (fileName: string): React.ReactNode => {
     return Filters.images.icon;
   } else if (Filters.videos.fileTypes.includes(extension as any)) {
     return Filters.videos.icon;
+  } else if (Filters.audio.fileTypes.includes(extension as any)) {
+    return Filters.audio.icon;
   } else if (Filters.documents.fileTypes.includes(extension as any)) {
     return Filters.documents.icon;
   } else if (Filters.compressed.fileTypes.includes(extension as any)) {
@@ -97,7 +101,14 @@ export const Filters = {
     value: 'videos',
     icon: <span className='text-xs leading-none'>🎥</span>,
     color: 'border-purple-500/30 bg-purple-500/10 text-purple-400',
-    fileTypes: ['mp4', 'webm', 'ogg', 'mov', 'avi', 'mkv'],
+    fileTypes: ['mp4', 'webm', 'mov', 'avi', 'mkv'],
+  },
+  audio: {
+    label: 'Audio',
+    value: 'audio',
+    icon: <span className='text-xs leading-none'>🎵</span>,
+    color: 'border-pink-500/30 bg-pink-500/10 text-pink-400',
+    fileTypes: ['mp3', 'wav', 'ogg', 'flac', 'aac', 'm4a'],
   },
   documents: {
     label: 'Documents',
