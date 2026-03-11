@@ -54,6 +54,12 @@ export default function FileFilters({
       count: files.filter((f) => getFileType(f.name) === Filters.videos.value).length,
     },
     {
+      type: Filters.audio.value,
+      label: Filters.audio.label,
+      icon: Filters.audio.icon,
+      count: files.filter((f) => getFileType(f.name) === Filters.audio.value).length,
+    },
+    {
       type: Filters.documents.value,
       label: Filters.documents.label,
       icon: Filters.documents.icon,
