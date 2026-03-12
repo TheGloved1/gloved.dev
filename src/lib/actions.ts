@@ -5,16 +5,21 @@ import { createOpenRouter } from '@openrouter/ai-sdk-provider';
 import { embed, embedMany } from 'ai';
 import { generateChunks } from './ai';
 import glovedApi from './glovedapi';
+import { rateLimiter } from './rate-limiter';
 import {
   addAdmin,
+  addGroceryItem,
   dbSync,
   deleteSync,
   deleteUserData,
   exportThreadToDb,
   getAdmins,
   getAllUserShortenedUrls,
+  getGroceryLists,
   getShortenedUrl,
+  moveGroceryItem,
   removeAdmin,
+  removeGroceryItem,
   setShortenedUrl,
 } from './redis';
 
@@ -138,3 +143,106 @@ export const generateEmbedding = async (value: string): Promise<number[]> => {
   });
   return embedding;
 };
+
+export async function getGroceryListsAction() {
+  try {
+    return await getGroceryLists();
+  } catch (error) {
+    console.error('Error fetching grocery lists:', error);
+    throw new Error('Failed to fetch grocery lists');
+  }
+}
+
+export async function addGroceryItemAction(listKey: 'shopping-list' | 'have-list', text: string, identifier?: string) {
+  try {
+    // Use identifier for rate limiting (either userName or clientIP)
+    if (!identifier) {
+      throw new Error('User identifier is required');
+    }
+
+    const rateLimit = rateLimiter.checkRateLimit(identifier);
+
+    if (!rateLimit.allowed) {
+      throw new Error('Rate limit exceeded. Please try again later.');
+    }
+
+    if (!text || text.trim().length === 0) {
+      throw new Error('Item text is required');
+    }
+
+    if (text.trim().length > 100) {
+      throw new Error('Item text must be 100 characters or less');
+    }
+
+    // Use identifier for attribution (userName or 'unknown' for IP)
+    const attributedName = identifier.includes('@') || identifier.includes('.') ? 'unknown' : identifier;
+
+    const item = {
+      id: crypto.randomUUID(),
+      text: text.trim(),
+      addedAt: Date.now(),
+      addedBy: attributedName,
+    };
+
+    await addGroceryItem(listKey, item);
+    return { success: true };
+  } catch (error) {
+    console.error('Error adding grocery item:', error);
+    throw error;
+  }
+}
+
+export async function removeGroceryItemAction(listKey: 'shopping-list' | 'have-list', itemId: string, identifier?: string) {
+  try {
+    // Use identifier for rate limiting (either userName or clientIP)
+    if (!identifier) {
+      throw new Error('User identifier is required');
+    }
+
+    const rateLimit = rateLimiter.checkRateLimit(identifier);
+
+    if (!rateLimit.allowed) {
+      throw new Error('Rate limit exceeded. Please try again later.');
+    }
+
+    if (!itemId) {
+      throw new Error('Item ID is required');
+    }
+
+    await removeGroceryItem(listKey, itemId);
+    return { success: true };
+  } catch (error) {
+    console.error('Error removing grocery item:', error);
+    throw error;
+  }
+}
+
+export async function moveGroceryItemAction(
+  fromListKey: 'shopping-list' | 'have-list',
+  toListKey: 'shopping-list' | 'have-list',
+  itemId: string,
+  identifier?: string,
+) {
+  try {
+    // Use identifier for rate limiting (either userName or clientIP)
+    if (!identifier) {
+      throw new Error('User identifier is required');
+    }
+
+    const rateLimit = rateLimiter.checkRateLimit(identifier);
+
+    if (!rateLimit.allowed) {
+      throw new Error('Rate limit exceeded. Please try again later.');
+    }
+
+    if (!itemId) {
+      throw new Error('Item ID is required');
+    }
+
+    await moveGroceryItem(fromListKey, toListKey, itemId);
+    return { success: true };
+  } catch (error) {
+    console.error('Error moving grocery item:', error);
+    throw error;
+  }
+}

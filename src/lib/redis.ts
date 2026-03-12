@@ -326,3 +326,89 @@ export async function deleteSync() {
     }
   } while (cursor !== '0');
 }
+
+// Grocery List Functions
+
+export interface GroceryItem {
+  id: string;
+  text: string;
+  addedAt: number;
+  addedBy: string;
+}
+
+export interface GroceryLists {
+  shoppingList: GroceryItem[];
+  haveList: GroceryItem[];
+}
+
+/**
+ * Retrieves both grocery lists from Redis.
+ * @returns A promise that resolves to an object containing both lists.
+ */
+export async function getGroceryLists(): Promise<GroceryLists> {
+  const shoppingList = ((await redis.get('groceries:shopping-list')) as GroceryItem[]) || [];
+  const haveList = ((await redis.get('groceries:have-list')) as GroceryItem[]) || [];
+
+  return {
+    shoppingList,
+    haveList,
+  };
+}
+
+/**
+ * Adds an item to the specified grocery list.
+ * @param listKey The key of the list ('shopping-list' or 'have-list')
+ * @param item The grocery item to add
+ * @returns A promise that resolves when the item is added.
+ */
+export async function addGroceryItem(listKey: 'shopping-list' | 'have-list', item: GroceryItem): Promise<void> {
+  const redisKey = `groceries:${listKey}`;
+  const lists = await getGroceryLists();
+  const targetList = listKey === 'shopping-list' ? lists.shoppingList : lists.haveList;
+
+  targetList.push(item);
+  await redis.set(redisKey, targetList);
+}
+
+/**
+ * Removes an item from the specified grocery list.
+ * @param listKey The key of the list ('shopping-list' or 'have-list')
+ * @param itemId The ID of the item to remove
+ * @returns A promise that resolves when the item is removed.
+ */
+export async function removeGroceryItem(listKey: 'shopping-list' | 'have-list', itemId: string): Promise<void> {
+  const redisKey = `groceries:${listKey}`;
+  const lists = await getGroceryLists();
+  const targetList = listKey === 'shopping-list' ? lists.shoppingList : lists.haveList;
+
+  const filteredList = targetList.filter((item) => item.id !== itemId);
+  await redis.set(redisKey, filteredList);
+}
+
+/**
+ * Moves an item from one list to another.
+ * @param fromListKey The source list key
+ * @param toListKey The target list key
+ * @param itemId The ID of the item to move
+ * @returns A promise that resolves when the item is moved.
+ */
+export async function moveGroceryItem(
+  fromListKey: 'shopping-list' | 'have-list',
+  toListKey: 'shopping-list' | 'have-list',
+  itemId: string,
+): Promise<void> {
+  const lists = await getGroceryLists();
+  const fromList = fromListKey === 'shopping-list' ? lists.shoppingList : lists.haveList;
+  const toList = toListKey === 'shopping-list' ? lists.shoppingList : lists.haveList;
+
+  const itemIndex = fromList.findIndex((item) => item.id === itemId);
+  if (itemIndex === -1) return;
+
+  const [item] = fromList.splice(itemIndex, 1);
+  toList.push(item);
+
+  await Promise.all([
+    redis.set('groceries:shopping-list', lists.shoppingList),
+    redis.set('groceries:have-list', lists.haveList),
+  ]);
+}
