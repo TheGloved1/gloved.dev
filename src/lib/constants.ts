@@ -63,6 +63,11 @@ const Constants = {
     link: '/chat',
     description: 'A VERY fast, local-first, AI chat web app using local IndexedDB database, WARNING: HE IS EVIL',
   },
+  Groceries: {
+    title: 'Grocery List',
+    link: '/groceries',
+    description: 'A synced grocery tracking web app',
+  },
   Colors: {
     title: 'Stupid Game',
     link: '/colors',
