@@ -22,13 +22,53 @@
 
 @layer utilities {
   .fancy-link {
-    @apply bg-gradient-to-r from-red-500 to-blue-500 bg-no-repeat py-1.5 text-gray-600 no-underline transition-all duration-500 ease-in-out;
-    background-size: 0% 2px; /* Custom style */
-    background-position: left 1.5rem; /* Custom style */
+    @apply relative inline-block py-2 text-gray-700 no-underline transition-all duration-300 ease-out;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #feca57 75%, #ff6b6b 100%);
+    background-size: 200% 200%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradient-shift 3s ease infinite;
   }
+
+  .fancy-link::before {
+    content: '';
+    @apply absolute bottom-0 left-0 h-0.5 w-full bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500;
+    transform: scaleX(0) translateX(-100%);
+    transform-origin: left center;
+    transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    background-size: 200% 100%;
+    animation: gradient-slide 2s linear infinite;
+  }
+
   .fancy-link:hover,
   .fancy-link:focus {
-    @apply bg-[length:100%_2px] text-purple-800;
+    @apply scale-105;
+    filter: drop-shadow(0 4px 8px rgba(139, 92, 246, 0.3));
+  }
+
+  .fancy-link:hover::before,
+  .fancy-link:focus::before {
+    transform: scaleX(1) translateX(0);
+  }
+
+  @keyframes gradient-shift {
+    0%,
+    100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  @keyframes gradient-slide {
+    0% {
+      background-position: 0% 50%;
+    }
+    100% {
+      background-position: 200% 50%;
+    }
   }
 }
 
@@ -294,7 +334,7 @@ button.brutal-shadow-sm:active {
     --chat-overlay: hsla(270, 12%, 16%, var(--blur-fallback, 0.71));
     --wordmark-color: #e3bad1;
   }
-  .cool-dark .border-reflect,
+  .classic-dark .border-reflect,
   .dark .border-reflect {
     --gradientBorder-gradient:
       linear-gradient(180deg, #93335b00, #93335bbd, #93335b17), linear-gradient(15deg, #93335b1f 50%, #93335bbd);
