@@ -94,7 +94,7 @@ export default function GroceryPage(): React.JSX.Element {
   } = useQuery({
     queryKey: ['groceryLists'],
     queryFn: getGroceryListsAction,
-    refetchInterval: isFocused ? 3000 : false, // Only refetch when focused
+    refetchInterval: isFocused ? 5000 : false, // Only refetch when focused
     refetchIntervalInBackground: false, // Don't refetch when tab is in background
     staleTime: 2000,
   });
