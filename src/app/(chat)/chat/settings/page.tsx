@@ -213,7 +213,7 @@ export default function Page() {
                   <h2 className='text-2xl font-bold'>Danger Zone</h2>
                   <div className='space-y-6'>
                     <p className='text-sm text-muted-foreground/80'>
-                      Permanently delete your history from both your local device and our servers.
+                      Permanently delete your history from both your local device and the database.
                     </p>
                     <div className='flex flex-row gap-2'>
                       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>

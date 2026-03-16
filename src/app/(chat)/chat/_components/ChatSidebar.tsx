@@ -175,18 +175,27 @@ export default function ChatSidebar({ children }: { children?: React.ReactNode }
             <div className='absolute right-1 top-1 text-muted-foreground md:hidden'>
               <ThemeChangerButton />
             </div>
-            <h1 className='flex h-8 shrink-0 items-center justify-center text-lg text-muted-foreground transition-opacity delay-75 duration-75'>
-              [
-              <Link
-                href={'/'}
-                className={
-                  'relative flex h-8 w-24 items-center justify-center rounded border border-border/10 text-sm font-semibold text-foreground hover:border-border/80'
-                }
-              >
-                gloved<span className='text-[hsl(280,93%,72%)]'>.</span>dev
-              </Link>
-              ]
-            </h1>
+            <Link
+              href='/'
+              className='group/home relative ml-0 mr-10 overflow-hidden rounded-lg bg-gradient-to-br from-slate-50 to-slate-100 p-2 shadow-sm transition-all duration-300 hover:scale-[1.01] hover:shadow-md active:scale-[0.99] dark:from-slate-800 dark:to-slate-900 md:ml-10 md:mr-0'
+            >
+              <div className='absolute inset-0 bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-blue-500/10 opacity-0 transition-opacity duration-300 group-hover/home:opacity-100'>
+                <span className='absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground'>{'<-'}</span>
+              </div>
+              <div className='relative flex items-center justify-center gap-0.5 text-sm font-bold tracking-tight transition-all duration-300 group-hover/home:text-purple-600 dark:group-hover/home:text-purple-400'>
+                <span className='relative'>
+                  gloved
+                  <span className='absolute -bottom-0.5 left-0 h-0.5 w-full scale-x-0 bg-gradient-to-r from-purple-600 to-pink-600 transition-transform duration-300 group-hover/home:scale-x-100'></span>
+                </span>
+                <span className='animate-gradient bg-gradient-to-r from-purple-600 to-pink-600 bg-[length:200%_100%] bg-clip-text text-transparent'>
+                  .
+                </span>
+                <span className='font-light tracking-wide'>
+                  dev
+                  <span className='absolute -bottom-0.5 left-0 h-0.5 w-full scale-x-0 bg-gradient-to-r from-purple-600 to-pink-600 transition-transform duration-300 group-hover/home:scale-x-100'></span>
+                </span>
+              </div>
+            </Link>
             <Link
               href='/chat'
               type='button'
