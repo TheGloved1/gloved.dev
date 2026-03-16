@@ -232,4 +232,4 @@ Create a modern, brutalist-inspired file manager interface with a dark theme, fe
 - `.noise-overlay` and `.grid-pattern`
 - `.glow-line` for emphasis
 
-This design system creates a cohesive, premium file manager interface that feels both technical and modern, with careful attention to detail in typography, spacing, and micro-interactions. The brutalist elements provide character while the glassmorphism effects add sophistication.
+This design system creates a cohesive, premium interface that feels both technical and modern, with careful attention to detail in typography, spacing, and micro-interactions. The brutalist elements provide character while the glassmorphism effects add sophistication.

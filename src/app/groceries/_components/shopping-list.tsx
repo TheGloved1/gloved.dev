@@ -8,6 +8,9 @@ interface ShoppingListProps {
   onMoveItem: (id: string) => void;
   isRemoving?: boolean;
   isMoving?: boolean;
+  selectionMode?: boolean;
+  selectedItems?: Set<string>;
+  onToggleSelection?: (itemId: string, selected: boolean) => void;
 }
 
 export default function ShoppingList({
@@ -16,6 +19,9 @@ export default function ShoppingList({
   onMoveItem,
   isRemoving = false,
   isMoving = false,
+  selectionMode = false,
+  selectedItems = new Set(),
+  onToggleSelection,
 }: ShoppingListProps): React.JSX.Element {
   if (items.length === 0) {
     return (
@@ -38,6 +44,9 @@ export default function ShoppingList({
           moveButtonClass=''
           isRemoving={isRemoving}
           isMoving={isMoving}
+          isSelected={selectedItems.has(item.id)}
+          onSelect={onToggleSelection ? (selected) => onToggleSelection(item.id, selected) : undefined}
+          showSelection={selectionMode}
         />
       ))}
     </div>

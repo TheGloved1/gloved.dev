@@ -8,6 +8,9 @@ interface HaveListProps {
   onMoveItem: (id: string) => void;
   isRemoving?: boolean;
   isMoving?: boolean;
+  selectionMode?: boolean;
+  selectedItems?: Set<string>;
+  onToggleSelection?: (itemId: string, selected: boolean) => void;
 }
 
 export default function HaveList({
@@ -16,6 +19,9 @@ export default function HaveList({
   onMoveItem,
   isRemoving = false,
   isMoving = false,
+  selectionMode = false,
+  selectedItems = new Set(),
+  onToggleSelection,
 }: HaveListProps): React.JSX.Element {
   if (items.length === 0) {
     return (
@@ -38,6 +44,9 @@ export default function HaveList({
           moveButtonClass='bg-green-600/80 hover:bg-green-500 border border-green-500/30 text-white'
           isRemoving={isRemoving}
           isMoving={isMoving}
+          isSelected={selectedItems.has(item.id)}
+          onSelect={onToggleSelection ? (selected) => onToggleSelection(item.id, selected) : undefined}
+          showSelection={selectionMode}
         />
       ))}
     </div>

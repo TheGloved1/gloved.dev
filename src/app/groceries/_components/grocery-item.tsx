@@ -10,6 +10,9 @@ interface GroceryItemComponentProps {
   moveButtonClass: string;
   isRemoving?: boolean;
   isMoving?: boolean;
+  isSelected?: boolean;
+  onSelect?: (selected: boolean) => void;
+  showSelection?: boolean;
 }
 
 export default function GroceryItemComponent({
@@ -20,6 +23,9 @@ export default function GroceryItemComponent({
   moveButtonClass,
   isRemoving = false,
   isMoving = false,
+  isSelected = false,
+  onSelect,
+  showSelection = false,
 }: GroceryItemComponentProps): React.JSX.Element {
   const formatDate = (timestamp: number) => {
     const date = new Date(timestamp);
@@ -38,14 +44,30 @@ export default function GroceryItemComponent({
   };
 
   return (
-    <div className='mb-3 rounded-xl border border-red-900/20 bg-black p-4'>
+    <div
+      className={`mb-3 rounded-xl border bg-black p-4 transition-all ${
+        isSelected ? 'border-red-500 bg-red-500/5' : 'border-red-900/20'
+      }`}
+    >
       <div className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
-        <div className='flex-1'>
-          <p className='mb-2 text-base font-medium text-red-200 sm:text-lg'>{item.text}</p>
-          <div className='flex flex-col gap-2 text-xs text-red-600/50 sm:flex-row sm:items-center'>
-            <span>Added {formatDate(item.addedAt)}</span>
-            <span className='hidden sm:inline'>•</span>
-            <span>By {item.addedBy}</span>
+        <div className='flex flex-1 items-start gap-3'>
+          {showSelection && onSelect && (
+            <div className='pt-1'>
+              <input
+                type='checkbox'
+                checked={isSelected}
+                onChange={(e) => onSelect(e.target.checked)}
+                className='h-4 w-4 rounded border-red-500/30 bg-red-900/20 text-red-500 focus:ring-red-500/50 focus:ring-offset-0'
+              />
+            </div>
+          )}
+          <div className='flex-1'>
+            <p className='mb-2 text-base font-medium text-red-200 sm:text-lg'>{item.text}</p>
+            <div className='flex flex-col gap-2 text-xs text-red-600/50 sm:flex-row sm:items-center'>
+              <span>Added {formatDate(item.addedAt)}</span>
+              <span className='hidden sm:inline'>•</span>
+              <span>By {item.addedBy}</span>
+            </div>
           </div>
         </div>
 

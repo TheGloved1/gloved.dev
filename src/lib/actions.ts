@@ -9,6 +9,8 @@ import { rateLimiter } from './rate-limiter';
 import {
   addAdmin,
   addGroceryItem,
+  bulkMoveGroceryItems,
+  bulkRemoveGroceryItems,
   dbSync,
   deleteSync,
   deleteUserData,
@@ -243,6 +245,65 @@ export async function moveGroceryItemAction(
     return { success: true };
   } catch (error) {
     console.error('Error moving grocery item:', error);
+    throw error;
+  }
+}
+
+export async function bulkRemoveGroceryItemsAction(
+  listKey: 'shopping-list' | 'have-list',
+  itemIds: string[],
+  identifier?: string,
+) {
+  try {
+    // Use identifier for rate limiting (either userName or clientIP)
+    if (!identifier) {
+      throw new Error('User identifier is required');
+    }
+
+    const rateLimit = rateLimiter.checkRateLimit(identifier);
+
+    if (!rateLimit.allowed) {
+      throw new Error('Rate limit exceeded. Please try again later.');
+    }
+
+    if (!itemIds || itemIds.length === 0) {
+      throw new Error('At least one item ID is required');
+    }
+
+    await bulkRemoveGroceryItems(listKey, itemIds);
+    return { success: true };
+  } catch (error) {
+    console.error('Error bulk removing grocery items:', error);
+    throw error;
+  }
+}
+
+export async function bulkMoveGroceryItemsAction(
+  fromListKey: 'shopping-list' | 'have-list',
+  toListKey: 'shopping-list' | 'have-list',
+  itemIds: string[],
+  identifier?: string,
+) {
+  try {
+    // Use identifier for rate limiting (either userName or clientIP)
+    if (!identifier) {
+      throw new Error('User identifier is required');
+    }
+
+    const rateLimit = rateLimiter.checkRateLimit(identifier);
+
+    if (!rateLimit.allowed) {
+      throw new Error('Rate limit exceeded. Please try again later.');
+    }
+
+    if (!itemIds || itemIds.length === 0) {
+      throw new Error('At least one item ID is required');
+    }
+
+    await bulkMoveGroceryItems(fromListKey, toListKey, itemIds);
+    return { success: true };
+  } catch (error) {
+    console.error('Error bulk moving grocery items:', error);
     throw error;
   }
 }

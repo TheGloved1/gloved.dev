@@ -412,3 +412,48 @@ export async function moveGroceryItem(
     redis.set('groceries:have-list', lists.haveList),
   ]);
 }
+
+export async function bulkRemoveGroceryItems(listKey: 'shopping-list' | 'have-list', itemIds: string[]): Promise<void> {
+  const redisKey = `groceries:${listKey}`;
+  const lists = await getGroceryLists();
+  const targetList = listKey === 'shopping-list' ? lists.shoppingList : lists.haveList;
+
+  const filteredList = targetList.filter((item) => !itemIds.includes(item.id));
+  await redis.set(redisKey, filteredList);
+}
+
+/**
+ * Moves multiple items from one list to another.
+ * @param fromListKey The source list key
+ * @param toListKey The target list key
+ * @param itemIds The IDs of the items to move
+ * @returns A promise that resolves when the items are moved.
+ */
+export async function bulkMoveGroceryItems(
+  fromListKey: 'shopping-list' | 'have-list',
+  toListKey: 'shopping-list' | 'have-list',
+  itemIds: string[],
+): Promise<void> {
+  const lists = await getGroceryLists();
+  const fromList = fromListKey === 'shopping-list' ? lists.shoppingList : lists.haveList;
+  const toList = toListKey === 'shopping-list' ? lists.shoppingList : lists.haveList;
+
+  // Find and remove items from source list
+  const itemsToMove = fromList.filter((item) => itemIds.includes(item.id));
+  const filteredFromList = fromList.filter((item) => !itemIds.includes(item.id));
+
+  // Add items to target list
+  toList.push(...itemsToMove);
+
+  // Update both lists
+  if (fromListKey === 'shopping-list') {
+    lists.shoppingList = filteredFromList;
+  } else {
+    lists.haveList = filteredFromList;
+  }
+
+  await Promise.all([
+    redis.set('groceries:shopping-list', lists.shoppingList),
+    redis.set('groceries:have-list', lists.haveList),
+  ]);
+}

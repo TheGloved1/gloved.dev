@@ -211,22 +211,22 @@ export default function Page() {
                       <div className='relative z-10 p-4'>
                         <div className='flex items-start justify-between gap-4'>
                           <div className='min-w-0 flex-1'>
-                            <a
+                            <Link
                               href={url}
                               className='font-mono-industrial block truncate text-sm text-white transition-colors hover:text-fuchsia-400'
                               target='_blank'
                             >
                               {url}
-                            </a>
+                            </Link>
                             <div className='mt-2 flex items-center gap-2'>
                               <span className='font-mono-industrial text-xs text-white/50'>{getShortenedUrl(id)}</span>
-                              <a
+                              <Link
                                 href={getShortenedUrl(id)}
                                 target='_blank'
                                 className='text-white/30 transition-colors hover:text-white/60'
                               >
                                 <ExternalLink className='h-3 w-3' />
-                              </a>
+                              </Link>
                             </div>
                           </div>
                           <Button
