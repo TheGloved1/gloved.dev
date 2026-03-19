@@ -1,3 +1,4 @@
+'use client';
 import { SiDungeonsanddragons } from '@icons-pack/react-simple-icons';
 import { Globe } from 'lucide-react';
 import { createDndTools } from './dnd';
