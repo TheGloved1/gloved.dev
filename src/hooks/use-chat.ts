@@ -8,7 +8,8 @@ import { useMount } from './use-mount';
  * @returns True if the model is valid, false otherwise.
  */
 function isValidModel(model: string | undefined | null): model is ModelID {
-  return model !== undefined && model !== null && ModelList.includes(model as ModelID);
+  const modelId = model;
+  return ModelList.includes(modelId as ModelID);
 }
 
 /**

@@ -1,5 +1,5 @@
 import { tryCatch } from '../utils';
-import { CustomTools, ModelID } from './models';
+import { CustomTools, ModelID } from './';
 
 export * from './config';
 export * from './embeddings';

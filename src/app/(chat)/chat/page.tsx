@@ -2,6 +2,7 @@
 import { Button } from '@/components/ui/button';
 import { useChat } from '@/hooks/use-chat';
 import { useLocalStorage } from '@/hooks/use-local-storage';
+import { useMount } from '@/hooks/use-mount';
 import { CustomTool } from '@/lib/ai';
 import { SiDungeonsanddragons } from '@icons-pack/react-simple-icons';
 import { Code, GraduationCap, Newspaper, Sparkles } from 'lucide-react';
@@ -82,10 +83,14 @@ const randomWelcomeMessages: string[] = [
 const getRandomWelcomeMessage = () => randomWelcomeMessages[Math.floor(Math.random() * randomWelcomeMessages.length)];
 
 export default function Page(): React.JSX.Element {
-  const [welcomeMessage] = useState(getRandomWelcomeMessage);
+  const [welcomeMessage, setWelcomeMessage] = useState<string | null>(null);
   const [currentTab, setCurrentTab] = useState<Tab>('Default');
   const [input, setInput] = useLocalStorage('input', '');
   const { tools } = useChat();
+
+  useMount(() => {
+    setWelcomeMessage(getRandomWelcomeMessage());
+  });
 
   const isActiveTab = (tab: Tab) => tab === currentTab;
 

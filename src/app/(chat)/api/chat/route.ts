@@ -3,14 +3,12 @@ import {
   ChatFetchOptions,
   CustomTool,
   defaultModel,
-  DND_SYSTEM_PROMPT,
-  DND_TOOLS_PROMPT,
-  dndTools,
   Feature,
   Model,
   modelConfig,
   ModelID,
   Models,
+  TOOL_CONFIG,
 } from '@/lib/ai';
 import glovedApi from '@/lib/glovedapi';
 import { formatMessageContent } from '@/lib/utils';
@@ -128,13 +126,22 @@ export async function POST(req: NextRequest) {
     };
 
     /* Add Tools to Tools List */
-    if (options.tools.includes(CustomTool.DND) && isValidTool(CustomTool.DND, options.model ?? defaultModel)) {
-      console.log('[CHAT] Adding D&D tools to tools list...');
-      Object.entries(dndTools).forEach(([key, tool]) => {
-        tools = { ...tools, [key]: tool };
-      });
-      console.log('[CHAT] Setting system prompt with D&D tools...');
-      system = DND_SYSTEM_PROMPT + '\n\n' + DND_TOOLS_PROMPT;
+    // Automatically process all tools from TOOL_CONFIG
+    for (const [toolKey, toolConfig] of Object.entries(TOOL_CONFIG)) {
+      if (options.tools.includes(toolConfig.value) && isValidTool(toolConfig.value, options.model ?? defaultModel)) {
+        console.log(`[CHAT] Adding ${toolConfig.name} to tools list...`);
+        const toolImplementation = await toolConfig.create();
+        Object.entries(toolImplementation.tools).forEach(([key, tool]) => {
+          tools = { ...tools, [key]: tool };
+        });
+
+        // Add system prompt if available
+        if ('system' in toolImplementation.prompts && toolImplementation.prompts.system) {
+          system = toolImplementation.prompts.system + '\n\n' + toolImplementation.prompts.tools;
+        } else if (toolImplementation.prompts?.tools) {
+          system += '\n\n' + toolImplementation.prompts.tools;
+        }
+      }
     }
     /* End of Add Tools to Tools List */
   };
@@ -147,10 +154,6 @@ export async function POST(req: NextRequest) {
         type: 'data-status',
         data: { status: 'streaming' },
       });
-
-      console.log('[CHAT] Starting chat stream...');
-      console.log('[CHAT] Active tools:', tools ? Object.keys(tools).join(', ') : 'none');
-      console.log('[CHAT] System prompt:', system);
 
       const result = streamText({
         system,

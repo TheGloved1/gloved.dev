@@ -1,3 +1,4 @@
+'use server';
 import { tool } from 'ai';
 import { z } from 'zod';
 
@@ -149,7 +150,7 @@ async function fetchFromApi<T = any>(endpoint: string): Promise<T> {
 /**
  * Tool to get D&D spell information
  */
-export const getSpellInfo = tool({
+const getSpellInfo = tool({
   description:
     'Get detailed information about a D&D 5th Edition spell including description, casting time, range, components, and duration',
   inputSchema: z.object({
@@ -222,7 +223,7 @@ export const getSpellInfo = tool({
 });
 
 // API endpoint tools for general resource access
-export const getAbilityScores = tool({
+const getAbilityScores = tool({
   description: 'Get information about D&D ability scores (STR, DEX, CON, INT, WIS, CHA)',
   inputSchema: z.object({
     score: z.string().optional().describe('Specific ability score to get (str, dex, con, int, wis, cha)'),
@@ -239,7 +240,7 @@ export const getAbilityScores = tool({
   },
 });
 
-export const getAlignments = tool({
+const getAlignments = tool({
   description: 'Get information about D&D alignments (Lawful Good, Chaotic Evil, etc.)',
   inputSchema: z.object({
     alignment: z.string().optional().describe('Specific alignment to get'),
@@ -256,7 +257,7 @@ export const getAlignments = tool({
   },
 });
 
-export const getBackgrounds = tool({
+const getBackgrounds = tool({
   description: 'Get information about D&D character backgrounds',
   inputSchema: z.object({
     background: z.string().optional().describe('Specific background to get'),
@@ -273,7 +274,7 @@ export const getBackgrounds = tool({
   },
 });
 
-export const getConditions = tool({
+const getConditions = tool({
   description: 'Get information about D&D conditions (blinded, charmed, frightened, etc.)',
   inputSchema: z.object({
     condition: z.string().optional().describe('Specific condition to get'),
@@ -290,7 +291,7 @@ export const getConditions = tool({
   },
 });
 
-export const getDamageTypes = tool({
+const getDamageTypes = tool({
   description: 'Get information about D&D damage types (fire, cold, lightning, etc.)',
   inputSchema: z.object({
     damageType: z.string().optional().describe('Specific damage type to get'),
@@ -307,7 +308,7 @@ export const getDamageTypes = tool({
   },
 });
 
-export const getEquipment = tool({
+const getEquipment = tool({
   description: 'Get information about D&D equipment, weapons, armor, and items',
   inputSchema: z.object({
     equipment: z.string().optional().describe('Specific equipment to get'),
@@ -324,7 +325,7 @@ export const getEquipment = tool({
   },
 });
 
-export const getEquipmentCategories = tool({
+const getEquipmentCategories = tool({
   description: 'Get information about D&D equipment categories (weapons, armor, tools, etc.)',
   inputSchema: z.object({
     category: z.string().optional().describe('Specific equipment category to get'),
@@ -341,7 +342,7 @@ export const getEquipmentCategories = tool({
   },
 });
 
-export const getFeats = tool({
+const getFeats = tool({
   description: 'Get information about D&D feats',
   inputSchema: z.object({
     feat: z.string().optional().describe('Specific feat to get'),
@@ -358,7 +359,7 @@ export const getFeats = tool({
   },
 });
 
-export const getFeatures = tool({
+const getFeatures = tool({
   description: 'Get information about D&D class features',
   inputSchema: z.object({
     feature: z.string().optional().describe('Specific feature to get'),
@@ -375,7 +376,7 @@ export const getFeatures = tool({
   },
 });
 
-export const getLanguages = tool({
+const getLanguages = tool({
   description: 'Get information about D&D languages',
   inputSchema: z.object({
     language: z.string().optional().describe('Specific language to get'),
@@ -392,7 +393,7 @@ export const getLanguages = tool({
   },
 });
 
-export const getMagicItems = tool({
+const getMagicItems = tool({
   description: 'Get information about D&D magic items',
   inputSchema: z.object({
     item: z.string().optional().describe('Specific magic item to get'),
@@ -409,7 +410,7 @@ export const getMagicItems = tool({
   },
 });
 
-export const getMagicSchools = tool({
+const getMagicSchools = tool({
   description: 'Get information about D&D schools of magic',
   inputSchema: z.object({
     school: z.string().optional().describe('Specific magic school to get'),
@@ -426,7 +427,7 @@ export const getMagicSchools = tool({
   },
 });
 
-export const getMonsters = tool({
+const getMonsters = tool({
   description: 'Get information about D&D monsters',
   inputSchema: z.object({
     monster: z.string().optional().describe('Specific monster to get'),
@@ -456,7 +457,7 @@ export const getMonsters = tool({
   },
 });
 
-export const getProficiencies = tool({
+const getProficiencies = tool({
   description: 'Get information about D&D proficiencies',
   inputSchema: z.object({
     proficiency: z.string().optional().describe('Specific proficiency to get'),
@@ -484,7 +485,7 @@ export const getProficiencies = tool({
   },
 });
 
-export const getRaces = tool({
+const getRaces = tool({
   description: 'Get information about D&D races',
   inputSchema: z.object({
     race: z.string().optional().describe('Specific race to get'),
@@ -501,7 +502,7 @@ export const getRaces = tool({
   },
 });
 
-export const getSkills = tool({
+const getSkills = tool({
   description: 'Get information about D&D skills',
   inputSchema: z.object({
     skill: z.string().optional().describe('Specific skill to get'),
@@ -518,7 +519,7 @@ export const getSkills = tool({
   },
 });
 
-export const getSubclasses = tool({
+const getSubclasses = tool({
   description: 'Get information about D&D subclasses',
   inputSchema: z.object({
     subclass: z.string().optional().describe('Specific subclass to get'),
@@ -546,7 +547,7 @@ export const getSubclasses = tool({
   },
 });
 
-export const getSubraces = tool({
+const getSubraces = tool({
   description: 'Get information about D&D subraces',
   inputSchema: z.object({
     subrace: z.string().optional().describe('Specific subrace to get'),
@@ -574,7 +575,7 @@ export const getSubraces = tool({
   },
 });
 
-export const getTraits = tool({
+const getTraits = tool({
   description: 'Get information about D&D racial traits',
   inputSchema: z.object({
     trait: z.string().optional().describe('Specific trait to get'),
@@ -602,7 +603,7 @@ export const getTraits = tool({
   },
 });
 
-export const getWeaponProperties = tool({
+const getWeaponProperties = tool({
   description: 'Get information about D&D weapon properties',
   inputSchema: z.object({
     property: z.string().optional().describe('Specific weapon property to get'),
@@ -619,7 +620,7 @@ export const getWeaponProperties = tool({
   },
 });
 
-export const getRules = tool({
+const getRules = tool({
   description: 'Get information about D&D rules and rule sections',
   inputSchema: z.object({
     rule: z.string().optional().describe('Specific rule to get'),
@@ -641,7 +642,7 @@ export const getRules = tool({
 });
 
 // General API endpoint tool for any endpoint
-export const getApiResource = tool({
+const getApiResource = tool({
   description:
     "Get any D&D API resource by endpoint. Use this for exploring the API or when other tools don't cover a specific need.",
   inputSchema: z.object({
@@ -665,7 +666,7 @@ export const getApiResource = tool({
   },
 });
 
-export const DND_SYSTEM_PROMPT = `You are a master Dungeon Master and storyteller for Dungeons & Dragons across all editions, specializing in creating epic, unique, and unforgettable campaigns. Your expertise spans all aspects of D&D including world-building, character development, encounter design, and narrative construction, with deep knowledge of every edition's unique mechanics and flavor.
+const DND_SYSTEM_PROMPT = `You are a master Dungeon Master and storyteller for Dungeons & Dragons across all editions, specializing in creating epic, unique, and unforgettable campaigns. Your expertise spans all aspects of D&D including world-building, character development, encounter design, and narrative construction, with deep knowledge of every edition's unique mechanics and flavor.
 
 ## Core Philosophy
 
@@ -1046,7 +1047,7 @@ function rollDice(notation: string): number {
 /**
  * Tool to get D&D class information
  */
-export const getDndClassInfo = tool({
+const getDndClassInfo = tool({
   description:
     'Get detailed information about a D&D 5th Edition class including features, hit die, primary stats, and progression',
   inputSchema: z.object({
@@ -1116,7 +1117,7 @@ export const getDndClassInfo = tool({
 /**
  * Tool to calculate D&D skill checks
  */
-export const calculateSkillCheck = tool({
+const calculateSkillCheck = tool({
   description: 'Calculate a D&D skill check with ability modifier, proficiency bonus, and roll result',
   inputSchema: z.object({
     skill: z.enum(Object.keys(DND_SKILLS) as [keyof typeof DND_SKILLS]).describe('The skill to check'),
@@ -1185,7 +1186,7 @@ export const calculateSkillCheck = tool({
 /**
  * Tool to generate D&D character
  */
-export const generateDndCharacter = tool({
+const generateDndCharacter = tool({
   description:
     'Generate a random D&D 5th Edition character with race, class, ability scores, and equipment. The AI should generate a creative name for the character.',
   inputSchema: z.object({
@@ -1270,7 +1271,7 @@ export const generateDndCharacter = tool({
 /**
  * Tool to simulate D&D combat encounter
  */
-export const simulateCombatEncounter = tool({
+const simulateCombatEncounter = tool({
   description: 'Simulate a D&D combat encounter between characters and monsters',
   inputSchema: z.object({
     partyLevel: z.number().min(1).max(20).describe('Average party level'),
@@ -1348,7 +1349,7 @@ export const simulateCombatEncounter = tool({
 /**
  * Tool to roll dice with various D&D notations
  */
-export const rollDiceTool = tool({
+const rollDiceTool = tool({
   description: 'Roll dice using D&D notation (e.g., 2d6+3, 1d20, 4d8) with optional modifiers',
   inputSchema: z.object({
     notation: z.string().describe('Dice notation in format like "2d6+3", "1d20", "4d8" (must follow D&D rules)'),
@@ -1391,43 +1392,49 @@ export const rollDiceTool = tool({
   },
 });
 
-export const dndTools = {
-  getDndClassInfo,
-  simulateCombatEncounter,
-  rollDice: rollDiceTool,
-  generateDndCharacter,
-  getSpellInfo,
-  calculateSkillCheck,
-  // New API endpoint tools
-  getAbilityScores,
-  getAlignments,
-  getBackgrounds,
-  getConditions,
-  getDamageTypes,
-  getEquipment,
-  getEquipmentCategories,
-  getFeats,
-  getFeatures,
-  getLanguages,
-  getMagicItems,
-  getMagicSchools,
-  getMonsters,
-  getProficiencies,
-  getRaces,
-  getSkills,
-  getSubclasses,
-  getSubraces,
-  getTraits,
-  getWeaponProperties,
-  getRules,
-  // General API tool
-  getApiResource,
-} as const;
+export const createDndTools = async () => ({
+  tools: {
+    getDndClassInfo,
+    simulateCombatEncounter,
+    rollDice: rollDiceTool,
+    generateDndCharacter,
+    getSpellInfo,
+    calculateSkillCheck,
+    // New API endpoint tools
+    getAbilityScores,
+    getAlignments,
+    getBackgrounds,
+    getConditions,
+    getDamageTypes,
+    getEquipment,
+    getEquipmentCategories,
+    getFeats,
+    getFeatures,
+    getLanguages,
+    getMagicItems,
+    getMagicSchools,
+    getMonsters,
+    getProficiencies,
+    getRaces,
+    getSkills,
+    getSubclasses,
+    getSubraces,
+    getTraits,
+    getWeaponProperties,
+    getRules,
+    // General API tool
+    getApiResource,
+  },
+  prompts: {
+    system: DND_SYSTEM_PROMPT,
+    tools: DND_TOOLS_PROMPT,
+  },
+});
 
 /**
  * System prompt fragment for teaching AI about D&D tools
  */
-export const DND_TOOLS_PROMPT = `You have access to Dungeons & Dragons 5th Edition tools with LIVE API data. These tools fetch real D&D information from the official 5e API.
+const DND_TOOLS_PROMPT = `You have access to Dungeons & Dragons 5th Edition tools with LIVE API data. These tools fetch real D&D information from the official 5e API.
 
 ## CRITICAL: How to Use These Tools
 

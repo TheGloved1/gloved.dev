@@ -1,7 +1,5 @@
-export enum CustomTool {
-  DND = 'dnd',
-}
-export type CustomTools = CustomTool[];
+import { CustomTool, CustomTools } from './tools';
+
 export enum Feature {
   REASONING = 'reasoning',
 }
@@ -36,7 +34,7 @@ export const Models = Object.freeze([
       loggedIn: true,
       admin: false,
     },
-    tools: [CustomTool.DND] as CustomTools,
+    tools: [CustomTool.DND, CustomTool.WEB_SEARCH] as CustomTools,
     features: [] as Features,
   },
   {
@@ -50,7 +48,21 @@ export const Models = Object.freeze([
       loggedIn: false,
       admin: false,
     },
-    tools: [CustomTool.DND] as CustomTools,
+    tools: [CustomTool.DND, CustomTool.WEB_SEARCH] as CustomTools,
+    features: [] as Features,
+  },
+  {
+    label: 'GPT OSS 120B (Openrouter)',
+    value: 'openai/gpt-oss-120b:free',
+    provider: 'openrouter' as ModelProvider,
+    type: 'gpt' as ModelType,
+    enabled: true,
+    description: "OpenAI's open source reasoning model (free tier)",
+    requirements: {
+      loggedIn: false,
+      admin: false,
+    },
+    tools: [CustomTool.DND, CustomTool.WEB_SEARCH] as CustomTools,
     features: [] as Features,
   },
   {
