@@ -531,7 +531,7 @@ export async function processStream(response: ReadableStream<Uint8Array>, messag
       } else if (type === 'reasoning-delta') {
         const delta = (eventStreamDelta?.delta ?? '') as string;
         if (delta) {
-          reasoningContent += '\n\n' + delta;
+          reasoningContent += delta;
           if (messageId) {
             await dxdb.messages.update(messageId, {
               updated_at: now(),
