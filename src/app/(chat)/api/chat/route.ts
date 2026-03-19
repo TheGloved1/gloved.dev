@@ -25,6 +25,7 @@ import {
   smoothStream,
   stepCountIs,
   streamText,
+  Tool,
   ToolSet,
   wrapLanguageModel,
 } from 'ai';
@@ -127,11 +128,11 @@ export async function POST(req: NextRequest) {
 
     /* Add Tools to Tools List */
     // Automatically process all tools from TOOL_CONFIG
-    for (const [toolKey, toolConfig] of Object.entries(TOOL_CONFIG)) {
+    for (const [_toolKey, toolConfig] of Object.entries(TOOL_CONFIG)) {
       if (options.tools.includes(toolConfig.value) && isValidTool(toolConfig.value, options.model ?? defaultModel)) {
         console.log(`[CHAT] Adding ${toolConfig.name} to tools list...`);
         const toolImplementation = await toolConfig.create();
-        Object.entries(toolImplementation.tools).forEach(([key, tool]) => {
+        Object.entries(toolImplementation.tools).forEach(([key, tool]: [string, Tool]) => {
           tools = { ...tools, [key]: tool };
         });
 
