@@ -161,7 +161,7 @@ export async function POST(req: NextRequest) {
         model,
         messages: coreMessages,
         tools,
-        stopWhen: stepCountIs(5),
+        stopWhen: stepCountIs(10),
         temperature: modelConfig.temperature,
         maxOutputTokens: modelConfig.maxOutputTokens,
         // frequencyPenalty: modelConfig.frequencyPenalty,

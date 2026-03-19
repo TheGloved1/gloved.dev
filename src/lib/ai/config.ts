@@ -1,5 +1,5 @@
 const temperature = 0.95;
-const maxOutputTokens = 4096;
+const maxOutputTokens = 4096 * 2;
 const frequencyPenalty = 0.95;
 const presencePenalty = 0.15;
 
