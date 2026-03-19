@@ -71,7 +71,7 @@ export default function BulkActionsToolbar({
             <Square className='mr-2 h-4 w-4' />
             Select All
           </Button>
-          
+
           <Button
             onClick={onClearSelection}
             variant='outline'
@@ -90,13 +90,11 @@ export default function BulkActionsToolbar({
             className='rounded-lg bg-red-600 px-3 py-2 text-sm text-white hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-50'
             disabled={selectedCount === 0 || isBulkMoving || isBulkRemoving}
           >
-            {isBulkMoving ? (
+            {isBulkMoving ?
               <div className='mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent'></div>
-            ) : moveButtonLabel.includes('Needed') ? (
+            : moveButtonLabel.includes('Have') ?
               <ArrowDown className='mr-2 h-4 w-4' />
-            ) : (
-              <ArrowUp className='mr-2 h-4 w-4' />
-            )}
+            : <ArrowUp className='mr-2 h-4 w-4' />}
             {moveButtonLabel}
           </Button>
 
@@ -107,11 +105,9 @@ export default function BulkActionsToolbar({
             className='rounded-lg bg-red-900 px-3 py-2 text-sm text-white hover:bg-red-800 disabled:cursor-not-allowed disabled:opacity-50'
             disabled={selectedCount === 0 || isBulkMoving || isBulkRemoving}
           >
-            {isBulkRemoving ? (
+            {isBulkRemoving ?
               <div className='mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent'></div>
-            ) : (
-              <Trash2 className='mr-2 h-4 w-4' />
-            )}
+            : <Trash2 className='mr-2 h-4 w-4' />}
             Remove
           </Button>
         </div>
