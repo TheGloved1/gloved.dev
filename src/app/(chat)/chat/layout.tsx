@@ -26,7 +26,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function Layout({ children }: Readonly<{ children: ReactNode }>) {
+export default function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <ThemeChanger>
       <CheckSync />
