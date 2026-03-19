@@ -1,5 +1,4 @@
 import { GroceryItem } from '@/lib/redis';
-import React from 'react';
 import GroceryItemComponent from './grocery-item';
 
 interface ShoppingListProps {
@@ -47,6 +46,7 @@ export default function ShoppingList({
           isSelected={selectedItems.has(item.id)}
           onSelect={onToggleSelection ? (selected) => onToggleSelection(item.id, selected) : undefined}
           showSelection={selectionMode}
+          hideIndividualActions={selectionMode}
         />
       ))}
     </div>

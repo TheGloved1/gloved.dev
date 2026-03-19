@@ -12,7 +12,7 @@ import {
 import { SignedIn, SignedOut, SignInButton, UserButton, useUser } from '@clerk/nextjs';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ShoppingCart } from 'lucide-react';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import AddItemForm from './add-item-form';
 import BulkActionsToolbar from './bulk-actions-toolbar';
@@ -52,10 +52,11 @@ export default function GroceryPage(): React.JSX.Element {
     }
   };
 
-  const [clientIP, setClientIP] = React.useState<string>('unknown');
-  const [isFocused, setIsFocused] = React.useState<boolean>(false);
-  const [selectionMode, setSelectionMode] = React.useState<boolean>(false);
-  const [selectedItems, setSelectedItems] = React.useState<Set<string>>(new Set());
+  const [clientIP, setClientIP] = useState<string>('unknown');
+  const [isFocused, setIsFocused] = useState<boolean>(false);
+  const [shoppingListSelectionMode, setShoppingListSelectionMode] = useState<boolean>(false);
+  const [haveListSelectionMode, setHaveListSelectionMode] = useState<boolean>(false);
+  const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
 
   // Fetch client IP on component mount
   useMount(() => {
@@ -63,7 +64,7 @@ export default function GroceryPage(): React.JSX.Element {
   });
 
   // Handle window focus/blur events (client-side only)
-  React.useEffect(() => {
+  useEffect(() => {
     if (typeof window !== 'undefined') {
       const handleFocus = () => setIsFocused(true);
       const handleBlur = () => setIsFocused(false);
@@ -79,7 +80,7 @@ export default function GroceryPage(): React.JSX.Element {
   }, []);
 
   // Handle visibility change (tab switching) (client-side only)
-  React.useEffect(() => {
+  useEffect(() => {
     if (typeof window !== 'undefined') {
       const handleVisibilityChange = () => {
         setIsFocused(!document.hidden);
@@ -161,7 +162,8 @@ export default function GroceryPage(): React.JSX.Element {
     onSuccess: () => {
       toast.success('Items removed');
       setSelectedItems(new Set());
-      setSelectionMode(false);
+      setShoppingListSelectionMode(false);
+      setHaveListSelectionMode(false);
       queryClient.invalidateQueries({ queryKey: ['groceryLists'] });
     },
     onError: (error) => {
@@ -177,7 +179,8 @@ export default function GroceryPage(): React.JSX.Element {
     onSuccess: () => {
       toast.success('Items moved');
       setSelectedItems(new Set());
-      setSelectionMode(false);
+      setShoppingListSelectionMode(false);
+      setHaveListSelectionMode(false);
       queryClient.invalidateQueries({ queryKey: ['groceryLists'] });
     },
     onError: (error) => {
@@ -236,8 +239,15 @@ export default function GroceryPage(): React.JSX.Element {
     bulkMoveMutation.mutate({ fromList, itemIds: selectedIds });
   };
 
-  const toggleSelectionMode = () => {
-    setSelectionMode(!selectionMode);
+  const toggleShoppingListSelectionMode = () => {
+    setShoppingListSelectionMode(!shoppingListSelectionMode);
+    setHaveListSelectionMode(false); // Disable the other toolbar
+    setSelectedItems(new Set());
+  };
+
+  const toggleHaveListSelectionMode = () => {
+    setHaveListSelectionMode(!haveListSelectionMode);
+    setShoppingListSelectionMode(false); // Disable the other toolbar
     setSelectedItems(new Set());
   };
 
@@ -324,11 +334,11 @@ export default function GroceryPage(): React.JSX.Element {
 
             {listsData.shoppingList.length > 0 && (
               <BulkActionsToolbar
-                selectionMode={selectionMode}
+                selectionMode={shoppingListSelectionMode}
                 selectedCount={
                   Array.from(selectedItems).filter((id) => listsData.shoppingList.some((item) => item.id === id)).length
                 }
-                onToggleSelectionMode={toggleSelectionMode}
+                onToggleSelectionMode={toggleShoppingListSelectionMode}
                 onSelectAll={() => handleSelectAll('shopping-list', listsData.shoppingList)}
                 onClearSelection={handleClearSelection}
                 onBulkMove={() => handleBulkMove('shopping-list')}
@@ -346,7 +356,7 @@ export default function GroceryPage(): React.JSX.Element {
                 onMoveItem={(id) => handleMoveItem(id, 'shopping-list')}
                 isRemoving={removeItemMutation.isPending}
                 isMoving={moveItemMutation.isPending}
-                selectionMode={selectionMode}
+                selectionMode={shoppingListSelectionMode}
                 selectedItems={selectedItems}
                 onToggleSelection={handleToggleSelection}
               />
@@ -369,11 +379,11 @@ export default function GroceryPage(): React.JSX.Element {
 
             {listsData.haveList.length > 0 && (
               <BulkActionsToolbar
-                selectionMode={selectionMode}
+                selectionMode={haveListSelectionMode}
                 selectedCount={
                   Array.from(selectedItems).filter((id) => listsData.haveList.some((item) => item.id === id)).length
                 }
-                onToggleSelectionMode={toggleSelectionMode}
+                onToggleSelectionMode={toggleHaveListSelectionMode}
                 onSelectAll={() => handleSelectAll('have-list', listsData.haveList)}
                 onClearSelection={handleClearSelection}
                 onBulkMove={() => handleBulkMove('have-list')}
@@ -391,7 +401,7 @@ export default function GroceryPage(): React.JSX.Element {
                 onMoveItem={(id) => handleMoveItem(id, 'have-list')}
                 isRemoving={removeItemMutation.isPending}
                 isMoving={moveItemMutation.isPending}
-                selectionMode={selectionMode}
+                selectionMode={haveListSelectionMode}
                 selectedItems={selectedItems}
                 onToggleSelection={handleToggleSelection}
               />

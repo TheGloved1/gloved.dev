@@ -13,6 +13,7 @@ interface GroceryItemComponentProps {
   isSelected?: boolean;
   onSelect?: (selected: boolean) => void;
   showSelection?: boolean;
+  hideIndividualActions?: boolean;
 }
 
 export default function GroceryItemComponent({
@@ -26,6 +27,7 @@ export default function GroceryItemComponent({
   isSelected = false,
   onSelect,
   showSelection = false,
+  hideIndividualActions = false,
 }: GroceryItemComponentProps): React.JSX.Element {
   const formatDate = (timestamp: number) => {
     const date = new Date(timestamp);
@@ -45,9 +47,14 @@ export default function GroceryItemComponent({
 
   return (
     <div
+      onClick={() => {
+        if (showSelection && onSelect) {
+          onSelect(!isSelected);
+        }
+      }}
       className={`mb-3 rounded-xl border bg-black p-4 transition-all ${
         isSelected ? 'border-red-500 bg-red-500/5' : 'border-red-900/20'
-      }`}
+      } ${showSelection && onSelect ? 'cursor-pointer select-none hover:bg-red-500/10' : ''}`}
     >
       <div className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
         <div className='flex flex-1 items-start gap-3'>
@@ -71,47 +78,49 @@ export default function GroceryItemComponent({
           </div>
         </div>
 
-        <div className='flex gap-2'>
-          <button
-            onClick={onMove}
-            disabled={isRemoving || isMoving}
-            className='touch-manipulation-none flex min-h-[44px] items-center gap-2 rounded-lg bg-red-600 px-4 py-2 font-medium text-white transition-colors hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-50'
-            title={moveButtonLabel}
-          >
-            {isMoving ?
-              <div className='h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent'></div>
-            : <>
-                {moveButtonLabel.includes('Needed') ?
-                  <>
-                    <ArrowDown className='h-4 w-4' />
-                    <span className='hidden sm:inline'>Move to Have</span>
-                    <span className='sm:hidden'>Have</span>
-                  </>
-                : <>
-                    <ArrowUp className='h-4 w-4' />
-                    <span className='hidden sm:inline'>Move to Shopping</span>
-                    <span className='sm:hidden'>Shopping</span>
-                  </>
-                }
-              </>
-            }
-          </button>
-          <button
-            onClick={onRemove}
-            disabled={isRemoving || isMoving}
-            className='touch-manipulation-none flex min-h-[44px] items-center gap-2 rounded-lg bg-red-900 px-4 py-2 font-medium text-white transition-colors hover:bg-red-800 disabled:cursor-not-allowed disabled:opacity-50'
-            title='Remove item'
-          >
-            {isRemoving ?
-              <div className='h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent'></div>
-            : <>
-                <Trash2 className='h-4 w-4' />
-                <span className='hidden sm:inline'>Remove</span>
-                <span className='sm:hidden'>Delete</span>
-              </>
-            }
-          </button>
-        </div>
+        {!hideIndividualActions && (
+          <div className='flex gap-2'>
+            <button
+              onClick={onMove}
+              disabled={isRemoving || isMoving}
+              className='touch-manipulation-none flex min-h-[44px] items-center gap-2 rounded-lg bg-red-600 px-4 py-2 font-medium text-white transition-colors hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-50'
+              title={moveButtonLabel}
+            >
+              {isMoving ?
+                <div className='h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent'></div>
+              : <>
+                  {moveButtonLabel.includes('Needed') ?
+                    <>
+                      <ArrowDown className='h-4 w-4' />
+                      <span className='hidden sm:inline'>Move to Have</span>
+                      <span className='sm:hidden'>Have</span>
+                    </>
+                  : <>
+                      <ArrowUp className='h-4 w-4' />
+                      <span className='hidden sm:inline'>Move to Shopping</span>
+                      <span className='sm:hidden'>Shopping</span>
+                    </>
+                  }
+                </>
+              }
+            </button>
+            <button
+              onClick={onRemove}
+              disabled={isRemoving || isMoving}
+              className='touch-manipulation-none flex min-h-[44px] items-center gap-2 rounded-lg bg-red-900 px-4 py-2 font-medium text-white transition-colors hover:bg-red-800 disabled:cursor-not-allowed disabled:opacity-50'
+              title='Remove item'
+            >
+              {isRemoving ?
+                <div className='h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent'></div>
+              : <>
+                  <Trash2 className='h-4 w-4' />
+                  <span className='hidden sm:inline'>Remove</span>
+                  <span className='sm:hidden'>Delete</span>
+                </>
+              }
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
