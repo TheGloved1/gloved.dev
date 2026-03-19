@@ -1,4 +1,4 @@
-import { CustomTool, CustomTools } from './tools';
+import { CustomTool, CustomTools } from '@/lib/ai';
 
 export enum Feature {
   REASONING = 'reasoning',
