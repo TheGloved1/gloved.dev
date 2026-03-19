@@ -4,14 +4,12 @@ import { createDndTools } from './dnd';
 import { createWebSearchTools } from './web_search';
 
 /**
- * A mapping of custom tool names to their configurations.
- * Each key in the mapping corresponds to a custom tool name.
- * The value associated with each key is an object containing
- * information about the custom tool, such as its name, description,
- * icon, and creation function.
- * The `replacePrompt` property is a boolean indicating whether
- * the tool should replace the system prompt with its own prompt
- * when activated or add to it.
+ * A constant object containing tool configuration.
+ * Each tool has a name, description, value, icon, and create function.
+ * The create function is used to generate the tool's functionality.
+ * The value is used to select which tool to use.
+ * The icon is used to display the tool's icon in the UI.
+ * The name and description are used to display the tool's name and description in the UI.
  */
 export const TOOL_CONFIG = {
   DND: {
