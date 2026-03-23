@@ -1,7 +1,10 @@
 'use client';
 import { createDndTools, createWebSearchTools } from '@/lib/ai/tools';
 import { SiDungeonsanddragons } from '@icons-pack/react-simple-icons';
+import { ToolSet } from 'ai';
 import { Globe } from 'lucide-react';
+
+type CreateToolsFunctionResult = Promise<{ tools: ToolSet; prompts: { system?: string; tools: string } }>;
 
 /**
  * A constant object containing tool configuration.
@@ -11,7 +14,10 @@ import { Globe } from 'lucide-react';
  * The icon is used to display the tool's icon in the UI.
  * The name and description are used to display the tool's name and description in the UI.
  */
-export const TOOL_CONFIG = {
+export const TOOL_CONFIG: Record<
+  string,
+  { name: string; description: string; value: string; icon: React.ReactNode; create: () => CreateToolsFunctionResult }
+> = {
   DND: {
     name: 'D&D Mode',
     description: 'Allows the AI to access D&D content and rules.',
