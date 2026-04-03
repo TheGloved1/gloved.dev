@@ -56,7 +56,7 @@ export const Models = Object.freeze([
     value: 'openai/gpt-oss-120b:free',
     provider: 'openrouter' as ModelProvider,
     type: 'gpt' as ModelType,
-    enabled: true,
+    enabled: false,
     description: "OpenAI's open source reasoning model (free tier)",
     requirements: {
       loggedIn: false,
