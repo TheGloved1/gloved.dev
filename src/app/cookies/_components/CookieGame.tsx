@@ -1,12 +1,10 @@
 'use client';
-
-import type React from 'react';
-
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useInterval } from '@/hooks/use-interval';
 import { useLocalStorage } from '@/hooks/use-local-storage';
-import { ArrowBigUp, MousePointer, Sparkles, Volume2, VolumeX } from 'lucide-react';
+import { useMount } from '@/hooks/use-mount';
+import { ArrowBigUp, MousePointer, RefreshCw, Sparkles, Trophy, Volume2, VolumeX } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -137,7 +135,7 @@ const useSoundEffects = () => {
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
   const [soundEnabled, setSoundEnabled] = useLocalStorage('soundEnabled', true);
 
-  useEffect(() => {
+  useMount(() => {
     // Only create AudioContext when needed (on first interaction)
     if (typeof window !== 'undefined' && soundEnabled && !audioContext) {
       try {
@@ -150,7 +148,7 @@ const useSoundEffects = () => {
         toast.error('Web Audio API not supported in this browser');
       }
     }
-  }, [soundEnabled, audioContext]);
+  });
 
   const playSound = (type: 'click' | 'purchase' | 'achievement' | 'powerup') => {
     if (!soundEnabled || !audioContext) return;
@@ -221,11 +219,32 @@ export function CookieGame() {
   const [floatingTexts, setFloatingTexts] = useState<{ id: number; value: string; x: number; y: number }[]>([]);
   const [nextFloatingId, setNextFloatingId] = useState(0);
   const [activeTab, setActiveTab] = useState('cps');
-  const [lastGameUpdate, setGameLastUpdate] = useLocalStorage('lastGameUpdate', Date.now());
+  const [lastGameUpdate, setGameLastUpdate] = useLocalStorage('lastGameUpdate', 0);
+
+  useMount(() => {
+    setGameLastUpdate(Date.now());
+  });
+  const [hasWon, setHasWon] = useState(false);
   const { soundEnabled, setSoundEnabled, playSound } = useSoundEffects();
 
   // Calculate prestige cost
   const prestigeCost = 1000000 * (prestigeLevel + 1);
+
+  // Check for NaN victory condition
+  useEffect(() => {
+    const checkVictory = () => {
+      if (isNaN(cookies) && !hasWon) {
+        setHasWon(true);
+        playSound('achievement');
+        toast('VICTORY!', {
+          description: 'You have ascended to Cookie God! Your cookies transcend reality itself!',
+        });
+      }
+    };
+
+    const timeoutId = setTimeout(checkVictory, 0);
+    return () => clearTimeout(timeoutId);
+  }, [cookies, hasWon, playSound]);
 
   // Function to check and unlock achievements
   const checkAchievement = useCallback(
@@ -367,38 +386,50 @@ export function CookieGame() {
   };
 
   // Activate a powerup
-  const activatePowerup = (powerupId: string) => {
-    const powerup = POWERUPS.find((p) => p.id === powerupId);
-    if (!powerup || cookies < powerup.cost) return;
+  const activatePowerup = useCallback(
+    (powerupId: string) => {
+      const powerup = POWERUPS.find((p) => p.id === powerupId);
+      if (!powerup || cookies < powerup.cost) return;
 
-    setCookies((prev) => prev - powerup.cost);
-    playSound('powerup');
+      setCookies((prev) => prev - powerup.cost);
+      playSound('powerup');
 
-    if (powerup.id === 'luckyDay') {
-      // Lucky day gives random bonus between 10-30% of current cookies
-      const bonusPercent = Math.random() * 20 + 10;
-      const bonus = Math.ceil((cookies - powerup.cost) * (bonusPercent / 100));
-      setCookies((prev) => prev + bonus);
-      setTotalCookies((prev) => prev + bonus);
+      if (powerup.id === 'luckyDay') {
+        // Lucky day gives random bonus between 10-30% of current cookies
+        const bonusPercent = Math.random() * 20 + 10;
+        const bonus = Math.ceil((cookies - powerup.cost) * (bonusPercent / 100));
+        setCookies((prev) => prev + bonus);
+        setTotalCookies((prev) => prev + bonus);
 
-      toast('Lucky Day!', {
-        description: `You received a bonus of ${bonus} cookies (${bonusPercent.toFixed(1)}%)`,
-      });
-    } else {
-      // Other powerups have duration and multiplier
-      setActivePowerups((prev) => ({
-        ...prev,
-        [powerupId]: {
-          startTime: Date.now(),
-          duration: powerup.duration,
-          multiplier: typeof powerup.effect === 'number' ? powerup.effect : 1,
-        },
-      }));
+        toast('Lucky Day!', {
+          description: `You received a bonus of ${bonus} cookies (${bonusPercent.toFixed(1)}%)`,
+        });
+      } else {
+        // Other powerups have duration and multiplier
+        setActivePowerups((prev) => ({
+          ...prev,
+          [powerupId]: {
+            startTime: Date.now(),
+            duration: powerup.duration,
+            multiplier: typeof powerup.effect === 'number' ? powerup.effect : 1,
+          },
+        }));
 
-      toast(`${powerup.name} Activated!`, {
-        description: powerup.description,
-      });
+        toast(`${powerup.name} Activated!`, {
+          description: powerup.description,
+        });
+      }
+    },
+    [cookies, playSound, setCookies, setTotalCookies],
+  );
+
+  // Calculate effective CPS with powerups
+  const effectiveCPS = () => {
+    let result = cps;
+    if (activePowerups.frenzy) {
+      result *= activePowerups.frenzy.multiplier;
     }
+    return result;
   };
 
   // Game loop for auto-clickers and powerups
@@ -440,15 +471,6 @@ export function CookieGame() {
       return changed ? updated : prev;
     });
   }, 100);
-
-  // Calculate effective CPS with powerups
-  const effectiveCPS = () => {
-    let result = cps;
-    if (activePowerups.frenzy) {
-      result *= activePowerups.frenzy.multiplier;
-    }
-    return result;
-  };
 
   // Format large numbers
   const formatNumber = (num: number) => {
@@ -501,8 +523,56 @@ export function CookieGame() {
     playSound('achievement');
   };
 
+  // Reset all progress
+  const resetProgress = () => {
+    // Reset all game state
+    setCookies(0);
+    setTotalCookies(0);
+    setCps(0);
+    setBaseCpc(1);
+    setOwnedUpgrades({});
+    setOwnedCpcUpgrades({});
+    setActivePowerups({});
+    setPrestigeLevel(0);
+    setPrestigeMultiplier(1);
+    setUnlockedAchievements([]);
+    setHasWon(false);
+    setFloatingTexts([]);
+
+    toast('Progress Reset', {
+      description: 'All progress has been reset. Start your cookie journey anew!',
+    });
+
+    playSound('purchase');
+  };
+
   return (
     <div className='container mx-auto max-w-6xl select-none px-4 py-8' suppressHydrationWarning>
+      {/* Victory Screen Overlay */}
+      {hasWon && (
+        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm'>
+          <div className='mx-4 max-w-md rounded-lg bg-gradient-to-b from-amber-100 to-amber-200 p-8 text-center shadow-2xl dark:from-amber-900 dark:to-amber-800'>
+            <div className='mb-6 flex justify-center'>
+              <Sparkles className='h-16 w-16 animate-pulse text-amber-600' />
+            </div>
+            <Trophy className='mx-auto mb-4 h-16 w-16 text-amber-600 dark:text-amber-400' />
+            <h1 className='mb-4 text-4xl font-bold text-amber-800 dark:text-amber-300'>You Have Ascended!</h1>
+            <p className='mb-6 text-lg text-amber-700 dark:text-amber-400'>Cookie God Status Achieved!</p>
+            <p className='mb-8 text-amber-600 dark:text-amber-500'>
+              Your cookies have transcended the boundaries of mathematics and reality itself. You are now the supreme Cookie
+              Deity, ruler of all baked goods and beyond!
+            </p>
+            <div className='flex flex-col gap-4'>
+              <Button onClick={resetProgress} className='bg-amber-600 px-6 py-3 font-bold text-white hover:bg-amber-700'>
+                <RefreshCw className='mr-2 h-5 w-5' />
+                Reset Progress
+              </Button>
+              <p className='text-sm text-amber-600 dark:text-amber-500'>Start a new journey from the beginning</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Game header */}
       <div className='mb-6 flex items-center justify-between'>
         <h1 className='text-3xl font-bold text-amber-800 dark:text-amber-300'>Cookie Clicker</h1>
@@ -699,10 +769,10 @@ export function CookieGame() {
                         key={`sparkle-${index}`}
                         className='absolute h-5 w-5 text-yellow-300'
                         style={{
-                          top: `${Math.random() * 100}%`,
-                          left: `${Math.random() * 100}%`,
+                          top: `${(index * 20) % 100}%`,
+                          left: `${(index * 25) % 100}%`,
                           filter: 'drop-shadow(0 0 3px rgba(255,255,0,0.8))',
-                          animation: `sparkle ${1 + Math.random()}s ease-in-out infinite`,
+                          animation: `sparkle ${1 + index * 0.2}s ease-in-out infinite`,
                           animationDelay: `${index * 0.2}s`,
                         }}
                       />
@@ -741,8 +811,12 @@ export function CookieGame() {
               {POWERUPS.map((powerup) => {
                 const canAfford = cookies >= powerup.cost;
                 const isActive = activePowerups[powerup.id];
-                const timeLeft =
-                  isActive ? Math.max(0, (isActive.startTime + isActive.duration * 1000 - Date.now()) / 1000).toFixed(1) : 0;
+                const calculateTimeLeft = () => {
+                  if (!isActive) return 0;
+                  const now = Date.now();
+                  return Math.max(0, (isActive.startTime + isActive.duration * 1000 - now) / 1000).toFixed(1);
+                };
+                const timeLeft = calculateTimeLeft();
 
                 return (
                   <div key={powerup.id} className='rounded bg-white p-3 shadow-sm dark:bg-amber-800/30'>
