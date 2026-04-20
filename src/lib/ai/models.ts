@@ -11,8 +11,8 @@ export type ModelType = 'gemini' | 'qwen' | 'llama' | 'deepseek' | 'gpt' | 'othe
 export const Models = Object.freeze([
   {
     label: 'Kimi K2',
-    value: 'moonshotai/kimi-k2-instruct-0905',
-    provider: 'groq' as ModelProvider,
+    value: 'moonshotai/kimi-k2-0905',
+    provider: 'openrouter' as ModelProvider,
     type: 'other' as ModelType,
     enabled: true,
     description: 'A powerful text-to-text model, excels at writing.',
