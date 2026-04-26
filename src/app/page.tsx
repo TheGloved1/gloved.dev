@@ -71,14 +71,14 @@ export default function Page(): React.JSX.Element {
     <ThemeChanger>
       <div className='noise-overlay' />
       <div className='grid-pattern' />
-      <div className='absolute left-0 top-0 flex items-center gap-2 rounded-br-lg border-b-2 border-r-2 border-fuchsia-500/30 bg-[#0a0a0a]/80 p-2 backdrop-blur-sm'>
+      <div className='left-0 top-0 flex w-[7.5rem] items-center gap-2 rounded-br-lg border-b-2 border-r-2 border-fuchsia-500/30 bg-[#0a0a0a]/80 p-2 backdrop-blur-sm'>
         <div className='glow-line h-2 w-2 bg-fuchsia-500' />
         <SignedOut>
-          <SignInButton mode={'modal'}>
-            <div className='font-mono-industrial brutal-shadow-sm cursor-pointer border border-fuchsia-500/50 bg-fuchsia-500/10 px-3 py-1 text-xs hover:bg-fuchsia-500/20'>
+          <div className='flex cursor-pointer items-center gap-2 border border-fuchsia-500/50 bg-fuchsia-500/10 px-3 py-2 text-xs uppercase tracking-wider hover:bg-fuchsia-500/20'>
+            <SignInButton mode='modal' forceRedirectUrl={'/'}>
               SIGN IN
-            </div>
-          </SignInButton>
+            </SignInButton>
+          </div>
         </SignedOut>
         <SignedIn>
           <div className='flex items-center gap-2'>

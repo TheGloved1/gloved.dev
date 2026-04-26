@@ -22,6 +22,11 @@ import ShoppingList from './shopping-list';
 export default function GroceryPage(): React.JSX.Element {
   const { user } = useUser();
   const queryClient = useQueryClient();
+  const [clientIP, setClientIP] = useState<string>('unknown');
+  const [isFocused, setIsFocused] = useState<boolean>(false);
+  const [shoppingListSelectionMode, setShoppingListSelectionMode] = useState<boolean>(false);
+  const [haveListSelectionMode, setHaveListSelectionMode] = useState<boolean>(false);
+  const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
 
   // Get user name from Clerk or fallback to 'unknown'
   const getUserName = () => {
@@ -51,12 +56,6 @@ export default function GroceryPage(): React.JSX.Element {
       return 'unknown';
     }
   };
-
-  const [clientIP, setClientIP] = useState<string>('unknown');
-  const [isFocused, setIsFocused] = useState<boolean>(false);
-  const [shoppingListSelectionMode, setShoppingListSelectionMode] = useState<boolean>(false);
-  const [haveListSelectionMode, setHaveListSelectionMode] = useState<boolean>(false);
-  const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
 
   // Fetch client IP on component mount
   useMount(() => {
@@ -303,7 +302,7 @@ export default function GroceryPage(): React.JSX.Element {
                 <UserButton />
               </SignedIn>
               <SignedOut>
-                <SignInButton mode='modal'>
+                <SignInButton mode='modal' forceRedirectUrl='/groceries'>
                   <Button
                     variant='outline'
                     size='sm'

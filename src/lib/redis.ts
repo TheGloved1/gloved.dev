@@ -333,6 +333,7 @@ export interface GroceryItem {
   id: string;
   text: string;
   addedAt: number;
+  updatedAt?: number;
   addedBy: string;
 }
 
@@ -408,8 +409,14 @@ export async function moveGroceryItem(
   toList.push(item);
 
   await Promise.all([
-    redis.set('groceries:shopping-list', lists.shoppingList),
-    redis.set('groceries:have-list', lists.haveList),
+    redis.set(
+      'groceries:shopping-list',
+      lists.shoppingList.map((item) => ({ ...item, updatedAt: Date.now() })),
+    ),
+    redis.set(
+      'groceries:have-list',
+      lists.haveList.map((item) => ({ ...item, updatedAt: Date.now() })),
+    ),
   ]);
 }
 
@@ -453,7 +460,13 @@ export async function bulkMoveGroceryItems(
   }
 
   await Promise.all([
-    redis.set('groceries:shopping-list', lists.shoppingList),
-    redis.set('groceries:have-list', lists.haveList),
+    redis.set(
+      'groceries:shopping-list',
+      lists.shoppingList.map((item) => ({ ...item, updatedAt: Date.now() })),
+    ),
+    redis.set(
+      'groceries:have-list',
+      lists.haveList.map((item) => ({ ...item, updatedAt: Date.now() })),
+    ),
   ]);
 }

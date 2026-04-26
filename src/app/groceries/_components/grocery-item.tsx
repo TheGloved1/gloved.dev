@@ -71,7 +71,9 @@ export default function GroceryItemComponent({
           <div className='flex-1'>
             <p className='mb-2 text-base font-medium text-red-200 sm:text-lg'>{item.text}</p>
             <div className='flex flex-col gap-2 text-xs text-red-600/50 sm:flex-row sm:items-center'>
-              <span>Added {formatDate(item.addedAt)}</span>
+              <span>
+                {item.updatedAt ? 'Moved' : 'Added'} {formatDate(item.updatedAt || item.addedAt)}
+              </span>
               <span className='hidden sm:inline'>•</span>
               <span>By {item.addedBy}</span>
             </div>
