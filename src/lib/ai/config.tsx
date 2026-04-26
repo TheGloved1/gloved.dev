@@ -94,4 +94,4 @@ export const safetySettings: SafetySettings = [
     threshold: 'BLOCK_NONE',
   },
 ];
-export const defaultModel = 'moonshotai/kimi-k2-instruct-0905' as const;
+export const defaultModel = 'moonshotai/kimi-k2-0905' as const;

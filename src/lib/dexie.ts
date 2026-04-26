@@ -809,7 +809,7 @@ export async function generateTitle(threadId: string) {
     ...allMessages.map((m) => ({ role: m.role, content: m.content })),
     newMessage as ApiMessage,
   ];
-  const model: ModelID = 'moonshotai/kimi-k2-instruct-0905';
+  const model: ModelID = 'moonshotai/kimi-k2-0905';
   const system =
     'You are a short title generator, do not generate any text except for the title. Only include alphanumeric characters and spaces. You can not output any markdown formatting or special characters. You can only output characters from the english alphabet. For example, "Hello World" is a valid title, but "**Hello World!**" is not.';
   try {

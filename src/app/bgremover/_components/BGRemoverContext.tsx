@@ -94,7 +94,7 @@ export function BGRemoverProvider({ children }: BGRemoverProviderProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const imglyPath = useMemo(() => {
-    return typeof window !== 'undefined' ? window.location.origin + '/imgly/' : undefined;
+    return typeof window !== 'undefined' ? window.location.origin + '/' : undefined;
   }, []);
 
   const handleFileSelect = useCallback(
@@ -200,7 +200,7 @@ export function BGRemoverProvider({ children }: BGRemoverProviderProps) {
       const resultBlob = await (removalMode === 'background' ? removeBackground : removeForeground)(blob, {
         device: device,
         model,
-        publicPath: imglyPath,
+        // publicPath: imglyPath,
         output: {
           format: outputFormat,
           quality: quality,
