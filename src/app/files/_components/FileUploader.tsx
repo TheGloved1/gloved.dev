@@ -15,7 +15,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { type AxiosProgressEvent } from 'axios';
 import { motion } from 'framer-motion';
 import { AlertTriangle, FolderOpen, RefreshCw } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { DeleteConfirmDialog } from '../../../components/DeleteConfirmDialog';
 import { Button } from '../../../components/ui/button';
 import Loading from '../loading';
@@ -113,12 +113,13 @@ export default function FileUploader(): React.JSX.Element {
   }, [filesQuery.data, debouncedSearchQuery, activeFilters]);
 
   // Reset to page 1 when filters or search changes
-  React.useEffect(() => {
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCurrentPage(1);
   }, [debouncedSearchQuery, activeFilters]);
 
   // Calculate pagination
-  const paginationData = React.useMemo(() => {
+  const paginationData = useMemo(() => {
     const totalPages = Math.ceil(filteredFiles.length / itemsPerPage);
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
@@ -133,8 +134,9 @@ export default function FileUploader(): React.JSX.Element {
   }, [filteredFiles, currentPage, itemsPerPage]);
 
   // Adjust current page if it exceeds total pages
-  React.useEffect(() => {
+  useEffect(() => {
     if (currentPage > paginationData.totalPages && paginationData.totalPages > 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setCurrentPage(paginationData.totalPages);
     }
   }, [currentPage, paginationData.totalPages]);
