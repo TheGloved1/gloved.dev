@@ -6,6 +6,7 @@ import UploadZone from '@/app/files/_components/UploadZone';
 import ErrorAlert from '@/components/ErrorAlert';
 import { env } from '@/env';
 import { useDebounce } from '@/hooks/use-debounce';
+import { useInterval } from '@/hooks/use-interval';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import { useResponsiveItemsPerPage } from '@/hooks/use-responsive-items-per-page';
 import glovedApi, { type FileInfo } from '@/lib/glovedapi';
@@ -251,6 +252,10 @@ export default function FileUploader(): React.JSX.Element {
     filesQuery.refetch();
     setTimeout(() => setIsRefreshing(false), 500);
   };
+
+  useInterval(() => {
+    filesQuery.refetch();
+  }, 15000);
 
   async function uploadFile(file: File, isTemp: boolean): Promise<void> {
     try {
