@@ -1,6 +1,7 @@
 import Constants from '@/lib/constants';
 import { SiDiscord, SiGithub } from '@icons-pack/react-simple-icons';
 import {
+  Bird,
   BookMarked,
   Calculator,
   CheckSquare,
@@ -38,6 +39,12 @@ export const apps: AppItem[] = [
     title: Constants.BGRemover.title,
     description: Constants.BGRemover.description,
     link: Constants.BGRemover.link,
+  },
+  {
+    icon: Bird,
+    title: Constants.Bird.title,
+    description: Constants.Bird.description,
+    link: Constants.Bird.link,
   },
   { icon: Palette, title: Constants.Colors.title, description: Constants.Colors.description, link: Constants.Colors.link },
   {

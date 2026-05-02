@@ -38,6 +38,11 @@ const Constants = {
     link: '/bgremover',
     description: 'Remove the background from an image',
   },
+  Bird: {
+    title: 'Bird Game',
+    link: '/bird',
+    description: 'Play a flappy bird game with a leaderboard!',
+  },
   Github: {
     title: 'Github',
     link: 'https://github.com/TheGloved1/',
