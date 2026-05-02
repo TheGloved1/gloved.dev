@@ -111,7 +111,7 @@ export function Leaderboard() {
 
       {isLoading ?
         <div className='max-h-96 flex-1 space-y-2 overflow-y-auto'>
-          {Array.from({ length: 8 }).map((_, i) => (
+          {Array.from({ length: 20 }).map((_, i) => (
             <div
               key={i}
               className='flex animate-pulse items-center gap-3 rounded border border-slate-600 bg-slate-700/50 p-2'
@@ -129,7 +129,7 @@ export function Leaderboard() {
           {leaderboard.length === 0 ?
             <p className='py-4 text-center text-sm text-slate-400'>No scores yet. Be the first to play!</p>
           : <div className='max-h-96 flex-1 overflow-y-auto scrollbar-thin scrollbar-track-slate-800 scrollbar-thumb-slate-600'>
-              {leaderboard.slice(0, 8).map((entry, index) => {
+              {leaderboard.map((entry, index) => {
                 const rank = index + 1;
                 const isCurrentUser = isSignedIn && user?.id === entry.userId;
 
