@@ -413,7 +413,7 @@ export function BirdGame() {
     }
     // eslint-disable-next-line react-hooks/immutability
     requestRef.current = requestAnimationFrame(gameLoop);
-  }, [gameState, score, checkCollision, highScore, setHighScore, isSignedIn, userBestScore, saveScoreMutation]);
+  }, [gameState, score, checkCollision, playSound, highScore, setHighScore, isSignedIn, userBestScore, saveScoreMutation]);
 
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
