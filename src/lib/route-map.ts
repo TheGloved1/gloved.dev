@@ -43,6 +43,10 @@ export const RouteMap: Record<string, RouteInfo> = {
       relativePath: 'src/app/bgremover/page.tsx',
       githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/bgremover/page.tsx'
     },
+    '/bird': {
+      relativePath: 'src/app/bird/page.tsx',
+      githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/bird/page.tsx'
+    },
     '/black': {
       relativePath: 'src/app/black/page.tsx',
       githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/black/page.tsx'
@@ -74,6 +78,10 @@ export const RouteMap: Record<string, RouteInfo> = {
     '/gallery': {
       relativePath: 'src/app/gallery/page.tsx',
       githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/gallery/page.tsx'
+    },
+    '/groceries': {
+      relativePath: 'src/app/groceries/page.tsx',
+      githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/groceries/page.tsx'
     },
     '/hangman': {
       relativePath: 'src/app/hangman/page.tsx',
