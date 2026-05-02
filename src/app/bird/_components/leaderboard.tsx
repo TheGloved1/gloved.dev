@@ -1,5 +1,6 @@
 'use client';
 
+import { Button } from '@/components/ui/button';
 import { getLeaderboardAction } from '@/lib/actions';
 import { SignInButton, useUser } from '@clerk/nextjs';
 import { useQuery } from '@tanstack/react-query';
@@ -48,7 +49,10 @@ export function Leaderboard() {
     if (typeof window !== 'undefined') {
       const handleFocus = () => setIsFocused(true);
       const handleBlur = () => setIsFocused(false);
-      const handleVisibilityChange = () => setIsFocused(!document.hidden);
+      const handleVisibilityChange = () => {
+        setIsFocused(!document.hidden);
+        refetch();
+      };
 
       window.addEventListener('focus', handleFocus);
       window.addEventListener('blur', handleBlur);
@@ -60,7 +64,7 @@ export function Leaderboard() {
         document.removeEventListener('visibilitychange', handleVisibilityChange);
       };
     }
-  }, []);
+  }, [refetch]);
 
   const getRankIcon = (rank: number) => {
     switch (rank) {
@@ -174,10 +178,10 @@ export function Leaderboard() {
             <p className='text-sm font-semibold text-blue-300'>Sign in to save scores!</p>
           </div>
           <SignInButton mode='modal'>
-            <button className='flex w-full items-center justify-center gap-1 rounded bg-gradient-to-r from-blue-600 to-purple-600 px-3 py-1.5 text-sm font-semibold text-white shadow-lg transition-all duration-200 hover:from-blue-700 hover:to-purple-700'>
+            <Button className='flex w-full items-center justify-center gap-1 rounded bg-gradient-to-r from-blue-600 to-purple-600 px-3 py-1.5 text-sm font-semibold text-white shadow-lg transition-all duration-200 hover:from-blue-700 hover:to-purple-700'>
               <User className='h-3 w-3' />
               Sign In
-            </button>
+            </Button>
           </SignInButton>
         </div>
       )}

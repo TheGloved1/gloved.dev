@@ -98,9 +98,9 @@ export function BirdGame() {
       return await getUserBestScoreAction(user.id);
     },
     enabled: !!user?.id,
-    refetchInterval: isFocused ? 30000 : false, // Only refetch when focused
+    refetchInterval: isFocused ? 5000 : false, // Only refetch when focused
     refetchIntervalInBackground: false, // Don't refetch when tab is in background
-    staleTime: 30000, // Cache for 30 seconds
+    staleTime: 5000, // Cache for 5 seconds
   });
 
   // Get display name for user (fallback to email if username not available)
