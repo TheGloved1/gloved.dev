@@ -1,10 +1,12 @@
 'use client';
+import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import { useMount } from '@/hooks/use-mount';
 import { addLeaderboardEntryAction, getUserBestScoreAction } from '@/lib/actions';
 import { useUser } from '@clerk/nextjs';
 import { useMutation, useQuery } from '@tanstack/react-query';
+import { Bird } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { BirdSelector } from './bird-selector';
 
@@ -981,12 +983,14 @@ export function BirdGame() {
             <div className='absolute bottom-4 left-4 z-10'>
               <Popover open={showBirdSelector} onOpenChange={setShowBirdSelector}>
                 <PopoverTrigger asChild>
-                  <button className='flex items-center gap-2 rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-white shadow-lg backdrop-blur-sm transition-all duration-200 hover:bg-white/20'>
-                    <span className='text-lg'>🐦</span>
-                    <span className='text-sm font-medium'>Change Bird</span>
-                  </button>
+                  <Button className='flex items-center gap-2 rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-white shadow-lg backdrop-blur-sm transition-all duration-200 hover:bg-white/20'>
+                    <span className='text-lg'>
+                      <Bird className='h-5 w-5' />
+                    </span>
+                    <span className='text-xs font-medium'>Change Bird</span>
+                  </Button>
                 </PopoverTrigger>
-                <PopoverContent className='w-80' align='start' sideOffset={8}>
+                <PopoverContent className='w-fit' align='start' side='top'>
                   <BirdSelector
                     currentBird={selectedBird}
                     onBirdChange={(birdType) => {

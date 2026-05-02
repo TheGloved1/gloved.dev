@@ -1,5 +1,6 @@
 'use client';
-import React from 'react';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import { birdTypes, type BirdType } from './b';
 
@@ -24,31 +25,27 @@ export function BirdSelector({ onBirdChange, currentBird }: BirdSelectorProps) {
   };
 
   return (
-    <div className="flex flex-col gap-2">
-      <label className="text-sm font-medium text-white">Choose Your Bird:</label>
-      <div className="grid grid-cols-2 gap-2">
+    <div className='flex flex-col gap-2'>
+      <Label className='text-sm font-medium text-white'>Choose Your Bird:</Label>
+      <div className='grid grid-cols-2 gap-2'>
         {birdTypes.map((birdType) => {
           const info = birdInfo[birdType];
           const isSelected = (currentBird || selectedBird) === birdType;
-          
+
           return (
-            <button
+            <Button
               key={birdType}
               onClick={() => handleBirdChange(birdType)}
-              className={`
-                flex items-center gap-2 rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all
-                ${isSelected 
-                  ? 'border-white bg-white/20 text-white shadow-lg' 
-                  : 'border-white/20 bg-white/5 text-white/70 hover:border-white/40 hover:bg-white/10'
-                }
-              `}
+              className={`flex items-center gap-2 rounded-lg border-2 px-3 py-2 text-sm font-medium transition-all ${
+                isSelected ?
+                  'border-white bg-white/20 text-white shadow-lg'
+                : 'border-white/20 bg-white/5 text-white/70 hover:border-white/40 hover:bg-white/10'
+              } `}
             >
-              <span className="text-lg">{info.emoji}</span>
+              <span className='text-lg'>{info.emoji}</span>
               <span>{info.name}</span>
-              {isSelected && (
-                <div className={`ml-auto h-2 w-2 rounded-full ${info.color}`} />
-              )}
-            </button>
+              {isSelected && <div className={`ml-auto h-2 w-2 rounded-full ${info.color}`} />}
+            </Button>
           );
         })}
       </div>
