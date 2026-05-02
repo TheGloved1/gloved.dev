@@ -1,12 +1,11 @@
 'use client';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import { useMount } from '@/hooks/use-mount';
 import { addLeaderboardEntryAction, getUserBestScoreAction } from '@/lib/actions';
 import { useUser } from '@clerk/nextjs';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { BirdSelector } from './bird-selector';
+import { type BirdType } from './b';
 
 // Game constants
 const GRAVITY = 0.5;
@@ -31,11 +30,11 @@ interface Bird {
   velocity: number;
   size: number;
   isDead: boolean;
-  wingPhase: number;
-  rotation: number;
-  rotationSpeed: number;
-  hitVelocityX: number;
-  hitVelocityY: number;
+  wingPhase: number; // For flapping animation
+  rotation: number; // Bird rotation angle
+  rotationSpeed: number; // Rotation speed for tumbling
+  hitVelocityX: number; // Horizontal velocity from collision
+  hitVelocityY: number; // Vertical velocity from collision
 }
 
 interface Particle {
@@ -56,8 +55,6 @@ interface Pipe {
   gapHeight: number;
   passed: boolean;
 }
-
-type BirdType = 'sparrow' | 'cardinal' | 'bluejay' | 'hummingbird';
 
 // Debug flag - set to true to enable sound debug menu
 const DEBUG_SOUND_MENU = false;
@@ -336,304 +333,241 @@ export function BirdGame() {
     }
   }, [gameState, resetGame, playSound]);
 
-  // Enhanced bird drawing function with different bird types
-  const drawBird = useCallback(
-    (ctx: CanvasRenderingContext2D, bird: Bird) => {
-      const centerX = bird.x + bird.size / 2;
-      const centerY = bird.y + bird.size / 2;
+  // Individual bird SVG generators
+  const getSparrowSVG = (wingPhase: number, size: number, isDead: boolean): string => {
+    const wingAngle = Math.sin(wingPhase) * 30;
+    const bodyColor = isDead ? '#8b7355' : '#8b6914';
+    const bellyColor = isDead ? '#d2b48c' : '#f4e4c1';
 
-      // Calculate wing angle based on flapping phase
-      const wingAngle = Math.sin(bird.wingPhase) * 0.4;
+    return `
+      <ellipse cx="${size / 2}" cy="${size * 0.95}" rx="${size * 0.4}" ry="${size * 0.08}" fill="rgba(0,0,0,0.2)"/>
+      <ellipse cx="${size / 2}" cy="${size / 2}" rx="${size * 0.35}" ry="${size * 0.4}" fill="${bodyColor}" stroke="#654321" stroke-width="1"/>
+      <ellipse cx="${size / 2}" cy="${size * 0.55}" rx="${size * 0.25}" ry="${size * 0.3}" fill="${bellyColor}"/>
+      <g transform="translate(${size * 0.15}, ${size * 0.45})">
+        <g transform="rotate(${-wingAngle})">
+          <path d="M 0,0 Q ${-size * 0.3},${-size * 0.2} ${-size * 0.5},${-size * 0.1} Q ${-size * 0.6},${size * 0.1} ${-size * 0.3},${size * 0.15} Z" fill="${bodyColor}" stroke="#654321" stroke-width="1"/>
+        </g>
+      </g>
+      <g transform="translate(${size * 0.85}, ${size * 0.45})">
+        <g transform="rotate(${wingAngle})">
+          <path d="M 0,0 Q ${size * 0.3},${-size * 0.2} ${size * 0.5},${-size * 0.1} Q ${size * 0.6},${size * 0.1} ${size * 0.3},${size * 0.15} Z" fill="${bodyColor}" stroke="#654321" stroke-width="1"/>
+        </g>
+      </g>
+      <circle cx="${size * 0.65}" cy="${size * 0.3}" r="${size * 0.18}" fill="${bodyColor}" stroke="#654321" stroke-width="1"/>
+      <circle cx="${size * 0.7}" cy="${size * 0.28}" r="${size * 0.05}" fill="white"/>
+      <circle cx="${size * 0.72}" cy="${size * 0.28}" r="${size * 0.03}" fill="black"/>
+      <path d="M ${size * 0.8},${size * 0.3} L ${size * 0.95},${size * 0.32} L ${size * 0.8},${size * 0.35} Z" fill="#ff8c00" stroke="#ff6600" stroke-width="0.5"/>
+    `;
+  };
 
-      // Apply rotation transformation
-      ctx.save();
-      ctx.translate(centerX, centerY);
-      ctx.rotate(bird.rotation);
-      ctx.translate(-centerX, -centerY);
+  const getCardinalSVG = (wingPhase: number, size: number, isDead: boolean): string => {
+    const wingAngle = Math.sin(wingPhase) * 35;
+    const bodyColor = isDead ? '#8b4513' : '#dc143c';
 
-      // Bird-specific colors and features
-      let bodyColors, beakColor, wingSpeedMultiplier, birdFeatures;
+    return `
+      <ellipse cx="${size / 2}" cy="${size * 0.95}" rx="${size * 0.4}" ry="${size * 0.08}" fill="rgba(0,0,0,0.2)"/>
+      <ellipse cx="${size / 2}" cy="${size / 2}" rx="${size * 0.35}" ry="${size * 0.4}" fill="${bodyColor}" stroke="#8b0000" stroke-width="1"/>
+      <ellipse cx="${size / 2}" cy="${size * 0.55}" rx="${size * 0.25}" ry="${size * 0.3}" fill="#ffd4a3"/>
+      <g transform="translate(${size * 0.15}, ${size * 0.45})">
+        <g transform="rotate(${-wingAngle})">
+          <path d="M 0,0 Q ${-size * 0.35},${-size * 0.25} ${-size * 0.6},${-size * 0.15} Q ${-size * 0.7},${size * 0.1} ${-size * 0.35},${size * 0.2} Z" fill="${bodyColor}" stroke="#8b0000" stroke-width="1"/>
+        </g>
+      </g>
+      <g transform="translate(${size * 0.85}, ${size * 0.45})">
+        <g transform="rotate(${wingAngle})">
+          <path d="M 0,0 Q ${size * 0.35},${-size * 0.25} ${size * 0.6},${-size * 0.15} Q ${size * 0.7},${size * 0.1} ${size * 0.35},${size * 0.2} Z" fill="${bodyColor}" stroke="#8b0000" stroke-width="1"/>
+        </g>
+      </g>
+      <circle cx="${size * 0.65}" cy="${size * 0.3}" r="${size * 0.2}" fill="${bodyColor}" stroke="#8b0000" stroke-width="1"/>
+      <path d="M ${size * 0.55},${size * 0.2} L ${size * 0.58},${size * 0.1} L ${size * 0.65},${size * 0.05} L ${size * 0.72},${size * 0.1} L ${size * 0.75},${size * 0.2}" fill="${bodyColor}" stroke="#8b0000" stroke-width="0.5"/>
+      <circle cx="${size * 0.7}" cy="${size * 0.28}" r="${size * 0.05}" fill="white"/>
+      <circle cx="${size * 0.72}" cy="${size * 0.28}" r="${size * 0.03}" fill="black"/>
+      <path d="M ${size * 0.8},${size * 0.3} L ${size * 0.95},${size * 0.32} L ${size * 0.8},${size * 0.35} Z" fill="#ffa500" stroke="#ff8c00" stroke-width="0.5"/>
+    `;
+  };
 
-      switch (selectedBird) {
-        case 'sparrow':
-          bodyColors = {
-            primary: '#8b6914',
-            secondary: '#fbbf24',
-            outline: '#654321',
-            belly: '#f4e4c1',
-          };
-          beakColor = '#ff8c00';
-          wingSpeedMultiplier = 1;
-          birdFeatures = { hasCrest: false, hasMask: false, hasWingBars: false };
-          break;
+  const getBlueJaySVG = (wingPhase: number, size: number, isDead: boolean): string => {
+    const wingAngle = Math.sin(wingPhase) * 40;
+    const bodyColor = isDead ? '#6b8e9b' : '#4169e1';
 
-        case 'cardinal':
-          bodyColors = {
-            primary: '#dc143c',
-            secondary: '#ff6b6b',
-            outline: '#8b0000',
-            belly: '#ffd4a3',
-          };
-          beakColor = '#ffa500';
-          wingSpeedMultiplier = 1.1;
-          birdFeatures = { hasCrest: true, hasMask: true, hasWingBars: false };
-          break;
+    return `
+      <ellipse cx="${size / 2}" cy="${size * 0.95}" rx="${size * 0.4}" ry="${size * 0.08}" fill="rgba(0,0,0,0.2)"/>
+      <ellipse cx="${size / 2}" cy="${size / 2}" rx="${size * 0.35}" ry="${size * 0.4}" fill="${bodyColor}" stroke="#1e3a8a" stroke-width="1"/>
+      <ellipse cx="${size / 2}" cy="${size * 0.55}" rx="${size * 0.25}" ry="${size * 0.3}" fill="#e6f3ff"/>
+      <g transform="translate(${size * 0.15}, ${size * 0.45})">
+        <g transform="rotate(${-wingAngle})">
+          <path d="M 0,0 Q ${-size * 0.4},${-size * 0.3} ${-size * 0.7},${-size * 0.2} Q ${-size * 0.8},${size * 0.1} ${-size * 0.4},${size * 0.2} Z" fill="${bodyColor}" stroke="#1e3a8a" stroke-width="1"/>
+          <rect x="${-size * 0.6}" y="${-size * 0.15}" width="${size * 0.3}" height="${size * 0.05}" fill="white" transform="rotate(-20)"/>
+        </g>
+      </g>
+      <g transform="translate(${size * 0.85}, ${size * 0.45})">
+        <g transform="rotate(${wingAngle})">
+          <path d="M 0,0 Q ${size * 0.4},${-size * 0.3} ${size * 0.7},${-size * 0.2} Q ${size * 0.8},${size * 0.1} ${size * 0.4},${size * 0.2} Z" fill="${bodyColor}" stroke="#1e3a8a" stroke-width="1"/>
+          <rect x="${size * 0.3}" y="${-size * 0.15}" width="${size * 0.3}" height="${size * 0.05}" fill="white" transform="rotate(20)"/>
+        </g>
+      </g>
+      <circle cx="${size * 0.65}" cy="${size * 0.3}" r="${size * 0.2}" fill="${bodyColor}" stroke="#1e3a8a" stroke-width="1"/>
+      <path d="M ${size * 0.55},${size * 0.2} L ${size * 0.58},${size * 0.05} L ${size * 0.65},${size * 0} L ${size * 0.72},${size * 0.05} L ${size * 0.75},${size * 0.2}" fill="${bodyColor}" stroke="#1e3a8a" stroke-width="0.5"/>
+      <circle cx="${size * 0.7}" cy="${size * 0.28}" r="${size * 0.05}" fill="white"/>
+      <circle cx="${size * 0.72}" cy="${size * 0.28}" r="${size * 0.03}" fill="black"/>
+      <path d="M ${size * 0.8},${size * 0.3} L ${size * 0.95},${size * 0.32} L ${size * 0.8},${size * 0.35} Z" fill="#4169e1" stroke="#1e3a8a" stroke-width="0.5"/>
+      <path d="M ${size * 0.55},${size * 0.38} Q ${size * 0.65},${size * 0.35} ${size * 0.75},${size * 0.38}" stroke="black" stroke-width="2" fill="none"/>
+    `;
+  };
 
-        case 'bluejay':
-          bodyColors = {
-            primary: '#4169e1',
-            secondary: '#60a5fa',
-            outline: '#1e3a8a',
-            belly: '#e6f3ff',
-          };
-          beakColor = '#4169e1';
-          wingSpeedMultiplier = 1.2;
-          birdFeatures = { hasCrest: true, hasMask: false, hasWingBars: true };
-          break;
+  const getHummingbirdSVG = (wingPhase: number, size: number, isDead: boolean): string => {
+    const wingAngle = Math.sin(wingPhase * 3) * 45;
+    const bodyColor = isDead ? '#778899' : '#228b22';
 
-        case 'hummingbird':
-          bodyColors = {
-            primary: '#228b22',
-            secondary: '#4ade80',
-            outline: '#006400',
-            belly: '#bbf7d0',
-          };
-          beakColor = '#000000';
-          wingSpeedMultiplier = 3; // Much faster wing beat
-          birdFeatures = { hasCrest: false, hasMask: false, hasWingBars: false };
-          break;
+    return `
+      <ellipse cx="${size / 2}" cy="${size * 0.95}" rx="${size * 0.3}" ry="${size * 0.06}" fill="rgba(0,0,0,0.2)"/>
+      <ellipse cx="${size / 2}" cy="${size / 2}" rx="${size * 0.25}" ry="${size * 0.35}" fill="${bodyColor}" stroke="#006400" stroke-width="1"/>
+      <ellipse cx="${size * 0.55}" cy="${size * 0.35}" rx="${size * 0.12}" ry="${size * 0.15}" fill="#ff69b4" opacity="0.8"/>
+      <g transform="translate(${size * 0.2}, ${size * 0.4})">
+        <g transform="rotate(${-wingAngle})">
+          <path d="M 0,0 Q ${-size * 0.25},${-size * 0.35} ${-size * 0.4},${-size * 0.3} Q ${-size * 0.45},${size * 0.05} ${-size * 0.2},${size * 0.1} Z" fill="${bodyColor}" stroke="#006400" stroke-width="0.5"/>
+        </g>
+      </g>
+      <g transform="translate(${size * 0.8}, ${size * 0.4})">
+        <g transform="rotate(${wingAngle})">
+          <path d="M 0,0 Q ${size * 0.25},${-size * 0.35} ${size * 0.4},${-size * 0.3} Q ${size * 0.45},${size * 0.05} ${size * 0.2},${size * 0.1} Z" fill="${bodyColor}" stroke="#006400" stroke-width="0.5"/>
+        </g>
+      </g>
+      <circle cx="${size * 0.65}" cy="${size * 0.25}" r="${size * 0.15}" fill="${bodyColor}" stroke="#006400" stroke-width="1"/>
+      <circle cx="${size * 0.68}" cy="${size * 0.23}" r="${size * 0.04}" fill="white"/>
+      <circle cx="${size * 0.69}" cy="${size * 0.23}" r="${size * 0.025}" fill="black"/>
+      <path d="M ${size * 0.78},${size * 0.25} L ${size * 1.1},${size * 0.26} L ${size * 0.78},${size * 0.27} Z" fill="#000" opacity="0.8"/>
+      <path d="M ${size * 0.25},${size * 0.7} L ${size * 0.15},${size * 0.85} L ${size * 0.2},${size * 0.8} Z" fill="${bodyColor}" stroke="#006400" stroke-width="0.5"/>
+  // Helper function to get bird SVG based on type
+  const getBirdSVG = useCallback((birdType: BirdType, wingPhase: number, size: number, isDead: boolean): string => {
+    const birdSVGs = {
+      sparrow: getSparrowSVG(wingPhase, size, isDead),
+      cardinal: getCardinalSVG(wingPhase, size, isDead),
+      bluejay: getBlueJaySVG(wingPhase, size, isDead),
+      hummingbird: getHummingbirdSVG(wingPhase, size, isDead),
+    };
 
-        default:
-          bodyColors = {
-            primary: '#8b6914',
-            secondary: '#fbbf24',
-            outline: '#654321',
-            belly: '#f4e4c1',
-          };
-          beakColor = '#ff8c00';
-          wingSpeedMultiplier = 1;
-          birdFeatures = { hasCrest: false, hasMask: false, hasWingBars: false };
-      }
+    return birdSVGs[birdType];
+  }, []);
+    const wingAngle = Math.sin(wingPhase) * 30;
+    const bodyColor = isDead ? '#8b7355' : '#8b6914';
+    const bellyColor = isDead ? '#d2b48c' : '#f4e4c1';
 
-      // Adjust wing phase for different birds
-      const adjustedWingPhase = bird.wingPhase * wingSpeedMultiplier;
-      const adjustedWingAngle = Math.sin(adjustedWingPhase) * 0.4;
+    return `
+      <ellipse cx="${size / 2}" cy="${size * 0.95}" rx="${size * 0.4}" ry="${size * 0.08}" fill="rgba(0,0,0,0.2)"/>
+      <ellipse cx="${size / 2}" cy="${size / 2}" rx="${size * 0.35}" ry="${size * 0.4}" fill="${bodyColor}" stroke="#654321" stroke-width="1"/>
+      <ellipse cx="${size / 2}" cy="${size * 0.55}" rx="${size * 0.25}" ry="${size * 0.3}" fill="${bellyColor}"/>
+      <g transform="translate(${size * 0.15}, ${size * 0.45})">
+        <g transform="rotate(${-wingAngle})">
+          <path d="M 0,0 Q ${-size * 0.3},${-size * 0.2} ${-size * 0.5},${-size * 0.1} Q ${-size * 0.6},${size * 0.1} ${-size * 0.3},${size * 0.15} Z" fill="${bodyColor}" stroke="#654321" stroke-width="1"/>
+        </g>
+      </g>
+      <g transform="translate(${size * 0.85}, ${size * 0.45})">
+        <g transform="rotate(${wingAngle})">
+          <path d="M 0,0 Q ${size * 0.3},${-size * 0.2} ${size * 0.5},${-size * 0.1} Q ${size * 0.6},${size * 0.1} ${size * 0.3},${size * 0.15} Z" fill="${bodyColor}" stroke="#654321" stroke-width="1"/>
+        </g>
+      </g>
+      <circle cx="${size * 0.65}" cy="${size * 0.3}" r="${size * 0.18}" fill="${bodyColor}" stroke="#654321" stroke-width="1"/>
+      <circle cx="${size * 0.7}" cy="${size * 0.28}" r="${size * 0.05}" fill="white"/>
+      <circle cx="${size * 0.72}" cy="${size * 0.28}" r="${size * 0.03}" fill="black"/>
+      <path d="M ${size * 0.8},${size * 0.3} L ${size * 0.95},${size * 0.32} L ${size * 0.8},${size * 0.35} Z" fill="#ff8c00" stroke="#ff6600" stroke-width="0.5"/>
+    `;
+  };
 
-      // Draw bird body
-      const bodyGradient = ctx.createRadialGradient(
-        centerX - bird.size * 0.1,
-        centerY - bird.size * 0.1,
-        0,
-        centerX,
-        centerY,
-        bird.size * 0.55,
-      );
-      bodyGradient.addColorStop(0, bodyColors.secondary);
-      bodyGradient.addColorStop(0.4, bodyColors.primary);
-      bodyGradient.addColorStop(0.8, bodyColors.primary);
-      bodyGradient.addColorStop(1, bodyColors.outline);
+  const getCardinalSVG = (wingPhase: number, size: number, isDead: boolean): string => {
+    const wingAngle = Math.sin(wingPhase) * 35;
+    const bodyColor = isDead ? '#8b4513' : '#dc143c';
 
-      ctx.fillStyle = bodyGradient;
-      ctx.beginPath();
-      // Egg shape - wider at bottom, tapered at top
-      ctx.ellipse(centerX, centerY, bird.size * 0.5, bird.size * 0.45, 0, 0, Math.PI * 2);
-      ctx.fill();
+    return `
+      <ellipse cx="${size / 2}" cy="${size * 0.95}" rx="${size * 0.4}" ry="${size * 0.08}" fill="rgba(0,0,0,0.2)"/>
+      <ellipse cx="${size / 2}" cy="${size / 2}" rx="${size * 0.35}" ry="${size * 0.4}" fill="${bodyColor}" stroke="#8b0000" stroke-width="1"/>
+      <ellipse cx="${size / 2}" cy="${size * 0.55}" rx="${size * 0.25}" ry="${size * 0.3}" fill="#ffd4a3"/>
+      <g transform="translate(${size * 0.15}, ${size * 0.45})">
+        <g transform="rotate(${-wingAngle})">
+          <path d="M 0,0 Q ${-size * 0.35},${-size * 0.25} ${-size * 0.6},${-size * 0.15} Q ${-size * 0.7},${size * 0.1} ${-size * 0.35},${size * 0.2} Z" fill="${bodyColor}" stroke="#8b0000" stroke-width="1"/>
+        </g>
+      </g>
+      <g transform="translate(${size * 0.85}, ${size * 0.45})">
+        <g transform="rotate(${wingAngle})">
+          <path d="M 0,0 Q ${size * 0.35},${-size * 0.25} ${size * 0.6},${-size * 0.15} Q ${size * 0.7},${size * 0.1} ${size * 0.35},${size * 0.2} Z" fill="${bodyColor}" stroke="#8b0000" stroke-width="1"/>
+        </g>
+      </g>
+      <circle cx="${size * 0.65}" cy="${size * 0.3}" r="${size * 0.2}" fill="${bodyColor}" stroke="#8b0000" stroke-width="1"/>
+      <path d="M ${size * 0.55},${size * 0.2} L ${size * 0.58},${size * 0.1} L ${size * 0.65},${size * 0.05} L ${size * 0.72},${size * 0.1} L ${size * 0.75},${size * 0.2}" fill="${bodyColor}" stroke="#8b0000" stroke-width="0.5"/>
+      <circle cx="${size * 0.7}" cy="${size * 0.28}" r="${size * 0.05}" fill="white"/>
+      <circle cx="${size * 0.72}" cy="${size * 0.28}" r="${size * 0.03}" fill="black"/>
+      <path d="M ${size * 0.8},${size * 0.3} L ${size * 0.95},${size * 0.32} L ${size * 0.8},${size * 0.35} Z" fill="#ffa500" stroke="#ff8c00" stroke-width="0.5"/>
+    `;
+  };
 
-      // Body outline
-      ctx.strokeStyle = bodyColors.outline;
-      ctx.lineWidth = 2;
-      ctx.stroke();
+  const getBlueJaySVG = (wingPhase: number, size: number, isDead: boolean): string => {
+    const wingAngle = Math.sin(wingPhase) * 40;
+    const bodyColor = isDead ? '#6b8e9b' : '#4169e1';
 
-      // Draw belly highlight
-      const bellyGradient = ctx.createRadialGradient(
-        centerX,
-        centerY + bird.size * 0.15,
-        0,
-        centerX,
-        centerY + bird.size * 0.2,
-        bird.size * 0.3,
-      );
-      bellyGradient.addColorStop(0, 'rgba(255, 255, 255, 0.4)');
-      bellyGradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
-      ctx.fillStyle = bellyGradient;
-      ctx.beginPath();
-      ctx.ellipse(centerX, centerY + bird.size * 0.15, bird.size * 0.3, bird.size * 0.2, 0, 0, Math.PI * 2);
-      ctx.fill();
+    return `
+      <ellipse cx="${size / 2}" cy="${size * 0.95}" rx="${size * 0.4}" ry="${size * 0.08}" fill="rgba(0,0,0,0.2)"/>
+      <ellipse cx="${size / 2}" cy="${size / 2}" rx="${size * 0.35}" ry="${size * 0.4}" fill="${bodyColor}" stroke="#1e3a8a" stroke-width="1"/>
+      <ellipse cx="${size / 2}" cy="${size * 0.55}" rx="${size * 0.25}" ry="${size * 0.3}" fill="#e6f3ff"/>
+      <g transform="translate(${size * 0.15}, ${size * 0.45})">
+        <g transform="rotate(${-wingAngle})">
+          <path d="M 0,0 Q ${-size * 0.4},${-size * 0.3} ${-size * 0.7},${-size * 0.2} Q ${-size * 0.8},${size * 0.1} ${-size * 0.4},${size * 0.2} Z" fill="${bodyColor}" stroke="#1e3a8a" stroke-width="1"/>
+          <rect x="${-size * 0.6}" y="${-size * 0.15}" width="${size * 0.3}" height="${size * 0.05}" fill="white" transform="rotate(-20)"/>
+        </g>
+      </g>
+      <g transform="translate(${size * 0.85}, ${size * 0.45})">
+        <g transform="rotate(${wingAngle})">
+          <path d="M 0,0 Q ${size * 0.4},${-size * 0.3} ${size * 0.7},${-size * 0.2} Q ${size * 0.8},${size * 0.1} ${size * 0.4},${size * 0.2} Z" fill="${bodyColor}" stroke="#1e3a8a" stroke-width="1"/>
+          <rect x="${size * 0.3}" y="${-size * 0.15}" width="${size * 0.3}" height="${size * 0.05}" fill="white" transform="rotate(20)"/>
+        </g>
+      </g>
+      <circle cx="${size * 0.65}" cy="${size * 0.3}" r="${size * 0.2}" fill="${bodyColor}" stroke="#1e3a8a" stroke-width="1"/>
+      <path d="M ${size * 0.55},${size * 0.2} L ${size * 0.58},${size * 0.05} L ${size * 0.65},${size * 0} L ${size * 0.72},${size * 0.05} L ${size * 0.75},${size * 0.2}" fill="${bodyColor}" stroke="#1e3a8a" stroke-width="0.5"/>
+      <circle cx="${size * 0.7}" cy="${size * 0.28}" r="${size * 0.05}" fill="white"/>
+      <circle cx="${size * 0.72}" cy="${size * 0.28}" r="${size * 0.03}" fill="black"/>
+      <path d="M ${size * 0.8},${size * 0.3} L ${size * 0.95},${size * 0.32} L ${size * 0.8},${size * 0.35} Z" fill="#4169e1" stroke="#1e3a8a" stroke-width="0.5"/>
+      <path d="M ${size * 0.55},${size * 0.38} Q ${size * 0.65},${size * 0.35} ${size * 0.75},${size * 0.38}" stroke="black" stroke-width="2" fill="none"/>
+    `;
+  };
 
-      // Draw wings with enhanced animation
-      const shoulderY = centerY - bird.size * 0.08;
-      const flapPhase = Math.sin(adjustedWingPhase);
-      const isFlappingDown = flapPhase > 0;
+  const getHummingbirdSVG = (wingPhase: number, size: number, isDead: boolean): string => {
+    const wingAngle = Math.sin(wingPhase * 3) * 45;
+    const bodyColor = isDead ? '#778899' : '#228b22';
 
-      // Left wing (behind body)
-      ctx.save();
-      ctx.translate(centerX - bird.size * 0.08, shoulderY);
-      ctx.rotate(-adjustedWingAngle);
-
-      const leftWingGradient = ctx.createLinearGradient(0, 0, -bird.size * 0.4, 0);
-      leftWingGradient.addColorStop(0, bodyColors.primary);
-      leftWingGradient.addColorStop(0.5, bodyColors.secondary);
-      leftWingGradient.addColorStop(1, bodyColors.outline);
-      ctx.fillStyle = leftWingGradient;
-
-      ctx.beginPath();
-      ctx.moveTo(0, 0);
-
-      if (isFlappingDown) {
-        const extension = flapPhase * 0.3;
-        ctx.quadraticCurveTo(-bird.size * 0.1, -bird.size * 0.3, -bird.size * 0.7 + extension, -bird.size * 0.2);
-        ctx.quadraticCurveTo(-bird.size * 0.8, -bird.size * 0.1, -bird.size * 1.1 + extension, bird.size * 0.2);
-        ctx.quadraticCurveTo(-bird.size * 0.2, bird.size * 0.2, 0, 0);
-      } else {
-        const fold = Math.abs(flapPhase) * 0.2;
-        ctx.quadraticCurveTo(-bird.size * 0.05, -bird.size * 0.25, -bird.size * 0.5 - fold, -bird.size * 0.15);
-        ctx.quadraticCurveTo(-bird.size * 0.6, -bird.size * 0.05, -bird.size * 0.8 - fold, bird.size * 0.1);
-        ctx.quadraticCurveTo(-bird.size * 0.2, bird.size * 0.2, 0, 0);
-      }
-      ctx.closePath();
-      ctx.fill();
-
-      // Add wing bars for bluejay
-      if (birdFeatures.hasWingBars) {
-        ctx.fillStyle = 'white';
-        ctx.fillRect(-bird.size * 0.6, -bird.size * 0.1, bird.size * 0.3, bird.size * 0.05);
-      }
-
-      ctx.restore();
-
-      // Right wing (in front of body)
-      ctx.save();
-      ctx.translate(centerX + bird.size * 0.08, shoulderY);
-      ctx.rotate(adjustedWingAngle);
-
-      const rightWingGradient = ctx.createLinearGradient(0, 0, bird.size * 0.4, 0);
-      rightWingGradient.addColorStop(0, bodyColors.primary);
-      rightWingGradient.addColorStop(0.5, bodyColors.secondary);
-      rightWingGradient.addColorStop(1, bodyColors.outline);
-      ctx.fillStyle = rightWingGradient;
-
-      ctx.beginPath();
-      ctx.moveTo(0, 0);
-
-      if (isFlappingDown) {
-        const extension = flapPhase * 0.3;
-        ctx.quadraticCurveTo(bird.size * 0.1, -bird.size * 0.3, bird.size * 0.7 + extension, -bird.size * 0.2);
-        ctx.quadraticCurveTo(bird.size * 0.8, -bird.size * 0.1, bird.size * 1.1 + extension, bird.size * 0.2);
-        ctx.quadraticCurveTo(bird.size * 0.2, bird.size * 0.2, 0, 0);
-      } else {
-        const fold = Math.abs(flapPhase) * 0.2;
-        ctx.quadraticCurveTo(bird.size * 0.05, -bird.size * 0.25, bird.size * 0.5 - fold, -bird.size * 0.15);
-        ctx.quadraticCurveTo(bird.size * 0.6, -bird.size * 0.05, bird.size * 0.8 - fold, bird.size * 0.1);
-        ctx.quadraticCurveTo(bird.size * 0.2, bird.size * 0.2, 0, 0);
-      }
-      ctx.closePath();
-      ctx.fill();
-
-      // Add wing bars for bluejay
-      if (birdFeatures.hasWingBars) {
-        ctx.fillStyle = 'white';
-        ctx.fillRect(bird.size * 0.3, -bird.size * 0.1, bird.size * 0.3, bird.size * 0.05);
-      }
-
-      ctx.restore();
-
-      // Draw beak
-      const beakGradient = ctx.createLinearGradient(
-        centerX + bird.size * 0.35,
-        centerY - bird.size * 0.05,
-        centerX + bird.size * 0.65,
-        centerY,
-      );
-      beakGradient.addColorStop(0, beakColor);
-      beakGradient.addColorStop(1, beakColor);
-      ctx.fillStyle = beakGradient;
-      ctx.beginPath();
-      ctx.moveTo(centerX + bird.size * 0.35, centerY - bird.size * 0.05);
-      ctx.lineTo(centerX + bird.size * 0.65, centerY - bird.size * 0.02);
-      ctx.lineTo(centerX + bird.size * 0.65, centerY + bird.size * 0.08);
-      ctx.lineTo(centerX + bird.size * 0.35, centerY + bird.size * 0.05);
-      ctx.closePath();
-      ctx.fill();
-
-      // Beak highlight
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
-      ctx.beginPath();
-      ctx.moveTo(centerX + bird.size * 0.4, centerY - bird.size * 0.02);
-      ctx.lineTo(centerX + bird.size * 0.55, centerY);
-      ctx.lineTo(centerX + bird.size * 0.5, centerY + bird.size * 0.02);
-      ctx.lineTo(centerX + bird.size * 0.38, centerY);
-      ctx.closePath();
-      ctx.fill();
-
-      // Draw eye
-      const eyeX = centerX + bird.size * 0.12;
-      const eyeY = centerY - bird.size * 0.12;
-      const eyeRadius = bird.size * 0.1;
-
-      // Eye white
-      ctx.fillStyle = '#fff';
-      ctx.beginPath();
-      ctx.arc(eyeX, eyeY, eyeRadius, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Eye outline
-      ctx.strokeStyle = '#1f2937';
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-
-      // Eye pupil
-      ctx.fillStyle = '#1f2937';
-      ctx.beginPath();
-      ctx.arc(eyeX + eyeRadius * 0.2, eyeY, eyeRadius * 0.5, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Eye highlight
-      ctx.fillStyle = '#fff';
-      ctx.beginPath();
-      ctx.arc(eyeX - eyeRadius * 0.2, eyeY - eyeRadius * 0.3, eyeRadius * 0.25, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Small second highlight
-      ctx.beginPath();
-      ctx.arc(eyeX + eyeRadius * 0.3, eyeY + eyeRadius * 0.2, eyeRadius * 0.1, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Draw crest for cardinal and bluejay
-      if (birdFeatures.hasCrest) {
-        ctx.fillStyle = bodyColors.primary;
-        ctx.beginPath();
-        ctx.moveTo(centerX - bird.size * 0.05, centerY - bird.size * 0.4);
-        ctx.lineTo(centerX + bird.size * 0.05, centerY - bird.size * 0.5);
-        ctx.lineTo(centerX + bird.size * 0.1, centerY - bird.size * 0.38);
-        ctx.closePath();
-        ctx.fill();
-      }
-
-      // Draw mask for cardinal
-      if (birdFeatures.hasMask) {
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
-        ctx.beginPath();
-        ctx.arc(centerX + bird.size * 0.12, centerY - bird.size * 0.12, bird.size * 0.08, 0, Math.PI * 2);
-        ctx.fill();
-      }
-
-      // Restore rotation transformation
-      ctx.restore();
-    },
-    [selectedBird],
-  );
+    return `
+      <ellipse cx="${size / 2}" cy="${size * 0.95}" rx="${size * 0.3}" ry="${size * 0.06}" fill="rgba(0,0,0,0.2)"/>
+      <ellipse cx="${size / 2}" cy="${size / 2}" rx="${size * 0.25}" ry="${size * 0.35}" fill="${bodyColor}" stroke="#006400" stroke-width="1"/>
+      <ellipse cx="${size * 0.55}" cy="${size * 0.35}" rx="${size * 0.12}" ry="${size * 0.15}" fill="#ff69b4" opacity="0.8"/>
+      <g transform="translate(${size * 0.2}, ${size * 0.4})">
+        <g transform="rotate(${-wingAngle})">
+          <path d="M 0,0 Q ${-size * 0.25},${-size * 0.35} ${-size * 0.4},${-size * 0.3} Q ${-size * 0.45},${size * 0.05} ${-size * 0.2},${size * 0.1} Z" fill="${bodyColor}" stroke="#006400" stroke-width="0.5"/>
+        </g>
+      </g>
+      <g transform="translate(${size * 0.8}, ${size * 0.4})">
+        <g transform="rotate(${wingAngle})">
+          <path d="M 0,0 Q ${size * 0.25},${-size * 0.35} ${size * 0.4},${-size * 0.3} Q ${size * 0.45},${size * 0.05} ${size * 0.2},${size * 0.1} Z" fill="${bodyColor}" stroke="#006400" stroke-width="0.5"/>
+        </g>
+      </g>
+      <circle cx="${size * 0.65}" cy="${size * 0.25}" r="${size * 0.15}" fill="${bodyColor}" stroke="#006400" stroke-width="1"/>
+      <circle cx="${size * 0.68}" cy="${size * 0.23}" r="${size * 0.04}" fill="white"/>
+      <circle cx="${size * 0.69}" cy="${size * 0.23}" r="${size * 0.025}" fill="black"/>
+      <path d="M ${size * 0.78},${size * 0.25} L ${size * 1.1},${size * 0.26} L ${size * 0.78},${size * 0.27} Z" fill="#000" opacity="0.8"/>
+      <path d="M ${size * 0.25},${size * 0.7} L ${size * 0.15},${size * 0.85} L ${size * 0.2},${size * 0.8} Z" fill="${bodyColor}" stroke="#006400" stroke-width="0.5"/>
+      <path d="M ${size * 0.25},${size * 0.7} L ${size * 0.25},${size * 0.9} L ${size * 0.3},${size * 0.8} Z" fill="${bodyColor}" stroke="#006400" stroke-width="0.5"/>
+      <path d="M ${size * 0.25},${size * 0.7} L ${size * 0.35},${size * 0.85} L ${size * 0.3},${size * 0.8} Z" fill="${bodyColor}" stroke="#006400" stroke-width="0.5"/>
+    `;
+  };
 
   const checkCollision = useCallback((bird: Bird, pipes: Pipe[]): Pipe | null => {
     // Check ground and ceiling collision
     if (bird.y <= 0 || bird.y + bird.size >= GAME_HEIGHT) {
-      return { x: 0, gapY: 0, width: GAME_WIDTH, gapHeight: 0, passed: false };
+      return { x: 0, gapY: 0, width: GAME_WIDTH, gapHeight: 0, passed: false }; // Return fake pipe for ceiling/ground collision
     }
 
     // Check pipe collision
     for (const pipe of pipes) {
       if (bird.x + bird.size > pipe.x && bird.x < pipe.x + pipe.width) {
         if (bird.y < pipe.gapY || bird.y + bird.size > pipe.gapY + pipe.gapHeight) {
-          return pipe;
+          return pipe; // Return the pipe that was hit
         }
       }
     }
@@ -650,10 +584,10 @@ export function BirdGame() {
 
     // Clear canvas with gradient sky background
     const gradient = ctx.createLinearGradient(0, 0, 0, GAME_HEIGHT - GROUND_HEIGHT);
-    gradient.addColorStop(0, '#0f172a');
-    gradient.addColorStop(0.3, '#1e3a8a');
-    gradient.addColorStop(0.7, '#60a5fa');
-    gradient.addColorStop(1, '#dbeafe');
+    gradient.addColorStop(0, '#0f172a'); // Dark blue night
+    gradient.addColorStop(0.3, '#1e3a8a'); // Medium blue
+    gradient.addColorStop(0.7, '#60a5fa'); // Light blue
+    gradient.addColorStop(1, '#dbeafe'); // Very light blue
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT - GROUND_HEIGHT);
 
@@ -680,11 +614,12 @@ export function BirdGame() {
       ctx.stroke();
     }
 
-    // Update parallax offsets
+    // Update parallax offsets (only when game is playing and bird is not dead)
     if (gameState === 'playing' && !birdRef.current.isDead) {
-      mountainOffsetRef.current -= 0.3;
-      hillsOffsetRef.current -= 0.6;
+      mountainOffsetRef.current -= 0.3; // Very slow
+      hillsOffsetRef.current -= 0.6; // Slightly faster
 
+      // Loop the offsets
       if (mountainOffsetRef.current <= -GAME_WIDTH) {
         mountainOffsetRef.current += GAME_WIDTH;
       }
@@ -693,13 +628,14 @@ export function BirdGame() {
       }
     }
 
-    // Draw distant mountains
+    // Draw distant mountains (slowest) - using seamless frequencies
     ctx.fillStyle = '#334155';
     ctx.beginPath();
     const mOffset = mountainOffsetRef.current;
     ctx.moveTo(0, GAME_HEIGHT - GROUND_HEIGHT);
     for (let x = 0; x <= GAME_WIDTH + 100; x += 50) {
       const worldX = x - mOffset;
+      // Frequencies chosen so that 800 * freq = 2*PI*k (seamless loop)
       const height = 100 + Math.sin(worldX * 0.00785) * 60 + Math.sin(worldX * 0.0157) * 30;
       ctx.lineTo(x, GAME_HEIGHT - GROUND_HEIGHT - height);
     }
@@ -707,13 +643,14 @@ export function BirdGame() {
     ctx.closePath();
     ctx.fill();
 
-    // Draw closer hills
+    // Draw closer hills (medium speed) - using seamless frequencies
     ctx.fillStyle = '#475569';
     ctx.beginPath();
     const hOffset = hillsOffsetRef.current;
     ctx.moveTo(0, GAME_HEIGHT - GROUND_HEIGHT);
     for (let x = 0; x <= GAME_WIDTH + 100; x += 30) {
       const worldX = x - hOffset;
+      // Frequencies chosen so that 800 * freq = 2*PI*k (seamless loop)
       const height = 50 + Math.sin(worldX * 0.0157) * 40 + Math.sin(worldX * 0.0393) * 20;
       ctx.lineTo(x, GAME_HEIGHT - GROUND_HEIGHT - height);
     }
@@ -723,11 +660,13 @@ export function BirdGame() {
 
     // Draw moving clouds
     cloudsRef.current.forEach((cloud) => {
+      // Update cloud position
       cloud.x -= cloud.speed;
       if (cloud.x + cloud.size < 0) {
         cloud.x = GAME_WIDTH + cloud.size;
       }
 
+      // Draw cloud
       ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
       ctx.beginPath();
       ctx.arc(cloud.x, cloud.y, cloud.size * 0.5, 0, Math.PI * 2);
@@ -739,9 +678,9 @@ export function BirdGame() {
 
     // Draw ground with gradient
     const groundGradient = ctx.createLinearGradient(0, GAME_HEIGHT - GROUND_HEIGHT, 0, GAME_HEIGHT);
-    groundGradient.addColorStop(0, '#166534');
-    groundGradient.addColorStop(0.5, '#15803d');
-    groundGradient.addColorStop(1, '#14532d');
+    groundGradient.addColorStop(0, '#166534'); // Dark green
+    groundGradient.addColorStop(0.5, '#15803d'); // Medium green
+    groundGradient.addColorStop(1, '#14532d'); // Very dark green
     ctx.fillStyle = groundGradient;
     ctx.fillRect(0, GAME_HEIGHT - GROUND_HEIGHT, GAME_WIDTH, GROUND_HEIGHT);
 
@@ -752,11 +691,12 @@ export function BirdGame() {
       ctx.fillRect(x, GAME_HEIGHT - GROUND_HEIGHT - grassHeight, 3, grassHeight);
     }
 
-    // Draw ground details
+    // Draw ground details (stones/flowers)
     for (let i = 0; i < 15; i++) {
       const x = (i * 53) % GAME_WIDTH;
       const y = GAME_HEIGHT - GROUND_HEIGHT + 20 + ((i * 17) % 50);
       if (i % 3 === 0) {
+        // Flower
         ctx.fillStyle = ['#f472b6', '#fbbf24', '#c084fc'][i % 3];
         ctx.beginPath();
         ctx.arc(x, y, 4, 0, Math.PI * 2);
@@ -766,6 +706,7 @@ export function BirdGame() {
         ctx.arc(x, y, 2, 0, Math.PI * 2);
         ctx.fill();
       } else if (i % 4 === 0) {
+        // Stone
         ctx.fillStyle = '#9ca3af';
         ctx.beginPath();
         ctx.ellipse(x, y, 6, 4, 0, 0, Math.PI * 2);
@@ -774,6 +715,7 @@ export function BirdGame() {
     }
 
     if (gameState === 'start') {
+      // Draw start screen
       ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
       ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 
@@ -783,29 +725,34 @@ export function BirdGame() {
       ctx.fillText('Click or Press Space to Start', GAME_WIDTH / 2, GAME_HEIGHT / 2);
 
       ctx.font = '24px Arial';
-      ctx.fillText('Choose your bird and avoid the pipes!', GAME_WIDTH / 2, GAME_HEIGHT / 2 + 40);
+      ctx.fillText('Avoid the pipes!', GAME_WIDTH / 2, GAME_HEIGHT / 2 + 40);
     }
 
     if (gameState === 'playing' || gameState === 'gameOver') {
       // Update bird physics and animation
       if (!birdRef.current.isDead) {
         birdRef.current.velocity += GRAVITY;
+        // Update wing flapping animation
         birdRef.current.wingPhase += WING_FLAP_SPEED;
       } else {
+        // Bird falls faster when dead
         birdRef.current.velocity += GRAVITY * 2;
+        // Slow down wing flapping when dead
         birdRef.current.wingPhase += WING_FLAP_SPEED * 0.2;
 
+        // Apply collision physics
         birdRef.current.x += birdRef.current.hitVelocityX;
         birdRef.current.y += birdRef.current.hitVelocityY;
         birdRef.current.rotation += birdRef.current.rotationSpeed;
 
+        // Apply friction to collision velocities
         birdRef.current.hitVelocityX *= 0.95;
         birdRef.current.hitVelocityY *= 0.95;
         birdRef.current.rotationSpeed *= BIRD_ROTATION_FRICTION;
       }
       birdRef.current.y += birdRef.current.velocity;
 
-      // Update pipes
+      // Update pipes (stop when bird is dead)
       if (!birdRef.current.isDead) {
         pipesRef.current = pipesRef.current
           .map((pipe) => ({ ...pipe, x: pipe.x - PIPE_SPEED }))
@@ -821,7 +768,7 @@ export function BirdGame() {
         }
       });
 
-      // Add new pipes
+      // Add new pipes (stop when bird is dead)
       if (
         !birdRef.current.isDead &&
         (pipesRef.current.length === 0 || pipesRef.current[pipesRef.current.length - 1].x < GAME_WIDTH - 300)
@@ -839,27 +786,30 @@ export function BirdGame() {
       // Draw pipes with gradient
       pipesRef.current.forEach((pipe) => {
         const pipeGradient = ctx.createLinearGradient(pipe.x, 0, pipe.x + pipe.width, 0);
-        pipeGradient.addColorStop(0, '#16a34a');
-        pipeGradient.addColorStop(0.5, '#22c55e');
-        pipeGradient.addColorStop(1, '#16a34a');
+        pipeGradient.addColorStop(0, '#16a34a'); // Green
+        pipeGradient.addColorStop(0.5, '#22c55e'); // Light green
+        pipeGradient.addColorStop(1, '#16a34a'); // Green
 
         ctx.fillStyle = pipeGradient;
+        // Top pipe
         ctx.fillRect(pipe.x, 0, pipe.width, pipe.gapY);
+        // Bottom pipe
         ctx.fillRect(pipe.x, pipe.gapY + pipe.gapHeight, pipe.width, GAME_HEIGHT - pipe.gapY - pipe.gapHeight);
 
-        ctx.strokeStyle = '#15803d';
+        // Pipe borders
+        ctx.strokeStyle = '#15803d'; // Dark green
         ctx.lineWidth = 2;
         ctx.strokeRect(pipe.x, 0, pipe.width, pipe.gapY);
         ctx.strokeRect(pipe.x, pipe.gapY + pipe.gapHeight, pipe.width, GAME_HEIGHT - pipe.gapY - pipe.gapHeight);
       });
 
-      // Draw enhanced bird
+      // Draw improved SVG bird
       drawBird(ctx, birdRef.current);
 
       // Update and draw particles
       updateParticles(ctx);
 
-      // Draw score
+      // Draw score with better styling
       ctx.fillStyle = '#000';
       ctx.font = 'bold 34px Arial';
       ctx.textAlign = 'center';
@@ -874,14 +824,19 @@ export function BirdGame() {
         birdRef.current.isDead = true;
         playSound('collision');
 
+        // Apply collision physics
         applyCollisionPhysics(birdRef.current, hitPipe);
+
+        // Create explosion at bird position
         createExplosion(birdRef.current.x + birdRef.current.size / 2, birdRef.current.y + birdRef.current.size / 2);
 
         const newHighScore = Math.max(highScore, score);
         setHighScore(newHighScore);
 
+        // Auto-save to leaderboard if user is signed in and this is a new personal best
         if (isSignedIn && score > 0) {
           console.log('Game over - checking auto-save:', { score, userBestScore });
+          // Check if this score beats the user's current best on the leaderboard
           const currentBest = userBestScore || 0;
           if (score > currentBest) {
             console.log('Auto-saving new best score:', score);
@@ -895,6 +850,7 @@ export function BirdGame() {
       // Set game over when bird falls off screen
       if (birdRef.current.y > GAME_HEIGHT + 100) {
         setGameState('gameOver');
+        // Only play game over sound once when transitioning to gameOver state
         if (gameState !== 'gameOver') {
           playSound('gameOver');
         }
@@ -916,6 +872,7 @@ export function BirdGame() {
       ctx.font = '24px Arial';
       ctx.fillText('Click or Press Space to Play Again', GAME_WIDTH / 2, GAME_HEIGHT / 2 + 60);
 
+      // Show auto-save notification for signed-in users
       if (isSignedIn && score > 0) {
         const currentBest = userBestScore || 0;
         if (score > currentBest) {
@@ -977,27 +934,7 @@ export function BirdGame() {
         {/* Game Container */}
         <div className='relative flex-1 rounded-2xl border border-slate-700 bg-gradient-to-br from-slate-800 to-slate-900 p-3 shadow-2xl'>
           <div className='relative h-full w-full' style={{ paddingBottom: '75%' }}>
-            {/* Bird Change Button - Bottom Left Corner */}
-            <div className='absolute bottom-4 left-4 z-10'>
-              <Popover open={showBirdSelector} onOpenChange={setShowBirdSelector}>
-                <PopoverTrigger asChild>
-                  <button className='flex items-center gap-2 rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-white shadow-lg backdrop-blur-sm transition-all duration-200 hover:bg-white/20'>
-                    <span className='text-lg'>🐦</span>
-                    <span className='text-sm font-medium'>Change Bird</span>
-                  </button>
-                </PopoverTrigger>
-                <PopoverContent className='w-80' align='start' sideOffset={8}>
-                  <BirdSelector
-                    currentBird={selectedBird}
-                    onBirdChange={(birdType) => {
-                      setSelectedBird(birdType);
-                      setShowBirdSelector(false);
-                    }}
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-
+            {/* Maintain 4:3 aspect ratio (800x600 = 4:3) */}
             <canvas
               ref={canvasRef}
               width={GAME_WIDTH}
@@ -1038,7 +975,28 @@ export function BirdGame() {
               </>
             }
           </button>
+          
+          <button
+            onClick={() => setShowBirdSelector(!showBirdSelector)}
+            className='flex items-center gap-2 rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-white backdrop-blur-sm transition-all duration-200 hover:bg-white/20'
+          >
+            <span className='text-lg'>🐦</span>
+            <span className='text-sm font-medium'>Change Bird</span>
+          </button>
         </div>
+
+        {/* Bird Selector */}
+        {showBirdSelector && (
+          <div className='mt-4 rounded-lg border border-white/20 bg-white/10 p-4 backdrop-blur-sm'>
+            <BirdSelector 
+              currentBird={selectedBird}
+              onBirdChange={(birdType) => {
+                setSelectedBird(birdType);
+                setShowBirdSelector(false);
+              }}
+            />
+          </div>
+        )}
 
         {/* Debug Sound Menu */}
         {DEBUG_SOUND_MENU && (
