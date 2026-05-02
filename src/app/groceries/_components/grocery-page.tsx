@@ -99,8 +99,10 @@ export default function GroceryPage(): React.JSX.Element {
 
   // Mutations for data modifications
   const addItemMutation = useMutation({
-    mutationFn: ({ listKey, text }: { listKey: 'shopping-list' | 'have-list'; text: string }) =>
-      addGroceryItemAction(listKey, text, userName || clientIP),
+    mutationFn: ({ listKey, text }: { listKey: 'shopping-list' | 'have-list'; text: string }) => {
+      console.log(`Adding "${text}" to ${listKey}`);
+      return addGroceryItemAction(listKey, text, userName || clientIP);
+    },
     onSuccess: () => {
       toast.success('Item added');
       queryClient.invalidateQueries({ queryKey: ['groceryLists'] });
@@ -111,8 +113,10 @@ export default function GroceryPage(): React.JSX.Element {
   });
 
   const removeItemMutation = useMutation({
-    mutationFn: ({ listKey, itemId }: { listKey: 'shopping-list' | 'have-list'; itemId: string }) =>
-      removeGroceryItemAction(listKey, itemId, userName || clientIP),
+    mutationFn: ({ listKey, itemId }: { listKey: 'shopping-list' | 'have-list'; itemId: string }) => {
+      console.log(`Removing ${itemId} from ${listKey}`);
+      return removeGroceryItemAction(listKey, itemId, userName || clientIP);
+    },
     onSuccess: () => {
       toast.success('Item removed');
       queryClient.invalidateQueries({ queryKey: ['groceryLists'] });
@@ -127,10 +131,12 @@ export default function GroceryPage(): React.JSX.Element {
       if (fromList === 'shopping-list') {
         // Move from Shopping List to Have List (have-list)
         const toList = 'have-list';
+        console.log(`Moving ${itemId} from ${fromList} to ${toList}`);
         return moveGroceryItemAction(fromList, toList, itemId, userName || clientIP);
       } else {
         // Move from Have List to Shopping List (shopping-list)
         const toList = 'shopping-list';
+        console.log(`Moving ${itemId} from ${fromList} to ${toList}`);
         return moveGroceryItemAction(fromList, toList, itemId, userName || clientIP);
       }
     },
@@ -144,8 +150,10 @@ export default function GroceryPage(): React.JSX.Element {
   });
 
   const bulkRemoveMutation = useMutation({
-    mutationFn: ({ listKey, itemIds }: { listKey: 'shopping-list' | 'have-list'; itemIds: string[] }) =>
-      bulkRemoveGroceryItemsAction(listKey, itemIds, userName || clientIP),
+    mutationFn: ({ listKey, itemIds }: { listKey: 'shopping-list' | 'have-list'; itemIds: string[] }) => {
+      console.log(`Removing [${itemIds.join(', ')}] from ${listKey}`);
+      return bulkRemoveGroceryItemsAction(listKey, itemIds, userName || clientIP);
+    },
     onSuccess: () => {
       toast.success('Items removed');
       setSelectedItems(new Set());
@@ -161,6 +169,7 @@ export default function GroceryPage(): React.JSX.Element {
   const bulkMoveMutation = useMutation({
     mutationFn: ({ fromList, itemIds }: { fromList: 'shopping-list' | 'have-list'; itemIds: string[] }) => {
       const toList = fromList === 'shopping-list' ? 'have-list' : 'shopping-list';
+      console.log(`Moving [${itemIds.join(', ')}] from ${fromList} to ${toList}`);
       return bulkMoveGroceryItemsAction(fromList, toList, itemIds, userName || clientIP);
     },
     onSuccess: () => {

@@ -406,17 +406,12 @@ export async function moveGroceryItem(
   if (itemIndex === -1) return;
 
   const [item] = fromList.splice(itemIndex, 1);
-  toList.push(item);
+  const updatedItem = { ...item, updatedAt: Date.now() };
+  toList.push(updatedItem);
 
   await Promise.all([
-    redis.set(
-      'groceries:shopping-list',
-      lists.shoppingList.map((item) => ({ ...item, updatedAt: Date.now() })),
-    ),
-    redis.set(
-      'groceries:have-list',
-      lists.haveList.map((item) => ({ ...item, updatedAt: Date.now() })),
-    ),
+    redis.set('groceries:shopping-list', lists.shoppingList),
+    redis.set('groceries:have-list', lists.haveList),
   ]);
 }
 
@@ -449,8 +444,9 @@ export async function bulkMoveGroceryItems(
   const itemsToMove = fromList.filter((item) => itemIds.includes(item.id));
   const filteredFromList = fromList.filter((item) => !itemIds.includes(item.id));
 
-  // Add items to target list
-  toList.push(...itemsToMove);
+  // Add items to target list with updated timestamps
+  const updatedItems = itemsToMove.map((item) => ({ ...item, updatedAt: Date.now() }));
+  toList.push(...updatedItems);
 
   // Update both lists
   if (fromListKey === 'shopping-list') {
@@ -460,13 +456,7 @@ export async function bulkMoveGroceryItems(
   }
 
   await Promise.all([
-    redis.set(
-      'groceries:shopping-list',
-      lists.shoppingList.map((item) => ({ ...item, updatedAt: Date.now() })),
-    ),
-    redis.set(
-      'groceries:have-list',
-      lists.haveList.map((item) => ({ ...item, updatedAt: Date.now() })),
-    ),
+    redis.set('groceries:shopping-list', lists.shoppingList),
+    redis.set('groceries:have-list', lists.haveList),
   ]);
 }
