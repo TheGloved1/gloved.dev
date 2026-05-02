@@ -460,3 +460,73 @@ export async function bulkMoveGroceryItems(
     redis.set('groceries:have-list', lists.haveList),
   ]);
 }
+
+// Kirk Bird Leaderboard Functions
+
+export interface LeaderboardEntry {
+  userId: string;
+  username: string;
+  score: number;
+  timestamp: number;
+}
+
+/**
+ * Retrieves the top 100 leaderboard entries sorted by score (descending).
+ * @returns A promise that resolves to an array of leaderboard entries.
+ */
+export async function getLeaderboard(): Promise<LeaderboardEntry[]> {
+  const entries = ((await redis.get('kirk-bird:leaderboard')) as LeaderboardEntry[]) || [];
+  return entries.sort((a, b) => b.score - a.score).slice(0, 100);
+}
+
+/**
+ * Adds a new score to the leaderboard for a user.
+ * If the user already has a score on the leaderboard, it will only be updated if the new score is higher.
+ * @param userId The user ID
+ * @param username The username to display
+ * @param score The score to add
+ * @returns A promise that resolves when the score is added.
+ */
+export async function addLeaderboardEntry(userId: string, username: string, score: number): Promise<void> {
+  const leaderboard = await getLeaderboard();
+
+  // Find existing entry for this user
+  const existingEntryIndex = leaderboard.findIndex((entry) => entry.userId === userId);
+
+  if (existingEntryIndex !== -1) {
+    // Only update if the new score is higher
+    if (score > leaderboard[existingEntryIndex].score) {
+      leaderboard[existingEntryIndex] = {
+        userId,
+        username,
+        score,
+        timestamp: Date.now(),
+      };
+    }
+  } else {
+    // Add new entry
+    leaderboard.push({
+      userId,
+      username,
+      score,
+      timestamp: Date.now(),
+    });
+  }
+
+  // Sort by score (descending) and keep only top 100
+  leaderboard.sort((a, b) => b.score - a.score);
+  const topEntries = leaderboard.slice(0, 100);
+
+  await redis.set('kirk-bird:leaderboard', topEntries);
+}
+
+/**
+ * Gets a specific user's best score from the leaderboard.
+ * @param userId The user ID
+ * @returns A promise that resolves to the user's best score or null if not found.
+ */
+export async function getUserBestScore(userId: string): Promise<number | null> {
+  const leaderboard = await getLeaderboard();
+  const userEntry = leaderboard.find((entry) => entry.userId === userId);
+  return userEntry ? userEntry.score : null;
+}

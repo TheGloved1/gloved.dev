@@ -9,6 +9,7 @@ import { rateLimiter } from './rate-limiter';
 import {
   addAdmin,
   addGroceryItem,
+  addLeaderboardEntry,
   bulkMoveGroceryItems,
   bulkRemoveGroceryItems,
   dbSync,
@@ -18,7 +19,9 @@ import {
   getAdmins,
   getAllUserShortenedUrls,
   getGroceryLists,
+  getLeaderboard,
   getShortenedUrl,
+  getUserBestScore,
   moveGroceryItem,
   removeAdmin,
   removeGroceryItem,
@@ -305,5 +308,47 @@ export async function bulkMoveGroceryItemsAction(
   } catch (error) {
     console.error('Error bulk moving grocery items:', error);
     throw error;
+  }
+}
+
+// Kirk Bird Leaderboard Actions
+
+export async function getLeaderboardAction() {
+  try {
+    return await getLeaderboard();
+  } catch (error) {
+    console.error('Error fetching leaderboard:', error);
+    throw new Error('Failed to fetch leaderboard');
+  }
+}
+
+export async function addLeaderboardEntryAction(userId: string, username: string, score: number) {
+  try {
+    if (!userId || !username) {
+      throw new Error('User ID and username are required');
+    }
+
+    if (typeof score !== 'number' || score < 0) {
+      throw new Error('Valid score is required');
+    }
+
+    await addLeaderboardEntry(userId, username, score);
+    return { success: true };
+  } catch (error) {
+    console.error('Error adding leaderboard entry:', error);
+    throw error;
+  }
+}
+
+export async function getUserBestScoreAction(userId: string) {
+  try {
+    if (!userId) {
+      throw new Error('User ID is required');
+    }
+
+    return await getUserBestScore(userId);
+  } catch (error) {
+    console.error('Error fetching user best score:', error);
+    throw new Error('Failed to fetch user best score');
   }
 }
