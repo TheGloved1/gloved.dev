@@ -14,14 +14,14 @@ export default function KirkBirdPage() {
         </div>
 
         {/* Main Content */}
-        <div className='flex min-h-0 flex-1 flex-col items-center justify-center gap-4 md:gap-6'>
+        <div className='flex min-h-0 flex-1 flex-col items-center justify-center gap-4 lg:flex-row lg:gap-6'>
           {/* Game Container */}
-          <div className='flex min-h-0 w-full max-w-3xl flex-1 items-center justify-center lg:max-w-4xl'>
+          <div className='flex min-h-0 w-full max-w-3xl items-center justify-center lg:max-w-4xl lg:flex-1'>
             <KirkBirdGame />
           </div>
 
           {/* Leaderboard Container */}
-          <div className='max-h-64 w-full max-w-xl flex-shrink-0 overflow-hidden lg:max-w-2xl'>
+          <div className='max-h-64 w-full max-w-xl overflow-hidden lg:h-full lg:max-h-none lg:max-w-md lg:flex-shrink-0'>
             <Leaderboard />
           </div>
         </div>

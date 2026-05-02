@@ -74,6 +74,9 @@ export function KirkBirdGame() {
       }
       await addLeaderboardEntryAction(user.id, displayName, scoreToSave);
       console.log('Score saved successfully!');
+
+      // Trigger immediate leaderboard refresh across all components
+      window.dispatchEvent(new CustomEvent('leaderboard-updated'));
     },
     onSuccess: () => {
       setShowSaveScore(false);
@@ -341,9 +344,9 @@ export function KirkBirdGame() {
 
   return (
     <div className='flex h-full w-full flex-col items-center justify-center'>
-      <div className='relative h-full w-full max-w-4xl'>
+      <div className='relative flex h-full w-full max-w-4xl flex-col'>
         {/* Game Container */}
-        <div className='relative h-full rounded-2xl border border-slate-700 bg-gradient-to-br from-slate-800 to-slate-900 p-3 shadow-2xl'>
+        <div className='relative flex-1 rounded-2xl border border-slate-700 bg-gradient-to-br from-slate-800 to-slate-900 p-3 shadow-2xl'>
           <div className='relative h-full w-full' style={{ paddingBottom: '75%' }}>
             {/* Maintain 4:3 aspect ratio (800x600 = 4:3) */}
             <canvas
@@ -359,15 +362,13 @@ export function KirkBirdGame() {
               }}
             />
           </div>
+        </div>
 
-          {/* Game Stats Overlay */}
-          <div className='pointer-events-none absolute left-3 right-3 top-3 flex justify-between'>
-            <div className='rounded-lg border border-white/20 bg-black/50 px-2 py-1 backdrop-blur-sm'>
-              <p className='text-sm font-bold text-white'>Score: {score}</p>
-            </div>
-            <div className='rounded-lg border border-white/20 bg-black/50 px-2 py-1 backdrop-blur-sm'>
-              <p className='text-sm font-bold text-yellow-400'>Best: {highScore}</p>
-            </div>
+        {/* High Score Display */}
+        <div className='mt-3 text-center'>
+          <div className='inline-flex items-center gap-2 rounded-lg border border-yellow-500/30 bg-gradient-to-r from-yellow-500/10 to-orange-500/10 px-4 py-2 backdrop-blur-sm'>
+            <span className='text-yellow-400'>🏆</span>
+            <span className='text-sm font-semibold text-yellow-300'>High Score: {highScore}</span>
           </div>
         </div>
       </div>

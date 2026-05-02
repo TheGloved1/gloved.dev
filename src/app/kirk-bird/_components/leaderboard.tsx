@@ -4,6 +4,7 @@ import { getLeaderboardAction } from '@/lib/actions';
 import { SignInButton, useUser } from '@clerk/nextjs';
 import { useQuery } from '@tanstack/react-query';
 import { Crown, Medal, Trophy, User } from 'lucide-react';
+import { useEffect } from 'react';
 
 interface LeaderboardEntry {
   userId: string;
@@ -19,14 +20,27 @@ export function Leaderboard() {
     data: leaderboard = [],
     isLoading,
     error,
+    refetch,
   } = useQuery({
     queryKey: ['leaderboard'],
     queryFn: async () => {
       const result = await getLeaderboardAction();
       return result as LeaderboardEntry[];
     },
-    refetchInterval: 30000, // Refresh every 30 seconds
+    refetchInterval: 5000, // Refresh every 5 seconds
+    staleTime: 2000, // Consider data stale after 2 seconds
   });
+
+  // Listen for leaderboard update events
+  useEffect(() => {
+    const handleLeaderboardUpdate = () => {
+      console.log('Leaderboard update event received, refreshing...');
+      refetch();
+    };
+
+    window.addEventListener('leaderboard-updated', handleLeaderboardUpdate);
+    return () => window.removeEventListener('leaderboard-updated', handleLeaderboardUpdate);
+  }, [refetch]);
 
   const getRankIcon = (rank: number) => {
     switch (rank) {
