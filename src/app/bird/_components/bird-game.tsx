@@ -74,6 +74,7 @@ export function BirdGame() {
   const [isMuted, setIsMuted] = useLocalStorage('bird-muted', false);
   const [selectedBird, setSelectedBird] = useLocalStorage<BirdType>('selected-bird', 'sparrow');
   const [showBirdSelector, setShowBirdSelector] = useState(false);
+  const [isFocused, setIsFocused] = useState(true);
 
   // Migrate old localStorage keys to new ones
   useMount(() => {
@@ -97,7 +98,9 @@ export function BirdGame() {
       return await getUserBestScoreAction(user.id);
     },
     enabled: !!user?.id,
-    refetchInterval: 30000, // Check every 30 seconds
+    refetchInterval: isFocused ? 30000 : false, // Only refetch when focused
+    refetchIntervalInBackground: false, // Don't refetch when tab is in background
+    staleTime: 30000, // Cache for 30 seconds
   });
 
   // Get display name for user (fallback to email if username not available)
@@ -972,6 +975,24 @@ export function BirdGame() {
       }
     };
   }, [gameLoop]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const handleFocus = () => setIsFocused(true);
+      const handleBlur = () => setIsFocused(false);
+      const handleVisibilityChange = () => setIsFocused(!document.hidden);
+
+      window.addEventListener('focus', handleFocus);
+      window.addEventListener('blur', handleBlur);
+      document.addEventListener('visibilitychange', handleVisibilityChange);
+
+      return () => {
+        window.removeEventListener('focus', handleFocus);
+        window.removeEventListener('blur', handleBlur);
+        document.removeEventListener('visibilitychange', handleVisibilityChange);
+      };
+    }
+  }, []);
 
   return (
     <div className='flex h-full w-full flex-col items-center justify-center'>
