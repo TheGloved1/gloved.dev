@@ -67,27 +67,15 @@ export default function GroceryPage(): React.JSX.Element {
     if (typeof window !== 'undefined') {
       const handleFocus = () => setIsFocused(true);
       const handleBlur = () => setIsFocused(false);
+      const handleVisibilityChange = () => setIsFocused(!document.hidden);
 
       window.addEventListener('focus', handleFocus);
       window.addEventListener('blur', handleBlur);
+      document.addEventListener('visibilitychange', handleVisibilityChange);
 
       return () => {
         window.removeEventListener('focus', handleFocus);
         window.removeEventListener('blur', handleBlur);
-      };
-    }
-  }, []);
-
-  // Handle visibility change (tab switching) (client-side only)
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const handleVisibilityChange = () => {
-        setIsFocused(!document.hidden);
-      };
-
-      document.addEventListener('visibilitychange', handleVisibilityChange);
-
-      return () => {
         document.removeEventListener('visibilitychange', handleVisibilityChange);
       };
     }

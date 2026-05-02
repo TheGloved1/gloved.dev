@@ -75,7 +75,7 @@ export default function GroceryItemComponent({
                 {item.updatedAt ? 'Moved' : 'Added'} {formatDate(item.updatedAt || item.addedAt)}
               </span>
               <span className='hidden sm:inline'>•</span>
-              <span>By {item.addedBy}</span>
+              <span>Added by {item.addedBy}</span>
             </div>
           </div>
         </div>
