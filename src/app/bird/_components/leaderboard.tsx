@@ -4,7 +4,7 @@ import { getLeaderboardAction } from '@/lib/actions';
 import { SignInButton, useUser } from '@clerk/nextjs';
 import { useQuery } from '@tanstack/react-query';
 import { Crown, Medal, Trophy, User } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 interface LeaderboardEntry {
   userId: string;
@@ -15,6 +15,7 @@ interface LeaderboardEntry {
 
 export function Leaderboard() {
   const { isSignedIn, user } = useUser();
+  const [isFocused, setIsFocused] = useState(true);
 
   const {
     data: leaderboard = [],
@@ -27,8 +28,9 @@ export function Leaderboard() {
       const result = await getLeaderboardAction();
       return result as LeaderboardEntry[];
     },
-    refetchInterval: 5000, // Refresh every 5 seconds
-    staleTime: 2000, // Consider data stale after 2 seconds
+    refetchInterval: isFocused ? 10000 : false, // Only refetch when focused
+    refetchIntervalInBackground: false, // Don't refetch when tab is in background
+    staleTime: 5000,
   });
 
   // Listen for leaderboard update events
@@ -41,6 +43,24 @@ export function Leaderboard() {
     window.addEventListener('leaderboard-updated', handleLeaderboardUpdate);
     return () => window.removeEventListener('leaderboard-updated', handleLeaderboardUpdate);
   }, [refetch]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const handleFocus = () => setIsFocused(true);
+      const handleBlur = () => setIsFocused(false);
+      const handleVisibilityChange = () => setIsFocused(!document.hidden);
+
+      window.addEventListener('focus', handleFocus);
+      window.addEventListener('blur', handleBlur);
+      document.addEventListener('visibilitychange', handleVisibilityChange);
+
+      return () => {
+        window.removeEventListener('focus', handleFocus);
+        window.removeEventListener('blur', handleBlur);
+        document.removeEventListener('visibilitychange', handleVisibilityChange);
+      };
+    }
+  }, []);
 
   const getRankIcon = (rank: number) => {
     switch (rank) {
@@ -90,7 +110,7 @@ export function Leaderboard() {
       </div>
 
       {isLoading ?
-        <div className='flex-1 space-y-2 overflow-y-auto'>
+        <div className='max-h-96 flex-1 space-y-2 overflow-y-auto'>
           {Array.from({ length: 8 }).map((_, i) => (
             <div
               key={i}
@@ -108,7 +128,7 @@ export function Leaderboard() {
       : <div className='space-y-2'>
           {leaderboard.length === 0 ?
             <p className='py-4 text-center text-sm text-slate-400'>No scores yet. Be the first to play!</p>
-          : <div className='flex-1 overflow-y-auto'>
+          : <div className='max-h-96 flex-1 overflow-y-auto scrollbar-thin scrollbar-track-slate-800 scrollbar-thumb-slate-600'>
               {leaderboard.slice(0, 8).map((entry, index) => {
                 const rank = index + 1;
                 const isCurrentUser = isSignedIn && user?.id === entry.userId;
