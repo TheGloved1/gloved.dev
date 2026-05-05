@@ -85,7 +85,7 @@ function ParticleText({
     const canvas = document.createElement('canvas');
     canvas.width = 1;
     canvas.height = 1;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
     if (ctx) {
       ctx.fillStyle = color;
       ctx.fillRect(0, 0, 1, 1);
@@ -167,7 +167,7 @@ function ParticleText({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext('2d', { alpha: true });
+    const ctx = canvas.getContext('2d', { alpha: true, willReadFrequently: true });
     if (!ctx) return;
 
     // Set appropriate FPS limit based on device performance

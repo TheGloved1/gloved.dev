@@ -71,7 +71,7 @@ export default function Page(): React.JSX.Element {
     <ThemeChanger>
       <div className='noise-overlay' />
       <div className='grid-pattern' />
-      <div className='left-0 top-0 flex w-[7.5rem] items-center gap-2 rounded-br-lg border-b-2 border-r-2 border-fuchsia-500/30 bg-[#0a0a0a]/80 p-2 backdrop-blur-sm'>
+      <div className='fixed left-0 top-0 z-10 flex items-center gap-2 rounded-br-lg border-b-2 border-r-2 border-fuchsia-500/30 bg-[#0a0a0a]/80 p-2 backdrop-blur-sm md:absolute'>
         <div className='glow-line h-2 w-2 bg-fuchsia-500' />
         <SignedOut>
           <div className='flex cursor-pointer items-center gap-2 border border-fuchsia-500/50 bg-fuchsia-500/10 px-3 py-2 text-xs uppercase tracking-wider hover:bg-fuchsia-500/20'>
