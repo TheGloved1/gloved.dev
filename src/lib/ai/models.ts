@@ -20,7 +20,7 @@ export const Models = Object.freeze([
       loggedIn: false,
       admin: false,
     },
-    tools: [CustomTool.DND] as CustomTools,
+    tools: [CustomTool.DND, CustomTool.WEB_SEARCH] as CustomTools,
     features: [] as Features,
   },
   {
