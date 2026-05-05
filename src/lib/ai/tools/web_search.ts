@@ -38,6 +38,7 @@ You have access to real-time web search to get current information beyond your t
 - **Verification**: Fact-checking claims or getting latest updates
 - **New Discoveries**: Scientific research, product releases, announcements
 - **Live Data**: Current statistics, real-time information
+- **General Knowledge**: Information that might be outdated in your training data
 
 ### How to Use:
 1. **Search Query**: Use specific, targeted queries for best results
