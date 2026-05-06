@@ -355,6 +355,9 @@ function ParticleText({
       // Skip expensive calculations if not hovering
       const maxEffectDistance = hoverRadius + blurRadius + hoverRadius * animationIntensity;
 
+      // Boundry push strength
+      const pushawayStrength = 25;
+
       // Process particles in batches for better performance
       const batchSize = performanceMode ? 100 : 200;
 
@@ -410,6 +413,37 @@ function ParticleText({
             p.x = p.baseX - moveX * blurRatio + oscillation * Math.cos(p.angle) * blurRatio;
             p.y = p.baseY - moveY * blurRatio + oscillation * Math.sin(p.angle) * blurRatio;
 
+            // Apply continuous edge pushaway force based on distance
+            const canvasWidth = canvas.width / (window.devicePixelRatio || 1);
+            const canvasHeight = canvas.height / (window.devicePixelRatio || 1);
+
+            // Calculate distance from each edge
+            const distFromLeft = p.x;
+            const distFromRight = canvasWidth - p.x;
+            const distFromTop = p.y;
+            const distFromBottom = canvasHeight - p.y;
+
+            // Apply pushaway force from left edge
+            const leftForce = Math.max(0, pushawayStrength / (distFromLeft + 1));
+            p.x += leftForce;
+
+            // Apply pushaway force from right edge
+            const rightForce = Math.max(0, pushawayStrength / (distFromRight + 1));
+            p.x -= rightForce;
+
+            // Apply pushaway force from top edge
+            const topForce = Math.max(0, pushawayStrength / (distFromTop + 1));
+            p.y += topForce;
+
+            // Apply pushaway force from bottom edge
+            const bottomForce = Math.max(0, pushawayStrength / (distFromBottom + 1));
+            p.y -= bottomForce;
+
+            // Soft boundary with damping
+            const boundaryPadding = 10;
+            p.x = Math.max(boundaryPadding, Math.min(canvasWidth - boundaryPadding, p.x));
+            p.y = Math.max(boundaryPadding, Math.min(canvasHeight - boundaryPadding, p.y));
+
             // Blend colors based on blur ratio
             ctx.fillStyle = blendColors(parsedColors.base, parsedColors.hover, blurRatio);
           } else {
@@ -417,6 +451,38 @@ function ParticleText({
             const returnSpeed = 0.1;
             p.x += (p.baseX - p.x) * returnSpeed;
             p.y += (p.baseY - p.y) * returnSpeed;
+
+            // Apply continuous edge pushaway force based on distance
+            const canvasWidth = canvas.width / (window.devicePixelRatio || 1);
+            const canvasHeight = canvas.height / (window.devicePixelRatio || 1);
+
+            // Calculate distance from each edge
+            const distFromLeft = p.x;
+            const distFromRight = canvasWidth - p.x;
+            const distFromTop = p.y;
+            const distFromBottom = canvasHeight - p.y;
+
+            // Apply pushaway force from left edge
+            const leftForce = Math.max(0, pushawayStrength / (distFromLeft + 1));
+            p.x += leftForce;
+
+            // Apply pushaway force from right edge
+            const rightForce = Math.max(0, pushawayStrength / (distFromRight + 1));
+            p.x -= rightForce;
+
+            // Apply pushaway force from top edge
+            const topForce = Math.max(0, pushawayStrength / (distFromTop + 1));
+            p.y += topForce;
+
+            // Apply pushaway force from bottom edge
+            const bottomForce = Math.max(0, pushawayStrength / (distFromBottom + 1));
+            p.y -= bottomForce;
+
+            // Soft boundary with damping
+            const boundaryPadding = 10;
+            p.x = Math.max(boundaryPadding, Math.min(canvasWidth - boundaryPadding, p.x));
+            p.y = Math.max(boundaryPadding, Math.min(canvasHeight - boundaryPadding, p.y));
+
             ctx.fillStyle = baseColor;
           }
         } else {
@@ -424,6 +490,38 @@ function ParticleText({
           const returnSpeed = 0.1;
           p.x += (p.baseX - p.x) * returnSpeed;
           p.y += (p.baseY - p.y) * returnSpeed;
+
+          // Apply continuous edge pushaway force based on distance
+          const canvasWidth = canvas.width / (window.devicePixelRatio || 1);
+          const canvasHeight = canvas.height / (window.devicePixelRatio || 1);
+
+          // Calculate distance from each edge
+          const distFromLeft = p.x;
+          const distFromRight = canvasWidth - p.x;
+          const distFromTop = p.y;
+          const distFromBottom = canvasHeight - p.y;
+
+          // Apply pushaway force from left edge
+          const leftForce = Math.max(0, pushawayStrength / (distFromLeft + 1));
+          p.x += leftForce;
+
+          // Apply pushaway force from right edge
+          const rightForce = Math.max(0, pushawayStrength / (distFromRight + 1));
+          p.x -= rightForce;
+
+          // Apply pushaway force from top edge
+          const topForce = Math.max(0, pushawayStrength / (distFromTop + 1));
+          p.y += topForce;
+
+          // Apply pushaway force from bottom edge
+          const bottomForce = Math.max(0, pushawayStrength / (distFromBottom + 1));
+          p.y -= bottomForce;
+
+          // Soft boundary with damping
+          const boundaryPadding = 10;
+          p.x = Math.max(boundaryPadding, Math.min(canvasWidth - boundaryPadding, p.x));
+          p.y = Math.max(boundaryPadding, Math.min(canvasHeight - boundaryPadding, p.y));
+
           ctx.fillStyle = baseColor;
         }
 
@@ -589,12 +687,27 @@ function ParticleText({
     calculateDynamicRadius,
   ]);
 
+  // Calculate canvas width based on text length and font size
+  const canvasWidth = useMemo(() => {
+    const fontSize = isMobile ? size * 0.6 : size;
+    // Estimate character width (rough approximation)
+    const charWidth = fontSize * 0.6; // Average character width multiplier
+    const calculatedWidth = text.length * charWidth;
+    // Add padding and ensure minimum/maximum bounds
+    return Math.max(245, Math.min(calculatedWidth + 45, 1345));
+  }, [text, size, isMobile]);
+
   return (
     <canvas
       ref={canvasRef}
-      className={`h-full w-full touch-none ${className}`}
+      className={`mx-auto h-full touch-none ${className}`}
       aria-label={`Interactive particle effect displaying: ${text}`}
-      style={{ background: 'transparent' }}
+      style={{
+        background: 'transparent',
+        border: '1px dotted rgba(255, 255, 255, 0.0075)',
+        width: `${canvasWidth}px`,
+        maxWidth: '90vw',
+      }}
     />
   );
 }
