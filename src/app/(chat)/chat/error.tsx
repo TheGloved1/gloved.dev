@@ -13,7 +13,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { useChat } from '@/hooks/use-chat';
 import { AlertTriangle, RefreshCw, Trash2 } from 'lucide-react';
-import { redirect } from 'next/navigation';
 import { useState } from 'react';
 
 export default function Error() {
@@ -22,7 +21,7 @@ export default function Error() {
 
   const handleConfirm = () => {
     clearChatSettings();
-    return redirect('/chat', 'replace');
+    window.location.reload();
   };
 
   return (
