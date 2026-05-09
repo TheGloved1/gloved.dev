@@ -127,7 +127,7 @@ export default function Page() {
                       }}
                       className={`rounded-full border px-3 py-1 text-sm transition-colors ${
                         !systemPrompt ?
-                          'cursor-not-allowed border-primary bg-primary text-primary-foreground opacity-50'
+                          'border-primary bg-primary text-primary-foreground opacity-50'
                         : 'border-muted-foreground/20 bg-secondary text-secondary-foreground hover:bg-secondary/80'
                       }`}
                     >
