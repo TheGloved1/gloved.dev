@@ -2,7 +2,7 @@ import { env } from '@/env';
 import {
   ChatFetchOptions,
   CustomTool,
-  defaultModel,
+  DEFAULT_MODEL,
   Feature,
   Model,
   modelConfig,
@@ -89,7 +89,7 @@ export async function POST(req: NextRequest) {
     content: formatMessageContent(msg.content, msg.attachments),
   })) as ModelMessage[];
 
-  const model = modelProvider.languageModel(options.model ?? defaultModel);
+  const model = modelProvider.languageModel(options.model ?? DEFAULT_MODEL);
 
   let tools: ToolSet | undefined;
 
@@ -129,7 +129,7 @@ export async function POST(req: NextRequest) {
     /* Add Tools to Tools List */
     // Automatically process all tools from TOOL_CONFIG
     for (const [_toolKey, toolConfig] of Object.entries(TOOL_CONFIG)) {
-      if (options.tools.includes(toolConfig.value) && isValidTool(toolConfig.value, options.model ?? defaultModel)) {
+      if (options.tools.includes(toolConfig.value) && isValidTool(toolConfig.value, options.model ?? DEFAULT_MODEL)) {
         console.log(`[CHAT] Adding ${toolConfig.name} to tools list...`);
         const toolImplementation = await toolConfig.create();
         Object.entries(toolImplementation.tools).forEach(([key, tool]: [string, Tool]) => {

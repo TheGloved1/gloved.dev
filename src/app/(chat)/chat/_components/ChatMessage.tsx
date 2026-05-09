@@ -12,9 +12,25 @@ import equal from 'fast-deep-equal';
 import { ChevronDown, ChevronUp, Copy, RefreshCcw, Send, SquarePen, Volume2Icon, VolumeXIcon } from 'lucide-react';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
-import { memo, useCallback, useEffect, useState } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import Timestamp from './Timestamp';
+
+function ReasoningDots() {
+  return (
+    <svg className='-mb-0.5 -ml-0.5 !size-4' viewBox='0 0 16 16' fill='currentColor'>
+      <circle cx='2' cy='8' r='2'>
+        <animate attributeName='opacity' values='0;1;0' dur='1.2s' repeatCount='indefinite' begin='0s' />
+      </circle>
+      <circle cx='8' cy='8' r='2'>
+        <animate attributeName='opacity' values='0;1;0' dur='1.2s' repeatCount='indefinite' begin='0.4s' />
+      </circle>
+      <circle cx='14' cy='8' r='2'>
+        <animate attributeName='opacity' values='0;1;0' dur='1.2s' repeatCount='indefinite' begin='0.8s' />
+      </circle>
+    </svg>
+  );
+}
 
 const renderImages = (attachments?: string[]) => {
   if (!attachments || attachments.length === 0) return null;
@@ -32,6 +48,9 @@ function ChatMessage({ message }: { message: Message }) {
   const [input, setInput] = useState<string | null>(null);
   const [isHovered, setIsHovered] = useState<boolean>(false);
   const [showReasoning, setShowReasoning] = useState<boolean>(false);
+  const [isReasoningStreaming, setIsReasoningStreaming] = useState(false);
+  const reasoningTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const prevReasoningRef = useRef(message.reasoning);
   const { threadId } = useParams<{ threadId: string }>();
   const { syncEnabled, model, systemPrompt, tools } = useChat();
   const tts = useTextToSpeech();
@@ -70,6 +89,25 @@ function ChatMessage({ message }: { message: Message }) {
   useEffect(() => {
     checkForOldAttachmentLinks();
   }, [checkForOldAttachmentLinks]);
+
+  useEffect(() => {
+    if (prevReasoningRef.current === message.reasoning) return;
+    prevReasoningRef.current = message.reasoning;
+    if (!message.reasoning || message.reasoning.trim() === '') return;
+    const enable = setTimeout(() => setIsReasoningStreaming(true), 0);
+    if (reasoningTimeoutRef.current) {
+      clearTimeout(reasoningTimeoutRef.current);
+    }
+    reasoningTimeoutRef.current = setTimeout(() => {
+      setIsReasoningStreaming(false);
+    }, 500);
+    return () => {
+      clearTimeout(enable);
+      if (reasoningTimeoutRef.current) {
+        clearTimeout(reasoningTimeoutRef.current);
+      }
+    };
+  }, [message.reasoning]);
 
   if (message.status === 'error') return <ErrorAlert>{`Error: Something went wrong, please try again.`}</ErrorAlert>;
   const showLoadingIndicator =
@@ -152,8 +190,10 @@ function ChatMessage({ message }: { message: Message }) {
                   onClick={() => setShowReasoning(!showReasoning)}
                   className='inline-flex items-center gap-2 rounded-md bg-secondary/0 px-3 py-1 text-sm font-medium text-secondary-foreground hover:bg-secondary/80'
                 >
-                  <span>Reasoning</span>
-                  {showReasoning ?
+                  <span>Thinking</span>
+                  {isReasoningStreaming ?
+                    <ReasoningDots />
+                  : showReasoning ?
                     <ChevronUp className='-mb-0.5 -ml-0.5 !size-4' />
                   : <ChevronDown className='-mb-0.5 -ml-0.5 !size-4' />}
                 </button>

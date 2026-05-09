@@ -94,4 +94,5 @@ export const safetySettings: SafetySettings = [
     threshold: 'BLOCK_NONE',
   },
 ];
-export const defaultModel = 'moonshotai/kimi-k2-0905' as const;
+export const DEFAULT_MODEL = 'deepseek/deepseek-v4-flash' as const;
+export const TITLE_MODEL = 'google/gemini-2.5-flash-lite' as const;

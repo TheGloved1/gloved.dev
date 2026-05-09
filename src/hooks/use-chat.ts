@@ -1,4 +1,4 @@
-import { CustomTools, defaultModel, ModelID, ModelList } from '@/lib/ai';
+import { CustomTools, DEFAULT_MODEL, ModelID, ModelList } from '@/lib/ai';
 import { useLocalStorage } from './use-local-storage';
 import { useMount } from './use-mount';
 
@@ -30,13 +30,13 @@ function isValidModel(model: string | undefined | null): model is ModelID {
 export function useChat() {
   const [syncEnabled, setSyncEnabled] = useLocalStorage('syncEnabled', false);
   const [systemPrompt, setSystemPrompt] = useLocalStorage<string | undefined>('systemPrompt', undefined);
-  const [model, setModel] = useLocalStorage<ModelID>('model', defaultModel);
+  const [model, setModel] = useLocalStorage<ModelID>('model', DEFAULT_MODEL);
   const [tools, setTools] = useLocalStorage<CustomTools>('tools', []);
 
   useMount(() => {
     if (!isValidModel(model)) {
       console.log('[CHAT] Invalid model, setting to default');
-      setModel(defaultModel);
+      setModel(DEFAULT_MODEL);
     }
   });
 

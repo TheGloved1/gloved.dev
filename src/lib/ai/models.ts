@@ -10,12 +10,43 @@ export type ModelProvider = 'google' | 'groq' | 'openrouter';
 export type ModelType = 'gemini' | 'qwen' | 'llama' | 'deepseek' | 'gpt' | 'other';
 export const Models = Object.freeze([
   {
-    label: 'Kimi K2',
-    value: 'moonshotai/kimi-k2-0905',
+    label: 'Deepseek V4 Flash',
+    value: 'deepseek/deepseek-v4-flash',
+    provider: 'openrouter' as ModelProvider,
+    type: 'deepseek' as ModelType,
+    enabled: true,
+    description:
+      "DeepSeek's latest model designed for fast inference and high-throughput workloads, while maintaining strong reasoning and coding performance",
+    requirements: {
+      loggedIn: false,
+      admin: false,
+    },
+    tools: [CustomTool.DND, CustomTool.WEB_SEARCH] as CustomTools,
+    features: [] as Features,
+  },
+  {
+    label: 'Kimi K2.5',
+    value: '@preset/kimi-no-reasoning',
     provider: 'openrouter' as ModelProvider,
     type: 'other' as ModelType,
     enabled: true,
-    description: 'A powerful text-to-text model, excels at writing.',
+    description:
+      'A powerful text-to-text model, excels at writing. Delivers strong performance in general reasoning, visual coding, and agentic tool-calling.',
+    requirements: {
+      loggedIn: false,
+      admin: false,
+    },
+    tools: [CustomTool.DND, CustomTool.WEB_SEARCH] as CustomTools,
+    features: [] as Features,
+  },
+  {
+    label: 'Kimi K2.5 (Thinking)',
+    value: 'moonshotai/kimi-k2.5',
+    provider: 'openrouter' as ModelProvider,
+    type: 'other' as ModelType,
+    enabled: true,
+    description:
+      'A powerful text-to-text model, excels at writing. Delivers strong performance in general reasoning, visual coding, and agentic tool-calling.',
     requirements: {
       loggedIn: false,
       admin: false,
@@ -52,13 +83,13 @@ export const Models = Object.freeze([
     features: [] as Features,
   },
   {
-    label: 'Deepseek V4 Flash',
-    value: 'deepseek/deepseek-v4-flash',
+    label: 'Minimax M2-her',
+    value: 'minimax/minimax-m2-her',
     provider: 'openrouter' as ModelProvider,
-    type: 'deepseek' as ModelType,
-    enabled: false,
+    type: 'other' as ModelType,
+    enabled: true,
     description:
-      "DeepSeek's latest model designed for fast inference and high-throughput workloads, while maintaining strong reasoning and coding performance",
+      'MiniMax M2-her is a dialogue-first large language model built for immersive roleplay, character-driven chat, and expressive multi-turn conversations',
     requirements: {
       loggedIn: false,
       admin: false,
@@ -82,13 +113,13 @@ export const Models = Object.freeze([
   },
   {
     label: 'Gemini 2.5 Flash Lite',
-    value: 'gemini-2.5-flash-lite',
-    provider: 'google' as ModelProvider,
+    value: 'google/gemini-2.5-flash-lite',
+    provider: 'openrouter' as ModelProvider,
     type: 'gemini' as ModelType,
     enabled: true,
     description: "Google's flash lite model",
     requirements: {
-      loggedIn: true,
+      loggedIn: false,
       admin: false,
     },
     tools: [] as CustomTools,
