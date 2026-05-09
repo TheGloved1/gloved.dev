@@ -52,6 +52,21 @@ export const Models = Object.freeze([
     features: [] as Features,
   },
   {
+    label: 'Deepseek V4 Flash',
+    value: 'deepseek/deepseek-v4-flash',
+    provider: 'openrouter' as ModelProvider,
+    type: 'deepseek' as ModelType,
+    enabled: false,
+    description:
+      "DeepSeek's latest model designed for fast inference and high-throughput workloads, while maintaining strong reasoning and coding performance",
+    requirements: {
+      loggedIn: false,
+      admin: false,
+    },
+    tools: [CustomTool.DND, CustomTool.WEB_SEARCH] as CustomTools,
+    features: [] as Features,
+  },
+  {
     label: 'GPT OSS 120B (Openrouter)',
     value: 'openai/gpt-oss-120b:free',
     provider: 'openrouter' as ModelProvider,
