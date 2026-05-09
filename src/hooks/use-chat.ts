@@ -31,7 +31,7 @@ export function useChat() {
   const [syncEnabled, setSyncEnabled] = useLocalStorage('syncEnabled', false);
   const [systemPrompt, setSystemPrompt] = useLocalStorage<string | undefined>('systemPrompt', undefined);
   const [model, setModel] = useLocalStorage<ModelID>('model', defaultModel);
-  const [tools, setTools] = useLocalStorage<CustomTools | undefined>('tools', undefined);
+  const [tools, setTools] = useLocalStorage<CustomTools>('tools', []);
 
   useMount(() => {
     if (!isValidModel(model)) {
@@ -39,6 +39,13 @@ export function useChat() {
       setModel(defaultModel);
     }
   });
+
+  const clearChatSettings = () => {
+    localStorage.removeItem('syncEnabled');
+    localStorage.removeItem('systemPrompt');
+    localStorage.removeItem('model');
+    localStorage.removeItem('tools');
+  };
 
   return {
     syncEnabled,
@@ -49,5 +56,6 @@ export function useChat() {
     setModel,
     tools,
     setTools,
+    clearChatSettings,
   };
 }

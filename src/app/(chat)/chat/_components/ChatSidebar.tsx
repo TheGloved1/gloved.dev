@@ -107,6 +107,7 @@ export default function ChatSidebar({ children }: { children?: React.ReactNode }
   };
 
   if (pathname.includes('/settings')) return <>{children}</>;
+  if (pathname.includes('/error')) return <>{children}</>;
 
   // Render a thread item
   const renderThreadItem = (thread: Thread) => (
