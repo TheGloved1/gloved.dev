@@ -117,6 +117,50 @@ export default function Page() {
                 <p className='text-muted-foreground/80'>
                   How would you like the AI to respond? (Leave blank to use default)
                 </p>
+                <div className='flex flex-wrap gap-2'>
+                  {
+                    <button
+                      type='button'
+                      onClick={() => {
+                        setSystemPrompt('');
+                        setPreviousSystemPrompt('');
+                      }}
+                      className={`rounded-full border px-3 py-1 text-sm transition-colors ${
+                        !systemPrompt ?
+                          'cursor-not-allowed border-primary bg-primary text-primary-foreground opacity-50'
+                        : 'border-muted-foreground/20 bg-secondary text-secondary-foreground hover:bg-secondary/80'
+                      }`}
+                    >
+                      Default
+                    </button>
+                  }
+                  {[
+                    { label: 'Concise', prompt: 'Be concise and direct. Avoid unnecessary explanations.' },
+                    { label: 'Creative', prompt: 'Be imaginative, expressive, and enthusiastic in your responses.' },
+                    {
+                      label: 'Technical',
+                      prompt: 'Be thorough and precise. Prefer technical detail and include relevant context.',
+                    },
+                    { label: 'Socratic', prompt: 'Guide the user to answers by asking thoughtful, clarifying questions.' },
+                    { label: 'Friendly', prompt: 'Be warm, conversational, and supportive.' },
+                  ].map((preset) => (
+                    <button
+                      key={preset.label}
+                      type='button'
+                      onClick={() => {
+                        setSystemPrompt(preset.prompt);
+                        setPreviousSystemPrompt(preset.prompt);
+                      }}
+                      className={`rounded-full border px-3 py-1 text-sm transition-colors ${
+                        systemPrompt === preset.prompt ?
+                          'border-primary bg-primary text-primary-foreground opacity-50'
+                        : 'border-muted-foreground/20 bg-secondary text-secondary-foreground hover:bg-secondary/80'
+                      }`}
+                    >
+                      {preset.label}
+                    </button>
+                  ))}
+                </div>
                 <textarea
                   value={systemPrompt ?? undefined}
                   onChange={(e) => {
