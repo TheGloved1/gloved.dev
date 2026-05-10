@@ -2,6 +2,19 @@ import { CustomTools, DEFAULT_MODEL, ModelID, ModelList } from '@/lib/ai';
 import { useLocalStorage } from './use-local-storage';
 import { useMount } from './use-mount';
 
+type ThreadID = string;
+type ThreadInput = {
+  input: string;
+  attachments: string[];
+};
+type InputMap = Record<ThreadID, ThreadInput>;
+
+const EMPTY_THREAD_INPUT: ThreadInput = { input: '', attachments: [] };
+
+function getInitialInputState(): InputMap {
+  return {};
+}
+
 /**
  * Checks if a given model is valid.
  * @param model - The model to check.
@@ -33,6 +46,34 @@ export function useChat() {
   const [model, setModel] = useLocalStorage<ModelID>('model', DEFAULT_MODEL);
   const [tools, setTools] = useLocalStorage<CustomTools>('tools', []);
 
+  const [inputState, setInputState] = useLocalStorage<InputMap>('input', getInitialInputState());
+
+  const getInput = (threadId: ThreadID): ThreadInput => {
+    return inputState[threadId] ?? { ...EMPTY_THREAD_INPUT };
+  };
+
+  const setInput = (threadId: ThreadID, updates: Partial<ThreadInput> | ((prev: ThreadInput) => Partial<ThreadInput>)) => {
+    setInputState((prevMap) => {
+      const prevThread = prevMap[threadId] ?? { ...EMPTY_THREAD_INPUT };
+      const partial = typeof updates === 'function' ? updates(prevThread) : updates;
+      const nextThread = { ...prevThread, ...partial };
+      if (nextThread.input === '' && nextThread.attachments.length === 0) {
+        const next = { ...prevMap };
+        delete next[threadId];
+        return next;
+      }
+      return { ...prevMap, [threadId]: nextThread };
+    });
+  };
+
+  const clearInput = (threadId: ThreadID) => {
+    setInputState((prev) => {
+      const next = { ...prev };
+      delete next[threadId];
+      return next;
+    });
+  };
+
   useMount(() => {
     if (!isValidModel(model)) {
       console.log('[CHAT] Invalid model, setting to default');
@@ -45,6 +86,7 @@ export function useChat() {
     localStorage.removeItem('systemPrompt');
     localStorage.removeItem('model');
     localStorage.removeItem('tools');
+    localStorage.removeItem('input');
   };
 
   return {
@@ -57,5 +99,8 @@ export function useChat() {
     tools,
     setTools,
     clearChatSettings,
+    getInput,
+    setInput,
+    clearInput,
   };
 }

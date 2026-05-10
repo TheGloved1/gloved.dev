@@ -263,7 +263,7 @@ export async function upload(file: File, userId?: string) {
   formData.append('userId', userId);
   formData.append('file', file);
 
-  const result = await gloved.uploadBlob(file);
+  const result = await gloved.uploadBlob(formData);
 
   if (result.error) {
     throw result.error;

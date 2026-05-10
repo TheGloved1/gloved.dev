@@ -3,6 +3,7 @@
  * methods for adding, removing, and retrieving data. It also provides methods for synchronizing the
  * database with remote data.
  */
+import clearInput from '@/hooks/use-chat.module';
 import { deleteUserDataAction, exportThreadAction, syncAction } from '@/lib/actions';
 import { aiGenerate, ApiMessage, checkEmbeddings, CustomTools, ModelID, onboardingCheck, TITLE_MODEL } from '@/lib/ai';
 import { now, sleep, tryCatch } from '@/lib/utils';
@@ -231,6 +232,8 @@ class Database extends Dexie {
       reasoning: undefined,
     });
 
+    clearInput(threadId);
+
     if (userId) {
       await this.exportThread(threadId, userId);
     }
@@ -260,6 +263,7 @@ class Database extends Dexie {
         console.log('[SYNC] Deleted user data for', userId);
       }
     }
+    clearInput('all');
     await sleep(500);
     await onboardingCheck(this);
   }

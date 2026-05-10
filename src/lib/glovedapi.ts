@@ -172,9 +172,11 @@ export class GlovedApi {
    * @param config Optional Axios request configuration.
    * @returns A Result containing the upload response or an error.
    */
-  async uploadBlob(file: File, config?: AxiosRequestConfig): Promise<Result<BlobUploadResponse>> {
-    const formData = new FormData();
-    formData.append('file', file);
+  async uploadBlob(file: File | FormData, config?: AxiosRequestConfig): Promise<Result<BlobUploadResponse>> {
+    const formData = file instanceof FormData ? file : new FormData();
+    if (file instanceof File) {
+      formData.append('file', file);
+    }
 
     return tryCatch(
       this.apiRequest<BlobUploadResponse>('/blob/upload', {

@@ -1,12 +1,11 @@
 'use client';
 import { createMessage, dxdb, stopGeneration } from '@/lib/dexie';
-import { memo, useEffect, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 
 import { Tooltip } from '@/components/TooltipSystem';
 import { Button } from '@/components/ui/button';
 import { useAutoResizeTextarea } from '@/hooks/use-autoresize-textarea';
 import { useChat } from '@/hooks/use-chat';
-import { useLocalStorage } from '@/hooks/use-local-storage';
 import { useIsMobile } from '@/hooks/use-mobile';
 import Constants from '@/lib/constants';
 import { tryCatch, upload } from '@/lib/utils';
@@ -14,7 +13,6 @@ import { useAuth } from '@clerk/nextjs';
 import { ArrowUp, ChevronDown, Paperclip, Square, X } from 'lucide-react';
 import Image from 'next/image';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import { useRef } from 'react';
 import { toast } from 'sonner';
 import MobileInputDialog from './MobileInputDialog';
 import ModelDropdown from './ModelDropdown';
@@ -30,12 +28,9 @@ const ChatInput = memo(
     isAtBottom?: boolean;
     scrollButtonCallback?: () => void;
   }) => {
-    const [canUpload, setCanUpload] = useState(false);
-    const [imagePreview, setImagePreview] = useState<string[]>([]);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [loading, setLoading] = useState<boolean>(false);
-    const [input, setInput] = useLocalStorage('input', '');
-    const { syncEnabled, model, systemPrompt, tools, setTools } = useChat();
+    const { syncEnabled, model, systemPrompt, tools, setTools, getInput, setInput } = useChat();
     const { textareaRef, adjustHeight } = useAutoResizeTextarea({
       minHeight: 60,
       maxHeight: 200,
@@ -48,12 +43,25 @@ const ChatInput = memo(
     const query = searchParams.get('q');
 
     const userIdIfSyncEnabled = syncEnabled && auth.userId ? auth.userId : undefined;
+    const canUpload = !!auth.userId;
 
-    const fileInputRef = useRef<HTMLInputElement>(null);
+    const storageKey = threadId || '__new__';
+    const { input, attachments: images } = getInput(storageKey);
 
-    useEffect(() => {
-      setCanUpload(!!auth.userId);
-    }, [auth.userId]);
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+    const dataURLToFile = (dataUrl: string, filename = 'image.png') => {
+      const arr = dataUrl.split(',');
+      const mimeMatch = arr[0].match(/:(.*?);/);
+      const mime = mimeMatch ? mimeMatch[1] : 'image/png';
+      const bstr = atob(arr[1]);
+      let n = bstr.length;
+      const u8arr = new Uint8Array(n);
+      while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+      }
+      return new File([u8arr], filename, { type: mime });
+    };
 
     const handleSubmit = async (
       e?: React.FormEvent<HTMLFormElement> | React.KeyboardEvent<HTMLTextAreaElement> | undefined,
@@ -61,10 +69,10 @@ const ChatInput = memo(
       e?.preventDefault();
       setLoading(true);
       let attachments: string[] | undefined;
-      if (canUpload && fileInputRef.current?.files?.length) {
-        const files = Array.from(fileInputRef.current.files);
-        for (const file of files) {
-          const imageUpload = await tryCatch(upload(file, auth.userId!));
+      if (canUpload && images.length) {
+        for (const dataUrl of images) {
+          const file = dataURLToFile(dataUrl);
+          const imageUpload = await tryCatch(upload(file, auth.userId));
           if (imageUpload.error) {
             toast.error('Failed to upload images');
             setLoading(false);
@@ -76,9 +84,8 @@ const ChatInput = memo(
             return;
           }
           attachments = [...(attachments || []), imageUpload.data];
-          setImagePreview([]);
         }
-        fileInputRef.current.files = null;
+        setInput(storageKey, { attachments: [] });
       } else if (!canUpload) {
         toast.error('Please sign in to upload images');
         setLoading(false);
@@ -89,7 +96,7 @@ const ChatInput = memo(
         router.push('/chat/' + threadId);
         try {
           const prompt = input;
-          setInput('');
+          setInput(storageKey, { input: '' });
           adjustHeight(true);
           await createMessage({
             threadId,
@@ -108,7 +115,7 @@ const ChatInput = memo(
         setLoading(false);
       } else {
         const prompt = input;
-        setInput('');
+        setInput(storageKey, { input: '' });
         adjustHeight(true);
         await createMessage({
           threadId,
@@ -150,8 +157,7 @@ const ChatInput = memo(
           const reader = new FileReader();
           reader.onloadend = () => {
             if (reader.result) {
-              validImages.push(reader.result as string);
-              setImagePreview((prev) => [...(prev || []), ...validImages]);
+              setInput(storageKey, (prev) => ({ attachments: [...prev.attachments, reader.result as string] }));
             }
           };
           reader.readAsDataURL(file);
@@ -160,7 +166,7 @@ const ChatInput = memo(
     };
 
     const removeImage = (index: number) => {
-      setImagePreview((prev) => prev?.filter((_, i) => i !== index));
+      setInput(storageKey, (prev) => ({ attachments: prev.attachments.filter((_, i) => i !== index) }));
       const fileInput = fileInputRef.current;
       if (fileInput && fileInput.files) {
         const dataTransfer = new DataTransfer();
@@ -209,9 +215,9 @@ const ChatInput = memo(
                   }}
                 >
                   <div className='flex flex-grow flex-col'>
-                    {imagePreview.length > 0 && (
+                    {images.length > 0 && (
                       <div className='flex flex-row gap-2 pb-2'>
-                        {imagePreview.map((image, index) => (
+                        {images.map((image, index) => (
                           <div key={index} className='relative h-20 w-20'>
                             <Image src={image} fill alt='Image preview' className='h-full w-full rounded-md object-cover' />
                             <button
@@ -234,7 +240,7 @@ const ChatInput = memo(
                         ref={textareaRef}
                         onFocus={handleMobileInput}
                         onChange={(e) => {
-                          setInput(e.target.value);
+                          setInput(storageKey, { input: e.target.value });
                           adjustHeight();
                         }}
                         onPaste={(e) => {
@@ -254,12 +260,12 @@ const ChatInput = memo(
                             const cursorPosition = e.currentTarget.selectionStart;
                             e.currentTarget.value = input.slice(0, cursorPosition) + '\n' + input.slice(cursorPosition);
                             e.currentTarget.setSelectionRange(cursorPosition + 1, cursorPosition + 1);
-                            setInput(e.currentTarget.value);
+                            setInput(storageKey, { input: e.currentTarget.value });
                             adjustHeight();
                             return;
                           } else if (e.key === 'Enter') {
                             e.preventDefault();
-                            if (!input.trim() && !imagePreview.length) {
+                            if (!input.trim() && !images.length) {
                               return;
                             }
                             handleSubmit(e);
@@ -311,7 +317,7 @@ const ChatInput = memo(
                           <Button
                             title='Send Message'
                             type='submit'
-                            disabled={!input.trim() && !imagePreview.length}
+                            disabled={!input.trim() && !images.length}
                             className='border-reflect button-reflect relative inline-flex h-9 w-9 items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-[rgb(162,59,103)] bg-primary/20 p-2 text-sm font-semibold text-pink-50 shadow transition-colors hover:bg-[#d56698] hover:bg-pink-800/70 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring active:bg-[rgb(162,59,103)] active:bg-pink-800/40 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-[rgb(162,59,103)] disabled:hover:bg-primary/20 disabled:active:bg-[rgb(162,59,103)] disabled:active:bg-primary/20 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
                           >
                             <ArrowUp className='!size-4' />
@@ -349,7 +355,7 @@ const ChatInput = memo(
         </div>
         <MobileInputDialog
           input={input}
-          setInput={setInput}
+          setInput={(val: string) => setInput(storageKey, { input: val })}
           isOpen={isDialogOpen}
           setIsOpen={setIsDialogOpen}
           onSubmit={(message) => {
