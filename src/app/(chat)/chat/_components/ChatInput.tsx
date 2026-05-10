@@ -79,6 +79,10 @@ const ChatInput = memo(
           setImagePreview([]);
         }
         fileInputRef.current.files = null;
+      } else if (!canUpload) {
+        toast.error('Please sign in to upload images');
+        setLoading(false);
+        return;
       }
       if (createThread) {
         const threadId = await dxdb.createThread();
@@ -126,8 +130,12 @@ const ChatInput = memo(
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [query, createThread]);
 
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const files = e.target.files;
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement> | FileList) => {
+      const files = 'target' in e ? e.target.files : e;
+      if (!canUpload) {
+        toast.error('Please sign in to upload images');
+        return;
+      }
       if (files?.length) {
         const validImages: string[] = [];
         for (const file of Array.from(files)) {
@@ -228,6 +236,16 @@ const ChatInput = memo(
                         onChange={(e) => {
                           setInput(e.target.value);
                           adjustHeight();
+                        }}
+                        onPaste={(e) => {
+                          const files = Array.from(e.clipboardData.files);
+                          const imageFiles = files.filter((f) => f.type.startsWith('image/'));
+                          if (imageFiles.length) {
+                            e.preventDefault();
+                            const dt = new DataTransfer();
+                            imageFiles.forEach((f) => dt.items.add(f));
+                            handleImageChange(dt.files);
+                          }
                         }}
                         onKeyDown={(e) => {
                           // Shift + Enter for new line
