@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function BirdPage() {
   return (
-    <div className='h-screen overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900'>
+    <div className='h-screen overflow-hidden bg-gradient-to-br from-emerald-950 via-teal-950 to-emerald-950'>
       <div className='container mx-auto flex h-full flex-col px-4'>
         {/* Header */}
         <div className='flex-shrink-0 py-4 text-center'>

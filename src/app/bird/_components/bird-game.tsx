@@ -169,11 +169,14 @@ export function BirdGame() {
   const particlesRef = useRef<Particle[]>([]);
   const mountainOffsetRef = useRef(0);
   const hillsOffsetRef = useRef(0);
-  const cloudsRef = useRef<Array<{ x: number; y: number; size: number; speed: number }>>([
-    { x: 100, y: 80, size: 60, speed: 0.3 },
-    { x: 300, y: 120, size: 80, speed: 0.2 },
-    { x: 550, y: 60, size: 50, speed: 0.25 },
-    { x: 700, y: 150, size: 70, speed: 0.35 },
+  const groundOffsetRef = useRef(0);
+  const cloudsRef = useRef<Array<{ x: number; y: number; size: number; speed: number; shape: number }>>([
+    { x: 100, y: 80, size: 60, speed: 0.3, shape: 0 },
+    { x: 300, y: 120, size: 80, speed: 0.2, shape: 1 },
+    { x: 550, y: 60, size: 50, speed: 0.25, shape: 2 },
+    { x: 700, y: 150, size: 70, speed: 0.35, shape: 3 },
+    { x: 900, y: 100, size: 45, speed: 0.18, shape: 1 },
+    { x: 1100, y: 130, size: 55, speed: 0.28, shape: 0 },
   ]);
 
   // Audio system
@@ -222,10 +225,10 @@ export function BirdGame() {
     [isMuted, initAudioContext],
   );
 
-  // Create explosion particles
+  // Create pixel explosion particles
   const createExplosion = useCallback((x: number, y: number) => {
     const newParticles: Particle[] = [];
-    const colors = ['#dc2626', '#b91c1c', '#991b1b', '#7f1d1d', '#ef4444', '#f87171'];
+    const colors = ['#dc2626', '#FF8C00', '#FFD700', '#8B4513', '#FFF'];
 
     for (let i = 0; i < PARTICLE_COUNT; i++) {
       const angle = (Math.PI * 2 * i) / PARTICLE_COUNT + Math.random() * 0.8;
@@ -236,7 +239,7 @@ export function BirdGame() {
         y,
         vx: Math.cos(angle) * speed,
         vy: Math.sin(angle) * speed - 2, // Upward burst
-        size: 2 + Math.random() * 4,
+        size: 4 + Math.random() * 4,
         color: colors[Math.floor(Math.random() * colors.length)],
         life: 1,
         maxLife: 40 + Math.random() * 30,
@@ -246,7 +249,7 @@ export function BirdGame() {
     particlesRef.current = [...particlesRef.current, ...newParticles];
   }, []);
 
-  // Update and draw particles
+  // Update and draw pixel art particles
   const updateParticles = useCallback((ctx: CanvasRenderingContext2D) => {
     particlesRef.current = particlesRef.current.filter((particle) => {
       // Update physics
@@ -260,29 +263,14 @@ export function BirdGame() {
       // Update life
       particle.life -= 1 / particle.maxLife;
 
-      // Draw particle
+      // Draw particle (Blocky pixels)
       if (particle.life > 0) {
         ctx.save();
         ctx.globalAlpha = particle.life;
         ctx.fillStyle = particle.color;
-        ctx.shadowBlur = 5;
-        ctx.shadowColor = particle.color;
-        ctx.beginPath();
-        ctx.arc(particle.x, particle.y, particle.size * particle.life, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Add blood splatter effect
-        if (particle.life > 0.7) {
-          ctx.globalAlpha = particle.life * 0.3;
-          ctx.beginPath();
-          ctx.arc(
-            particle.x + Math.random() * 4 - 2,
-            particle.y + Math.random() * 4 - 2,
-            particle.size * particle.life * 0.5,
-            0,
-            Math.PI * 2,
-          );
-          ctx.fill();
+        const s = Math.floor(particle.size * particle.life);
+        if (s > 0) {
+          ctx.fillRect(Math.floor(particle.x - s/2), Math.floor(particle.y - s/2), s, s);
         }
         ctx.restore();
 
@@ -341,288 +329,77 @@ export function BirdGame() {
     }
   }, [gameState, resetGame, playSound]);
 
-  // Enhanced bird drawing function with different bird types
+  // Redesigned pixel art bird drawing function
   const drawBird = useCallback(
     (ctx: CanvasRenderingContext2D, bird: Bird) => {
-      const centerX = bird.x + bird.size / 2;
-      const centerY = bird.y + bird.size / 2;
+      const bx = Math.floor(bird.x);
+      const by = Math.floor(bird.y);
+      const s = bird.size;
 
-      // Calculate wing angle based on flapping phase
-      const wingAngle = Math.sin(bird.wingPhase) * 0.4;
-
-      // Apply rotation transformation
-      ctx.save();
-      ctx.translate(centerX, centerY);
-      ctx.rotate(bird.rotation);
-      ctx.translate(-centerX, -centerY);
-
-      // Bird-specific colors and features
-      let bodyColors, beakColor, wingSpeedMultiplier, birdFeatures;
+      // Retro Nature Palette
+      let primary, secondary, belly, beak, eye, hasCrest = false, hasMask = false, wingSpeed = 1;
 
       switch (selectedBird) {
         case 'sparrow':
-          bodyColors = {
-            primary: '#8b6914',
-            secondary: '#fbbf24',
-            outline: '#654321',
-            belly: '#f4e4c1',
-          };
-          beakColor = '#ff8c00';
-          wingSpeedMultiplier = 1;
-          birdFeatures = { hasCrest: false, hasMask: false, hasWingBars: false };
+          primary = '#8B6914'; secondary = '#654321'; belly = '#F4E4C1'; beak = '#FF8C00'; eye = '#1F2937';
           break;
-
         case 'cardinal':
-          bodyColors = {
-            primary: '#dc143c',
-            secondary: '#ff6b6b',
-            outline: '#8b0000',
-            belly: '#ffd4a3',
-          };
-          beakColor = '#ffa500';
-          wingSpeedMultiplier = 1.1;
-          birdFeatures = { hasCrest: true, hasMask: true, hasWingBars: false };
+          primary = '#DC143C'; secondary = '#8B0000'; belly = '#FFD4A3'; beak = '#FFA500'; eye = '#1F2937';
+          hasCrest = true; hasMask = true;
           break;
-
         case 'bluejay':
-          bodyColors = {
-            primary: '#4169e1',
-            secondary: '#60a5fa',
-            outline: '#1e3a8a',
-            belly: '#e6f3ff',
-          };
-          beakColor = '#4169e1';
-          wingSpeedMultiplier = 1.2;
-          birdFeatures = { hasCrest: true, hasMask: false, hasWingBars: true };
+          primary = '#4169E1'; secondary = '#1E3A8A'; belly = '#E6F3FF'; beak = '#4169E1'; eye = '#1F2937';
+          hasCrest = true;
           break;
-
         case 'hummingbird':
-          bodyColors = {
-            primary: '#228b22',
-            secondary: '#4ade80',
-            outline: '#006400',
-            belly: '#bbf7d0',
-          };
-          beakColor = '#000000';
-          wingSpeedMultiplier = 3; // Much faster wing beat
-          birdFeatures = { hasCrest: false, hasMask: false, hasWingBars: false };
+          primary = '#228B22'; secondary = '#006400'; belly = '#BBF7D0'; beak = '#000000'; eye = '#1F2937';
+          wingSpeed = 3;
           break;
-
         default:
-          bodyColors = {
-            primary: '#8b6914',
-            secondary: '#fbbf24',
-            outline: '#654321',
-            belly: '#f4e4c1',
-          };
-          beakColor = '#ff8c00';
-          wingSpeedMultiplier = 1;
-          birdFeatures = { hasCrest: false, hasMask: false, hasWingBars: false };
+          primary = '#8B6914'; secondary = '#654321'; belly = '#F4E4C1'; beak = '#FF8C00'; eye = '#1F2937';
       }
 
-      // Adjust wing phase for different birds
-      const adjustedWingPhase = bird.wingPhase * wingSpeedMultiplier;
-      const adjustedWingAngle = Math.sin(adjustedWingPhase) * 0.4;
-
-      // Draw bird body
-      const bodyGradient = ctx.createRadialGradient(
-        centerX - bird.size * 0.1,
-        centerY - bird.size * 0.1,
-        0,
-        centerX,
-        centerY,
-        bird.size * 0.55,
-      );
-      bodyGradient.addColorStop(0, bodyColors.secondary);
-      bodyGradient.addColorStop(0.4, bodyColors.primary);
-      bodyGradient.addColorStop(0.8, bodyColors.primary);
-      bodyGradient.addColorStop(1, bodyColors.outline);
-
-      ctx.fillStyle = bodyGradient;
-      ctx.beginPath();
-      // Egg shape - wider at bottom, tapered at top
-      ctx.ellipse(centerX, centerY, bird.size * 0.5, bird.size * 0.45, 0, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Body outline
-      ctx.strokeStyle = bodyColors.outline;
-      ctx.lineWidth = 2;
-      ctx.stroke();
-
-      // Draw belly highlight
-      const bellyGradient = ctx.createRadialGradient(
-        centerX,
-        centerY + bird.size * 0.15,
-        0,
-        centerX,
-        centerY + bird.size * 0.2,
-        bird.size * 0.3,
-      );
-      bellyGradient.addColorStop(0, 'rgba(255, 255, 255, 0.4)');
-      bellyGradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
-      ctx.fillStyle = bellyGradient;
-      ctx.beginPath();
-      ctx.ellipse(centerX, centerY + bird.size * 0.15, bird.size * 0.3, bird.size * 0.2, 0, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Draw wings with enhanced animation
-      const shoulderY = centerY - bird.size * 0.08;
-      const flapPhase = Math.sin(adjustedWingPhase);
-      const isFlappingDown = flapPhase > 0;
-
-      // Left wing (behind body)
       ctx.save();
-      ctx.translate(centerX - bird.size * 0.08, shoulderY);
-      ctx.rotate(-adjustedWingAngle);
+      ctx.translate(bx + s / 2, by + s / 2);
+      ctx.rotate(bird.rotation);
+      ctx.translate(-(bx + s / 2), -(by + s / 2));
 
-      const leftWingGradient = ctx.createLinearGradient(0, 0, -bird.size * 0.4, 0);
-      leftWingGradient.addColorStop(0, bodyColors.primary);
-      leftWingGradient.addColorStop(0.5, bodyColors.secondary);
-      leftWingGradient.addColorStop(1, bodyColors.outline);
-      ctx.fillStyle = leftWingGradient;
+      // Pixel Art Body (Blocky shapes)
+      ctx.fillStyle = primary;
+      ctx.fillRect(bx + 8, by + 12, 24, 24); // Body
+      ctx.fillRect(bx + 12, by + 8, 16, 16); // Head
 
-      ctx.beginPath();
-      ctx.moveTo(0, 0);
+      // Belly
+      ctx.fillStyle = belly;
+      ctx.fillRect(bx + 16, by + 20, 16, 12);
 
-      if (isFlappingDown) {
-        const extension = flapPhase * 0.3;
-        ctx.quadraticCurveTo(-bird.size * 0.1, -bird.size * 0.3, -bird.size * 0.7 + extension, -bird.size * 0.2);
-        ctx.quadraticCurveTo(-bird.size * 0.8, -bird.size * 0.1, -bird.size * 1.1 + extension, bird.size * 0.2);
-        ctx.quadraticCurveTo(-bird.size * 0.2, bird.size * 0.2, 0, 0);
-      } else {
-        const fold = Math.abs(flapPhase) * 0.2;
-        ctx.quadraticCurveTo(-bird.size * 0.05, -bird.size * 0.25, -bird.size * 0.5 - fold, -bird.size * 0.15);
-        ctx.quadraticCurveTo(-bird.size * 0.6, -bird.size * 0.05, -bird.size * 0.8 - fold, bird.size * 0.1);
-        ctx.quadraticCurveTo(-bird.size * 0.2, bird.size * 0.2, 0, 0);
-      }
-      ctx.closePath();
-      ctx.fill();
-
-      // Add wing bars for bluejay
-      if (birdFeatures.hasWingBars) {
-        ctx.fillStyle = 'white';
-        ctx.fillRect(-bird.size * 0.6, -bird.size * 0.1, bird.size * 0.3, bird.size * 0.05);
+      // Mask
+      if (hasMask) {
+        ctx.fillStyle = '#111';
+        ctx.fillRect(bx + 20, by + 12, 12, 8);
       }
 
-      ctx.restore();
-
-      // Right wing (in front of body)
-      ctx.save();
-      ctx.translate(centerX + bird.size * 0.08, shoulderY);
-      ctx.rotate(adjustedWingAngle);
-
-      const rightWingGradient = ctx.createLinearGradient(0, 0, bird.size * 0.4, 0);
-      rightWingGradient.addColorStop(0, bodyColors.primary);
-      rightWingGradient.addColorStop(0.5, bodyColors.secondary);
-      rightWingGradient.addColorStop(1, bodyColors.outline);
-      ctx.fillStyle = rightWingGradient;
-
-      ctx.beginPath();
-      ctx.moveTo(0, 0);
-
-      if (isFlappingDown) {
-        const extension = flapPhase * 0.3;
-        ctx.quadraticCurveTo(bird.size * 0.1, -bird.size * 0.3, bird.size * 0.7 + extension, -bird.size * 0.2);
-        ctx.quadraticCurveTo(bird.size * 0.8, -bird.size * 0.1, bird.size * 1.1 + extension, bird.size * 0.2);
-        ctx.quadraticCurveTo(bird.size * 0.2, bird.size * 0.2, 0, 0);
-      } else {
-        const fold = Math.abs(flapPhase) * 0.2;
-        ctx.quadraticCurveTo(bird.size * 0.05, -bird.size * 0.25, bird.size * 0.5 - fold, -bird.size * 0.15);
-        ctx.quadraticCurveTo(bird.size * 0.6, -bird.size * 0.05, bird.size * 0.8 - fold, bird.size * 0.1);
-        ctx.quadraticCurveTo(bird.size * 0.2, bird.size * 0.2, 0, 0);
-      }
-      ctx.closePath();
-      ctx.fill();
-
-      // Add wing bars for bluejay
-      if (birdFeatures.hasWingBars) {
-        ctx.fillStyle = 'white';
-        ctx.fillRect(bird.size * 0.3, -bird.size * 0.1, bird.size * 0.3, bird.size * 0.05);
+      // Crest
+      if (hasCrest) {
+        ctx.fillStyle = primary;
+        ctx.fillRect(bx + 16, by + 4, 8, 4);
       }
 
-      ctx.restore();
+      // Eye
+      ctx.fillStyle = '#FFF';
+      ctx.fillRect(bx + 24, by + 12, 4, 4);
+      ctx.fillStyle = eye;
+      ctx.fillRect(bx + 26, by + 14, 2, 2);
 
-      // Draw beak
-      const beakGradient = ctx.createLinearGradient(
-        centerX + bird.size * 0.35,
-        centerY - bird.size * 0.05,
-        centerX + bird.size * 0.65,
-        centerY,
-      );
-      beakGradient.addColorStop(0, beakColor);
-      beakGradient.addColorStop(1, beakColor);
-      ctx.fillStyle = beakGradient;
-      ctx.beginPath();
-      ctx.moveTo(centerX + bird.size * 0.35, centerY - bird.size * 0.05);
-      ctx.lineTo(centerX + bird.size * 0.65, centerY - bird.size * 0.02);
-      ctx.lineTo(centerX + bird.size * 0.65, centerY + bird.size * 0.08);
-      ctx.lineTo(centerX + bird.size * 0.35, centerY + bird.size * 0.05);
-      ctx.closePath();
-      ctx.fill();
+      // Beak
+      ctx.fillStyle = beak;
+      ctx.fillRect(bx + 32, by + 16, 8, 4);
 
-      // Beak highlight
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
-      ctx.beginPath();
-      ctx.moveTo(centerX + bird.size * 0.4, centerY - bird.size * 0.02);
-      ctx.lineTo(centerX + bird.size * 0.55, centerY);
-      ctx.lineTo(centerX + bird.size * 0.5, centerY + bird.size * 0.02);
-      ctx.lineTo(centerX + bird.size * 0.38, centerY);
-      ctx.closePath();
-      ctx.fill();
+      // Wings (Animated block)
+      const wingY = Math.sin(bird.wingPhase * wingSpeed) * 8;
+      ctx.fillStyle = secondary;
+      ctx.fillRect(bx + 4, by + 18 + wingY, 12, 8);
 
-      // Draw eye
-      const eyeX = centerX + bird.size * 0.12;
-      const eyeY = centerY - bird.size * 0.12;
-      const eyeRadius = bird.size * 0.1;
-
-      // Eye white
-      ctx.fillStyle = '#fff';
-      ctx.beginPath();
-      ctx.arc(eyeX, eyeY, eyeRadius, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Eye outline
-      ctx.strokeStyle = '#1f2937';
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-
-      // Eye pupil
-      ctx.fillStyle = '#1f2937';
-      ctx.beginPath();
-      ctx.arc(eyeX + eyeRadius * 0.2, eyeY, eyeRadius * 0.5, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Eye highlight
-      ctx.fillStyle = '#fff';
-      ctx.beginPath();
-      ctx.arc(eyeX - eyeRadius * 0.2, eyeY - eyeRadius * 0.3, eyeRadius * 0.25, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Small second highlight
-      ctx.beginPath();
-      ctx.arc(eyeX + eyeRadius * 0.3, eyeY + eyeRadius * 0.2, eyeRadius * 0.1, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Draw crest for cardinal and bluejay
-      if (birdFeatures.hasCrest) {
-        ctx.fillStyle = bodyColors.primary;
-        ctx.beginPath();
-        ctx.moveTo(centerX - bird.size * 0.05, centerY - bird.size * 0.4);
-        ctx.lineTo(centerX + bird.size * 0.05, centerY - bird.size * 0.5);
-        ctx.lineTo(centerX + bird.size * 0.1, centerY - bird.size * 0.38);
-        ctx.closePath();
-        ctx.fill();
-      }
-
-      // Draw mask for cardinal
-      if (birdFeatures.hasMask) {
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
-        ctx.beginPath();
-        ctx.arc(centerX + bird.size * 0.12, centerY - bird.size * 0.12, bird.size * 0.08, 0, Math.PI * 2);
-        ctx.fill();
-      }
-
-      // Restore rotation transformation
       ctx.restore();
     },
     [selectedBird],
@@ -653,42 +430,44 @@ export function BirdGame() {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Clear canvas with gradient sky background
-    const gradient = ctx.createLinearGradient(0, 0, 0, GAME_HEIGHT - GROUND_HEIGHT);
-    gradient.addColorStop(0, '#0f172a');
-    gradient.addColorStop(0.3, '#1e3a8a');
-    gradient.addColorStop(0.7, '#60a5fa');
-    gradient.addColorStop(1, '#dbeafe');
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT - GROUND_HEIGHT);
+    // Retro Nature Background - Pixel Art Style
+    // Multi-band sky for depth
+    ctx.fillStyle = '#4A7CF5'; // Deep sky top
+    ctx.fillRect(0, 0, GAME_WIDTH, 160);
+    ctx.fillStyle = '#5C94FC'; // Mid sky
+    ctx.fillRect(0, 160, GAME_WIDTH, 120);
+    ctx.fillStyle = '#87CEEB'; // Light sky
+    ctx.fillRect(0, 280, GAME_WIDTH, 100);
+    ctx.fillStyle = '#B0E0E6'; // Horizon glow
+    ctx.fillRect(0, 380, GAME_WIDTH, GAME_HEIGHT - GROUND_HEIGHT - 380);
 
-    // Draw sun
-    const sunX = GAME_WIDTH - 100;
-    const sunY = 80;
-    const sunGradient = ctx.createRadialGradient(sunX, sunY, 0, sunX, sunY, 40);
-    sunGradient.addColorStop(0, '#fef3c7');
-    sunGradient.addColorStop(0.5, '#fbbf24');
-    sunGradient.addColorStop(1, 'rgba(251, 191, 36, 0)');
-    ctx.fillStyle = sunGradient;
-    ctx.beginPath();
-    ctx.arc(sunX, sunY, 40, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Draw sun rays
-    ctx.strokeStyle = 'rgba(251, 191, 36, 0.3)';
-    ctx.lineWidth = 2;
-    for (let i = 0; i < 8; i++) {
-      const angle = (i / 8) * Math.PI * 2;
-      ctx.beginPath();
-      ctx.moveTo(sunX + Math.cos(angle) * 50, sunY + Math.sin(angle) * 50);
-      ctx.lineTo(sunX + Math.cos(angle) * 70, sunY + Math.sin(angle) * 70);
-      ctx.stroke();
-    }
+    // Pixel Sun with rays
+    const sunX = GAME_WIDTH - 90;
+    const sunY = 70;
+    ctx.fillStyle = '#FFD700';
+    // Sun body (blocky cross shape)
+    ctx.fillRect(sunX - 14, sunY - 14, 28, 28);
+    ctx.fillRect(sunX - 6, sunY - 22, 12, 8);
+    ctx.fillRect(sunX - 6, sunY + 14, 12, 8);
+    ctx.fillRect(sunX - 22, sunY - 6, 8, 12);
+    ctx.fillRect(sunX + 14, sunY - 6, 8, 12);
+    // Diagonal ray pixels
+    ctx.fillStyle = '#FFEC8B';
+    ctx.fillRect(sunX - 18, sunY - 18, 4, 4);
+    ctx.fillRect(sunX + 14, sunY - 18, 4, 4);
+    ctx.fillRect(sunX - 18, sunY + 14, 4, 4);
+    ctx.fillRect(sunX + 14, sunY + 14, 4, 4);
+    ctx.fillStyle = '#FFD700';
+    ctx.fillRect(sunX - 24, sunY - 24, 3, 3);
+    ctx.fillRect(sunX + 21, sunY - 24, 3, 3);
+    ctx.fillRect(sunX - 24, sunY + 21, 3, 3);
+    ctx.fillRect(sunX + 21, sunY + 21, 3, 3);
 
     // Update parallax offsets
     if (gameState === 'playing' && !birdRef.current.isDead) {
       mountainOffsetRef.current -= 0.3;
       hillsOffsetRef.current -= 0.6;
+      groundOffsetRef.current -= 1.5;
 
       if (mountainOffsetRef.current <= -GAME_WIDTH) {
         mountainOffsetRef.current += GAME_WIDTH;
@@ -698,84 +477,253 @@ export function BirdGame() {
       }
     }
 
-    // Draw distant mountains
-    ctx.fillStyle = '#334155';
-    ctx.beginPath();
-    const mOffset = mountainOffsetRef.current;
-    ctx.moveTo(0, GAME_HEIGHT - GROUND_HEIGHT);
-    for (let x = 0; x <= GAME_WIDTH + 100; x += 50) {
-      const worldX = x - mOffset;
-      const height = 100 + Math.sin(worldX * 0.00785) * 60 + Math.sin(worldX * 0.0157) * 30;
-      ctx.lineTo(x, GAME_HEIGHT - GROUND_HEIGHT - height);
+    // Layer 1: Distant faint mountains (parallax slow)
+    ctx.fillStyle = '#4A7A6A';
+    const dOffset = Math.floor(mountainOffsetRef.current * 0.5);
+    for (let i = 0; i < 5; i++) {
+      const baseX = dOffset + i * 240;
+      ctx.beginPath();
+      ctx.moveTo(baseX - 40, GAME_HEIGHT - GROUND_HEIGHT);
+      ctx.lineTo(baseX + 40, GAME_HEIGHT - GROUND_HEIGHT - 50);
+      ctx.lineTo(baseX + 80, GAME_HEIGHT - GROUND_HEIGHT - 30);
+      ctx.lineTo(baseX + 120, GAME_HEIGHT - GROUND_HEIGHT);
+      ctx.fill();
     }
-    ctx.lineTo(GAME_WIDTH, GAME_HEIGHT - GROUND_HEIGHT);
-    ctx.closePath();
-    ctx.fill();
 
-    // Draw closer hills
-    ctx.fillStyle = '#475569';
-    ctx.beginPath();
-    const hOffset = hillsOffsetRef.current;
-    ctx.moveTo(0, GAME_HEIGHT - GROUND_HEIGHT);
-    for (let x = 0; x <= GAME_WIDTH + 100; x += 30) {
-      const worldX = x - hOffset;
-      const height = 50 + Math.sin(worldX * 0.0157) * 40 + Math.sin(worldX * 0.0393) * 20;
-      ctx.lineTo(x, GAME_HEIGHT - GROUND_HEIGHT - height);
+    // Layer 2: Mid-distance forested hills with jagged tree-line silhouette
+    ctx.fillStyle = '#3A7A2A';
+    const mOffset = Math.floor(mountainOffsetRef.current);
+    for (let i = 0; i < 5; i++) {
+      const baseX = mOffset + i * 300;
+      const peakX = baseX + 45;
+      ctx.beginPath();
+      ctx.moveTo(baseX, GAME_HEIGHT - GROUND_HEIGHT);
+      ctx.lineTo(baseX + 20, GAME_HEIGHT - GROUND_HEIGHT - 40);
+      ctx.lineTo(baseX + 30, GAME_HEIGHT - GROUND_HEIGHT - 55);
+      ctx.lineTo(peakX, GAME_HEIGHT - GROUND_HEIGHT - 110);
+      ctx.lineTo(baseX + 55, GAME_HEIGHT - GROUND_HEIGHT - 95);
+      ctx.lineTo(baseX + 65, GAME_HEIGHT - GROUND_HEIGHT - 105);
+      ctx.lineTo(baseX + 75, GAME_HEIGHT - GROUND_HEIGHT - 90);
+      ctx.lineTo(baseX + 85, GAME_HEIGHT - GROUND_HEIGHT - 100);
+      ctx.lineTo(baseX + 95, GAME_HEIGHT - GROUND_HEIGHT - 85);
+      ctx.lineTo(baseX + 110, GAME_HEIGHT - GROUND_HEIGHT - 95);
+      ctx.lineTo(baseX + 120, GAME_HEIGHT - GROUND_HEIGHT - 75);
+      ctx.lineTo(baseX + 130, GAME_HEIGHT - GROUND_HEIGHT - 85);
+      ctx.lineTo(baseX + 145, GAME_HEIGHT - GROUND_HEIGHT - 65);
+      ctx.lineTo(baseX + 160, GAME_HEIGHT - GROUND_HEIGHT - 72);
+      ctx.lineTo(baseX + 175, GAME_HEIGHT - GROUND_HEIGHT - 55);
+      ctx.lineTo(baseX + 190, GAME_HEIGHT - GROUND_HEIGHT - 60);
+      ctx.lineTo(baseX + 200, GAME_HEIGHT - GROUND_HEIGHT - 50);
+      ctx.lineTo(baseX + 210, GAME_HEIGHT - GROUND_HEIGHT - 45);
+      ctx.lineTo(baseX + 230, GAME_HEIGHT - GROUND_HEIGHT - 30);
+      ctx.lineTo(baseX + 280, GAME_HEIGHT - GROUND_HEIGHT);
+      ctx.fill();
+
+      // Variety trees on mid-distance hills
+      const peakY = GAME_HEIGHT - GROUND_HEIGHT - 110;
+      const treeVariant = i % 3;
+      if (treeVariant === 0) {
+        // Tall pine
+        ctx.fillStyle = '#2A5A14';
+        ctx.fillRect(peakX - 3, peakY - 18, 6, 18);
+        ctx.fillStyle = '#1A3A0A';
+        ctx.fillRect(peakX - 2, peakY - 14, 4, 4);
+        ctx.fillStyle = '#5A3A1A';
+        ctx.fillRect(peakX - 1, peakY, 2, 5);
+      } else if (treeVariant === 1) {
+        // Round canopy
+        ctx.fillStyle = '#3A6A1A';
+        ctx.fillRect(peakX - 5, peakY - 14, 10, 14);
+        ctx.fillStyle = '#5A9A2A';
+        ctx.fillRect(peakX - 3, peakY - 11, 6, 3);
+        ctx.fillStyle = '#5A3A1A';
+        ctx.fillRect(peakX - 1, peakY, 2, 5);
+      } else {
+        // Pine cluster
+        ctx.fillStyle = '#1A4A0A';
+        ctx.fillRect(peakX - 2, peakY - 12, 4, 12);
+        ctx.fillRect(peakX + 4, peakY - 10, 4, 10);
+        ctx.fillStyle = '#3A7A20';
+        ctx.fillRect(peakX, peakY - 6, 2, 2);
+      }
     }
-    ctx.lineTo(GAME_WIDTH, GAME_HEIGHT - GROUND_HEIGHT);
-    ctx.closePath();
-    ctx.fill();
 
-    // Draw moving clouds
+    // Layer 3: Closer rolling green hills with trees (parallax fast)
+    ctx.fillStyle = '#3A9A2A';
+    const hOffset = Math.floor(hillsOffsetRef.current);
+    for (let i = 0; i < 6; i++) {
+      const baseX = hOffset + i * 180;
+      ctx.beginPath();
+      ctx.moveTo(baseX, GAME_HEIGHT - GROUND_HEIGHT);
+      ctx.lineTo(baseX + 60, GAME_HEIGHT - GROUND_HEIGHT - 45);
+      ctx.lineTo(baseX + 120, GAME_HEIGHT - GROUND_HEIGHT - 20);
+      ctx.lineTo(baseX + 180, GAME_HEIGHT - GROUND_HEIGHT);
+      ctx.fill();
+
+      // Closer trees with more detail
+      const peakX = baseX + 60;
+      const peakY = GAME_HEIGHT - GROUND_HEIGHT - 45;
+      const shoulderX = baseX + 30;
+      const shoulderY = GAME_HEIGHT - GROUND_HEIGHT - 22;
+      const treeType = i % 3;
+
+      // Main tree at hill peak
+      if (treeType === 0) {
+        // Detailed pine
+        ctx.fillStyle = '#2D5A1A';
+        ctx.fillRect(peakX - 6, peakY - 22, 12, 22);
+        ctx.fillRect(peakX - 4, peakY - 26, 8, 6);
+        ctx.fillStyle = '#4A8A2A';
+        ctx.fillRect(peakX - 3, peakY - 20, 6, 3);
+        ctx.fillRect(peakX - 2, peakY - 14, 4, 3);
+      } else if (treeType === 1) {
+        // Round lush tree
+        ctx.fillStyle = '#2D6B1A';
+        ctx.fillRect(peakX - 8, peakY - 20, 16, 20);
+        ctx.fillStyle = '#5A9A2A';
+        ctx.fillRect(peakX - 6, peakY - 17, 12, 4);
+        ctx.fillRect(peakX - 5, peakY - 10, 10, 3);
+      } else {
+        // Tall thin pine
+        ctx.fillStyle = '#1A5A0A';
+        ctx.fillRect(peakX - 3, peakY - 28, 6, 28);
+        ctx.fillRect(peakX - 5, peakY - 22, 10, 6);
+        ctx.fillRect(peakX - 4, peakY - 16, 8, 4);
+        ctx.fillStyle = '#3A8A1A';
+        ctx.fillRect(peakX - 2, peakY - 18, 4, 3);
+      }
+
+      // Trunk for main tree
+      ctx.fillStyle = '#5A3A1A';
+      ctx.fillRect(peakX - 1, peakY, 2, 6);
+
+      // Secondary small tree at shoulder
+      ctx.fillStyle = '#2D5A1A';
+      if (i % 2 === 0) {
+        ctx.fillRect(shoulderX - 3, shoulderY - 10, 6, 10);
+        ctx.fillRect(shoulderX - 4, shoulderY - 14, 8, 6);
+      } else {
+        ctx.fillRect(shoulderX - 4, shoulderY - 12, 8, 12);
+        ctx.fillRect(shoulderX - 2, shoulderY - 8, 4, 3);
+      }
+      ctx.fillStyle = '#5A3A1A';
+      ctx.fillRect(shoulderX - 1, shoulderY, 2, 4);
+    }
+
+    // Moving Pixel Clouds with varied shapes
+    const drawCloudShadow = (px: number, py: number, pw: number, ph: number) => {
+      ctx.fillStyle = 'rgba(180, 200, 220, 0.3)';
+      ctx.fillRect(px + 2, py + 2, pw, ph);
+    };
+    const drawCloudBody = (px: number, py: number, pw: number, ph: number) => {
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+      ctx.fillRect(px, py, pw, ph);
+    };
+
     cloudsRef.current.forEach((cloud) => {
       cloud.x -= cloud.speed;
-      if (cloud.x + cloud.size < 0) {
-        cloud.x = GAME_WIDTH + cloud.size;
-      }
+      if (cloud.x + cloud.size < 0) cloud.x = GAME_WIDTH + cloud.size;
+      const cx = Math.floor(cloud.x);
+      const cy = Math.floor(cloud.y);
+      const cs = Math.floor(cloud.size);
 
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-      ctx.beginPath();
-      ctx.arc(cloud.x, cloud.y, cloud.size * 0.5, 0, Math.PI * 2);
-      ctx.arc(cloud.x + cloud.size * 0.3, cloud.y, cloud.size * 0.4, 0, Math.PI * 2);
-      ctx.arc(cloud.x - cloud.size * 0.3, cloud.y, cloud.size * 0.4, 0, Math.PI * 2);
-      ctx.arc(cloud.x + cloud.size * 0.1, cloud.y - cloud.size * 0.2, cloud.size * 0.35, 0, Math.PI * 2);
-      ctx.fill();
+      switch (cloud.shape) {
+        case 0: // Classic puffy — wide with a top bump
+          drawCloudShadow(cx, cy, cs, Math.floor(cs * 0.35));
+          drawCloudBody(cx, cy, cs, Math.floor(cs * 0.35));
+          drawCloudShadow(cx + Math.floor(cs * 0.25), cy - 8, Math.floor(cs * 0.5), 10);
+          drawCloudBody(cx + Math.floor(cs * 0.25), cy - 10, Math.floor(cs * 0.5), 12);
+          break;
+        case 1: // Double bump
+          drawCloudShadow(cx, cy, cs, Math.floor(cs * 0.3));
+          drawCloudBody(cx, cy, cs, Math.floor(cs * 0.3));
+          drawCloudShadow(cx + Math.floor(cs * 0.1), cy - 8, Math.floor(cs * 0.35), 8);
+          drawCloudBody(cx + Math.floor(cs * 0.1), cy - 10, Math.floor(cs * 0.35), 10);
+          drawCloudShadow(cx + Math.floor(cs * 0.5), cy - 6, Math.floor(cs * 0.35), 8);
+          drawCloudBody(cx + Math.floor(cs * 0.5), cy - 8, Math.floor(cs * 0.35), 10);
+          break;
+        case 2: // Long and low
+          drawCloudShadow(cx, cy, cs, Math.floor(cs * 0.25));
+          drawCloudBody(cx, cy, cs, Math.floor(cs * 0.25));
+          drawCloudShadow(cx + Math.floor(cs * 0.3), cy - 4, Math.floor(cs * 0.4), 6);
+          drawCloudBody(cx + Math.floor(cs * 0.3), cy - 6, Math.floor(cs * 0.4), 8);
+          break;
+        case 3: // Tall round puff
+          drawCloudShadow(cx, cy, Math.floor(cs * 0.7), Math.floor(cs * 0.4));
+          drawCloudBody(cx, cy, Math.floor(cs * 0.7), Math.floor(cs * 0.4));
+          drawCloudShadow(cx + Math.floor(cs * 0.15), cy - 12, Math.floor(cs * 0.4), 12);
+          drawCloudBody(cx + Math.floor(cs * 0.15), cy - 14, Math.floor(cs * 0.4), 14);
+          break;
+      }
     });
 
-    // Draw ground with gradient
-    const groundGradient = ctx.createLinearGradient(0, GAME_HEIGHT - GROUND_HEIGHT, 0, GAME_HEIGHT);
-    groundGradient.addColorStop(0, '#166534');
-    groundGradient.addColorStop(0.5, '#15803d');
-    groundGradient.addColorStop(1, '#14532d');
-    ctx.fillStyle = groundGradient;
-    ctx.fillRect(0, GAME_HEIGHT - GROUND_HEIGHT, GAME_WIDTH, GROUND_HEIGHT);
+    // Scrolling Retro Ground
+    const gOff = Math.floor(groundOffsetRef.current);
+    const scrollX = ((gOff % GAME_WIDTH) + GAME_WIDTH) % GAME_WIDTH;
 
-    // Draw grass on top of ground
-    ctx.fillStyle = '#22c55e';
-    for (let x = 0; x < GAME_WIDTH; x += 15) {
-      const grassHeight = 8 + Math.random() * 8;
-      ctx.fillRect(x, GAME_HEIGHT - GROUND_HEIGHT - grassHeight, 3, grassHeight);
+    // Tile solid background bands
+    for (let x = -GAME_WIDTH; x < GAME_WIDTH * 2; x += GAME_WIDTH) {
+      const dx = x + scrollX;
+
+      // Grass top layer
+      ctx.fillStyle = '#4A7A2A';
+      ctx.fillRect(dx, GAME_HEIGHT - GROUND_HEIGHT, GAME_WIDTH, 8);
+      ctx.fillStyle = '#3A6A1A'; // Dark grass stripe
+      ctx.fillRect(dx, GAME_HEIGHT - GROUND_HEIGHT + 8, GAME_WIDTH, 4);
+
+      // Dirt layer
+      ctx.fillStyle = '#6B4A2E';
+      ctx.fillRect(dx, GAME_HEIGHT - GROUND_HEIGHT + 12, GAME_WIDTH, GROUND_HEIGHT - 12);
+
+      // Darker dirt bottom
+      ctx.fillStyle = '#5A3D22';
+      ctx.fillRect(dx, GAME_HEIGHT - GROUND_HEIGHT + 40, GAME_WIDTH, GROUND_HEIGHT - 40);
     }
 
-    // Draw ground details
-    for (let i = 0; i < 15; i++) {
-      const x = (i * 53) % GAME_WIDTH;
-      const y = GAME_HEIGHT - GROUND_HEIGHT + 20 + ((i * 17) % 50);
-      if (i % 3 === 0) {
-        ctx.fillStyle = ['#f472b6', '#fbbf24', '#c084fc'][i % 3];
-        ctx.beginPath();
-        ctx.arc(x, y, 4, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = '#fbbf24';
-        ctx.beginPath();
-        ctx.arc(x, y, 2, 0, Math.PI * 2);
-        ctx.fill();
-      } else if (i % 4 === 0) {
-        ctx.fillStyle = '#9ca3af';
-        ctx.beginPath();
-        ctx.ellipse(x, y, 6, 4, 0, 0, Math.PI * 2);
-        ctx.fill();
-      }
+    // Grass tufts along the top (scroll with wrap)
+    ctx.fillStyle = '#5A9A3A';
+    for (let x = -20; x < GAME_WIDTH + 20; x += 20) {
+      const sx = ((x + scrollX) % GAME_WIDTH + GAME_WIDTH) % GAME_WIDTH;
+      const h = 6 + (((x + scrollX) / 4) % 3) * 2;
+      ctx.fillRect(sx, GAME_HEIGHT - GROUND_HEIGHT - h, 3, h);
+      ctx.fillRect(sx + 10, GAME_HEIGHT - GROUND_HEIGHT - h + 2, 3, h - 2);
+    }
+
+    // Dirt speckles (scroll with wrap)
+    ctx.fillStyle = '#7A5A3E';
+    for (let i = 0; i < 25; i++) {
+      const dx = (((i * 67 + 13) + scrollX) % GAME_WIDTH + GAME_WIDTH) % GAME_WIDTH;
+      const dy = GAME_HEIGHT - GROUND_HEIGHT + 18 + ((i * 23) % (GROUND_HEIGHT - 25));
+      ctx.fillRect(dx, dy, 4, 3);
+    }
+
+    // Small pebbles (scroll with wrap)
+    ctx.fillStyle = '#8B7355';
+    for (let i = 0; i < 10; i++) {
+      const px = (((i * 97 + 41) + scrollX) % GAME_WIDTH + GAME_WIDTH) % GAME_WIDTH;
+      const py = GAME_HEIGHT - GROUND_HEIGHT + 14 + ((i * 53) % 30);
+      ctx.fillRect(px, py, 5, 3);
+    }
+
+    // Occasional flowers (scroll with wrap)
+    for (let i = 0; i < 5; i++) {
+      const fx = (((i * 137 + 53) + scrollX) % GAME_WIDTH + GAME_WIDTH) % GAME_WIDTH;
+      const fy = GAME_HEIGHT - GROUND_HEIGHT + 6;
+      ctx.fillStyle = i % 2 === 0 ? '#FFD700' : '#FF69B4';
+      ctx.fillRect(fx, fy, 3, 3);
+      ctx.fillStyle = '#5A9A3A';
+      ctx.fillRect(fx + 1, fy + 3, 1, 4);
+    }
+
+    // Foreground bushes (scroll with wrap)
+    ctx.fillStyle = '#2D6B1A';
+    for (let i = 0; i < 5; i++) {
+      const bx = (((i * 220 + 40) + scrollX) % GAME_WIDTH + GAME_WIDTH) % GAME_WIDTH;
+      ctx.fillRect(bx - 10, GAME_HEIGHT - GROUND_HEIGHT - 14, 20, 14);
+      ctx.fillRect(bx - 4, GAME_HEIGHT - GROUND_HEIGHT - 20, 10, 8);
+      ctx.fillStyle = '#4A9A2A';
+      ctx.fillRect(bx - 6, GAME_HEIGHT - GROUND_HEIGHT - 12, 14, 4);
+      ctx.fillStyle = '#2D6B1A';
     }
 
     if (gameState === 'start') {
@@ -792,32 +740,26 @@ export function BirdGame() {
     }
 
     if (gameState === 'playing' || gameState === 'gameOver') {
-      // Update bird physics and animation
+      // Bird physics
       if (!birdRef.current.isDead) {
         birdRef.current.velocity += GRAVITY;
         birdRef.current.wingPhase += WING_FLAP_SPEED;
       } else {
         birdRef.current.velocity += GRAVITY * 2;
-        birdRef.current.wingPhase += WING_FLAP_SPEED * 0.2;
-
         birdRef.current.x += birdRef.current.hitVelocityX;
-        birdRef.current.y += birdRef.current.hitVelocityY;
+        birdRef.current.y += birdRef.current.velocity;
         birdRef.current.rotation += birdRef.current.rotationSpeed;
-
-        birdRef.current.hitVelocityX *= 0.95;
-        birdRef.current.hitVelocityY *= 0.95;
-        birdRef.current.rotationSpeed *= BIRD_ROTATION_FRICTION;
       }
       birdRef.current.y += birdRef.current.velocity;
 
-      // Update pipes
+      // Pipe updates
       if (!birdRef.current.isDead) {
         pipesRef.current = pipesRef.current
           .map((pipe) => ({ ...pipe, x: pipe.x - PIPE_SPEED }))
           .filter((pipe) => pipe.x + pipe.width > 0);
       }
 
-      // Check for scoring
+      // Scoring
       pipesRef.current.forEach((pipe) => {
         if (!pipe.passed && pipe.x + pipe.width < birdRef.current.x) {
           pipe.passed = true;
@@ -826,7 +768,7 @@ export function BirdGame() {
         }
       });
 
-      // Add new pipes
+      // Spawn pipes
       if (
         !birdRef.current.isDead &&
         (pipesRef.current.length === 0 || pipesRef.current[pipesRef.current.length - 1].x < GAME_WIDTH - 300)
@@ -841,99 +783,52 @@ export function BirdGame() {
         });
       }
 
-      // Draw pipes with gradient
+      // Pixel Art Tree Pipes
       pipesRef.current.forEach((pipe) => {
-        const pipeGradient = ctx.createLinearGradient(pipe.x, 0, pipe.x + pipe.width, 0);
-        pipeGradient.addColorStop(0, '#16a34a');
-        pipeGradient.addColorStop(0.5, '#22c55e');
-        pipeGradient.addColorStop(1, '#16a34a');
-
-        ctx.fillStyle = pipeGradient;
+        ctx.fillStyle = '#8B4513'; // Trunk (Saddle brown)
         ctx.fillRect(pipe.x, 0, pipe.width, pipe.gapY);
         ctx.fillRect(pipe.x, pipe.gapY + pipe.gapHeight, pipe.width, GAME_HEIGHT - pipe.gapY - pipe.gapHeight);
-
-        ctx.strokeStyle = '#15803d';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(pipe.x, 0, pipe.width, pipe.gapY);
-        ctx.strokeRect(pipe.x, pipe.gapY + pipe.gapHeight, pipe.width, GAME_HEIGHT - pipe.gapY - pipe.gapHeight);
+        
+        // Leafy caps
+        ctx.fillStyle = '#32CD32'; // Lime green
+        ctx.fillRect(pipe.x - 4, pipe.gapY - 12, pipe.width + 8, 12);
+        ctx.fillRect(pipe.x - 4, pipe.gapY + pipe.gapHeight, pipe.width + 8, 12);
       });
 
-      // Draw enhanced bird
       drawBird(ctx, birdRef.current);
-
-      // Update and draw particles
       updateParticles(ctx);
 
-      // Draw score
-      ctx.fillStyle = '#000';
-      ctx.font = 'bold 34px Arial';
+      // Score
+      ctx.fillStyle = '#FFF';
+      ctx.font = 'bold 34px monospace';
       ctx.textAlign = 'center';
-      ctx.strokeStyle = '#fff';
-      ctx.lineWidth = 3;
-      ctx.strokeText(`Score: ${score}`, GAME_WIDTH / 2, 50);
-      ctx.fillText(`Score: ${score}`, GAME_WIDTH / 2, 50);
+      ctx.fillText(score.toString(), GAME_WIDTH / 2, 50);
 
-      // Check collision
+      // Collision
       const hitPipe = checkCollision(birdRef.current, pipesRef.current);
       if (hitPipe && !birdRef.current.isDead) {
         birdRef.current.isDead = true;
         playSound('collision');
-
         applyCollisionPhysics(birdRef.current, hitPipe);
         createExplosion(birdRef.current.x + birdRef.current.size / 2, birdRef.current.y + birdRef.current.size / 2);
-
         const newHighScore = Math.max(highScore, score);
         setHighScore(newHighScore);
-
-        if (isSignedIn && score > 0) {
-          console.log('Game over - checking auto-save:', { score, userBestScore });
-          const currentBest = userBestScore || 0;
-          if (score > currentBest) {
-            console.log('Auto-saving new best score:', score);
-            saveScoreMutation.mutate(score);
-          } else {
-            console.log('Not auto-saving - score not better than best');
-          }
-        }
+        if (isSignedIn && score > 0) saveScoreMutation.mutate(score);
       }
 
-      // Set game over when bird falls off screen
-      if (birdRef.current.y > GAME_HEIGHT + 100) {
-        setGameState('gameOver');
-        if (gameState !== 'gameOver') {
-          playSound('gameOver');
-        }
-      }
+      if (birdRef.current.y > GAME_HEIGHT + 100) setGameState('gameOver');
     }
 
     if (gameState === 'gameOver') {
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
       ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
-
       ctx.fillStyle = '#FFF';
-      ctx.font = 'bold 48px Arial';
+      ctx.font = 'bold 48px monospace';
       ctx.textAlign = 'center';
-      ctx.fillText('Game Over!', GAME_WIDTH / 2, GAME_HEIGHT / 2 - 60);
-
-      ctx.font = '32px Arial';
-      ctx.fillText(`Score: ${score}`, GAME_WIDTH / 2, GAME_HEIGHT / 2);
-
-      ctx.font = '24px Arial';
-      ctx.fillText('Click or Press Space to Play Again', GAME_WIDTH / 2, GAME_HEIGHT / 2 + 60);
-
-      if (isSignedIn && score > 0) {
-        const currentBest = userBestScore || 0;
-        if (score > currentBest) {
-          ctx.fillStyle = '#4CAF50';
-          ctx.font = '18px Arial';
-          ctx.fillText('🎉 New Personal Best - Auto-Saved!', GAME_WIDTH / 2, GAME_HEIGHT / 2 + 140);
-        }
-      }
+      ctx.fillText('GAME OVER', GAME_WIDTH / 2, GAME_HEIGHT / 2);
     }
 
-    if (requestRef.current) {
-      cancelAnimationFrame(requestRef.current);
-    }
+    if (requestRef.current) cancelAnimationFrame(requestRef.current);
     // eslint-disable-next-line react-hooks/immutability
     requestRef.current = requestAnimationFrame(gameLoop);
   }, [
@@ -951,6 +846,7 @@ export function BirdGame() {
     userBestScore,
     saveScoreMutation,
   ]);
+
 
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {

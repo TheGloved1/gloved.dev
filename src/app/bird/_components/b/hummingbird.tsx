@@ -1,5 +1,3 @@
-import React from 'react';
-
 interface AnimatedBirdProps {
   wingPhase: number;
   size: number;
@@ -10,130 +8,22 @@ interface AnimatedBirdProps {
 }
 
 export function HummingbirdBird({ wingPhase, size, x, y, rotation, isDead = false }: AnimatedBirdProps) {
-  const wingAngle = Math.sin(wingPhase * 3) * 45; // Faster wing beat
-  const bodyColor = isDead ? '#778899' : '#228b22';
-  const throatColor = isDead ? '#8fbc8f' : '#ff69b4';
+  const bodyColor = isDead ? '#778899' : '#228B22';
+  const wingColor = '#006400';
+  const bellyColor = '#BBF7D0';
   
   return (
-    <g transform={`translate(${x + size/2}, ${y + size/2}) rotate(${rotation}) translate(${-size/2}, ${-size/2})`}>
-      {/* Shadow */}
-      <ellipse
-        cx={size/2}
-        cy={size * 0.95}
-        rx={size * 0.3}
-        ry={size * 0.06}
-        fill="rgba(0,0,0,0.2)"
-      />
-      
-      {/* Body - more slender */}
-      <ellipse
-        cx={size/2}
-        cy={size/2}
-        rx={size * 0.25}
-        ry={size * 0.35}
-        fill={bodyColor}
-        stroke="#006400"
-        strokeWidth="1"
-      />
-      
-      {/* Throat patch */}
-      <ellipse
-        cx={size * 0.55}
-        cy={size * 0.35}
-        rx={size * 0.12}
-        ry={size * 0.15}
-        fill={throatColor}
-        opacity="0.8"
-      />
-      
-      {/* Left Wing - very fast movement */}
-      <g transform={`translate(${size * 0.2}, ${size * 0.4})`}>
-        <g transform={`rotate(${-wingAngle})`}>
-          <path
-            d={`M 0,0 Q ${-size * 0.25},${-size * 0.35} ${-size * 0.4},${-size * 0.3} Q ${-size * 0.45},${size * 0.05} ${-size * 0.2},${size * 0.1} Z`}
-            fill={bodyColor}
-            stroke="#006400"
-            strokeWidth="0.5"
-          />
-          {/* Wing shimmer */}
-          <path
-            d={`M ${-size * 0.05},${-size * 0.1} Q ${-size * 0.2},${-size * 0.2} ${-size * 0.3},${-size * 0.15}`}
-            stroke="rgba(255,255,255,0.6)"
-            strokeWidth="0.3"
-            fill="none"
-          />
-        </g>
-      </g>
-      
-      {/* Right Wing */}
-      <g transform={`translate(${size * 0.8}, ${size * 0.4})`}>
-        <g transform={`rotate(${wingAngle})`}>
-          <path
-            d={`M 0,0 Q ${size * 0.25},${-size * 0.35} ${size * 0.4},${-size * 0.3} Q ${size * 0.45},${size * 0.05} ${size * 0.2},${size * 0.1} Z`}
-            fill={bodyColor}
-            stroke="#006400"
-            strokeWidth="0.5"
-          />
-          {/* Wing shimmer */}
-          <path
-            d={`M ${size * 0.05},${-size * 0.1} Q ${size * 0.2},${-size * 0.2} ${size * 0.3},${-size * 0.15}`}
-            stroke="rgba(255,255,255,0.6)"
-            strokeWidth="0.3"
-            fill="none"
-          />
-        </g>
-      </g>
-      
-      {/* Head */}
-      <circle
-        cx={size * 0.65}
-        cy={size * 0.25}
-        r={size * 0.15}
-        fill={bodyColor}
-        stroke="#006400"
-        strokeWidth="1"
-      />
-      
-      {/* Eye */}
-      <circle
-        cx={size * 0.68}
-        cy={size * 0.23}
-        r={size * 0.04}
-        fill="white"
-      />
-      <circle
-        cx={size * 0.69}
-        cy={size * 0.23}
-        r={size * 0.025}
-        fill="black"
-      />
-      
-      {/* Long thin beak */}
-      <path
-        d={`M ${size * 0.78},${size * 0.25} L ${size * 1.1},${size * 0.26} L ${size * 0.78},${size * 0.27} Z`}
-        fill="#000"
-        opacity="0.8"
-      />
-      
-      {/* Tail feathers - spread */}
-      <path
-        d={`M ${size * 0.25},${size * 0.7} L ${size * 0.15},${size * 0.85} L ${size * 0.2},${size * 0.8} Z`}
-        fill={bodyColor}
-        stroke="#006400"
-        strokeWidth="0.5"
-      />
-      <path
-        d={`M ${size * 0.25},${size * 0.7} L ${size * 0.25},${size * 0.9} L ${size * 0.3},${size * 0.8} Z`}
-        fill={bodyColor}
-        stroke="#006400"
-        strokeWidth="0.5"
-      />
-      <path
-        d={`M ${size * 0.25},${size * 0.7} L ${size * 0.35},${size * 0.85} L ${size * 0.3},${size * 0.8} Z`}
-        fill={bodyColor}
-        stroke="#006400"
-        strokeWidth="0.5"
-      />
+    <g transform={`translate(${x + size/2}, ${y + size/2}) rotate(${rotation}) translate(${-size/2}, -20)`}>
+      {/* Pixel Art Hummingbird */}
+      <rect x="14" y="12" width="14" height="20" fill={bodyColor} /> {/* Body */}
+      <rect x="20" y="4" width="14" height="12" fill={bodyColor} /> {/* Head */}
+      <rect x="16" y="16" width="10" height="14" fill={bellyColor} /> {/* Belly */}
+      <rect x="22" y="14" width="6" height="8" fill="#FF69B4" /> {/* Throat */}
+      <rect x="32" y="8" width="14" height="2" fill="#000" /> {/* Beak top */}
+      <rect x="32" y="10" width="12" height="2" fill="#000" /> {/* Beak bottom */}
+      <rect x="26" y="8" width="5" height="5" fill="#FFF" /> {/* Eye */}
+      <rect x="28" y="10" width="2" height="2" fill="#1F2937" /> {/* Pupil */}
+      <rect x="8" y="12" width="12" height="4" fill="rgba(34,139,34,0.6)" /> {/* Wing */}
     </g>
   );
 }
