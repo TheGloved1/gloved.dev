@@ -21,7 +21,7 @@
     "lint": "eslint .",
     "prettier": "prettier --config ./package.json --write ./src",
     "generate-route-map": "bun run scripts/GithubPageRouteGen.ts",
-    "gource": ".\\..\\gource\\gource --title \"gloved.dev\" --auto-skip-seconds 1 -f -1280x720 --font-size 18 --seconds-per-day 0.20 --stop-at-end -o - | ffmpeg -y -r 60 -f image2pipe -vcodec ppm -i - -vcodec libvpx -b 10000K public/gource.webm"
+    "gource": "bun run scripts/gource.ts public/gource.webm"
   },
   "prettier": {
     "printWidth": 125,
