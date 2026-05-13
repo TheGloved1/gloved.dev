@@ -178,10 +178,10 @@ export default function ChatSidebar({ children }: { children?: React.ReactNode }
             </div>
             <Link
               href='/'
-              className='ml-0 mr-10 flex items-center justify-center gap-2 rounded-lg border border-border px-3 py-2 text-sm font-semibold tracking-tight text-foreground transition-colors hover:bg-accent md:ml-10 md:mr-0'
+              className='border-reflect brutal-shadow-sm group relative ml-0 mr-10 flex items-center justify-center gap-2 rounded-lg border border-fuchsia-500/20 bg-fuchsia-500/[0.03] px-3 py-2 text-sm font-semibold tracking-tight text-foreground transition-all duration-200 active:border-fuchsia-500/40 active:bg-fuchsia-500/10 active:shadow-sm md:ml-10 md:mr-0'
             >
-              <ArrowLeft className='h-4 w-4 text-muted-foreground' />
-              <span className='font-display text-xs font-bold uppercase leading-none tracking-wide'>
+              <ArrowLeft className='h-4 w-4 text-muted-foreground transition-transform duration-200 group-hover:-translate-x-0.5 group-active:translate-x-0' />
+              <span className='font-display text-xs font-bold uppercase leading-none tracking-wide transition-colors duration-200 group-hover:text-fuchsia-400/80'>
                 gloved<span className='text-fuchsia-500'>.</span>dev
               </span>
             </Link>
