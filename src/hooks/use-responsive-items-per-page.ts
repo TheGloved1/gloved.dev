@@ -22,7 +22,7 @@ export function useResponsiveItemsPerPage() {
 
     const mql = window.matchMedia(`(max-width: ${TABLET_BREAKPOINT - 1}px)`);
     mql.addEventListener('change', updateItemsPerPage);
-    
+
     return () => mql.removeEventListener('change', updateItemsPerPage);
   }, []);
 

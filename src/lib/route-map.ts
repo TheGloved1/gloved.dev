@@ -19,6 +19,10 @@ export const RouteMap: Record<string, RouteInfo> = {
       relativePath: 'src/app/(auth)/sign-up/[[...rest]]/page.tsx',
       githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/(auth)/sign-up/%5B%5B...rest%5D%5D/page.tsx'
     },
+    '/(chat)/chat/error': {
+      relativePath: 'src/app/(chat)/chat/error/page.tsx',
+      githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/(chat)/chat/error/page.tsx'
+    },
     '/(chat)/chat': {
       relativePath: 'src/app/(chat)/chat/page.tsx',
       githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/(chat)/chat/page.tsx'
@@ -90,6 +94,10 @@ export const RouteMap: Record<string, RouteInfo> = {
     '/home': {
       relativePath: 'src/app/home/page.tsx',
       githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/home/page.tsx'
+    },
+    '/localstorage': {
+      relativePath: 'src/app/localstorage/page.tsx',
+      githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/localstorage/page.tsx'
     },
     '/old': {
       relativePath: 'src/app/old/page.tsx',

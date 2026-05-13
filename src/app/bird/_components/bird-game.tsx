@@ -270,7 +270,7 @@ export function BirdGame() {
         ctx.fillStyle = particle.color;
         const s = Math.floor(particle.size * particle.life);
         if (s > 0) {
-          ctx.fillRect(Math.floor(particle.x - s/2), Math.floor(particle.y - s/2), s, s);
+          ctx.fillRect(Math.floor(particle.x - s / 2), Math.floor(particle.y - s / 2), s, s);
         }
         ctx.restore();
 
@@ -337,26 +337,54 @@ export function BirdGame() {
       const s = bird.size;
 
       // Retro Nature Palette
-      let primary, secondary, belly, beak, eye, hasCrest = false, hasMask = false, wingSpeed = 1;
+      let primary,
+        secondary,
+        belly,
+        beak,
+        eye,
+        hasCrest = false,
+        hasMask = false,
+        wingSpeed = 1;
 
       switch (selectedBird) {
         case 'sparrow':
-          primary = '#8B6914'; secondary = '#654321'; belly = '#F4E4C1'; beak = '#FF8C00'; eye = '#1F2937';
+          primary = '#8B6914';
+          secondary = '#654321';
+          belly = '#F4E4C1';
+          beak = '#FF8C00';
+          eye = '#1F2937';
           break;
         case 'cardinal':
-          primary = '#DC143C'; secondary = '#8B0000'; belly = '#FFD4A3'; beak = '#FFA500'; eye = '#1F2937';
-          hasCrest = true; hasMask = true;
+          primary = '#DC143C';
+          secondary = '#8B0000';
+          belly = '#FFD4A3';
+          beak = '#FFA500';
+          eye = '#1F2937';
+          hasCrest = true;
+          hasMask = true;
           break;
         case 'bluejay':
-          primary = '#4169E1'; secondary = '#1E3A8A'; belly = '#E6F3FF'; beak = '#4169E1'; eye = '#1F2937';
+          primary = '#4169E1';
+          secondary = '#1E3A8A';
+          belly = '#E6F3FF';
+          beak = '#4169E1';
+          eye = '#1F2937';
           hasCrest = true;
           break;
         case 'hummingbird':
-          primary = '#228B22'; secondary = '#006400'; belly = '#BBF7D0'; beak = '#000000'; eye = '#1F2937';
+          primary = '#228B22';
+          secondary = '#006400';
+          belly = '#BBF7D0';
+          beak = '#000000';
+          eye = '#1F2937';
           wingSpeed = 3;
           break;
         default:
-          primary = '#8B6914'; secondary = '#654321'; belly = '#F4E4C1'; beak = '#FF8C00'; eye = '#1F2937';
+          primary = '#8B6914';
+          secondary = '#654321';
+          belly = '#F4E4C1';
+          beak = '#FF8C00';
+          eye = '#1F2937';
       }
 
       ctx.save();
@@ -683,7 +711,7 @@ export function BirdGame() {
     // Grass tufts along the top (scroll with wrap)
     ctx.fillStyle = '#5A9A3A';
     for (let x = -20; x < GAME_WIDTH + 20; x += 20) {
-      const sx = ((x + scrollX) % GAME_WIDTH + GAME_WIDTH) % GAME_WIDTH;
+      const sx = (((x + scrollX) % GAME_WIDTH) + GAME_WIDTH) % GAME_WIDTH;
       const h = 6 + (((x + scrollX) / 4) % 3) * 2;
       ctx.fillRect(sx, GAME_HEIGHT - GROUND_HEIGHT - h, 3, h);
       ctx.fillRect(sx + 10, GAME_HEIGHT - GROUND_HEIGHT - h + 2, 3, h - 2);
@@ -692,7 +720,7 @@ export function BirdGame() {
     // Dirt speckles (scroll with wrap)
     ctx.fillStyle = '#7A5A3E';
     for (let i = 0; i < 25; i++) {
-      const dx = (((i * 67 + 13) + scrollX) % GAME_WIDTH + GAME_WIDTH) % GAME_WIDTH;
+      const dx = (((i * 67 + 13 + scrollX) % GAME_WIDTH) + GAME_WIDTH) % GAME_WIDTH;
       const dy = GAME_HEIGHT - GROUND_HEIGHT + 18 + ((i * 23) % (GROUND_HEIGHT - 25));
       ctx.fillRect(dx, dy, 4, 3);
     }
@@ -700,14 +728,14 @@ export function BirdGame() {
     // Small pebbles (scroll with wrap)
     ctx.fillStyle = '#8B7355';
     for (let i = 0; i < 10; i++) {
-      const px = (((i * 97 + 41) + scrollX) % GAME_WIDTH + GAME_WIDTH) % GAME_WIDTH;
+      const px = (((i * 97 + 41 + scrollX) % GAME_WIDTH) + GAME_WIDTH) % GAME_WIDTH;
       const py = GAME_HEIGHT - GROUND_HEIGHT + 14 + ((i * 53) % 30);
       ctx.fillRect(px, py, 5, 3);
     }
 
     // Occasional flowers (scroll with wrap)
     for (let i = 0; i < 5; i++) {
-      const fx = (((i * 137 + 53) + scrollX) % GAME_WIDTH + GAME_WIDTH) % GAME_WIDTH;
+      const fx = (((i * 137 + 53 + scrollX) % GAME_WIDTH) + GAME_WIDTH) % GAME_WIDTH;
       const fy = GAME_HEIGHT - GROUND_HEIGHT + 6;
       ctx.fillStyle = i % 2 === 0 ? '#FFD700' : '#FF69B4';
       ctx.fillRect(fx, fy, 3, 3);
@@ -718,7 +746,7 @@ export function BirdGame() {
     // Foreground bushes (scroll with wrap)
     ctx.fillStyle = '#2D6B1A';
     for (let i = 0; i < 5; i++) {
-      const bx = (((i * 220 + 40) + scrollX) % GAME_WIDTH + GAME_WIDTH) % GAME_WIDTH;
+      const bx = (((i * 220 + 40 + scrollX) % GAME_WIDTH) + GAME_WIDTH) % GAME_WIDTH;
       ctx.fillRect(bx - 10, GAME_HEIGHT - GROUND_HEIGHT - 14, 20, 14);
       ctx.fillRect(bx - 4, GAME_HEIGHT - GROUND_HEIGHT - 20, 10, 8);
       ctx.fillStyle = '#4A9A2A';
@@ -788,7 +816,7 @@ export function BirdGame() {
         ctx.fillStyle = '#8B4513'; // Trunk (Saddle brown)
         ctx.fillRect(pipe.x, 0, pipe.width, pipe.gapY);
         ctx.fillRect(pipe.x, pipe.gapY + pipe.gapHeight, pipe.width, GAME_HEIGHT - pipe.gapY - pipe.gapHeight);
-        
+
         // Leafy caps
         ctx.fillStyle = '#32CD32'; // Lime green
         ctx.fillRect(pipe.x - 4, pipe.gapY - 12, pipe.width + 8, 12);
@@ -846,7 +874,6 @@ export function BirdGame() {
     userBestScore,
     saveScoreMutation,
   ]);
-
 
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
