@@ -26,7 +26,7 @@ import {
 import { Tooltip, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { dxdb, Thread } from '@/lib/dexie';
 import { tryCatch } from '@/lib/utils';
-import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs';
+import { SignInButton, UserButton, useUser } from '@clerk/nextjs';
 import { TooltipContent } from '@radix-ui/react-tooltip';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { ArrowLeft, Settings, X } from 'lucide-react';
@@ -94,6 +94,7 @@ export default function ChatSidebar({ children }: { children?: React.ReactNode }
   const router = useRouter();
   const pathname = usePathname();
   const threads = useLiveQuery(() => dxdb.getThreads());
+  const { isSignedIn } = useUser();
 
   const categorizedThreads = useMemo(() => categorizeThreads(threads), [threads]);
 
@@ -216,14 +217,11 @@ export default function ChatSidebar({ children }: { children?: React.ReactNode }
           </SidebarContent>
           <SidebarFooter className='mb-1 p-2'>
             <div className='flex items-center gap-2'>
-              <SignedOut>
+              {!isSignedIn ?
                 <SignInButton mode={'modal'}>
                   <Button className='w-full gap-1'>Sign in</Button>
                 </SignInButton>
-              </SignedOut>
-              <SignedIn>
-                <UserButton showName userProfileUrl='/profile' />
-              </SignedIn>
+              : <UserButton showName userProfileUrl='/profile' />}
               <Link href='/chat/settings' className='ml-auto'>
                 <Button variant='ghost' className='h-8 w-8 rounded-full p-0 text-2xl'>
                   <Settings className='h-5 w-5' />

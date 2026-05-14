@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useIsMobile } from '@/hooks/use-mobile';
 import Constants from '@/lib/constants';
-import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs';
+import { SignInButton, UserButton, useUser } from '@clerk/nextjs';
 import { SiDiscord, SiGithub } from '@icons-pack/react-simple-icons';
 import {
   BookMarked,
@@ -32,6 +32,7 @@ import React from 'react';
 
 export default function OldPage(): React.JSX.Element {
   const isMobile = useIsMobile();
+  const { isSignedIn } = useUser();
 
   interface AppItem {
     icon: React.ForwardRefExoticComponent<Omit<LucideProps, 'ref'> & React.RefAttributes<SVGSVGElement>>;
@@ -160,16 +161,14 @@ export default function OldPage(): React.JSX.Element {
         }}
       />
       <div className='absolute left-0 top-0 flex items-center gap-2 rounded-br-lg border-b-2 border-r-2 border-border p-2'>
-        <SignedOut>
+        {!isSignedIn ?
           <SignInButton mode={'modal'}>
             <Button className='btn gap-1'>Sign in</Button>
           </SignInButton>
-        </SignedOut>
-        <SignedIn>
-          <div className='flex items-center gap-2'>
+        : <div className='flex items-center gap-2'>
             <UserButton showName />
           </div>
-        </SignedIn>
+        }
       </div>
       <div className='container relative flex flex-col items-center justify-center gap-8 px-1 py-16 md:px-4'>
         <div className='absolute inset-0 -z-10 bg-gradient-to-br from-transparent via-purple-900/10 to-transparent'></div>

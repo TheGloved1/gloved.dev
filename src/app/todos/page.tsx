@@ -1,4 +1,3 @@
-import PageBack from '@/components/PageBack';
 import Constants from '@/lib/constants';
 import { Metadata } from 'next';
 import React from 'react';
@@ -10,12 +9,5 @@ export const metadata: Metadata = {
 };
 
 export default function Page(): React.JSX.Element {
-  return (
-    <>
-      <div className='h-dvh w-dvw'>
-        <PageBack />
-        <TodoPage />
-      </div>
-    </>
-  );
+  return <TodoPage />;
 }

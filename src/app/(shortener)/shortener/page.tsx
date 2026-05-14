@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { getAllUserShortenedUrlsAction, setShortenedUrlAction } from '@/lib/actions';
 import { tryCatch } from '@/lib/utils';
-import { SignedIn, SignedOut, SignInButton, useAuth, UserButton } from '@clerk/nextjs';
+import { SignInButton, useAuth, UserButton } from '@clerk/nextjs';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Check, Copy, ExternalLink, Link2, Loader2, Scissors } from 'lucide-react';
 import Link from 'next/link';
@@ -14,6 +14,7 @@ import { toast } from 'sonner';
 
 export default function Page() {
   const auth = useAuth();
+  const isSignedIn = !!auth.userId;
   const queryClient = useQueryClient();
   const [longUrl, setLongUrl] = useState('');
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -84,11 +85,9 @@ export default function Page() {
 
       <div className='relative z-10 flex min-h-screen flex-col items-center justify-center px-4 py-8'>
         <div className='absolute right-4 top-4 flex items-center gap-4'>
-          <SignedIn>
+          {isSignedIn ?
             <UserButton />
-          </SignedIn>
-          <SignedOut>
-            <SignInButton mode='modal'>
+          : <SignInButton mode='modal'>
               <Button
                 variant='outline'
                 size='sm'
@@ -97,7 +96,7 @@ export default function Page() {
                 Sign In
               </Button>
             </SignInButton>
-          </SignedOut>
+          }
         </div>
 
         <PageBack />

@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { useIsMobile } from '@/hooks/use-mobile';
 import { adminApps, apps, type AppItem } from '@/lib/apps';
 import { animationDelay } from '@/lib/utils';
-import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs';
+import { SignInButton, UserButton, useUser } from '@clerk/nextjs';
 import { Video } from 'lucide-react';
 import DefaultPlayer from 'next-video/player';
 import Link from 'next/link';
@@ -66,6 +66,7 @@ function AppGrid({ apps }: { apps: AppItem[] }): React.JSX.Element {
 }
 export default function Page(): React.JSX.Element {
   const isMobile = useIsMobile();
+  const { isSignedIn } = useUser();
 
   return (
     <ThemeChanger>
@@ -73,18 +74,16 @@ export default function Page(): React.JSX.Element {
       <div className='grid-pattern' />
       <div className='fixed left-0 top-0 z-10 flex items-center gap-2 rounded-br-lg border-b-2 border-r-2 border-fuchsia-500/30 bg-[#0a0a0a]/80 p-2 backdrop-blur-sm md:absolute'>
         <div className='glow-line h-2 w-2 bg-fuchsia-500' />
-        <SignedOut>
+        {!isSignedIn ?
           <div className='flex cursor-pointer items-center gap-2 border border-fuchsia-500/50 bg-fuchsia-500/10 px-3 py-2 text-xs uppercase tracking-wider hover:bg-fuchsia-500/20'>
             <SignInButton mode='modal' forceRedirectUrl={'/'}>
               SIGN IN
             </SignInButton>
           </div>
-        </SignedOut>
-        <SignedIn>
-          <div className='flex items-center gap-2'>
+        : <div className='flex items-center gap-2'>
             <UserButton showName />
           </div>
-        </SignedIn>
+        }
       </div>
       <div className='container relative flex min-h-screen flex-col items-center justify-center gap-8 px-1 py-16 md:px-4'>
         <div className='fixed inset-0 -z-10 bg-[#0a0a0a]'></div>

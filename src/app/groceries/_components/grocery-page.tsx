@@ -9,7 +9,7 @@ import {
   moveGroceryItemAction,
   removeGroceryItemAction,
 } from '@/lib/actions';
-import { SignedIn, SignedOut, SignInButton, UserButton, useUser } from '@clerk/nextjs';
+import { SignInButton, UserButton, useUser } from '@clerk/nextjs';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ShoppingCart } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
@@ -20,7 +20,7 @@ import HaveList from './have-list';
 import ShoppingList from './shopping-list';
 
 export default function GroceryPage(): React.JSX.Element {
-  const { user } = useUser();
+  const { user, isSignedIn } = useUser();
   const queryClient = useQueryClient();
   const [clientIP, setClientIP] = useState<string>('unknown');
   const [isFocused, setIsFocused] = useState<boolean>(false);
@@ -295,11 +295,9 @@ export default function GroceryPage(): React.JSX.Element {
             </div>
 
             <div className='flex items-center gap-4'>
-              <SignedIn>
+              {isSignedIn ?
                 <UserButton />
-              </SignedIn>
-              <SignedOut>
-                <SignInButton mode='modal' forceRedirectUrl='/groceries'>
+              : <SignInButton mode='modal' forceRedirectUrl='/groceries'>
                   <Button
                     variant='outline'
                     size='sm'
@@ -308,7 +306,7 @@ export default function GroceryPage(): React.JSX.Element {
                     Sign In
                   </Button>
                 </SignInButton>
-              </SignedOut>
+              }
             </div>
           </div>
         </div>
