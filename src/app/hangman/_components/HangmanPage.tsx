@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import useIsDev from '@/hooks/use-is-dev';
 import { ChevronLeft, Skull } from 'lucide-react';
 import Link from 'next/link';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -21,6 +22,8 @@ export default function Page(): React.JSX.Element {
   const isLoser = incorrectLetters.length >= 6;
   const isWinner = wordToGuess.split('').every((letter) => guessedLetters.includes(letter));
   const isGameOver = isLoser || isWinner;
+
+  const isDev = useIsDev();
 
   const addGuessedLetter = useCallback(
     (letter: string) => {
@@ -93,17 +96,6 @@ export default function Page(): React.JSX.Element {
           </div>
         </div>
 
-        {isWinner && (
-          <div className='rounded-xl border border-fuchsia-500/30 bg-fuchsia-500/10 px-4 py-2 backdrop-blur-sm duration-300 animate-in fade-in zoom-in sm:px-6 sm:py-3'>
-            <p className='font-display text-xl font-bold uppercase tracking-tight text-fuchsia-400 sm:text-2xl'>You Win!</p>
-          </div>
-        )}
-        {isLoser && (
-          <div className='rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-2 backdrop-blur-sm duration-300 animate-in fade-in zoom-in sm:px-6 sm:py-3'>
-            <p className='font-display text-xl font-bold uppercase tracking-tight text-red-400 sm:text-2xl'>Game Over</p>
-          </div>
-        )}
-
         <HangmanDrawing numberOfGuesses={incorrectLetters.length} />
         <HangmanWord reveal={isLoser} guessedLetters={guessedLetters} wordToGuess={wordToGuess} />
 
@@ -114,13 +106,60 @@ export default function Page(): React.JSX.Element {
           addGuessedLetter={addGuessedLetter}
         />
 
+        {isDev && (
+          <div className='flex gap-2'>
+            <button
+              onClick={() => {
+                const letters = [...new Set(wordToGuess.split(''))];
+                setGuessedLetters(letters);
+              }}
+              className='brutal-shadow-sm font-mono-industrial rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-emerald-400 transition-all duration-150 hover:bg-emerald-500/20 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none'
+            >
+              Auto Win
+            </button>
+            <button
+              onClick={() => {
+                const alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
+                const wrong = alphabet.filter((l) => !wordToGuess.includes(l)).slice(0, 6);
+                setGuessedLetters(wrong);
+              }}
+              className='brutal-shadow-sm font-mono-industrial rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-red-400 transition-all duration-150 hover:bg-red-500/20 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none'
+            >
+              Auto Lose
+            </button>
+          </div>
+        )}
+
         {isGameOver && (
-          <button
-            onClick={newGame}
-            className='brutal-shadow font-mono-industrial border border-fuchsia-500 bg-fuchsia-500 px-6 py-2 text-xs font-bold uppercase tracking-wider text-black transition-all duration-150 hover:bg-fuchsia-400 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none sm:px-8 sm:py-3 sm:text-sm'
-          >
-            Play Again
-          </button>
+          <div className='fixed inset-0 z-40 flex items-center justify-center bg-black/80 backdrop-blur-sm duration-300 animate-in fade-in'>
+            <div className='mx-4 w-full max-w-sm rounded-2xl border border-fuchsia-500/30 bg-fuchsia-500/5 p-8 text-center shadow-[0_0_40px_rgba(236,72,153,0.15)] backdrop-blur-md duration-300 animate-in fade-in zoom-in'>
+              <div className='mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl border border-fuchsia-500/30 bg-fuchsia-500/10'>
+                <Skull className='h-7 w-7 text-fuchsia-500' />
+              </div>
+              {isWinner ?
+                <p className='font-display mb-2 text-3xl font-bold uppercase tracking-tight text-fuchsia-400'>You Win!</p>
+              : <p className='font-display mb-2 text-3xl font-bold uppercase tracking-tight text-red-400'>Game Over</p>}
+              <p className='font-mono-industrial mb-1 text-xs text-white/50'>
+                The word was <span className='font-bold uppercase text-white/80'>{wordToGuess}</span>
+              </p>
+              {isWinner && (
+                <p className='font-mono-industrial mb-8 text-[10px] text-white/40'>
+                  {incorrectLetters.length} incorrect
+                  {incorrectLetters.length === 1 ? ' guess' : ' guesses'}
+                  {' · '}
+                  {6 - incorrectLetters.length} try
+                  {6 - incorrectLetters.length === 1 ? '' : 's'} remaining
+                </p>
+              )}
+              {isLoser && <div className='mb-8' />}
+              <button
+                onClick={newGame}
+                className='brutal-shadow font-mono-industrial w-full border border-fuchsia-500 bg-fuchsia-500 px-8 py-3 text-sm font-bold uppercase tracking-wider text-black transition-all duration-150 hover:bg-fuchsia-400 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none'
+              >
+                Play Again
+              </button>
+            </div>
+          </div>
         )}
       </div>
     </div>
