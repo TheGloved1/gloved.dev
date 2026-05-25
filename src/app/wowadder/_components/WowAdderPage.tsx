@@ -108,7 +108,7 @@ export default function WowAdderPage(): React.JSX.Element {
       <div className="grid-pattern pointer-events-none fixed inset-0" />
       <div className="noise-overlay" />
 
-      <PageBack stayTop btnClassName="brutal-shadow-sm border border-amber-500/50 bg-amber-500/10 text-xs text-white hover:bg-amber-500/20" />
+      <PageBack stayTop className="z-50" btnClassName="brutal-shadow-sm border border-amber-500/50 bg-amber-500/10 text-xs text-white hover:bg-amber-500/20" />
 
       {/* Hero */}
       <section className="relative flex flex-col items-center px-4 pb-12 pt-20 sm:pb-16 sm:pt-28 lg:pt-32">
