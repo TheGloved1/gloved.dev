@@ -1,11 +1,11 @@
 'use client';
 import { CornerDecorations } from '@/components/CornerDecorations';
 import { Button } from '@/components/ui/button';
+import { useInterval } from '@/hooks/use-interval';
+import { useLocalStorage } from '@/hooks/use-local-storage';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import { Check, Copy, Printer, RefreshCw } from 'lucide-react';
-import { useInterval } from '@/hooks/use-interval';
-import { useLocalStorage } from '@/hooks/use-local-storage';
 import { useState } from 'react';
 import { generateFactAction } from '../actions';
 
@@ -108,9 +108,7 @@ export default function FactGenerator() {
                   {isLoading ? loadingHeadings[loadingIndex] : 'GENERATE FACT'}
                 </h2>
                 <p className='font-mono-industrial text-xs text-white/50'>
-                  {isLoading ?
-                    loadingSubtitles[loadingIndex]
-                  : 'CLICK THE BUTTON BELOW TO GENERATE A RANDOM FACT'}
+                  {isLoading ? loadingSubtitles[loadingIndex] : 'CLICK THE BUTTON BELOW TO GENERATE A RANDOM FACT'}
                 </p>
               </div>
 

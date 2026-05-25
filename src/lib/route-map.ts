@@ -114,6 +114,10 @@ export const RouteMap: Record<string, RouteInfo> = {
     '/white': {
       relativePath: 'src/app/white/page.tsx',
       githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/white/page.tsx'
+    },
+    '/wowadder': {
+      relativePath: 'src/app/wowadder/page.tsx',
+      githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/wowadder/page.tsx'
     }
 };
 

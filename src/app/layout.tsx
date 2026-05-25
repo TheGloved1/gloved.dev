@@ -49,7 +49,16 @@ const jetbrains = JetBrains_Mono({
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <ClerkProvider appearance={{ variables: { colorPrimary: '#333' }, baseTheme: dark }}>
+    <ClerkProvider
+      appearance={{
+        variables: { colorPrimary: '#333' },
+        baseTheme: dark,
+        elements: {
+          modalBackdrop: 'bg-black/60 backdrop-blur-sm',
+          card: 'bg-[#0a0a0f] border border-white/10',
+        },
+      }}
+    >
       <html lang='en' suppressHydrationWarning>
         {env.NODE_ENV === 'development' && (
           <>

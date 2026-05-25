@@ -98,6 +98,11 @@ const Constants = {
     link: '/admin',
     description: 'Admin panel for admin stuff',
   },
+  WowAdder: {
+    title: 'WowAdder',
+    link: '/wowadder',
+    description: 'A lightweight, native World of Warcraft addon manager built with Tauri v2, React 19, and the CurseForge Core API v2. No Electron. No ads. No accounts. Just addons.',
+  },
 } as const;
 
 export default Constants;

@@ -11,6 +11,7 @@ import {
   Link2,
   LucideProps,
   MessageCircle,
+  Package,
   Palette,
   Scissors,
   Shield,
@@ -73,6 +74,12 @@ export const apps: AppItem[] = [
     link: Constants.Shortener.link,
   },
   { icon: BookMarked, title: Constants.Fax.title, description: Constants.Fax.description, link: Constants.Fax.link },
+  {
+    icon: Package,
+    title: Constants.WowAdder.title,
+    description: Constants.WowAdder.description,
+    link: Constants.WowAdder.link,
+  },
   {
     icon: SiGithub,
     title: Constants.Github.title,
