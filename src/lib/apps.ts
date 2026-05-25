@@ -36,6 +36,12 @@ export const apps: AppItem[] = [
     link: Constants.FileUploader.link,
   },
   {
+    icon: Package,
+    title: Constants.WowAdder.title,
+    description: Constants.WowAdder.description,
+    link: Constants.WowAdder.link,
+  },
+  {
     icon: Scissors,
     title: Constants.BGRemover.title,
     description: Constants.BGRemover.description,
@@ -74,12 +80,6 @@ export const apps: AppItem[] = [
     link: Constants.Shortener.link,
   },
   { icon: BookMarked, title: Constants.Fax.title, description: Constants.Fax.description, link: Constants.Fax.link },
-  {
-    icon: Package,
-    title: Constants.WowAdder.title,
-    description: Constants.WowAdder.description,
-    link: Constants.WowAdder.link,
-  },
   {
     icon: SiGithub,
     title: Constants.Github.title,
