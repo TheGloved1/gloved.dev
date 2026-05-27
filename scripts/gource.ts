@@ -1,9 +1,14 @@
 import { spawn } from 'child_process';
 import { join, resolve } from 'path';
+import { existsSync } from 'fs';
 
 const outputPath = process.argv[2]
   ? resolve(process.cwd(), process.argv[2])
   : join(process.cwd(), 'public', 'gource.webm');
+
+const gourcePath = existsSync('C:\\Users\\glove\\AppData\\Local\\Gource\\gource.exe')
+  ? 'C:\\Users\\glove\\AppData\\Local\\Gource\\gource.exe'
+  : 'gource';
 
 const gourceArgs = [
   '--title', 'gloved.dev',
@@ -26,7 +31,7 @@ const ffmpegArgs = [
   outputPath,
 ];
 
-const gource = spawn('gource', gourceArgs, { shell: true });
+const gource = spawn(gourcePath, gourceArgs, { shell: true });
 const ffmpeg = spawn('ffmpeg', ffmpegArgs, { shell: true });
 
 gource.stdout.pipe(ffmpeg.stdin);
