@@ -307,8 +307,8 @@ export default function ReleasesTab(): React.JSX.Element {
 
                 {/* Changelog */}
                 {changelog && (
-                  <div className='border-t border-[#292524] pt-3'>
-                    <div className='markdown-body [&_h2]:font-wow-heading [&_h3]:font-wow-heading [&_li]:font-wow-body [&_p]:font-wow-body [&_code]:font-wow-body [&_a:hover]:decoration-[#fbbf24] [&_a]:text-[#fbbf24] [&_a]:underline [&_a]:decoration-[#a16207]/30 [&_code]:mx-0.5 [&_code]:rounded-sm [&_code]:bg-[#292524] [&_code]:px-1 [&_code]:py-0.5 [&_code]:text-[11px] [&_code]:text-[#a8a29e] [&_h2]:mb-2 [&_h2]:mt-0 [&_h2]:text-sm [&_h2]:tracking-wide [&_h2]:text-[#fbbf24]/80 [&_h3]:mb-1.5 [&_h3]:mt-3 [&_h3]:text-xs [&_h3]:tracking-wide [&_h3]:text-[#a8a29e] [&_li]:text-xs [&_li]:leading-relaxed [&_li]:text-[#a8a29e]/80 [&_p]:text-xs [&_p]:leading-relaxed [&_p]:text-[#a8a29e]/80 [&_strong]:font-semibold [&_strong]:text-[#faf6f0]/80 [&_ul]:mb-0 [&_ul]:mt-1 [&_ul]:list-disc [&_ul]:pl-4'>
+                  <div className='border-t border-[#292524] pt-1.5'>
+                    <div className='markdown-body [&_h2]:font-wow-heading [&_h3]:font-wow-heading [&_li]:font-wow-body [&_p]:font-wow-body [&_code]:font-wow-body [&_a:hover]:decoration-[#fbbf24] [&_a]:text-[#fbbf24] [&_a]:underline [&_a]:decoration-[#a16207]/30 [&_code]:mx-0.5 [&_code]:rounded-sm [&_code]:bg-[#292524] [&_code]:px-1 [&_code]:py-0.5 [&_code]:text-[11px] [&_code]:text-[#a8a29e] [&_h2]:mb-2 [&_h2]:mt-0 [&_h2]:text-sm [&_h2]:tracking-wide [&_h2]:text-[#fbbf24]/80 [&_h3]:mb-1.5 [&_h3]:mt-0.5 [&_h3]:text-xs [&_h3]:tracking-wide [&_h3]:text-[#a8a29e] [&_li]:text-xs [&_li]:leading-relaxed [&_li]:text-[#a8a29e]/80 [&_p]:text-xs [&_p]:leading-relaxed [&_p]:text-[#a8a29e]/80 [&_strong]:font-semibold [&_strong]:text-[#faf6f0]/80 [&_ul]:mb-0 [&_ul]:mt-1 [&_ul]:list-disc [&_ul]:pl-4'>
                       <Markdown>{changelog}</Markdown>
                     </div>
                   </div>
