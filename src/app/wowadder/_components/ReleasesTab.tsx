@@ -145,10 +145,10 @@ export default function ReleasesTab(): React.JSX.Element {
 
   if (releasesQuery.isLoading) {
     return (
-      <div className='flex min-h-[300px] items-center justify-center'>
+      <div className='flex min-h-[400px] items-center justify-center'>
         <div className='flex flex-col items-center gap-3'>
-          <Loader2 className='h-6 w-6 animate-spin text-amber-400' />
-          <p className='font-mono-industrial text-xs text-white/40'>Loading releases...</p>
+          <Loader2 className='h-5 w-5 animate-spin text-[#fbbf24]' />
+          <p className='font-wow-body text-xs text-[#78716c]'>Loading releases...</p>
         </div>
       </div>
     );
@@ -156,9 +156,9 @@ export default function ReleasesTab(): React.JSX.Element {
 
   if (releasesQuery.isError) {
     return (
-      <div className='flex min-h-[300px] items-center justify-center'>
-        <div className='rounded-xl border border-red-500/20 bg-red-500/5 px-8 py-6 text-center'>
-          <p className='font-mono-industrial text-sm text-red-400'>Failed to load releases. Try again later.</p>
+      <div className='flex min-h-[400px] items-center justify-center'>
+        <div className='rounded-sm border border-[#c41e3a]/30 bg-[#c41e3a]/10 px-6 py-4 text-center'>
+          <p className='font-wow-body text-sm text-[#c41e3a]/80'>Failed to load releases. Try again later.</p>
         </div>
       </div>
     );
@@ -166,27 +166,31 @@ export default function ReleasesTab(): React.JSX.Element {
 
   if (releases.length === 0) {
     return (
-      <div className='flex min-h-[300px] items-center justify-center'>
-        <p className='font-mono-industrial text-sm text-white/40'>No releases found.</p>
+      <div className='flex min-h-[400px] items-center justify-center'>
+        <p className='font-wow-body text-sm text-[#78716c]'>No releases found.</p>
       </div>
     );
   }
 
   return (
-    <div className='relative py-8 sm:py-10'>
+    <div className='relative py-8 sm:py-12'>
       <div className='mx-auto max-w-4xl'>
         {/* Top pagination bar */}
         {totalPages > 1 && (
           <div className='mb-6 flex flex-wrap items-center justify-between gap-3'>
             <div className='flex items-center gap-2'>
-              <span className='font-mono-industrial text-[11px] text-white/40'>Per page</span>
+              <span className='font-wow-body text-xs text-[#78716c]'>Per page</span>
               <Select value={String(releasesPerPage)} onValueChange={(v) => setReleasesPerPage(Number(v))}>
-                <SelectTrigger className='h-7 w-16 border-amber-500/20 bg-amber-500/5 text-xs text-white'>
+                <SelectTrigger className='h-7 w-16 rounded-sm border-[#3f3a36] bg-[#1c1917] text-xs text-[#a8a29e] transition-all duration-150 hover:border-[#a16207]/50'>
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className='border-amber-500/20 bg-[#1a1a1a] text-white'>
+                <SelectContent className='rounded-sm border-[#3f3a36] bg-[#1c1917] text-[#a8a29e]'>
                   {[5, 10, 20, 50].map((n) => (
-                    <SelectItem key={n} value={String(n)} className='text-xs focus:bg-amber-500/15 focus:text-amber-400'>
+                    <SelectItem
+                      key={n}
+                      value={String(n)}
+                      className='text-xs text-[#a8a29e] focus:bg-[#292524] focus:text-[#faf6f0] data-[state=checked]:text-[#fbbf24]'
+                    >
                       {n}
                     </SelectItem>
                   ))}
@@ -202,13 +206,17 @@ export default function ReleasesTab(): React.JSX.Element {
                       e.preventDefault();
                       if (currentPage > 1) setCurrentPage((p) => p - 1);
                     }}
-                    className={currentPage === 1 ? 'pointer-events-none opacity-30' : 'text-white/70 hover:text-amber-400'}
+                    className={
+                      currentPage === 1 ?
+                        'pointer-events-none opacity-20'
+                      : 'text-[#a8a29e] transition-all duration-150 hover:text-[#fbbf24]'
+                    }
                   />
                 </PaginationItem>
                 {getPageNumbers(currentPage, totalPages).map((page, i) =>
                   page === 'ellipsis' ?
                     <PaginationItem key={`e-${i}`}>
-                      <PaginationEllipsis className='text-white/30' />
+                      <PaginationEllipsis className='text-[#78716c]' />
                     </PaginationItem>
                   : <PaginationItem key={page}>
                       <PaginationLink
@@ -220,8 +228,8 @@ export default function ReleasesTab(): React.JSX.Element {
                         }}
                         className={
                           page === currentPage ?
-                            'border-amber-500/50 bg-amber-500/15 text-amber-400'
-                          : 'text-white/50 hover:text-amber-400'
+                            'font-wow-heading border-[#a16207] bg-[#1c1917] text-xs tracking-wide text-[#fbbf24] shadow-[0_0_6px_rgba(251,191,36,0.1)]'
+                          : 'text-[#a8a29e] transition-all duration-150 hover:text-[#fbbf24]'
                         }
                       >
                         {page}
@@ -236,7 +244,9 @@ export default function ReleasesTab(): React.JSX.Element {
                       if (currentPage < totalPages) setCurrentPage((p) => p + 1);
                     }}
                     className={
-                      currentPage === totalPages ? 'pointer-events-none opacity-30' : 'text-white/70 hover:text-amber-400'
+                      currentPage === totalPages ?
+                        'pointer-events-none opacity-20'
+                      : 'text-[#a8a29e] transition-all duration-150 hover:text-[#fbbf24]'
                     }
                   />
                 </PaginationItem>
@@ -245,48 +255,49 @@ export default function ReleasesTab(): React.JSX.Element {
           </div>
         )}
 
-        <div className='space-y-6'>
-          {paginatedReleases.map((release, index) => {
+        <div className='space-y-4'>
+          {paginatedReleases.map((release) => {
             const msiUrl = findMsiAsset(release);
             const changelog = getChangelog(release);
 
             return (
               <div
                 key={release.tag_name}
-                className='brutal-shadow-sm rounded-xl border border-amber-500/20 bg-amber-500/5 p-5 transition-all duration-200 hover:border-amber-500/40 sm:p-6'
+                className='wow-card group p-4 transition-all duration-150 hover:shadow-[0_0_10px_rgba(161,98,7,0.1)] sm:p-5'
               >
                 {/* Header */}
-                <div className='mb-4 flex flex-wrap items-start justify-between gap-3'>
+                <div className='mb-3 flex flex-wrap items-start justify-between gap-3'>
                   <div className='flex items-center gap-3'>
-                    <div className='flex h-8 w-8 items-center justify-center rounded-lg border border-amber-500/20 bg-amber-500/10 sm:h-9 sm:w-9'>
-                      <GitBranch className='h-4 w-4 text-amber-400' />
+                    <div className='relative flex h-9 w-9 items-center justify-center rounded-sm border border-[#3f3a36] bg-[#292524] sm:h-10 sm:w-10'>
+                      <div className='pointer-events-none absolute inset-px rounded-sm border border-[#a16207]/20' />
+                      <GitBranch className='relative h-4 w-4 text-[#fbbf24]/70 group-hover:text-[#fbbf24] sm:h-[18px] sm:w-[18px]' />
                     </div>
                     <div>
-                      <div className='flex flex-wrap items-center gap-2'>
-                        <h3 className='font-display text-sm font-bold uppercase tracking-tight text-white sm:text-base'>
+                      <div className='flex flex-wrap items-center gap-2.5'>
+                        <h3 className='font-wow-heading text-sm tracking-wide text-[#faf6f0] transition-colors duration-150 group-hover:text-[#fbbf24] sm:text-base'>
                           {release.tag_name}
                         </h3>
                         {release.prerelease && (
-                          <span className='font-mono-industrial rounded border border-amber-500/30 bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-amber-400'>
+                          <span className='font-wow-body rounded-sm border border-[#1eff00]/30 bg-[#1eff00]/10 px-1.5 py-0.5 text-[10px] font-medium text-[#1eff00]'>
                             Pre-release
                           </span>
                         )}
                       </div>
-                      <p className='font-mono-industrial text-[11px] text-white/40'>{formatDate(release.published_at)}</p>
+                      <p className='font-wow-body text-[11px] text-[#78716c]'>{formatDate(release.published_at)}</p>
                     </div>
                   </div>
 
                   <div className='flex flex-wrap gap-2'>
                     {msiUrl && (
                       <a href={msiUrl} target='_blank' rel='noopener noreferrer'>
-                        <Button className='brutal-shadow-sm h-7 border border-amber-500/50 bg-amber-500/10 px-2.5 text-[11px] text-white hover:bg-amber-500/20 sm:h-8 sm:px-3 sm:text-xs'>
+                        <Button className='h-7 rounded-sm border border-[#3f3a36] bg-[#1c1917] px-2.5 text-[11px] text-[#a8a29e] transition-all duration-150 hover:border-[#a16207] hover:text-[#faf6f0] hover:shadow-[0_0_6px_rgba(161,98,7,0.15)] sm:h-8 sm:px-3 sm:text-xs'>
                           <CloudDownload className='mr-1 h-3 w-3' />
                           MSI
                         </Button>
                       </a>
                     )}
                     <a href={release.html_url} target='_blank' rel='noopener noreferrer'>
-                      <Button className='brutal-shadow-sm h-7 border border-white/20 bg-white/5 px-2.5 text-[11px] text-white/70 hover:bg-white/10 sm:h-8 sm:px-3 sm:text-xs'>
+                      <Button className='h-7 rounded-sm border border-[#3f3a36] bg-[#1c1917] px-2.5 text-[11px] text-[#a8a29e] transition-all duration-150 hover:border-[#a16207] hover:text-[#faf6f0] hover:shadow-[0_0_6px_rgba(161,98,7,0.15)] sm:h-8 sm:px-3 sm:text-xs'>
                         <ExternalLink className='mr-1 h-3 w-3' />
                         Details
                       </Button>
@@ -296,8 +307,8 @@ export default function ReleasesTab(): React.JSX.Element {
 
                 {/* Changelog */}
                 {changelog && (
-                  <div className='prose prose-invert max-w-none border-t border-amber-500/10 pt-4'>
-                    <div className='markdown-body [&_h2]:font-display [&_h3]:font-display [&_li]:font-mono-industrial [&_p]:font-mono-industrial [&_code]:font-mono-industrial [&_a:hover]:decoration-amber-400 [&_a]:text-amber-400 [&_a]:underline [&_a]:decoration-amber-500/30 [&_code]:mx-0.5 [&_code]:rounded [&_code]:bg-white/5 [&_code]:px-1 [&_code]:py-0.5 [&_code]:text-[11px] [&_code]:text-white/70 [&_h2]:mb-3 [&_h2]:mt-0 [&_h2]:text-sm [&_h2]:font-bold [&_h2]:uppercase [&_h2]:tracking-tight [&_h2]:text-amber-400 [&_h3]:mb-2 [&_h3]:mt-4 [&_h3]:text-xs [&_h3]:font-bold [&_h3]:uppercase [&_h3]:tracking-wider [&_h3]:text-white/70 [&_li]:text-xs [&_li]:leading-relaxed [&_li]:text-white/60 [&_p]:text-xs [&_p]:leading-relaxed [&_p]:text-white/60 [&_strong]:font-semibold [&_strong]:text-white/80 [&_ul]:mb-0 [&_ul]:mt-1 [&_ul]:list-disc [&_ul]:pl-4'>
+                  <div className='border-t border-[#292524] pt-3'>
+                    <div className='markdown-body [&_h2]:font-wow-heading [&_h3]:font-wow-heading [&_li]:font-wow-body [&_p]:font-wow-body [&_code]:font-wow-body [&_a:hover]:decoration-[#fbbf24] [&_a]:text-[#fbbf24] [&_a]:underline [&_a]:decoration-[#a16207]/30 [&_code]:mx-0.5 [&_code]:rounded-sm [&_code]:bg-[#292524] [&_code]:px-1 [&_code]:py-0.5 [&_code]:text-[11px] [&_code]:text-[#a8a29e] [&_h2]:mb-2 [&_h2]:mt-0 [&_h2]:text-sm [&_h2]:tracking-wide [&_h2]:text-[#fbbf24]/80 [&_h3]:mb-1.5 [&_h3]:mt-3 [&_h3]:text-xs [&_h3]:tracking-wide [&_h3]:text-[#a8a29e] [&_li]:text-xs [&_li]:leading-relaxed [&_li]:text-[#a8a29e]/80 [&_p]:text-xs [&_p]:leading-relaxed [&_p]:text-[#a8a29e]/80 [&_strong]:font-semibold [&_strong]:text-[#faf6f0]/80 [&_ul]:mb-0 [&_ul]:mt-1 [&_ul]:list-disc [&_ul]:pl-4'>
                       <Markdown>{changelog}</Markdown>
                     </div>
                   </div>
@@ -319,14 +330,18 @@ export default function ReleasesTab(): React.JSX.Element {
                       e.preventDefault();
                       if (currentPage > 1) setCurrentPage((p) => p - 1);
                     }}
-                    className={currentPage === 1 ? 'pointer-events-none opacity-30' : 'text-white/70 hover:text-amber-400'}
+                    className={
+                      currentPage === 1 ?
+                        'pointer-events-none opacity-20'
+                      : 'text-[#a8a29e] transition-all duration-150 hover:text-[#fbbf24]'
+                    }
                   />
                 </PaginationItem>
 
                 {getPageNumbers(currentPage, totalPages).map((page, i) =>
                   page === 'ellipsis' ?
                     <PaginationItem key={`e-${i}`}>
-                      <PaginationEllipsis className='text-white/30' />
+                      <PaginationEllipsis className='text-[#78716c]' />
                     </PaginationItem>
                   : <PaginationItem key={page}>
                       <PaginationLink
@@ -338,8 +353,8 @@ export default function ReleasesTab(): React.JSX.Element {
                         }}
                         className={
                           page === currentPage ?
-                            'border-amber-500/50 bg-amber-500/15 text-amber-400'
-                          : 'text-white/50 hover:text-amber-400'
+                            'font-wow-heading border-[#a16207] bg-[#1c1917] text-xs tracking-wide text-[#fbbf24] shadow-[0_0_6px_rgba(251,191,36,0.1)]'
+                          : 'text-[#a8a29e] transition-all duration-150 hover:text-[#fbbf24]'
                         }
                       >
                         {page}
@@ -355,7 +370,9 @@ export default function ReleasesTab(): React.JSX.Element {
                       if (currentPage < totalPages) setCurrentPage((p) => p + 1);
                     }}
                     className={
-                      currentPage === totalPages ? 'pointer-events-none opacity-30' : 'text-white/70 hover:text-amber-400'
+                      currentPage === totalPages ?
+                        'pointer-events-none opacity-20'
+                      : 'text-[#a8a29e] transition-all duration-150 hover:text-[#fbbf24]'
                     }
                   />
                 </PaginationItem>
@@ -366,8 +383,8 @@ export default function ReleasesTab(): React.JSX.Element {
 
         {/* Release count */}
         <div className='mt-4 text-center'>
-          <p className='font-mono-industrial text-[11px] text-white/30'>
-            Page {currentPage} of {totalPages} ({releases.length} releases total)
+          <p className='font-wow-body text-xs text-[#78716c]'>
+            Page {currentPage} of {totalPages} &middot; {releases.length} release{releases.length !== 1 ? 's' : ''} total
           </p>
         </div>
       </div>
