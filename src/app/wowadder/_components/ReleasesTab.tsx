@@ -197,7 +197,7 @@ export default function ReleasesTab(): React.JSX.Element {
                 </SelectContent>
               </Select>
             </div>
-            <Pagination className='w-auto'>
+            <Pagination className='ml-auto mr-0 w-auto justify-end'>
               <PaginationContent>
                 <PaginationItem>
                   <PaginationPrevious

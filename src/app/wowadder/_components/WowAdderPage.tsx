@@ -157,8 +157,9 @@ export default function WowAdderPage(): React.JSX.Element {
         <FadeInSection className='flex flex-col items-center'>
           <div className='relative mb-6'>
             <div className='relative flex h-16 w-16 items-center justify-center rounded-sm border border-[#3f3a36] bg-[#1c1917] sm:h-20 sm:w-20'>
-              <div className='pointer-events-none absolute inset-px rounded-sm border border-[#a16207]/20' />
-              <Boxes className='relative h-8 w-8 text-[#fbbf24] sm:h-10 sm:w-10' />
+              {/* <div className='pointer-events-none absolute inset-px rounded-sm border border-[#a16207]/20' /> */}
+              {/* <Boxes className='relative h-8 w-8 text-[#fbbf24] sm:h-10 sm:w-10' /> */}
+              <img src='https://github.com/TheGloved1/WowAdder/blob/main/public/logo.png?raw=true' alt='WowAdder logo' />
             </div>
           </div>
 
