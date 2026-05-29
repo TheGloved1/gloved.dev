@@ -28,6 +28,14 @@ const components: Components = {
       </CodeBlock>
     );
   },
+  ul: ({
+    children,
+    ...props
+  }: ClassAttributes<HTMLUListElement> & HTMLAttributes<HTMLUListElement> & ExtraProps): React.JSX.Element => (
+    <ul className='list-disc pb-4' {...props}>
+      {children}
+    </ul>
+  ),
 };
 
 /**
