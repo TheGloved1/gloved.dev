@@ -66,7 +66,7 @@ const Constants = {
   Chat: {
     title: 'GlovedChat',
     link: '/chat',
-    description: 'A VERY fast, local-first, AI chat web app using local IndexedDB database, WARNING: HE IS EVIL',
+    description: 'A VERY fast, local-first, AI chat web app using local IndexedDB database. WARNING: HE IS EVIL',
   },
   Groceries: {
     title: 'Grocery List',
@@ -86,12 +86,12 @@ const Constants = {
   Shortener: {
     title: 'Shortener',
     link: '/shortener',
-    description: 'A simple URL shortener web app. (Must be signed in)',
+    description: 'A simple URL shortener web app (Must be signed in)',
   },
   Fax: {
     title: 'Fax',
     link: '/fax',
-    description: 'A simple fact generator web app suggested by a friend.',
+    description: 'A simple fact generator web app suggested by a friend',
   },
   Admin: {
     title: 'Admin Panel',
@@ -101,7 +101,7 @@ const Constants = {
   WowAdder: {
     title: 'WowAdder',
     link: '/wowadder',
-    description: 'A lightweight, native World of Warcraft addon manager built with Tauri v2, React 19, and the CurseForge Core API v2. No Electron. No ads. No accounts. Just addons.',
+    description: 'A lightweight, native World of Warcraft addon manager',
   },
 } as const;
 
