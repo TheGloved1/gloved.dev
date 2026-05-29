@@ -101,7 +101,7 @@ const Constants = {
   WowAdder: {
     title: 'WowAdder',
     link: '/wowadder',
-    description: 'A lightweight, native World of Warcraft addon manager',
+    description: 'A lightweight World of Warcraft addon manager',
   },
 } as const;
 
