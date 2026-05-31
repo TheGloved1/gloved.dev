@@ -12,6 +12,7 @@ import {
   PaginationPrevious,
 } from '@/components/ui/pagination';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { minutes } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
 import { CloudDownload, ExternalLink, GitBranch, Loader2 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -88,7 +89,7 @@ export default function ReleasesTab(): React.JSX.Element {
       if (!res.ok) throw new Error('Failed to fetch releases');
       return (await res.json()) as GitHubRelease[];
     },
-    staleTime: 10 * 60 * 1000,
+    staleTime: minutes(10),
   });
 
   const releases = useMemo(() => releasesQuery.data ?? [], [releasesQuery.data]);

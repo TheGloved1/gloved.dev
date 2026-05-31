@@ -25,6 +25,10 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+export function minutes(minutes: number) {
+  return minutes * 60 * 1000;
+}
+
 /**
  * Any function
  */
