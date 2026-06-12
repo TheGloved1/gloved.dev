@@ -1,22 +1,25 @@
 'use client';
-import { createMessage, dxdb, stopGeneration } from '@/lib/dexie';
-import { memo, useEffect, useRef, useState } from 'react';
-
 import { Tooltip } from '@/components/TooltipSystem';
 import { Button } from '@/components/ui/button';
 import { useAutoResizeTextarea } from '@/hooks/use-autoresize-textarea';
 import { useChat } from '@/hooks/use-chat';
+import { useCreateMessage, useCreateThread } from '@/hooks/use-chat-data';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { stopGeneration } from '@/lib/chat-store';
 import Constants from '@/lib/constants';
 import { tryCatch, upload } from '@/lib/utils';
 import { useAuth } from '@clerk/nextjs';
 import { ArrowUp, ChevronDown, Paperclip, Square, X } from 'lucide-react';
 import Image from 'next/image';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { memo, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import MobileInputDialog from './MobileInputDialog';
 import ModelDropdown from './ModelDropdown';
 import ToolDropdown from './ToolDropdown';
+
+const actionButtonClass =
+  'border-reflect button-reflect relative inline-flex h-9 w-9 items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-[rgb(162,59,103)] bg-primary/20 p-2 text-sm font-semibold text-pink-50 shadow transition-colors hover:bg-[#d56698] hover:bg-pink-800/70 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring active:bg-[rgb(162,59,103)] active:bg-pink-800/40 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-[rgb(162,59,103)] disabled:hover:bg-primary/20 disabled:active:bg-[rgb(162,59,103)] disabled:active:bg-primary/20 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0';
 
 const ChatInput = memo(
   ({
@@ -30,7 +33,7 @@ const ChatInput = memo(
   }) => {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [loading, setLoading] = useState<boolean>(false);
-    const { syncEnabled, model, systemPrompt, tools, setTools, getInput, setInput } = useChat();
+    const { model, systemPrompt, tools, setTools, getInput, setInput } = useChat();
     const { textareaRef, adjustHeight } = useAutoResizeTextarea({
       minHeight: 60,
       maxHeight: 200,
@@ -39,16 +42,18 @@ const ChatInput = memo(
     const isMobile = useIsMobile();
     const router = useRouter();
     const { threadId } = useParams<{ threadId: string }>();
+    const createThreadCallback = useCreateThread();
+    const createMessage = useCreateMessage();
     const searchParams = useSearchParams();
     const query = searchParams.get('q');
 
-    const userIdIfSyncEnabled = syncEnabled && auth.userId ? auth.userId : undefined;
     const canUpload = !!auth.userId;
 
     const storageKey = threadId || '__new__';
     const { input, attachments: images } = getInput(storageKey);
 
     const fileInputRef = useRef<HTMLInputElement | null>(null);
+    const isSubmittingRef = useRef(false);
 
     const dataURLToFile = (dataUrl: string, filename = 'image.png') => {
       const arr = dataUrl.split(',');
@@ -67,66 +72,53 @@ const ChatInput = memo(
       e?: React.FormEvent<HTMLFormElement> | React.KeyboardEvent<HTMLTextAreaElement> | undefined,
     ) => {
       e?.preventDefault();
-      setLoading(true);
-      let attachments: string[] | undefined;
-      if (canUpload && images.length) {
-        for (const dataUrl of images) {
-          const file = dataURLToFile(dataUrl);
-          const imageUpload = await tryCatch(upload(file, auth.userId));
-          if (imageUpload.error) {
-            toast.error('Failed to upload images');
-            setLoading(false);
-            return;
+      if (isSubmittingRef.current) return;
+      isSubmittingRef.current = true;
+
+      try {
+        setLoading(true);
+
+        let attachments: string[] | undefined;
+        if (canUpload && images.length) {
+          for (const dataUrl of images) {
+            const file = dataURLToFile(dataUrl);
+            const imageUpload = await tryCatch(upload(file, auth.userId));
+            if (imageUpload.error || !imageUpload.data) {
+              toast.error('Failed to upload images');
+              return;
+            }
+            attachments = [...(attachments || []), imageUpload.data];
           }
-          if (!imageUpload.data) {
-            toast.error('Failed to upload images');
-            setLoading(false);
-            return;
-          }
-          attachments = [...(attachments || []), imageUpload.data];
-        }
-        setInput(storageKey, { attachments: [] });
-      } else if (!canUpload) {
-        toast.error('Please sign in to upload images');
-        setLoading(false);
-        return;
-      }
-      if (createThread) {
-        const threadId = await dxdb.createThread();
-        router.push('/chat/' + threadId);
-        try {
-          const prompt = input;
-          setInput(storageKey, { input: '' });
-          adjustHeight(true);
-          await createMessage({
-            threadId,
-            userContent: query || prompt,
-            model,
-            systemPrompt: systemPrompt?.trim(),
-            attachments,
-            userId: userIdIfSyncEnabled,
-            tools,
-          });
-        } catch (e) {
-          toast.error('Failed to generate message');
-          setLoading(false);
+          setInput(storageKey, { attachments: [] });
+        } else if (!canUpload) {
+          toast.error('Please sign in to upload images');
           return;
         }
-        setLoading(false);
-      } else {
+
         const prompt = input;
+        const targetThreadId = createThread ? await createThreadCallback() : threadId;
+
         setInput(storageKey, { input: '' });
         adjustHeight(true);
+
         await createMessage({
-          threadId,
-          userContent: prompt,
+          threadId: targetThreadId,
+          userContent: createThread ? query || prompt : prompt,
           model,
           systemPrompt: systemPrompt?.trim(),
           attachments,
-          userId: userIdIfSyncEnabled,
           tools,
         });
+
+        if (createThread) {
+          router.push('/chat/' + targetThreadId);
+        }
+      } catch (e) {
+        console.error('[CHAT] handleSubmit failed', e);
+        toast.error('Failed to generate message');
+      } finally {
         setLoading(false);
+        isSubmittingRef.current = false;
       }
     };
 
@@ -144,7 +136,6 @@ const ChatInput = memo(
         return;
       }
       if (files?.length) {
-        const validImages: string[] = [];
         for (const file of Array.from(files)) {
           if (!file.type.startsWith('image/')) {
             toast.error('Only image files are allowed.');
@@ -318,7 +309,7 @@ const ChatInput = memo(
                             title='Send Message'
                             type='submit'
                             disabled={!input.trim() && !images.length}
-                            className='border-reflect button-reflect relative inline-flex h-9 w-9 items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-[rgb(162,59,103)] bg-primary/20 p-2 text-sm font-semibold text-pink-50 shadow transition-colors hover:bg-[#d56698] hover:bg-pink-800/70 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring active:bg-[rgb(162,59,103)] active:bg-pink-800/40 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-[rgb(162,59,103)] disabled:hover:bg-primary/20 disabled:active:bg-[rgb(162,59,103)] disabled:active:bg-primary/20 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
+                            className={actionButtonClass}
                           >
                             <ArrowUp className='!size-4' />
                             <span className='sr-only'>Send</span>
@@ -333,7 +324,7 @@ const ChatInput = memo(
                               stopGeneration('Stop button clicked! Stopping stream...');
                               setLoading(false);
                             }}
-                            className='border-reflect button-reflect relative inline-flex h-9 w-9 items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-[rgb(162,59,103)] bg-primary/20 p-2 text-sm font-semibold text-pink-50 shadow transition-colors hover:bg-[#d56698] hover:bg-pink-800/70 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring active:bg-[rgb(162,59,103)] active:bg-pink-800/40 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-[rgb(162,59,103)] disabled:hover:bg-primary/20 disabled:active:bg-[rgb(162,59,103)] disabled:active:bg-primary/20 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
+                            className={actionButtonClass}
                           >
                             <Square className='size-4 rounded bg-current' />
                             <span className='sr-only'>Stop Generation</span>

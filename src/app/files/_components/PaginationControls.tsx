@@ -15,7 +15,7 @@ interface PaginationControlsProps {
   onPageChange: (page: number) => void;
 }
 
-export default function PaginationControls({
+const PaginationControls = React.memo(function PaginationControls({
   currentPage,
   totalPages,
   onPageChange,
@@ -80,4 +80,6 @@ export default function PaginationControls({
       </PaginationContent>
     </Pagination>
   );
-}
+});
+
+export default PaginationControls;

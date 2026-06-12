@@ -4,10 +4,9 @@ import LoadingSvg from '@/components/LoadingSvg';
 import Markdown from '@/components/Markdown';
 import { Button } from '@/components/ui/button';
 import { useChat } from '@/hooks/use-chat';
+import { useUpdateMessage } from '@/hooks/use-chat-data';
 import { useTextToSpeech } from '@/hooks/use-tts';
-import { dxdb, Message, updateMessage } from '@/lib/dexie';
-import { tryCatch } from '@/lib/utils';
-import { useAuth } from '@clerk/nextjs';
+import { getLocalMessages, Message } from '@/lib/chat-store';
 import equal from 'fast-deep-equal';
 import { ChevronDown, ChevronUp, Copy, RefreshCcw, Send, SquarePen, Volume2Icon, VolumeXIcon } from 'lucide-react';
 import Image from 'next/image';
@@ -15,6 +14,9 @@ import { useParams } from 'next/navigation';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import Timestamp from './Timestamp';
+
+const proseClass =
+  'prose prose-sm prose-neutral prose-invert max-w-none text-foreground prose-pre:m-0 prose-pre:bg-transparent prose-pre:p-0';
 
 function ReasoningDots() {
   return (
@@ -52,28 +54,14 @@ function ChatMessage({ message }: { message: Message }) {
   const reasoningTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const prevReasoningRef = useRef(message.reasoning);
   const { threadId } = useParams<{ threadId: string }>();
-  const { syncEnabled, model, systemPrompt, tools } = useChat();
+  const { model, systemPrompt, tools } = useChat();
+  const updateMessage = useUpdateMessage();
   const tts = useTextToSpeech();
-  const auth = useAuth();
-  const syncUserIdIfEnabled = syncEnabled && auth.userId ? auth.userId : undefined;
 
-  const handleEditMessage = useCallback(
-    async (m: Message) => {
-      const getThreadMessages = await tryCatch(dxdb.getThreadMessages(threadId)); // Get all messages in the thread
-      if (getThreadMessages.error) return;
-      const allMessages = getThreadMessages.data;
-      const index = allMessages.findIndex((msg) => msg.id === m.id); // Find the index of the edited message
-      if (index === -1) return toast.error('Failed to find selected message');
-
-      // Delete all subsequent messages
-      await dxdb.transaction('rw', [dxdb.messages, dxdb.threads], async () => {
-        for (let i = index + 1; i < allMessages.length; i++) {
-          dxdb.removeMessage(allMessages[i].id);
-        }
-      });
-    },
-    [threadId],
-  );
+  const handleCopy = useCallback(() => {
+    navigator.clipboard.writeText(message.content);
+    toast.success('Copied response to clipboard!');
+  }, [message.content]);
 
   const checkForOldAttachmentLinks = useCallback(() => {
     if (!message.attachments) return;
@@ -83,8 +71,17 @@ function ChatMessage({ message }: { message: Message }) {
       }
       return attachment;
     });
-    dxdb.messages.update(message.id, { attachments: newAttachments });
-  }, [message.attachments, message.id]);
+    // Update attachment migration - for localStorage users
+    const msgs = getLocalMessages(threadId);
+    const existing = msgs.find((msg) => msg.id === message.id);
+    if (existing) {
+      const idx = msgs.findIndex((m) => m.id === message.id);
+      if (idx >= 0) {
+        msgs[idx].attachments = newAttachments;
+        localStorage.setItem('gloved_chat_msgs_' + threadId, JSON.stringify(msgs));
+      }
+    }
+  }, [message.attachments, message.id, threadId]);
 
   useEffect(() => {
     checkForOldAttachmentLinks();
@@ -100,7 +97,7 @@ function ChatMessage({ message }: { message: Message }) {
     }
     reasoningTimeoutRef.current = setTimeout(() => {
       setIsReasoningStreaming(false);
-    }, 500);
+    }, 750);
     return () => {
       clearTimeout(enable);
       if (reasoningTimeoutRef.current) {
@@ -165,17 +162,20 @@ function ChatMessage({ message }: { message: Message }) {
                 disabled={!input}
                 title='Send'
                 onClick={async () => {
-                  await handleEditMessage(message);
                   const newContent = input;
                   setInput(null);
-                  await updateMessage({
-                    message,
-                    newContent,
-                    model,
-                    systemPrompt,
-                    tools,
-                    userId: syncUserIdIfEnabled,
-                  });
+                  try {
+                    await updateMessage({
+                      message,
+                      newContent,
+                      model,
+                      systemPrompt,
+                      tools,
+                    });
+                  } catch {
+                    toast.error('Failed to edit message');
+                    setInput(newContent);
+                  }
                 }}
               >
                 <Send className='-mb-0.5 -ml-0.5 !size-5' />
@@ -202,9 +202,7 @@ function ChatMessage({ message }: { message: Message }) {
             {message.reasoning && message.reasoning.trim() !== '' ?
               showReasoning ?
                 <div className='mb-4 rounded-lg bg-neutral-800/20 p-3'>
-                  <Markdown className='prose prose-sm prose-neutral prose-invert max-w-none text-foreground prose-pre:m-0 prose-pre:bg-transparent prose-pre:p-0'>
-                    {message.reasoning}
-                  </Markdown>
+                  <Markdown className={proseClass}>{message.reasoning}</Markdown>
                 </div>
               : null
             : null}
@@ -219,15 +217,17 @@ function ChatMessage({ message }: { message: Message }) {
               tooltipSide='bottom'
               title='Retry'
               onClick={async () => {
-                await handleEditMessage(message);
-                await updateMessage({
-                  message,
-                  newContent: message.content,
-                  model,
-                  systemPrompt,
-                  tools,
-                  userId: syncUserIdIfEnabled,
-                });
+                try {
+                  await updateMessage({
+                    message,
+                    newContent: message.content,
+                    model,
+                    systemPrompt,
+                    tools,
+                  });
+                } catch {
+                  toast.error('Failed to retry message');
+                }
               }}
             >
               <RefreshCcw className='-mb-0.5 -ml-0.5 !size-5' />
@@ -248,10 +248,7 @@ function ChatMessage({ message }: { message: Message }) {
             <Button
               className='inline-flex h-8 w-8 items-center justify-center gap-2 whitespace-nowrap rounded-lg p-0 text-xs font-medium transition-colors hover:bg-muted/40 hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-foreground/50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
               variant='ghost'
-              onClick={() => {
-                navigator.clipboard.writeText(message.content);
-                toast.success('Copied response to clipboard!');
-              }}
+              onClick={handleCopy}
               title='Copy'
               tooltipSide='bottom'
             >
@@ -287,10 +284,7 @@ function ChatMessage({ message }: { message: Message }) {
             <Button
               title='Copy response'
               tooltipSide='bottom'
-              onClick={() => {
-                navigator.clipboard.writeText(message.content);
-                toast.success('Copied response to clipboard!');
-              }}
+              onClick={handleCopy}
               className='inline-flex h-8 items-center justify-center gap-2 whitespace-nowrap rounded-md bg-secondary px-3 text-xs font-medium text-secondary-foreground opacity-0 shadow-sm transition-opacity hover:bg-secondary/80 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 group-focus-within:opacity-100 group-hover:opacity-100 group-focus:opacity-100 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
             >
               <Copy className='-mb-0.5 -ml-0.5 !size-5' />
@@ -310,15 +304,7 @@ function ChatMessage({ message }: { message: Message }) {
 
 const renderMessageContent = (message: Message): React.ReactNode => {
   if (!message.tools || message.tools.length === 0) {
-    return (
-      <Markdown
-        className={
-          'prose prose-sm prose-neutral prose-invert max-w-none text-foreground prose-pre:m-0 prose-pre:bg-transparent prose-pre:p-0'
-        }
-      >
-        {message.content}
-      </Markdown>
-    );
+    return <Markdown className={proseClass}>{message.content}</Markdown>;
   }
 
   // Sort tools by 'after' position to maintain order
@@ -336,12 +322,7 @@ const renderMessageContent = (message: Message): React.ReactNode => {
       const contentSegment = message.content.slice(lastIndex, toolAfter);
       if (contentSegment.trim()) {
         segments.push(
-          <Markdown
-            key={`content-${index}`}
-            className={
-              'prose prose-sm prose-neutral prose-invert max-w-none text-foreground prose-pre:m-0 prose-pre:bg-transparent prose-pre:p-0'
-            }
-          >
+          <Markdown key={`content-${index}`} className={proseClass}>
             {contentSegment}
           </Markdown>,
         );
@@ -393,12 +374,7 @@ const renderMessageContent = (message: Message): React.ReactNode => {
     const remainingContent = message.content.slice(lastIndex);
     if (remainingContent.trim()) {
       segments.push(
-        <Markdown
-          key='content-final'
-          className={
-            'prose prose-sm prose-neutral prose-invert max-w-none text-foreground prose-pre:m-0 prose-pre:bg-transparent prose-pre:p-0'
-          }
-        >
+        <Markdown key='content-final' className={proseClass}>
           {remainingContent}
         </Markdown>,
       );

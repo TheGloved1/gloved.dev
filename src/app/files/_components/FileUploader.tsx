@@ -15,7 +15,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { type AxiosProgressEvent } from 'axios';
 import { motion } from 'framer-motion';
 import { AlertTriangle, FolderOpen, RefreshCw } from 'lucide-react';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { DeleteConfirmDialog } from '../../../components/DeleteConfirmDialog';
 import { Button } from '../../../components/ui/button';
 import Loading from '../loading';
@@ -157,22 +157,22 @@ export default function FileUploader(): React.JSX.Element {
     },
   });
 
-  const handleCancelUpload = () => {
+  const handleCancelUpload = useCallback(() => {
     if (uploadRequestController) {
       uploadRequestController.abort();
       setUploadProgress(0);
       setUploadRequestController(null);
     }
-  };
+  }, [uploadRequestController]);
 
   const uploadMutation = useMutation({
-    mutationFn: (file: File) => {
+    mutationFn: ({ file, isUploadTemp }: { file: File; isUploadTemp: boolean }) => {
       const controller = new AbortController();
       setUploadRequestController(controller);
 
       return uploadFileApi(
         file,
-        isTemp,
+        isUploadTemp,
         (progressEvent) => {
           if (progressEvent.total) {
             const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
@@ -191,7 +191,6 @@ export default function FileUploader(): React.JSX.Element {
       setUploadProgress(0);
       setUploadRequestController(null);
 
-      // Handle different error types
       if (error.code === 'ECONNABORTED') {
         setAlert('Upload was cancelled');
       } else if (error.code === 'ECONNABORTED' || error.message?.includes('timeout')) {
@@ -212,62 +211,63 @@ export default function FileUploader(): React.JSX.Element {
     return () => clearTimeout(timer);
   }, [alert]);
 
-  async function handleDelete(permanent: boolean = false): Promise<void> {
-    if (!fileToDelete) return;
-    if (!passwordEntered) {
-      const password = prompt(`Enter passkey to delete files`)?.trim();
-      if (!password) {
-        return;
+  const handleDelete = useCallback(
+    async (permanent: boolean = false): Promise<void> => {
+      if (!fileToDelete) return;
+      if (!passwordEntered) {
+        const password = prompt(`Enter passkey to delete files`)?.trim();
+        if (!password) {
+          return;
+        }
+        if (password === correctPassword) {
+          setPasswordEntered(true);
+        } else {
+          setAlert('Incorrect passkey');
+          setFileToDelete(null);
+          return;
+        }
       }
-      if (password === correctPassword) {
-        setPasswordEntered(true);
+
+      if (permanent) {
+        const { error } = await tryCatch(
+          permanentDeleteMutation.mutateAsync({ filename: fileToDelete.name, isTemp: fileToDelete.isTemp }),
+        );
+        if (error) {
+          setAlert(error.message);
+          return;
+        }
       } else {
-        setAlert('Incorrect passkey');
-        setFileToDelete(null);
-        return;
+        const { error } = await tryCatch(
+          deleteMutation.mutateAsync({ filename: fileToDelete.name, isTemp: fileToDelete.isTemp }),
+        );
+        if (error) {
+          setAlert(error.message);
+          return;
+        }
       }
-    }
+      setAlert('');
+      setFileToDelete(null);
+    },
+    [fileToDelete, passwordEntered, correctPassword, permanentDeleteMutation, deleteMutation],
+  );
 
-    if (permanent) {
-      const { error } = await tryCatch(
-        permanentDeleteMutation.mutateAsync({ filename: fileToDelete.name, isTemp: fileToDelete.isTemp }),
-      );
-      if (error) {
-        setAlert(error.message);
-        return;
-      }
-    } else {
-      const { error } = await tryCatch(
-        deleteMutation.mutateAsync({ filename: fileToDelete.name, isTemp: fileToDelete.isTemp }),
-      );
-      if (error) {
-        setAlert(error.message);
-        return;
-      }
-    }
-    setAlert('');
-    setFileToDelete(null);
-  }
-
-  const handleRefresh = () => {
+  const handleRefresh = useCallback(() => {
     setIsRefreshing(true);
     filesQuery.refetch();
     setTimeout(() => setIsRefreshing(false), 500);
-  };
+  }, [filesQuery]);
 
   useInterval(() => {
     filesQuery.refetch();
   }, 15000);
 
-  async function uploadFile(file: File, isTemp: boolean): Promise<void> {
-    try {
-      uploadMutation.mutate(file);
+  const uploadFile = useCallback(
+    (file: File, isUploadTemp: boolean) => {
+      uploadMutation.mutate({ file, isUploadTemp });
       setAlert('');
-    } catch (error) {
-      console.error('An error occurred while uploading file:', error);
-      setAlert('An error occurred while uploading file');
-    }
-  }
+    },
+    [uploadMutation],
+  );
 
   return (
     <>

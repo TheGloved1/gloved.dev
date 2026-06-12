@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { type FileInfo } from '@/lib/glovedapi';
 import { cn } from '@/lib/utils';
 import { FilterIcon, Search, X } from 'lucide-react';
-import { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Filters, type Filter, type FilterValue } from './filters';
 
 interface FileFiltersProps {
@@ -38,7 +38,7 @@ const getFilterOptions = (files: FileInfo[]): GetFilterOptionsReturnType[] => {
   ];
 };
 
-export default function FileFilters({
+const FileFilters = React.memo(function FileFilters({
   searchQuery,
   onSearchChange,
   onFilterChange,
@@ -48,7 +48,7 @@ export default function FileFilters({
   const [activeFilters, setActiveFilters] = useState<FilterValue[]>([]);
   const [showFilters, setShowFilters] = useState(false);
 
-  const filterOptions = getFilterOptions(files);
+  const filterOptions = useMemo(() => getFilterOptions(files), [files]);
 
   const handleFilterChange = useCallback(
     (filterType: FilterValue) => {
@@ -283,4 +283,6 @@ export default function FileFilters({
       )}
     </div>
   );
-}
+});
+
+export default FileFilters;

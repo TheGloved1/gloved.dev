@@ -22,6 +22,8 @@ export type ChatFetchOptions = {
   model?: ModelID;
   system?: string;
   tools?: CustomTools;
+  convexThreadId?: string;
+  convexAssistantMessageId?: string;
 };
 
 export type EmbedFetchOptions = {

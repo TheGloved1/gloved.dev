@@ -1,3 +1,4 @@
+import ConvexClientProvider from '@/components/ConvexClientProvider';
 import ReactQueryProvider from '@/components/ReactQueryProvider';
 import SourceCodeButton from '@/components/SourceCodeButton';
 import { Toaster } from '@/components/ui/sonner';
@@ -67,13 +68,15 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           </>
         )}
         <body className={`dark min-h-screen bg-background antialiased ${jetbrains.className}`}>
-          <ReactQueryProvider>
-            <Analytics />
-            <SpeedInsights />
-            <Toaster toastOptions={{ style: { background: 'hsl(var(--background))' } }} />
-            <SourceCodeButton />
-            <TooltipProvider>{children}</TooltipProvider>
-          </ReactQueryProvider>
+          <ConvexClientProvider>
+            <ReactQueryProvider>
+              <Analytics />
+              <SpeedInsights />
+              <Toaster toastOptions={{ style: { background: 'hsl(var(--background))' } }} />
+              <SourceCodeButton />
+              <TooltipProvider>{children}</TooltipProvider>
+            </ReactQueryProvider>
+          </ConvexClientProvider>
         </body>
       </html>
     </ClerkProvider>

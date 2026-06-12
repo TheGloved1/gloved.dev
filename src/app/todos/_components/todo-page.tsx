@@ -1,10 +1,11 @@
 'use client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { CheckSquare, ChevronLeft, Pencil, Plus, Trash2 } from 'lucide-react';
+import { CheckSquare, ChevronLeft, Plus } from 'lucide-react';
 import Link from 'next/link';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
+import TodoItem from './TodoItem';
 
 export type Todo = {
   id: string;
@@ -24,15 +25,16 @@ export default function TodoPage(): React.JSX.Element {
   const [newTitle, setNewTitle] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editText, setEditText] = useState('');
-  const editRef = useRef<HTMLInputElement>(null);
+  const isMounted = useRef(false);
 
   useEffect(() => {
-    localStorage.setItem(TODO_KEY, JSON.stringify(todos));
+    if (!isMounted.current) {
+      isMounted.current = true;
+      return;
+    }
+    const id = setTimeout(() => localStorage.setItem(TODO_KEY, JSON.stringify(todos)), 300);
+    return () => clearTimeout(id);
   }, [todos]);
-
-  useEffect(() => {
-    if (editingId) editRef.current?.focus();
-  }, [editingId]);
 
   const startEditing = useCallback((todo: Todo) => {
     setEditingId(todo.id);
@@ -40,13 +42,13 @@ export default function TodoPage(): React.JSX.Element {
   }, []);
 
   const saveEdit = useCallback(() => {
-    const id = editingId;
+    if (editingId === null) return;
     const title = editText.trim();
-    if (!id || !title) {
+    if (!title) {
       setEditingId(null);
       return;
     }
-    setTodos((prev) => prev.map((t) => (t.id === id ? { ...t, title } : t)));
+    setTodos((prev) => prev.map((t) => (t.id === editingId ? { ...t, title } : t)));
     setEditingId(null);
     toast.success('Todo updated');
   }, [editingId, editText]);
@@ -133,84 +135,18 @@ export default function TodoPage(): React.JSX.Element {
             </div>
           : <ul className='flex-1 space-y-1 overflow-y-auto'>
               {todos.map((todo) => (
-                <li
+                <TodoItem
                   key={todo.id}
-                  className='group flex items-center gap-3 rounded-lg border border-white/10 bg-white/[0.02] px-3 py-2.5 transition-colors hover:border-fuchsia-500/30 hover:bg-fuchsia-500/[0.02]'
-                >
-                  <button
-                    onClick={() => toggleTodo(todo.id)}
-                    className={`flex h-4 w-4 shrink-0 items-center justify-center rounded border transition-colors ${
-                      todo.completed ? 'border-fuchsia-500 bg-fuchsia-500' : 'border-white/30 hover:border-fuchsia-500/60'
-                    }`}
-                  >
-                    {todo.completed && (
-                      <svg
-                        className='h-2.5 w-2.5 text-black'
-                        fill='none'
-                        viewBox='0 0 12 12'
-                        stroke='currentColor'
-                        strokeWidth={3}
-                      >
-                        <path strokeLinecap='round' strokeLinejoin='round' d='M2 6l3 3 5-5' />
-                      </svg>
-                    )}
-                  </button>
-                  {editingId === todo.id ?
-                    <>
-                      <Input
-                        ref={editRef}
-                        value={editText}
-                        onChange={(e) => setEditText(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') saveEdit();
-                          if (e.key === 'Escape') setEditingId(null);
-                        }}
-                        className='font-mono-industrial h-7 flex-1 border-fuchsia-500/50 bg-fuchsia-500/5 text-xs text-white'
-                      />
-                      <button
-                        onClick={saveEdit}
-                        className='brutal-shadow-sm flex h-7 w-7 items-center justify-center rounded-lg border border-fuchsia-500/50 bg-fuchsia-500/10 text-fuchsia-400 hover:bg-fuchsia-500/20'
-                      >
-                        <svg className='h-3 w-3' fill='none' viewBox='0 0 12 12' stroke='currentColor' strokeWidth={3}>
-                          <path strokeLinecap='round' strokeLinejoin='round' d='M2 6l3 3 5-5' />
-                        </svg>
-                      </button>
-                      <button
-                        onClick={() => setEditingId(null)}
-                        className='brutal-shadow-sm flex h-7 w-7 items-center justify-center rounded-lg border border-white/20 bg-white/5 text-white/50 hover:border-white/40 hover:bg-white/10'
-                      >
-                        <svg className='h-3 w-3' fill='none' viewBox='0 0 12 12' stroke='currentColor' strokeWidth={3}>
-                          <path strokeLinecap='round' strokeLinejoin='round' d='M2 2l8 8M10 2l-8 8' />
-                        </svg>
-                      </button>
-                    </>
-                  : <button onClick={() => startEditing(todo)} className='flex flex-1 items-center text-left'>
-                      <span
-                        className={`font-mono-industrial flex-1 text-sm transition-colors ${
-                          todo.completed ? 'text-white/30 line-through' : 'text-white/80'
-                        }`}
-                      >
-                        {todo.title}
-                      </span>
-                    </button>
-                  }
-                  {editingId !== todo.id && (
-                    <div className='relative h-7 w-16'>
-                      <button
-                        onClick={() => startEditing(todo)}
-                        className='absolute right-0 flex h-7 w-7 items-center justify-center text-white/20 transition-all duration-200 hover:text-white/50 group-hover:right-9'
-                      >
-                        <Pencil className='h-3.5 w-3.5' />
-                      </button>
-                      <button
-                        onClick={() => deleteTodo(todo.id)}
-                        className='brutal-shadow-sm pointer-events-none absolute right-0 flex h-7 w-7 items-center justify-center rounded-lg border border-red-500/30 bg-red-500/10 text-red-400 opacity-0 transition-all duration-200 hover:border-red-500/60 hover:bg-red-500/20 group-hover:pointer-events-auto group-hover:opacity-100'
-                      >
-                        <Trash2 className='h-3 w-3' />
-                      </button>
-                    </div>
-                  )}
-                </li>
+                  todo={todo}
+                  editingId={editingId}
+                  editText={editText}
+                  onToggle={toggleTodo}
+                  onStartEdit={startEditing}
+                  onSaveEdit={saveEdit}
+                  onCancelEdit={() => setEditingId(null)}
+                  onDelete={deleteTodo}
+                  onEditTextChange={setEditText}
+                />
               ))}
             </ul>
           }

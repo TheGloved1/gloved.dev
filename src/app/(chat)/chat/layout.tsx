@@ -1,8 +1,8 @@
 import ThemeChanger from '@/components/ThemeChanger';
+import { ChatInputProvider } from '@/contexts/chat-input-context';
 import Constants from '@/lib/constants';
 import { Metadata } from 'next';
-import ChatSidebar from './_components/ChatSidebar';
-import CheckSync from './_components/CheckSync';
+import SidebarWrapper from './_components/SidebarWrapper';
 
 export const metadata: Metadata = {
   title: Constants.Chat.title,
@@ -29,8 +29,9 @@ export const metadata: Metadata = {
 export default function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <ThemeChanger>
-      <CheckSync />
-      <ChatSidebar>{children}</ChatSidebar>
+      <SidebarWrapper>
+        <ChatInputProvider>{children}</ChatInputProvider>
+      </SidebarWrapper>
     </ThemeChanger>
   );
 }

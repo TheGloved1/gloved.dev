@@ -19,19 +19,6 @@ export default function ToolDropdown() {
   const isMobile = useIsMobile();
 
   const handleToolToggle = (tool: CustomTool, e?: React.MouseEvent) => {
-    e?.stopPropagation(); // Prevent dropdown from closing
-    setTools((prev) => {
-      if (prev?.includes(tool)) {
-        return prev.filter((t) => t !== tool);
-      } else {
-        return [...(prev ?? []), tool];
-      }
-    });
-    // Don't close dropdown when toggling tools
-  };
-
-  // Handle mobile tool toggle with tooltip
-  const handleMobileToolToggle = (tool: CustomTool, e?: React.MouseEvent) => {
     e?.stopPropagation();
     setTools((prev) => {
       if (prev?.includes(tool)) {
@@ -88,7 +75,7 @@ export default function ToolDropdown() {
                   className={`cursor-pointer rounded-lg border p-3 transition-colors ${
                     isActive ? 'border-primary/20 bg-primary/5' : 'border-border hover:border-border/60 hover:bg-muted/30'
                   }`}
-                  onClick={isMobile ? (e) => handleMobileToolToggle(tool.value, e) : (e) => handleToolToggle(tool.value, e)}
+                  onClick={isMobile ? (e) => handleToolToggle(tool.value, e) : (e) => handleToolToggle(tool.value, e)}
                 >
                   <div className='flex items-start gap-3'>
                     {/* Tool Icon */}

@@ -1,8 +1,16 @@
-import { GroceryItem } from '@/lib/redis';
+import React from 'react';
 import GroceryItemComponent from './grocery-item';
 
+interface GroceryItemData {
+  _id: string;
+  text: string;
+  addedAt: number;
+  updatedAt?: number;
+  addedBy: string;
+}
+
 interface ShoppingListProps {
-  items: GroceryItem[];
+  items: GroceryItemData[];
   onRemoveItem: (id: string) => void;
   onMoveItem: (id: string) => void;
   isRemoving?: boolean;
@@ -12,7 +20,7 @@ interface ShoppingListProps {
   onToggleSelection?: (itemId: string, selected: boolean) => void;
 }
 
-export default function ShoppingList({
+const ShoppingList = React.memo(function ShoppingList({
   items,
   onRemoveItem,
   onMoveItem,
@@ -35,20 +43,22 @@ export default function ShoppingList({
     <div className='space-y-3'>
       {items.map((item) => (
         <GroceryItemComponent
-          key={item.id}
+          key={item._id}
           item={item}
-          onRemove={() => onRemoveItem(item.id)}
-          onMove={() => onMoveItem(item.id)}
+          onRemove={() => onRemoveItem(item._id)}
+          onMove={() => onMoveItem(item._id)}
           moveButtonLabel='Move to Needed'
           moveButtonClass=''
           isRemoving={isRemoving}
           isMoving={isMoving}
-          isSelected={selectedItems.has(item.id)}
-          onSelect={onToggleSelection ? (selected) => onToggleSelection(item.id, selected) : undefined}
+          isSelected={selectedItems.has(item._id)}
+          onSelect={onToggleSelection ? (selected) => onToggleSelection(item._id, selected) : undefined}
           showSelection={selectionMode}
           hideIndividualActions={selectionMode}
         />
       ))}
     </div>
   );
-}
+});
+
+export default ShoppingList;

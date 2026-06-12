@@ -86,7 +86,7 @@ export const apps: AppItem[] = [
     description: Constants.Github.description,
     link: Constants.Github.link,
   },
-] as const;
+];
 
 export const adminApps: AppItem[] = [
   {

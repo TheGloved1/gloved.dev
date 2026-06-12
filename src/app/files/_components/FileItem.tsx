@@ -6,7 +6,7 @@ import glovedApi, { type FileInfo } from '@/lib/glovedapi';
 import { cn } from '@/lib/utils';
 import { Calendar, Check, Copy, Download, Eye, HardDrive, Trash2 } from 'lucide-react';
 import Image from 'next/image';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import VideoPreview from '../../../components/VideoPreview';
 import { createFileFilters, getFileType, getFileTypeIcon } from './filters';
 
@@ -49,7 +49,7 @@ const formatDate = (dateString: string): string => {
   });
 };
 
-export default function FileItem({ file, onDelete, className }: FileItemProps): React.JSX.Element {
+const FileItem = React.memo(function FileItem({ file, onDelete, className }: FileItemProps): React.JSX.Element {
   const [isHovered, setIsHovered] = useState(false);
   const [showDialog, setShowDialog] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
@@ -467,4 +467,6 @@ export default function FileItem({ file, onDelete, className }: FileItemProps): 
       </Dialog>
     </>
   );
-}
+});
+
+export default FileItem;

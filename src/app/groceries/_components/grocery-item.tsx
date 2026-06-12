@@ -1,9 +1,16 @@
-import { GroceryItem } from '@/lib/redis';
 import { ArrowDown, ArrowUp, Trash2 } from 'lucide-react';
 import React from 'react';
 
+interface GroceryItemData {
+  _id: string;
+  text: string;
+  addedAt: number;
+  updatedAt?: number;
+  addedBy: string;
+}
+
 interface GroceryItemComponentProps {
-  item: GroceryItem;
+  item: GroceryItemData;
   onRemove: () => void;
   onMove: () => void;
   moveButtonLabel: string;
@@ -16,7 +23,7 @@ interface GroceryItemComponentProps {
   hideIndividualActions?: boolean;
 }
 
-export default function GroceryItemComponent({
+export default React.memo(function GroceryItemComponent({
   item,
   onRemove,
   onMove,
@@ -126,4 +133,4 @@ export default function GroceryItemComponent({
       </div>
     </div>
   );
-}
+});

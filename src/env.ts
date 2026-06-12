@@ -11,8 +11,8 @@ export const env = createEnv({
     GROQ: z.string(),
     OPENROUTER: z.string(),
     CLERK_SECRET_KEY: z.string(),
+    CLERK_ISSUER_URL: z.string().optional(),
     TAVILY_API_KEY: z.string(),
-    KV_URL: z.string(),
     KV_REST_API_URL: z.string(),
     KV_REST_API_TOKEN: z.string(),
     KV_REST_API_READ_ONLY_TOKEN: z.string(),
@@ -25,6 +25,7 @@ export const env = createEnv({
   client: {
     NEXT_PUBLIC_FILE_MANAGER_PASSKEY: z.string(),
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string(),
+    NEXT_PUBLIC_CONVEX_URL: z.string(),
   },
 
   /**
@@ -35,14 +36,15 @@ export const env = createEnv({
     GEMINI: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
     GROQ: process.env.GROQ_API_KEY,
     OPENROUTER: process.env.OPENROUTER,
-    KV_URL: process.env.KV_URL,
+    CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
+    CLERK_ISSUER_URL: process.env.CLERK_ISSUER_URL,
+    TAVILY_API_KEY: process.env.TAVILY_API_KEY,
     KV_REST_API_URL: process.env.KV_REST_API_URL,
     KV_REST_API_TOKEN: process.env.KV_REST_API_TOKEN,
     KV_REST_API_READ_ONLY_TOKEN: process.env.KV_REST_API_READ_ONLY_TOKEN,
-    TAVILY_API_KEY: process.env.TAVILY_API_KEY,
     NEXT_PUBLIC_FILE_MANAGER_PASSKEY: process.env.NEXT_PUBLIC_FILE_MANAGER_PASSKEY,
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
-    CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
+    NEXT_PUBLIC_CONVEX_URL: process.env.NEXT_PUBLIC_CONVEX_URL,
   },
 
   emptyStringAsUndefined: true,

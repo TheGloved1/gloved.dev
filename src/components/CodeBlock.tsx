@@ -38,6 +38,7 @@ const CodeBlock = ({ children = '', language = 'plaintext' }: CodeBlockProps) =>
       );
       if (highlighted.error) {
         console.error('Failed to highlight code', highlighted.error);
+        setCode(`<pre>${escapeHtml(String(children))}</pre>`);
         return;
       }
       setCode(highlighted.data);
@@ -59,5 +60,9 @@ const CodeBlock = ({ children = '', language = 'plaintext' }: CodeBlockProps) =>
     </div>
   );
 };
+
+function escapeHtml(text: string): string {
+  return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
 
 export default CodeBlock;

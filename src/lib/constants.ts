@@ -3,7 +3,7 @@ import { GLOVED_API_URL } from './glovedapi';
 const Constants = {
   NAME: 'gloved.dev',
   DESC: 'A personal website for my projects and interests. Built with Next.js',
-  ICON: '/logo.png',
+  ICON: '/new_logo.png',
   API: GLOVED_API_URL,
   GITHUB_URL: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/',
   FILE_SIZE_LIMIT_MB: 2.5,

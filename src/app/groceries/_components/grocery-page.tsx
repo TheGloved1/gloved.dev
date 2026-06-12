@@ -1,18 +1,11 @@
 'use client';
 import { Button } from '@/components/ui/button';
 import { useMount } from '@/hooks/use-mount';
-import {
-  addGroceryItemAction,
-  bulkMoveGroceryItemsAction,
-  bulkRemoveGroceryItemsAction,
-  getGroceryListsAction,
-  moveGroceryItemAction,
-  removeGroceryItemAction,
-} from '@/lib/actions';
 import { SignInButton, UserButton, useUser } from '@clerk/nextjs';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { api } from '@convex/_generated/api';
+import { useMutation, useQuery } from 'convex/react';
 import { ShoppingCart } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { toast } from 'sonner';
 import AddItemForm from './add-item-form';
 import BulkActionsToolbar from './bulk-actions-toolbar';
@@ -21,14 +14,11 @@ import ShoppingList from './shopping-list';
 
 export default function GroceryPage(): React.JSX.Element {
   const { user, isSignedIn } = useUser();
-  const queryClient = useQueryClient();
   const [clientIP, setClientIP] = useState<string>('unknown');
-  const [isFocused, setIsFocused] = useState<boolean>(false);
   const [shoppingListSelectionMode, setShoppingListSelectionMode] = useState<boolean>(false);
   const [haveListSelectionMode, setHaveListSelectionMode] = useState<boolean>(false);
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
 
-  // Get user name from Clerk or fallback to 'unknown'
   const getUserName = () => {
     if (user?.firstName && user?.lastName) {
       return `${user.firstName} ${user.lastName}`;
@@ -45,161 +35,102 @@ export default function GroceryPage(): React.JSX.Element {
     return 'unknown';
   };
 
-  // Get client IP
   const getClientIP = async (): Promise<string> => {
     try {
       const response = await fetch('https://api.ipify.org?format=json');
       const data = await response.json();
       return data.ip || 'unknown';
-    } catch (error) {
-      console.error('Failed to get client IP:', error);
+    } catch {
       return 'unknown';
     }
   };
 
-  // Fetch client IP on component mount
   useMount(() => {
     getClientIP().then(setClientIP);
   });
 
-  // Handle window focus/blur events (client-side only)
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const handleFocus = () => setIsFocused(true);
-      const handleBlur = () => setIsFocused(false);
-      const handleVisibilityChange = () => setIsFocused(!document.hidden);
-
-      window.addEventListener('focus', handleFocus);
-      window.addEventListener('blur', handleBlur);
-      document.addEventListener('visibilitychange', handleVisibilityChange);
-
-      return () => {
-        window.removeEventListener('focus', handleFocus);
-        window.removeEventListener('blur', handleBlur);
-        document.removeEventListener('visibilitychange', handleVisibilityChange);
-      };
-    }
-  }, []);
-
   const userName = getUserName();
 
-  // React Query for fetching lists
-  const {
-    data: lists,
-    isLoading,
-    error,
-    refetch,
-  } = useQuery({
-    queryKey: ['groceryLists'],
-    queryFn: getGroceryListsAction,
-    refetchInterval: isFocused ? 5000 : false, // Only refetch when focused
-    refetchIntervalInBackground: false, // Don't refetch when tab is in background
-    staleTime: 2000,
-  });
+  const shoppingList = useQuery(api.groceries.getShoppingList);
+  const haveList = useQuery(api.groceries.getHaveList);
+  const addItemMut = useMutation(api.groceries.addItem);
+  const removeItemMut = useMutation(api.groceries.removeItem);
+  const moveItemMut = useMutation(api.groceries.moveItem);
+  const bulkRemoveMut = useMutation(api.groceries.bulkRemove);
+  const bulkMoveMut = useMutation(api.groceries.bulkMove);
 
-  // Mutations for data modifications
-  const addItemMutation = useMutation({
-    mutationFn: ({ listKey, text }: { listKey: 'shopping-list' | 'have-list'; text: string }) => {
-      console.log(`Adding "${text}" to ${listKey}`);
-      return addGroceryItemAction(listKey, text, userName || clientIP);
-    },
-    onSuccess: () => {
+  const [addItemPending, setAddItemPending] = useState(false);
+  const [removeItemPending, setRemoveItemPending] = useState(false);
+  const [moveItemPending, setMoveItemPending] = useState(false);
+  const [bulkRemovePending, setBulkRemovePending] = useState(false);
+  const [bulkMovePending, setBulkMovePending] = useState(false);
+
+  const handleAddItem = async (listKey: 'shopping-list' | 'have-list', text: string) => {
+    setAddItemPending(true);
+    try {
+      const identifier = userName || clientIP;
+      await addItemMut({ listKey, text, addedBy: identifier });
       toast.success('Item added');
-      queryClient.invalidateQueries({ queryKey: ['groceryLists'] });
-    },
-    onError: (error) => {
+    } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Failed to add item');
-    },
-  });
+    }
+    setAddItemPending(false);
+  };
 
-  const removeItemMutation = useMutation({
-    mutationFn: ({ listKey, itemId }: { listKey: 'shopping-list' | 'have-list'; itemId: string }) => {
-      console.log(`Removing ${itemId} from ${listKey}`);
-      return removeGroceryItemAction(listKey, itemId, userName || clientIP);
-    },
-    onSuccess: () => {
+  const handleRemoveItem = async (itemId: string) => {
+    setRemoveItemPending(true);
+    try {
+      await removeItemMut({ itemId: itemId as any });
       toast.success('Item removed');
-      queryClient.invalidateQueries({ queryKey: ['groceryLists'] });
-    },
-    onError: (error) => {
+    } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Failed to remove item');
-    },
-  });
+    }
+    setRemoveItemPending(false);
+  };
 
-  const moveItemMutation = useMutation({
-    mutationFn: ({ itemId, fromList }: { itemId: string; fromList: 'shopping-list' | 'have-list' }) => {
-      if (fromList === 'shopping-list') {
-        // Move from Shopping List to Have List (have-list)
-        const toList = 'have-list';
-        console.log(`Moving ${itemId} from ${fromList} to ${toList}`);
-        return moveGroceryItemAction(fromList, toList, itemId, userName || clientIP);
-      } else {
-        // Move from Have List to Shopping List (shopping-list)
-        const toList = 'shopping-list';
-        console.log(`Moving ${itemId} from ${fromList} to ${toList}`);
-        return moveGroceryItemAction(fromList, toList, itemId, userName || clientIP);
-      }
-    },
-    onSuccess: () => {
+  const handleMoveItem = async (itemId: string, fromList: 'shopping-list' | 'have-list') => {
+    setMoveItemPending(true);
+    try {
+      const toList = fromList === 'shopping-list' ? 'have-list' : 'shopping-list';
+      await moveItemMut({ fromListKey: fromList, toListKey: toList, itemId: itemId as any });
       toast.success('Item moved');
-      queryClient.invalidateQueries({ queryKey: ['groceryLists'] });
-    },
-    onError: (error) => {
+    } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Failed to move item');
-    },
-  });
+    }
+    setMoveItemPending(false);
+  };
 
-  const bulkRemoveMutation = useMutation({
-    mutationFn: ({ listKey, itemIds }: { listKey: 'shopping-list' | 'have-list'; itemIds: string[] }) => {
-      console.log(`Removing [${itemIds.join(', ')}] from ${listKey}`);
-      return bulkRemoveGroceryItemsAction(listKey, itemIds, userName || clientIP);
-    },
-    onSuccess: () => {
+  const handleBulkRemove = async () => {
+    const selectedIds = Array.from(selectedItems);
+    if (selectedIds.length === 0) return;
+    setBulkRemovePending(true);
+    try {
+      await bulkRemoveMut({ itemIds: selectedIds as any });
       toast.success('Items removed');
       setSelectedItems(new Set());
       setShoppingListSelectionMode(false);
       setHaveListSelectionMode(false);
-      queryClient.invalidateQueries({ queryKey: ['groceryLists'] });
-    },
-    onError: (error) => {
+    } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Failed to remove items');
-    },
-  });
+    }
+    setBulkRemovePending(false);
+  };
 
-  const bulkMoveMutation = useMutation({
-    mutationFn: ({ fromList, itemIds }: { fromList: 'shopping-list' | 'have-list'; itemIds: string[] }) => {
+  const handleBulkMove = async (fromList: 'shopping-list' | 'have-list') => {
+    const selectedIds = Array.from(selectedItems);
+    if (selectedIds.length === 0) return;
+    setBulkMovePending(true);
+    try {
       const toList = fromList === 'shopping-list' ? 'have-list' : 'shopping-list';
-      console.log(`Moving [${itemIds.join(', ')}] from ${fromList} to ${toList}`);
-      return bulkMoveGroceryItemsAction(fromList, toList, itemIds, userName || clientIP);
-    },
-    onSuccess: () => {
+      await bulkMoveMut({ fromListKey: fromList, toListKey: toList, itemIds: selectedIds as any });
       toast.success('Items moved');
       setSelectedItems(new Set());
       setShoppingListSelectionMode(false);
       setHaveListSelectionMode(false);
-      queryClient.invalidateQueries({ queryKey: ['groceryLists'] });
-    },
-    onError: (error) => {
+    } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Failed to move items');
-    },
-  });
-
-  const handleAddItem = (listKey: 'shopping-list' | 'have-list', text: string) => {
-    addItemMutation.mutate({ listKey, text });
-  };
-
-  const handleRemoveItem = (listKey: 'shopping-list' | 'have-list', itemId: string) => {
-    removeItemMutation.mutate({ listKey, itemId });
-  };
-
-  const handleMoveItem = (itemId: string, fromList: 'shopping-list' | 'have-list') => {
-    if (fromList === 'shopping-list') {
-      // Move from Shopping List to Have List
-      moveItemMutation.mutate({ itemId, fromList: 'shopping-list' });
-    } else {
-      // Move from Have List to Shopping List
-      moveItemMutation.mutate({ itemId, fromList: 'have-list' });
     }
+    setBulkMovePending(false);
   };
 
   const handleToggleSelection = (itemId: string, selected: boolean) => {
@@ -215,7 +146,7 @@ export default function GroceryPage(): React.JSX.Element {
   };
 
   const handleSelectAll = (listKey: 'shopping-list' | 'have-list', items: any[]) => {
-    const itemIds = items.map((item) => item.id);
+    const itemIds = items.map((item) => item._id);
     setSelectedItems(new Set(itemIds));
   };
 
@@ -223,31 +154,19 @@ export default function GroceryPage(): React.JSX.Element {
     setSelectedItems(new Set());
   };
 
-  const handleBulkRemove = (listKey: 'shopping-list' | 'have-list') => {
-    const selectedIds = Array.from(selectedItems);
-    if (selectedIds.length === 0) return;
-    bulkRemoveMutation.mutate({ listKey, itemIds: selectedIds });
-  };
-
-  const handleBulkMove = (fromList: 'shopping-list' | 'have-list') => {
-    const selectedIds = Array.from(selectedItems);
-    if (selectedIds.length === 0) return;
-    bulkMoveMutation.mutate({ fromList, itemIds: selectedIds });
-  };
-
   const toggleShoppingListSelectionMode = () => {
     setShoppingListSelectionMode(!shoppingListSelectionMode);
-    setHaveListSelectionMode(false); // Disable the other toolbar
+    setHaveListSelectionMode(false);
     setSelectedItems(new Set());
   };
 
   const toggleHaveListSelectionMode = () => {
     setHaveListSelectionMode(!haveListSelectionMode);
-    setShoppingListSelectionMode(false); // Disable the other toolbar
+    setShoppingListSelectionMode(false);
     setSelectedItems(new Set());
   };
 
-  if (isLoading) {
+  if (shoppingList === undefined || haveList === undefined) {
     return (
       <div className='flex min-h-screen items-center justify-center bg-black'>
         <div className='px-4 text-center'>
@@ -258,29 +177,8 @@ export default function GroceryPage(): React.JSX.Element {
     );
   }
 
-  if (error) {
-    return (
-      <div className='flex min-h-screen items-center justify-center bg-black px-4'>
-        <div className='max-w-md text-center'>
-          <p className='mb-6 text-base text-red-400'>
-            {error instanceof Error ? error.message : 'Failed to load your shopping lists'}
-          </p>
-          <Button
-            onClick={() => refetch()}
-            className='rounded-xl bg-red-600 px-6 py-3 text-base text-white hover:bg-red-700'
-          >
-            Try Again
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
-  const listsData = lists ?? { shoppingList: [], haveList: [] };
-
   return (
     <div className='min-h-screen bg-black'>
-      {/* Header */}
       <header className='border-b border-red-900/20'>
         <div className='mx-auto max-w-4xl px-4 py-6 sm:px-6'>
           <div className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
@@ -312,44 +210,40 @@ export default function GroceryPage(): React.JSX.Element {
         </div>
       </header>
 
-      {/* Main Content */}
       <main className='mx-auto max-w-4xl px-4 py-6 sm:px-6 sm:py-12'>
-        <AddItemForm listKey='shopping-list' onAddItem={handleAddItem} isLoading={addItemMutation.isPending} />
+        <AddItemForm listKey='shopping-list' onAddItem={handleAddItem} isLoading={addItemPending} />
         <div className='mt-6 space-y-12'>
-          {/* Shopping List */}
           <section>
             <div className='mb-6 flex items-center gap-3'>
               <ShoppingCart className='h-6 w-6 text-red-500' />
               <h2 className='text-xl font-light text-red-300 sm:text-2xl'>Shopping List</h2>
               <span className='rounded-full bg-red-500/20 px-3 py-1 text-sm font-medium text-red-300'>
-                {listsData.shoppingList.length} items
+                {shoppingList.length} items
               </span>
             </div>
 
-            {listsData.shoppingList.length > 0 && (
+            {shoppingList.length > 0 && (
               <BulkActionsToolbar
                 selectionMode={shoppingListSelectionMode}
-                selectedCount={
-                  Array.from(selectedItems).filter((id) => listsData.shoppingList.some((item) => item.id === id)).length
-                }
+                selectedCount={Array.from(selectedItems).filter((id) => shoppingList.some((item) => item._id === id)).length}
                 onToggleSelectionMode={toggleShoppingListSelectionMode}
-                onSelectAll={() => handleSelectAll('shopping-list', listsData.shoppingList)}
+                onSelectAll={() => handleSelectAll('shopping-list', shoppingList as any)}
                 onClearSelection={handleClearSelection}
                 onBulkMove={() => handleBulkMove('shopping-list')}
-                onBulkRemove={() => handleBulkRemove('shopping-list')}
-                isBulkMoving={bulkMoveMutation.isPending}
-                isBulkRemoving={bulkRemoveMutation.isPending}
+                onBulkRemove={handleBulkRemove}
+                isBulkMoving={bulkMovePending}
+                isBulkRemoving={bulkRemovePending}
                 moveButtonLabel='Move to Have'
               />
             )}
 
             <div className='space-y-6'>
               <ShoppingList
-                items={listsData.shoppingList}
-                onRemoveItem={(id) => handleRemoveItem('shopping-list', id)}
+                items={shoppingList}
+                onRemoveItem={handleRemoveItem}
                 onMoveItem={(id) => handleMoveItem(id, 'shopping-list')}
-                isRemoving={removeItemMutation.isPending}
-                isMoving={moveItemMutation.isPending}
+                isRemoving={removeItemPending}
+                isMoving={moveItemPending}
                 selectionMode={shoppingListSelectionMode}
                 selectedItems={selectedItems}
                 onToggleSelection={handleToggleSelection}
@@ -357,7 +251,6 @@ export default function GroceryPage(): React.JSX.Element {
             </div>
           </section>
 
-          {/* Have Section */}
           <section>
             <div className='mb-6 flex items-center gap-3'>
               <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-red-500/10'>
@@ -366,35 +259,33 @@ export default function GroceryPage(): React.JSX.Element {
               <div>
                 <h2 className='text-xl font-light text-red-300 sm:text-2xl'>Have</h2>
                 <span className='rounded-full bg-red-500/20 px-3 py-1 text-sm font-medium text-red-300'>
-                  {listsData.haveList.length} items
+                  {haveList.length} items
                 </span>
               </div>
             </div>
 
-            {listsData.haveList.length > 0 && (
+            {haveList.length > 0 && (
               <BulkActionsToolbar
                 selectionMode={haveListSelectionMode}
-                selectedCount={
-                  Array.from(selectedItems).filter((id) => listsData.haveList.some((item) => item.id === id)).length
-                }
+                selectedCount={Array.from(selectedItems).filter((id) => haveList.some((item) => item._id === id)).length}
                 onToggleSelectionMode={toggleHaveListSelectionMode}
-                onSelectAll={() => handleSelectAll('have-list', listsData.haveList)}
+                onSelectAll={() => handleSelectAll('have-list', haveList as any)}
                 onClearSelection={handleClearSelection}
                 onBulkMove={() => handleBulkMove('have-list')}
-                onBulkRemove={() => handleBulkRemove('have-list')}
-                isBulkMoving={bulkMoveMutation.isPending}
-                isBulkRemoving={bulkRemoveMutation.isPending}
+                onBulkRemove={handleBulkRemove}
+                isBulkMoving={bulkMovePending}
+                isBulkRemoving={bulkRemovePending}
                 moveButtonLabel='Move to Shopping'
               />
             )}
 
             <div className='space-y-3'>
               <HaveList
-                items={listsData.haveList}
-                onRemoveItem={(id) => handleRemoveItem('have-list', id)}
+                items={haveList}
+                onRemoveItem={handleRemoveItem}
                 onMoveItem={(id) => handleMoveItem(id, 'have-list')}
-                isRemoving={removeItemMutation.isPending}
-                isMoving={moveItemMutation.isPending}
+                isRemoving={removeItemPending}
+                isMoving={moveItemPending}
                 selectionMode={haveListSelectionMode}
                 selectedItems={selectedItems}
                 onToggleSelection={handleToggleSelection}

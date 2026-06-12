@@ -11,12 +11,17 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
-import { useChat } from '@/hooks/use-chat';
 import { AlertTriangle, RefreshCw, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 
+function clearChatSettings() {
+  localStorage.removeItem('systemPrompt');
+  localStorage.removeItem('model');
+  localStorage.removeItem('tools');
+  localStorage.removeItem('input');
+}
+
 export default function Error() {
-  const { clearChatSettings } = useChat();
   const [open, setOpen] = useState(false);
 
   const handleConfirm = () => {

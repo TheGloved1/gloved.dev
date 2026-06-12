@@ -16,9 +16,10 @@ const getVisits = async (visitorId: string | null) => {
 export function PageVisits(): React.JSX.Element | null {
   const [visitorId, setVisitorId] = useLocalStorage<string | null>('visitorId', null);
   const visitsQuery = useQuery({
-    queryKey: ['pageVisits'],
+    queryKey: ['pageVisits', visitorId],
     queryFn: () => getVisits(visitorId),
-    initialData: { visitorIds: [], visits: 0 },
+    enabled: visitorId !== null,
+    staleTime: Infinity,
   });
   useMount(() => {
     if (visitorId === null) {
@@ -30,7 +31,8 @@ export function PageVisits(): React.JSX.Element | null {
     }
   });
   if (visitsQuery.isError) return null;
-  if (visitsQuery.isFetching) return null;
+  if (visitsQuery.isFetching || visitsQuery.isLoading) return null;
+  if (!visitsQuery.data) return null;
   return (
     <div className='fixed bottom-0 left-0 right-0 items-center justify-center gap-4'>
       <div className='text-center text-[0.5rem] sm:text-[0.6rem] md:text-[0.7rem] lg:text-[0.8rem]'>{`This page has been loaded ${visitsQuery.data.visits} times by ${visitsQuery.data.visitorIds.length} visitors`}</div>

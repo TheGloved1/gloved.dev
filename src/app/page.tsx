@@ -136,21 +136,6 @@ export default function Page(): React.JSX.Element {
       <div className='mx-auto flex w-[75vw] max-w-[1000px] items-center self-center'>
         <div className='flex h-px flex-1 bg-gradient-to-r from-transparent via-fuchsia-500/50 to-transparent' />
       </div>
-      <div className='container flex flex-col items-center gap-1 self-center px-4 py-4 text-xs md:text-sm lg:text-base'>
-        <p className='font-mono-industrial p-4 text-sm text-white/50'>
-          {'Help me improve the site and '}
-          <Button
-            asChild
-            variant='outline'
-            size='sm'
-            className='brutal-shadow-sm border border-fuchsia-500/50 bg-fuchsia-500/10 text-xs hover:bg-fuchsia-500/20'
-          >
-            <Link href={'https://crotus.io/gloves/review'} target='_blank'>
-              WRITE A REVIEW!
-            </Link>
-          </Button>
-        </p>
-      </div>
       <PageVisits />
     </ThemeChanger>
   );

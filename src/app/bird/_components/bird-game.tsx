@@ -3,14 +3,13 @@ import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import { useMount } from '@/hooks/use-mount';
-import { addLeaderboardEntryAction, getUserBestScoreAction } from '@/lib/actions';
 import { useUser } from '@clerk/nextjs';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { api } from '@convex/_generated/api';
+import { useMutation, useQuery } from 'convex/react';
 import { Bird } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { BirdSelector } from './bird-selector';
 
-// Game constants
 const GRAVITY = 0.5;
 const JUMP_STRENGTH = -8;
 const PIPE_WIDTH = 60;
@@ -61,7 +60,6 @@ interface Pipe {
 
 type BirdType = 'sparrow' | 'cardinal' | 'bluejay' | 'hummingbird';
 
-// Debug flag - set to true to enable sound debug menu
 const DEBUG_SOUND_MENU = false;
 
 export function BirdGame() {
@@ -70,18 +68,16 @@ export function BirdGame() {
   const requestRef = useRef<number>(0);
   const [gameState, setGameState] = useState<'start' | 'playing' | 'gameOver'>('start');
   const [score, setScore] = useState(0);
-  const [highScore, setHighScore] = useLocalStorage('bird-high-score', 0);
+  const [localHighScore, setLocalHighScore] = useLocalStorage('bird-high-score', 0);
   const [isMuted, setIsMuted] = useLocalStorage('bird-muted', false);
   const [selectedBird, setSelectedBird] = useLocalStorage<BirdType>('selected-bird', 'sparrow');
   const [showBirdSelector, setShowBirdSelector] = useState(false);
-  const [isFocused, setIsFocused] = useState(true);
 
-  // Migrate old localStorage keys to new ones
   useMount(() => {
     const oldHighScore = localStorage.getItem('kirk-bird-high-score');
     const oldMuted = localStorage.getItem('kirk-bird-muted');
     if (oldHighScore) {
-      setHighScore(parseInt(oldHighScore));
+      setLocalHighScore(parseInt(oldHighScore));
       localStorage.removeItem('kirk-bird-high-score');
     }
     if (oldMuted) {
@@ -90,67 +86,35 @@ export function BirdGame() {
     }
   });
 
-  // Get user's best score from leaderboard
-  const { data: userBestScore } = useQuery({
-    queryKey: ['user-best-score', user?.id],
-    queryFn: async () => {
-      if (!user?.id) return null;
-      return await getUserBestScoreAction(user.id);
-    },
-    enabled: !!user?.id,
-    refetchInterval: isFocused ? 5000 : false, // Only refetch when focused
-    refetchIntervalInBackground: false, // Don't refetch when tab is in background
-    staleTime: 5000, // Cache for 5 seconds
-  });
+  const userBestScore = useQuery(api.leaderboard.getUserBestScore, user?.id ? { userId: user.id } : 'skip');
+  const highScore = isSignedIn ? (userBestScore ?? 0) : localHighScore;
 
-  // Get display name for user (fallback to email if username not available)
   const getDisplayName = useCallback(() => {
     if (!user) return 'Unknown';
-
-    // Try username first, then full name, then email
     if (user.username) return user.username;
     if (user.fullName) return user.fullName;
     if (user.primaryEmailAddress?.emailAddress) {
       return user.primaryEmailAddress.emailAddress.split('@')[0];
     }
-
     return 'Player';
   }, [user]);
 
-  // Mutation to save score to leaderboard
-  const saveScoreMutation = useMutation({
-    mutationFn: async (scoreToSave: number) => {
-      const displayName = getDisplayName();
-      console.log('Attempting to save score:', scoreToSave, 'for user:', user?.id, displayName);
-      if (!user?.id) {
-        throw new Error('User not authenticated');
-      }
-      await addLeaderboardEntryAction(user.id, displayName, scoreToSave);
-      console.log('Score saved successfully!');
+  const saveScore = useMutation(api.leaderboard.addEntry);
 
-      // Trigger immediate leaderboard refresh across all components
-      window.dispatchEvent(new CustomEvent('leaderboard-updated'));
-    },
-    onSuccess: () => {
-      console.log('Score upload successful!');
-      // You could show a success message here
-    },
-    onError: (error) => {
-      console.error('Failed to save score:', error);
-      // You could show an error message here
-    },
-  });
-
-  // Sync local high score with leaderboard
-  useEffect(() => {
-    if (isSignedIn && user?.id && highScore > 0) {
-      const currentBest = userBestScore || 0;
-      if (highScore > currentBest) {
-        // Upload local high score to leaderboard if it's higher
-        saveScoreMutation.mutate(highScore);
+  const saveScoreMutation = useCallback(
+    async (scoreToSave: number) => {
+      if (!user?.id) return;
+      try {
+        const displayName = getDisplayName();
+        console.log('Attempting to save score:', scoreToSave, 'for user:', user?.id, displayName);
+        await saveScore({ userId: user.id, username: displayName, score: scoreToSave });
+        console.log('Score saved successfully!');
+      } catch (error) {
+        console.error('Failed to save score:', error);
       }
-    }
-  }, [isSignedIn, user?.id, highScore, userBestScore, saveScoreMutation]);
+    },
+    [user?.id, getDisplayName, saveScore],
+  );
 
   const birdRef = useRef<Bird>({
     x: 150,
@@ -179,7 +143,6 @@ export function BirdGame() {
     { x: 1100, y: 130, size: 55, speed: 0.28, shape: 0 },
   ]);
 
-  // Audio system
   const audioContextRef = useRef<AudioContext | null>(null);
 
   const initAudioContext = useCallback(() => {
@@ -194,7 +157,6 @@ export function BirdGame() {
       if (isMuted) return;
 
       const audioContext = initAudioContext();
-      if (!audioContext) return;
 
       try {
         const audio = new Audio();
@@ -225,7 +187,6 @@ export function BirdGame() {
     [isMuted, initAudioContext],
   );
 
-  // Create pixel explosion particles
   const createExplosion = useCallback((x: number, y: number) => {
     const newParticles: Particle[] = [];
     const colors = ['#dc2626', '#FF8C00', '#FFD700', '#8B4513', '#FFF'];
@@ -238,7 +199,7 @@ export function BirdGame() {
         x,
         y,
         vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed - 2, // Upward burst
+        vy: Math.sin(angle) * speed - 2,
         size: 4 + Math.random() * 4,
         color: colors[Math.floor(Math.random() * colors.length)],
         life: 1,
@@ -249,10 +210,8 @@ export function BirdGame() {
     particlesRef.current = [...particlesRef.current, ...newParticles];
   }, []);
 
-  // Update and draw pixel art particles
   const updateParticles = useCallback((ctx: CanvasRenderingContext2D) => {
     particlesRef.current = particlesRef.current.filter((particle) => {
-      // Update physics
       particle.vy += PARTICLE_GRAVITY;
       particle.vx *= PARTICLE_FRICTION;
       particle.vy *= PARTICLE_FRICTION;
@@ -260,10 +219,8 @@ export function BirdGame() {
       particle.x += particle.vx;
       particle.y += particle.vy;
 
-      // Update life
       particle.life -= 1 / particle.maxLife;
 
-      // Draw particle (Blocky pixels)
       if (particle.life > 0) {
         ctx.save();
         ctx.globalAlpha = particle.life;
@@ -281,20 +238,17 @@ export function BirdGame() {
     });
   }, []);
 
-  // Apply collision physics to bird
   const applyCollisionPhysics = useCallback((bird: Bird, pipe: Pipe) => {
-    // Determine collision side and apply appropriate force
     const birdCenterX = bird.x + bird.size / 2;
     const birdCenterY = bird.y + bird.size / 2;
     const pipeCenterX = pipe.x + pipe.width / 2;
 
-    // Calculate collision response
     const horizontalForce = birdCenterX < pipeCenterX ? -BIRD_HIT_BOUNCE : BIRD_HIT_BOUNCE;
-    const verticalForce = -BIRD_HIT_BOUNCE * 0.8; // Slight upward bounce
+    const verticalForce = -BIRD_HIT_BOUNCE * 0.8;
 
-    bird.hitVelocityX = horizontalForce + (Math.random() - 0.5) * 4; // Add randomness
+    bird.hitVelocityX = horizontalForce + (Math.random() - 0.5) * 4;
     bird.hitVelocityY = verticalForce + Math.random() * 2;
-    bird.rotationSpeed = (Math.random() - 0.5) * 0.3; // Random tumbling
+    bird.rotationSpeed = (Math.random() - 0.5) * 0.3;
   }, []);
 
   const resetGame = useCallback(() => {
@@ -329,14 +283,12 @@ export function BirdGame() {
     }
   }, [gameState, resetGame, playSound]);
 
-  // Redesigned pixel art bird drawing function
   const drawBird = useCallback(
     (ctx: CanvasRenderingContext2D, bird: Bird) => {
       const bx = Math.floor(bird.x);
       const by = Math.floor(bird.y);
       const s = bird.size;
 
-      // Retro Nature Palette
       let primary,
         secondary,
         belly,
@@ -392,38 +344,31 @@ export function BirdGame() {
       ctx.rotate(bird.rotation);
       ctx.translate(-(bx + s / 2), -(by + s / 2));
 
-      // Pixel Art Body (Blocky shapes)
       ctx.fillStyle = primary;
-      ctx.fillRect(bx + 8, by + 12, 24, 24); // Body
-      ctx.fillRect(bx + 12, by + 8, 16, 16); // Head
+      ctx.fillRect(bx + 8, by + 12, 24, 24);
+      ctx.fillRect(bx + 12, by + 8, 16, 16);
 
-      // Belly
       ctx.fillStyle = belly;
       ctx.fillRect(bx + 16, by + 20, 16, 12);
 
-      // Mask
       if (hasMask) {
         ctx.fillStyle = '#111';
         ctx.fillRect(bx + 20, by + 12, 12, 8);
       }
 
-      // Crest
       if (hasCrest) {
         ctx.fillStyle = primary;
         ctx.fillRect(bx + 16, by + 4, 8, 4);
       }
 
-      // Eye
       ctx.fillStyle = '#FFF';
       ctx.fillRect(bx + 24, by + 12, 4, 4);
       ctx.fillStyle = eye;
       ctx.fillRect(bx + 26, by + 14, 2, 2);
 
-      // Beak
       ctx.fillStyle = beak;
       ctx.fillRect(bx + 32, by + 16, 8, 4);
 
-      // Wings (Animated block)
       const wingY = Math.sin(bird.wingPhase * wingSpeed) * 8;
       ctx.fillStyle = secondary;
       ctx.fillRect(bx + 4, by + 18 + wingY, 12, 8);
@@ -434,12 +379,10 @@ export function BirdGame() {
   );
 
   const checkCollision = useCallback((bird: Bird, pipes: Pipe[]): Pipe | null => {
-    // Check ground and ceiling collision
     if (bird.y <= 0 || bird.y + bird.size >= GAME_HEIGHT) {
       return { x: 0, gapY: 0, width: GAME_WIDTH, gapHeight: 0, passed: false };
     }
 
-    // Check pipe collision
     for (const pipe of pipes) {
       if (bird.x + bird.size > pipe.x && bird.x < pipe.x + pipe.width) {
         if (bird.y < pipe.gapY || bird.y + bird.size > pipe.gapY + pipe.gapHeight) {
@@ -458,28 +401,23 @@ export function BirdGame() {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Retro Nature Background - Pixel Art Style
-    // Multi-band sky for depth
-    ctx.fillStyle = '#4A7CF5'; // Deep sky top
+    ctx.fillStyle = '#4A7CF5';
     ctx.fillRect(0, 0, GAME_WIDTH, 160);
-    ctx.fillStyle = '#5C94FC'; // Mid sky
+    ctx.fillStyle = '#5C94FC';
     ctx.fillRect(0, 160, GAME_WIDTH, 120);
-    ctx.fillStyle = '#87CEEB'; // Light sky
+    ctx.fillStyle = '#87CEEB';
     ctx.fillRect(0, 280, GAME_WIDTH, 100);
-    ctx.fillStyle = '#B0E0E6'; // Horizon glow
+    ctx.fillStyle = '#B0E0E6';
     ctx.fillRect(0, 380, GAME_WIDTH, GAME_HEIGHT - GROUND_HEIGHT - 380);
 
-    // Pixel Sun with rays
     const sunX = GAME_WIDTH - 90;
     const sunY = 70;
     ctx.fillStyle = '#FFD700';
-    // Sun body (blocky cross shape)
     ctx.fillRect(sunX - 14, sunY - 14, 28, 28);
     ctx.fillRect(sunX - 6, sunY - 22, 12, 8);
     ctx.fillRect(sunX - 6, sunY + 14, 12, 8);
     ctx.fillRect(sunX - 22, sunY - 6, 8, 12);
     ctx.fillRect(sunX + 14, sunY - 6, 8, 12);
-    // Diagonal ray pixels
     ctx.fillStyle = '#FFEC8B';
     ctx.fillRect(sunX - 18, sunY - 18, 4, 4);
     ctx.fillRect(sunX + 14, sunY - 18, 4, 4);
@@ -491,7 +429,6 @@ export function BirdGame() {
     ctx.fillRect(sunX - 24, sunY + 21, 3, 3);
     ctx.fillRect(sunX + 21, sunY + 21, 3, 3);
 
-    // Update parallax offsets
     if (gameState === 'playing' && !birdRef.current.isDead) {
       mountainOffsetRef.current -= 0.3;
       hillsOffsetRef.current -= 0.6;
@@ -505,7 +442,6 @@ export function BirdGame() {
       }
     }
 
-    // Layer 1: Distant faint mountains (parallax slow)
     ctx.fillStyle = '#4A7A6A';
     const dOffset = Math.floor(mountainOffsetRef.current * 0.5);
     for (let i = 0; i < 5; i++) {
@@ -518,7 +454,6 @@ export function BirdGame() {
       ctx.fill();
     }
 
-    // Layer 2: Mid-distance forested hills with jagged tree-line silhouette
     ctx.fillStyle = '#3A7A2A';
     const mOffset = Math.floor(mountainOffsetRef.current);
     for (let i = 0; i < 5; i++) {
@@ -547,11 +482,9 @@ export function BirdGame() {
       ctx.lineTo(baseX + 280, GAME_HEIGHT - GROUND_HEIGHT);
       ctx.fill();
 
-      // Variety trees on mid-distance hills
       const peakY = GAME_HEIGHT - GROUND_HEIGHT - 110;
       const treeVariant = i % 3;
       if (treeVariant === 0) {
-        // Tall pine
         ctx.fillStyle = '#2A5A14';
         ctx.fillRect(peakX - 3, peakY - 18, 6, 18);
         ctx.fillStyle = '#1A3A0A';
@@ -559,7 +492,6 @@ export function BirdGame() {
         ctx.fillStyle = '#5A3A1A';
         ctx.fillRect(peakX - 1, peakY, 2, 5);
       } else if (treeVariant === 1) {
-        // Round canopy
         ctx.fillStyle = '#3A6A1A';
         ctx.fillRect(peakX - 5, peakY - 14, 10, 14);
         ctx.fillStyle = '#5A9A2A';
@@ -567,7 +499,6 @@ export function BirdGame() {
         ctx.fillStyle = '#5A3A1A';
         ctx.fillRect(peakX - 1, peakY, 2, 5);
       } else {
-        // Pine cluster
         ctx.fillStyle = '#1A4A0A';
         ctx.fillRect(peakX - 2, peakY - 12, 4, 12);
         ctx.fillRect(peakX + 4, peakY - 10, 4, 10);
@@ -576,7 +507,6 @@ export function BirdGame() {
       }
     }
 
-    // Layer 3: Closer rolling green hills with trees (parallax fast)
     ctx.fillStyle = '#3A9A2A';
     const hOffset = Math.floor(hillsOffsetRef.current);
     for (let i = 0; i < 6; i++) {
@@ -588,16 +518,13 @@ export function BirdGame() {
       ctx.lineTo(baseX + 180, GAME_HEIGHT - GROUND_HEIGHT);
       ctx.fill();
 
-      // Closer trees with more detail
       const peakX = baseX + 60;
       const peakY = GAME_HEIGHT - GROUND_HEIGHT - 45;
       const shoulderX = baseX + 30;
       const shoulderY = GAME_HEIGHT - GROUND_HEIGHT - 22;
       const treeType = i % 3;
 
-      // Main tree at hill peak
       if (treeType === 0) {
-        // Detailed pine
         ctx.fillStyle = '#2D5A1A';
         ctx.fillRect(peakX - 6, peakY - 22, 12, 22);
         ctx.fillRect(peakX - 4, peakY - 26, 8, 6);
@@ -605,14 +532,12 @@ export function BirdGame() {
         ctx.fillRect(peakX - 3, peakY - 20, 6, 3);
         ctx.fillRect(peakX - 2, peakY - 14, 4, 3);
       } else if (treeType === 1) {
-        // Round lush tree
         ctx.fillStyle = '#2D6B1A';
         ctx.fillRect(peakX - 8, peakY - 20, 16, 20);
         ctx.fillStyle = '#5A9A2A';
         ctx.fillRect(peakX - 6, peakY - 17, 12, 4);
         ctx.fillRect(peakX - 5, peakY - 10, 10, 3);
       } else {
-        // Tall thin pine
         ctx.fillStyle = '#1A5A0A';
         ctx.fillRect(peakX - 3, peakY - 28, 6, 28);
         ctx.fillRect(peakX - 5, peakY - 22, 10, 6);
@@ -621,11 +546,9 @@ export function BirdGame() {
         ctx.fillRect(peakX - 2, peakY - 18, 4, 3);
       }
 
-      // Trunk for main tree
       ctx.fillStyle = '#5A3A1A';
       ctx.fillRect(peakX - 1, peakY, 2, 6);
 
-      // Secondary small tree at shoulder
       ctx.fillStyle = '#2D5A1A';
       if (i % 2 === 0) {
         ctx.fillRect(shoulderX - 3, shoulderY - 10, 6, 10);
@@ -638,7 +561,6 @@ export function BirdGame() {
       ctx.fillRect(shoulderX - 1, shoulderY, 2, 4);
     }
 
-    // Moving Pixel Clouds with varied shapes
     const drawCloudShadow = (px: number, py: number, pw: number, ph: number) => {
       ctx.fillStyle = 'rgba(180, 200, 220, 0.3)';
       ctx.fillRect(px + 2, py + 2, pw, ph);
@@ -656,13 +578,13 @@ export function BirdGame() {
       const cs = Math.floor(cloud.size);
 
       switch (cloud.shape) {
-        case 0: // Classic puffy — wide with a top bump
+        case 0:
           drawCloudShadow(cx, cy, cs, Math.floor(cs * 0.35));
           drawCloudBody(cx, cy, cs, Math.floor(cs * 0.35));
           drawCloudShadow(cx + Math.floor(cs * 0.25), cy - 8, Math.floor(cs * 0.5), 10);
           drawCloudBody(cx + Math.floor(cs * 0.25), cy - 10, Math.floor(cs * 0.5), 12);
           break;
-        case 1: // Double bump
+        case 1:
           drawCloudShadow(cx, cy, cs, Math.floor(cs * 0.3));
           drawCloudBody(cx, cy, cs, Math.floor(cs * 0.3));
           drawCloudShadow(cx + Math.floor(cs * 0.1), cy - 8, Math.floor(cs * 0.35), 8);
@@ -670,13 +592,13 @@ export function BirdGame() {
           drawCloudShadow(cx + Math.floor(cs * 0.5), cy - 6, Math.floor(cs * 0.35), 8);
           drawCloudBody(cx + Math.floor(cs * 0.5), cy - 8, Math.floor(cs * 0.35), 10);
           break;
-        case 2: // Long and low
+        case 2:
           drawCloudShadow(cx, cy, cs, Math.floor(cs * 0.25));
           drawCloudBody(cx, cy, cs, Math.floor(cs * 0.25));
           drawCloudShadow(cx + Math.floor(cs * 0.3), cy - 4, Math.floor(cs * 0.4), 6);
           drawCloudBody(cx + Math.floor(cs * 0.3), cy - 6, Math.floor(cs * 0.4), 8);
           break;
-        case 3: // Tall round puff
+        case 3:
           drawCloudShadow(cx, cy, Math.floor(cs * 0.7), Math.floor(cs * 0.4));
           drawCloudBody(cx, cy, Math.floor(cs * 0.7), Math.floor(cs * 0.4));
           drawCloudShadow(cx + Math.floor(cs * 0.15), cy - 12, Math.floor(cs * 0.4), 12);
@@ -685,30 +607,24 @@ export function BirdGame() {
       }
     });
 
-    // Scrolling Retro Ground
     const gOff = Math.floor(groundOffsetRef.current);
     const scrollX = ((gOff % GAME_WIDTH) + GAME_WIDTH) % GAME_WIDTH;
 
-    // Tile solid background bands
     for (let x = -GAME_WIDTH; x < GAME_WIDTH * 2; x += GAME_WIDTH) {
       const dx = x + scrollX;
 
-      // Grass top layer
       ctx.fillStyle = '#4A7A2A';
       ctx.fillRect(dx, GAME_HEIGHT - GROUND_HEIGHT, GAME_WIDTH, 8);
-      ctx.fillStyle = '#3A6A1A'; // Dark grass stripe
+      ctx.fillStyle = '#3A6A1A';
       ctx.fillRect(dx, GAME_HEIGHT - GROUND_HEIGHT + 8, GAME_WIDTH, 4);
 
-      // Dirt layer
       ctx.fillStyle = '#6B4A2E';
       ctx.fillRect(dx, GAME_HEIGHT - GROUND_HEIGHT + 12, GAME_WIDTH, GROUND_HEIGHT - 12);
 
-      // Darker dirt bottom
       ctx.fillStyle = '#5A3D22';
       ctx.fillRect(dx, GAME_HEIGHT - GROUND_HEIGHT + 40, GAME_WIDTH, GROUND_HEIGHT - 40);
     }
 
-    // Grass tufts along the top (scroll with wrap)
     ctx.fillStyle = '#5A9A3A';
     for (let x = -20; x < GAME_WIDTH + 20; x += 20) {
       const sx = (((x + scrollX) % GAME_WIDTH) + GAME_WIDTH) % GAME_WIDTH;
@@ -717,7 +633,6 @@ export function BirdGame() {
       ctx.fillRect(sx + 10, GAME_HEIGHT - GROUND_HEIGHT - h + 2, 3, h - 2);
     }
 
-    // Dirt speckles (scroll with wrap)
     ctx.fillStyle = '#7A5A3E';
     for (let i = 0; i < 25; i++) {
       const dx = (((i * 67 + 13 + scrollX) % GAME_WIDTH) + GAME_WIDTH) % GAME_WIDTH;
@@ -725,7 +640,6 @@ export function BirdGame() {
       ctx.fillRect(dx, dy, 4, 3);
     }
 
-    // Small pebbles (scroll with wrap)
     ctx.fillStyle = '#8B7355';
     for (let i = 0; i < 10; i++) {
       const px = (((i * 97 + 41 + scrollX) % GAME_WIDTH) + GAME_WIDTH) % GAME_WIDTH;
@@ -733,7 +647,6 @@ export function BirdGame() {
       ctx.fillRect(px, py, 5, 3);
     }
 
-    // Occasional flowers (scroll with wrap)
     for (let i = 0; i < 5; i++) {
       const fx = (((i * 137 + 53 + scrollX) % GAME_WIDTH) + GAME_WIDTH) % GAME_WIDTH;
       const fy = GAME_HEIGHT - GROUND_HEIGHT + 6;
@@ -743,7 +656,6 @@ export function BirdGame() {
       ctx.fillRect(fx + 1, fy + 3, 1, 4);
     }
 
-    // Foreground bushes (scroll with wrap)
     ctx.fillStyle = '#2D6B1A';
     for (let i = 0; i < 5; i++) {
       const bx = (((i * 220 + 40 + scrollX) % GAME_WIDTH) + GAME_WIDTH) % GAME_WIDTH;
@@ -768,7 +680,6 @@ export function BirdGame() {
     }
 
     if (gameState === 'playing' || gameState === 'gameOver') {
-      // Bird physics
       if (!birdRef.current.isDead) {
         birdRef.current.velocity += GRAVITY;
         birdRef.current.wingPhase += WING_FLAP_SPEED;
@@ -780,14 +691,12 @@ export function BirdGame() {
       }
       birdRef.current.y += birdRef.current.velocity;
 
-      // Pipe updates
       if (!birdRef.current.isDead) {
         pipesRef.current = pipesRef.current
           .map((pipe) => ({ ...pipe, x: pipe.x - PIPE_SPEED }))
           .filter((pipe) => pipe.x + pipe.width > 0);
       }
 
-      // Scoring
       pipesRef.current.forEach((pipe) => {
         if (!pipe.passed && pipe.x + pipe.width < birdRef.current.x) {
           pipe.passed = true;
@@ -796,7 +705,6 @@ export function BirdGame() {
         }
       });
 
-      // Spawn pipes
       if (
         !birdRef.current.isDead &&
         (pipesRef.current.length === 0 || pipesRef.current[pipesRef.current.length - 1].x < GAME_WIDTH - 300)
@@ -811,14 +719,12 @@ export function BirdGame() {
         });
       }
 
-      // Pixel Art Tree Pipes
       pipesRef.current.forEach((pipe) => {
-        ctx.fillStyle = '#8B4513'; // Trunk (Saddle brown)
+        ctx.fillStyle = '#8B4513';
         ctx.fillRect(pipe.x, 0, pipe.width, pipe.gapY);
         ctx.fillRect(pipe.x, pipe.gapY + pipe.gapHeight, pipe.width, GAME_HEIGHT - pipe.gapY - pipe.gapHeight);
 
-        // Leafy caps
-        ctx.fillStyle = '#32CD32'; // Lime green
+        ctx.fillStyle = '#32CD32';
         ctx.fillRect(pipe.x - 4, pipe.gapY - 12, pipe.width + 8, 12);
         ctx.fillRect(pipe.x - 4, pipe.gapY + pipe.gapHeight, pipe.width + 8, 12);
       });
@@ -826,22 +732,22 @@ export function BirdGame() {
       drawBird(ctx, birdRef.current);
       updateParticles(ctx);
 
-      // Score
       ctx.fillStyle = '#FFF';
       ctx.font = 'bold 34px monospace';
       ctx.textAlign = 'center';
       ctx.fillText(score.toString(), GAME_WIDTH / 2, 50);
 
-      // Collision
       const hitPipe = checkCollision(birdRef.current, pipesRef.current);
       if (hitPipe && !birdRef.current.isDead) {
         birdRef.current.isDead = true;
         playSound('collision');
         applyCollisionPhysics(birdRef.current, hitPipe);
         createExplosion(birdRef.current.x + birdRef.current.size / 2, birdRef.current.y + birdRef.current.size / 2);
-        const newHighScore = Math.max(highScore, score);
-        setHighScore(newHighScore);
-        if (isSignedIn && score > 0) saveScoreMutation.mutate(score);
+        if (isSignedIn && score > 0) {
+          saveScoreMutation(score);
+        } else {
+          setLocalHighScore(Math.max(localHighScore, score));
+        }
       }
 
       if (birdRef.current.y > GAME_HEIGHT + 100) setGameState('gameOver');
@@ -857,7 +763,6 @@ export function BirdGame() {
     }
 
     if (requestRef.current) cancelAnimationFrame(requestRef.current);
-    // eslint-disable-next-line react-hooks/immutability
     requestRef.current = requestAnimationFrame(gameLoop);
   }, [
     gameState,
@@ -869,10 +774,10 @@ export function BirdGame() {
     applyCollisionPhysics,
     createExplosion,
     highScore,
-    setHighScore,
     isSignedIn,
-    userBestScore,
     saveScoreMutation,
+    setLocalHighScore,
+    localHighScore,
   ]);
 
   useEffect(() => {
@@ -899,31 +804,11 @@ export function BirdGame() {
     };
   }, [gameLoop]);
 
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const handleFocus = () => setIsFocused(true);
-      const handleBlur = () => setIsFocused(false);
-      const handleVisibilityChange = () => setIsFocused(!document.hidden);
-
-      window.addEventListener('focus', handleFocus);
-      window.addEventListener('blur', handleBlur);
-      document.addEventListener('visibilitychange', handleVisibilityChange);
-
-      return () => {
-        window.removeEventListener('focus', handleFocus);
-        window.removeEventListener('blur', handleBlur);
-        document.removeEventListener('visibilitychange', handleVisibilityChange);
-      };
-    }
-  }, []);
-
   return (
     <div className='flex h-full w-full flex-col items-center justify-center'>
       <div className='relative flex h-full w-full max-w-4xl flex-col'>
-        {/* Game Container */}
         <div className='relative flex-1 rounded-2xl border border-slate-700 bg-gradient-to-br from-slate-800 to-slate-900 p-3 shadow-2xl'>
           <div className='relative h-full w-full' style={{ paddingBottom: '75%' }}>
-            {/* Bird Change Button - Bottom Left Corner */}
             <div className='absolute bottom-4 left-4 z-10'>
               <Popover open={showBirdSelector} onOpenChange={setShowBirdSelector}>
                 <PopoverTrigger asChild>
@@ -961,7 +846,6 @@ export function BirdGame() {
           </div>
         </div>
 
-        {/* High Score Display */}
         <div className='mt-3 text-center'>
           <div className='inline-flex items-center gap-2 rounded-lg border border-yellow-500/30 bg-gradient-to-r from-yellow-500/10 to-orange-500/10 px-4 py-2 backdrop-blur-sm'>
             <span className='text-yellow-400'>🏆</span>
@@ -969,7 +853,6 @@ export function BirdGame() {
           </div>
         </div>
 
-        {/* Game Controls */}
         <div className='mt-4 flex justify-center gap-4'>
           <button
             onClick={() => setIsMuted(!isMuted)}
@@ -988,7 +871,6 @@ export function BirdGame() {
           </button>
         </div>
 
-        {/* Debug Sound Menu */}
         {DEBUG_SOUND_MENU && (
           <div className='mt-4 rounded-lg border border-red-500/30 bg-red-500/10 p-4'>
             <h3 className='mb-3 text-sm font-bold text-red-300'>🔧 Sound Debug Menu</h3>

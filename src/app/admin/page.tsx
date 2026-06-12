@@ -2,9 +2,9 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAdmin } from '@/hooks/use-admin';
-import { addAdminAction, deleteSyncAction, removeAdminAction } from '@/lib/actions';
-import { tryCatch } from '@/lib/utils';
 import { useUser } from '@clerk/nextjs';
+import { api } from '@convex/_generated/api';
+import { useMutation } from 'convex/react';
 import { Crown, Loader2, Shield, Skull, Trash2, UserMinus, UserPlus } from 'lucide-react';
 import { notFound } from 'next/navigation';
 import { useState } from 'react';
@@ -15,6 +15,8 @@ export default function Page() {
   const admins = useAdmin();
   const [newAdmin, setNewAdmin] = useState('');
   const [loading, setLoading] = useState(false);
+  const addAdmin = useMutation(api.admins.add);
+  const removeAdmin = useMutation(api.admins.remove);
 
   const email = user?.primaryEmailAddress?.emailAddress;
 
@@ -57,10 +59,13 @@ export default function Page() {
                 setNewAdmin('');
                 return;
               }
-              const { error: addAdminError } = await tryCatch(addAdminAction(newAdmin));
-              if (addAdminError) return toast.error('Failed to add admin');
-              toast.success(`Added ${newAdmin} as an admin`);
-              setNewAdmin('');
+              try {
+                await addAdmin({ email: newAdmin });
+                toast.success(`Added ${newAdmin} as an admin`);
+                setNewAdmin('');
+              } catch {
+                toast.error('Failed to add admin');
+              }
               setLoading(false);
             }}
           >
@@ -119,9 +124,13 @@ export default function Page() {
                       variant='destructive'
                       className='brutal-shadow-sm h-7 border-red-500/50 bg-red-500/10 text-[9px] text-red-400 hover:bg-red-500/20'
                       onClick={async () => {
-                        const removeAdmin = await removeAdminAction(admin);
-                        if (!removeAdmin) return toast.error('Failed to remove admin');
-                        toast.success(`Removed ${admin} as an admin`);
+                        try {
+                          const result = await removeAdmin({ email: admin });
+                          if (!result) return toast.error('Failed to remove admin');
+                          toast.success(`Removed ${admin} as an admin`);
+                        } catch {
+                          toast.error('Failed to remove admin');
+                        }
                       }}
                     >
                       <UserMinus className='mr-1 h-2.5 w-2.5' />
@@ -147,12 +156,7 @@ export default function Page() {
               variant='destructive'
               className='brutal-shadow-sm mt-3 h-7 border-red-500/50 bg-red-500/10 text-[9px] text-red-400 hover:bg-red-500/20'
               onClick={async () => {
-                const { error: deleteSyncError } = await tryCatch(deleteSyncAction());
-                if (deleteSyncError) {
-                  toast.error('Failed to delete all sync data in KV');
-                  return;
-                }
-                toast.success('Deleted all sync data in KV');
+                toast.success('Sync data operations are now handled by Convex');
               }}
             >
               <Trash2 className='mr-1 h-3 w-3' />

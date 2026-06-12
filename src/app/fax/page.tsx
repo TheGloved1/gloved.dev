@@ -3,6 +3,7 @@ import Constants from '@/lib/constants';
 import { Metadata } from 'next';
 import FactGenerator from './_components/FactGenerator';
 
+export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
   title: `${Constants.NAME} | ${Constants.Fax.title}`,
   description: Constants.Fax.description,

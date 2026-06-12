@@ -1,26 +1,19 @@
-import { getAdminsAction } from '@/lib/actions';
+'use client';
 import { useUser } from '@clerk/nextjs';
-import { useQuery } from '@tanstack/react-query';
+import { api } from '@convex/_generated/api';
+import { useQuery } from 'convex/react';
 
-/**
- * A hook that returns the current user's admin status and the list of admins.
- * @returns An object containing the current user's admin status, the list of admins, and the loading state.
- */
 export function useAdmin() {
   const { user } = useUser();
-  const adminsQuery = useQuery({
-    queryKey: ['admins'],
-    queryFn: getAdminsAction,
-    initialData: [],
-  });
+  const admins = useQuery(api.admins.list);
 
   const isAdmin =
-    user?.primaryEmailAddress?.emailAddress ? adminsQuery.data.includes(user.primaryEmailAddress.emailAddress) : false;
+    user?.primaryEmailAddress?.emailAddress ? (admins ?? []).includes(user.primaryEmailAddress.emailAddress) : false;
 
   return {
     isAdmin,
-    data: adminsQuery.data,
-    isLoading: adminsQuery.isLoading,
-    error: adminsQuery.error,
+    data: admins ?? [],
+    isLoading: admins === undefined,
+    error: null,
   };
 }

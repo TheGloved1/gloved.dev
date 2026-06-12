@@ -1,70 +1,15 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { getLeaderboardAction } from '@/lib/actions';
 import { SignInButton, useUser } from '@clerk/nextjs';
-import { useQuery } from '@tanstack/react-query';
+import { api } from '@convex/_generated/api';
+import { useQuery } from 'convex/react';
 import { Crown, Medal, Trophy, User } from 'lucide-react';
-import { useEffect, useState } from 'react';
-
-interface LeaderboardEntry {
-  userId: string;
-  username: string;
-  score: number;
-  timestamp: number;
-}
 
 export function Leaderboard() {
   const { isSignedIn, user } = useUser();
-  const [isFocused, setIsFocused] = useState(true);
 
-  const {
-    data: leaderboard = [],
-    isLoading,
-    error,
-    refetch,
-  } = useQuery({
-    queryKey: ['leaderboard'],
-    queryFn: async () => {
-      const result = await getLeaderboardAction();
-      return result as LeaderboardEntry[];
-    },
-    refetchInterval: isFocused ? 10000 : false, // Only refetch when focused
-    refetchIntervalInBackground: false, // Don't refetch when tab is in background
-    staleTime: 5000,
-  });
-
-  // Listen for leaderboard update events
-  useEffect(() => {
-    const handleLeaderboardUpdate = () => {
-      console.log('Leaderboard update event received, refreshing...');
-      refetch();
-    };
-
-    window.addEventListener('leaderboard-updated', handleLeaderboardUpdate);
-    return () => window.removeEventListener('leaderboard-updated', handleLeaderboardUpdate);
-  }, [refetch]);
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const handleFocus = () => setIsFocused(true);
-      const handleBlur = () => setIsFocused(false);
-      const handleVisibilityChange = () => {
-        setIsFocused(!document.hidden);
-        refetch();
-      };
-
-      window.addEventListener('focus', handleFocus);
-      window.addEventListener('blur', handleBlur);
-      document.addEventListener('visibilitychange', handleVisibilityChange);
-
-      return () => {
-        window.removeEventListener('focus', handleFocus);
-        window.removeEventListener('blur', handleBlur);
-        document.removeEventListener('visibilitychange', handleVisibilityChange);
-      };
-    }
-  }, [refetch]);
+  const leaderboard = useQuery(api.leaderboard.getTop100);
 
   const getRankIcon = (rank: number) => {
     switch (rank) {
@@ -92,28 +37,15 @@ export function Leaderboard() {
     }
   };
 
-  if (error) {
+  if (leaderboard === undefined) {
     return (
-      <div className='rounded-lg bg-white p-6 shadow-lg'>
-        <div className='mb-4 flex items-center gap-2'>
-          <Trophy className='h-6 w-6 text-yellow-500' />
-          <h2 className='text-2xl font-bold text-gray-800'>Leaderboard</h2>
+      <div className='flex h-full flex-col overflow-hidden rounded-2xl border border-slate-700 bg-gradient-to-br from-slate-800 to-slate-900 p-4 shadow-2xl'>
+        <div className='mb-3 flex flex-shrink-0 items-center gap-2'>
+          <div className='rounded-lg bg-gradient-to-br from-yellow-400 to-orange-500 p-1'>
+            <Trophy className='h-4 w-4 text-white' />
+          </div>
+          <h2 className='text-lg font-bold text-white'>Leaderboard</h2>
         </div>
-        <p className='text-red-500'>Failed to load leaderboard</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className='flex h-full flex-col overflow-hidden rounded-2xl border border-slate-700 bg-gradient-to-br from-slate-800 to-slate-900 p-4 shadow-2xl'>
-      <div className='mb-3 flex flex-shrink-0 items-center gap-2'>
-        <div className='rounded-lg bg-gradient-to-br from-yellow-400 to-orange-500 p-1'>
-          <Trophy className='h-4 w-4 text-white' />
-        </div>
-        <h2 className='text-lg font-bold text-white'>Leaderboard</h2>
-      </div>
-
-      {isLoading ?
         <div className='max-h-96 flex-1 space-y-2 overflow-y-auto'>
           {Array.from({ length: 20 }).map((_, i) => (
             <div
@@ -129,41 +61,51 @@ export function Leaderboard() {
             </div>
           ))}
         </div>
-      : <div className='space-y-2'>
-          {leaderboard.length === 0 ?
-            <p className='py-4 text-center text-sm text-slate-400'>No scores yet. Be the first to play!</p>
-          : <div className='max-h-96 flex-1 overflow-y-auto scrollbar-thin scrollbar-track-slate-800 scrollbar-thumb-slate-600'>
-              {leaderboard.map((entry, index) => {
-                const rank = index + 1;
-                const isCurrentUser = isSignedIn && user?.id === entry.userId;
+      </div>
+    );
+  }
 
-                return (
-                  <div
-                    key={entry.userId}
-                    className={`flex items-center gap-3 p-2 ${getRankBackground(rank)} ${isCurrentUser ? 'ring-2 ring-blue-500 ring-offset-2' : ''}`}
-                  >
-                    <div className='flex w-6 items-center justify-center text-sm'>{getRankIcon(rank)}</div>
-
-                    <div className='min-w-0 flex-1'>
-                      <div className='flex items-center gap-1'>
-                        <p className='truncate text-sm font-semibold text-white'>{entry.username}</p>
-                        {isCurrentUser && (
-                          <span className='rounded-full bg-blue-500 px-1 py-0.5 text-xs text-white'>You</span>
-                        )}
-                      </div>
-                      <p className='text-xs text-slate-400'>{new Date(entry.timestamp).toLocaleDateString()}</p>
-                    </div>
-
-                    <div className='text-right'>
-                      <p className='text-sm font-bold text-white'>{entry.score}</p>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          }
+  return (
+    <div className='flex h-full flex-col overflow-hidden rounded-2xl border border-slate-700 bg-gradient-to-br from-slate-800 to-slate-900 p-4 shadow-2xl'>
+      <div className='mb-3 flex flex-shrink-0 items-center gap-2'>
+        <div className='rounded-lg bg-gradient-to-br from-yellow-400 to-orange-500 p-1'>
+          <Trophy className='h-4 w-4 text-white' />
         </div>
-      }
+        <h2 className='text-lg font-bold text-white'>Leaderboard</h2>
+      </div>
+
+      <div className='space-y-2'>
+        {leaderboard.length === 0 ?
+          <p className='py-4 text-center text-sm text-slate-400'>No scores yet. Be the first to play!</p>
+        : <div className='max-h-96 flex-1 overflow-y-auto scrollbar-thin scrollbar-track-slate-800 scrollbar-thumb-slate-600'>
+            {leaderboard.map((entry, index) => {
+              const rank = index + 1;
+              const isCurrentUser = isSignedIn && user?.id === entry.userId;
+
+              return (
+                <div
+                  key={entry._id}
+                  className={`flex items-center gap-3 p-2 ${getRankBackground(rank)} ${isCurrentUser ? 'ring-2 ring-blue-500 ring-offset-2' : ''}`}
+                >
+                  <div className='flex w-6 items-center justify-center text-sm'>{getRankIcon(rank)}</div>
+
+                  <div className='min-w-0 flex-1'>
+                    <div className='flex items-center gap-1'>
+                      <p className='truncate text-sm font-semibold text-white'>{entry.username}</p>
+                      {isCurrentUser && <span className='rounded-full bg-blue-500 px-1 py-0.5 text-xs text-white'>You</span>}
+                    </div>
+                    <p className='text-xs text-slate-400'>{new Date(entry.timestamp).toLocaleDateString()}</p>
+                  </div>
+
+                  <div className='text-right'>
+                    <p className='text-sm font-bold text-white'>{entry.score}</p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        }
+      </div>
 
       {leaderboard.length > 10 && (
         <div className='mt-4 text-center'>

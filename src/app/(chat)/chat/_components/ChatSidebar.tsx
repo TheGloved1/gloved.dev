@@ -24,17 +24,19 @@ import {
   SidebarProvider,
 } from '@/components/ui/sidebar';
 import { Tooltip, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { dxdb, Thread } from '@/lib/dexie';
-import { tryCatch } from '@/lib/utils';
+import { useDeleteThread, useThreads } from '@/hooks/use-chat-data';
+import { Thread } from '@/lib/chat-store';
 import { SignInButton, UserButton, useUser } from '@clerk/nextjs';
 import { TooltipContent } from '@radix-ui/react-tooltip';
-import { useLiveQuery } from 'dexie-react-hooks';
 import { ArrowLeft, Settings, X } from 'lucide-react';
 import Link from 'next/link';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import React, { useMemo } from 'react';
 import { toast } from 'sonner';
 import ChatSidebarTrigger from './ChatSidebarTrigger';
+
+const newChatButtonClass =
+  'border-reflect button-reflect relative mt-2 inline-flex h-9 w-full select-none items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-[rgb(162,59,103)] bg-primary/20 p-2 px-4 py-2 text-sm font-semibold text-primary-foreground shadow transition-colors hover:bg-[#d56698] hover:bg-pink-800/70 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring active:bg-[rgb(162,59,103)] active:bg-pink-800/40 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-[rgb(162,59,103)] disabled:hover:bg-primary/20 disabled:active:bg-[rgb(162,59,103)] disabled:active:bg-primary/20 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0';
 
 // Helper function to categorize threads by date
 type ThreadCategories = {
@@ -93,7 +95,8 @@ export default function ChatSidebar({ children }: { children?: React.ReactNode }
   const { threadId } = useParams<{ threadId: string }>();
   const router = useRouter();
   const pathname = usePathname();
-  const threads = useLiveQuery(() => dxdb.getThreads());
+  const { threads } = useThreads();
+  const deleteThread = useDeleteThread();
   const { isSignedIn } = useUser();
 
   const categorizedThreads = useMemo(() => categorizeThreads(threads), [threads]);
@@ -101,10 +104,14 @@ export default function ChatSidebar({ children }: { children?: React.ReactNode }
   const isCurrentThread = (id: string) => threadId === id;
 
   const handleDelete = async (id: string) => {
-    const { error } = await tryCatch(dxdb.deleteThread(id)); // Delete the thread
-    if (error) return (toast.error('Error deleting thread'), router.push('/chat'));
-    toast.success('Thread deleted');
-    if (isCurrentThread(id)) router.replace('/chat');
+    try {
+      await deleteThread(id);
+      toast.success('Thread deleted');
+      if (isCurrentThread(id)) router.replace('/chat');
+    } catch {
+      toast.error('Error deleting thread');
+      router.push('/chat');
+    }
   };
 
   if (pathname.includes('/settings')) return <>{children}</>;
@@ -179,18 +186,14 @@ export default function ChatSidebar({ children }: { children?: React.ReactNode }
             </div>
             <Link
               href='/'
-              className='border-reflect brutal-shadow-sm group relative ml-0 mr-10 flex items-center justify-center gap-2 rounded-lg border border-fuchsia-500/20 bg-fuchsia-500/[0.03] px-3 py-2 text-sm font-semibold tracking-tight text-foreground transition-all duration-200 active:border-fuchsia-500/40 active:bg-fuchsia-500/10 active:shadow-sm md:ml-10 md:mr-0'
+              className='border-reflect brutal-shadow-sm group/home relative ml-0 mr-10 flex items-center justify-center gap-2 rounded-lg border border-fuchsia-500/20 bg-fuchsia-500/[0.03] px-3 py-2 text-sm font-semibold tracking-tight text-foreground transition-all duration-200 active:border-fuchsia-500/40 active:bg-fuchsia-500/10 active:shadow-sm md:ml-10 md:mr-0'
             >
-              <ArrowLeft className='h-4 w-4 text-muted-foreground transition-transform duration-200 group-hover:-translate-x-0.5 group-active:translate-x-0' />
-              <span className='font-display text-xs font-bold uppercase leading-none tracking-wide transition-colors duration-200 group-hover:text-fuchsia-400/80'>
+              <ArrowLeft className='h-4 w-4 text-muted-foreground transition-transform duration-200 group-hover/home:-translate-x-0.5 group-active/home:translate-x-0' />
+              <span className='font-display text-xs font-bold uppercase leading-none tracking-wide transition-colors duration-200 group-hover/home:text-fuchsia-400/80'>
                 gloved<span className='text-fuchsia-500'>.</span>dev
               </span>
             </Link>
-            <Link
-              href='/chat'
-              type='button'
-              className='border-reflect button-reflect relative mt-2 inline-flex h-9 w-full select-none items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-[rgb(162,59,103)] bg-primary/20 p-2 px-4 py-2 text-sm font-semibold text-primary-foreground shadow transition-colors hover:bg-[#d56698] hover:bg-pink-800/70 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring active:bg-[rgb(162,59,103)] active:bg-pink-800/40 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-[rgb(162,59,103)] disabled:hover:bg-primary/20 disabled:active:bg-[rgb(162,59,103)] disabled:active:bg-primary/20 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0'
-            >
+            <Link href='/chat' type='button' className={newChatButtonClass}>
               New Chat
             </Link>
           </SidebarHeader>

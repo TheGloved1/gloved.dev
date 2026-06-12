@@ -11,10 +11,13 @@ import {
   TOOL_CONFIG,
 } from '@/lib/ai';
 import glovedApi from '@/lib/glovedapi';
+import { deleteStreamContent, publishStreamStatus, publishStreamUpdate, setStreamContent } from '@/lib/redis';
 import { formatMessageContent } from '@/lib/utils';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { createGroq } from '@ai-sdk/groq';
 import { type LanguageModelV2 } from '@ai-sdk/provider';
+import { api } from '@convex/_generated/api';
+import type { Id } from '@convex/_generated/dataModel';
 import { createOpenRouter } from '@openrouter/ai-sdk-provider';
 import {
   createUIMessageStream,
@@ -29,6 +32,7 @@ import {
   ToolSet,
   wrapLanguageModel,
 } from 'ai';
+import { ConvexHttpClient } from 'convex/browser';
 
 import { NextRequest } from 'next/server';
 
@@ -66,22 +70,68 @@ const languageModels = Models.reduce(
   {} as Record<ModelID, LanguageModelV2>,
 );
 
+let convexClient: ConvexHttpClient | null = null;
+function getConvexClient(): ConvexHttpClient {
+  if (!convexClient) {
+    const url = env.NEXT_PUBLIC_CONVEX_URL;
+    if (!url) throw new Error('NEXT_PUBLIC_CONVEX_URL is not set');
+    convexClient = new ConvexHttpClient(url);
+  }
+  return convexClient;
+}
+
 export const modelProvider = customProvider({
   languageModels,
 });
 
-/**
- * Retrieves the system prompt from the gloved API if no custom system prompt is provided.
- * @param {string} [system] - The custom system prompt to use instead of the gloved API's system prompt.
- * @returns {Promise<string>} The system prompt to use for the chat.
- */
 const getSystemPrompt = async (system?: string): Promise<string> => {
-  return system ? system : ((await glovedApi.getSystemPrompt())?.data ?? '');
+  return system ?? (await glovedApi.getSystemPrompt())?.data ?? '';
 };
+
+async function consumeRedisStream(
+  stream: ReadableStream,
+  messageId: string | undefined,
+  state: { content: string; reasoning: string },
+): Promise<void> {
+  if (!messageId) return;
+
+  const reader = stream.getReader();
+  let lastRedisWrite = 0;
+  const REDIS_INTERVAL = 200;
+
+  const flush = async (force = false) => {
+    const now = Date.now();
+    if (!force && now - lastRedisWrite < REDIS_INTERVAL) return;
+    lastRedisWrite = now;
+    try {
+      await Promise.all([
+        setStreamContent(messageId, state.content, state.reasoning),
+        publishStreamUpdate(messageId, state.content, state.reasoning),
+      ]);
+    } catch (e) {
+      console.warn('[CHAT] redis write failed', e);
+    }
+  };
+
+  try {
+    while (true) {
+      const { done } = await reader.read();
+      if (done) break;
+      await flush();
+    }
+    await flush(true);
+  } catch (e) {
+    console.warn('[CHAT] consumeRedisStream error', e);
+  }
+}
 
 export async function POST(req: NextRequest) {
   const options: ChatFetchOptions = await req.json();
-  console.log('[CHAT] Received chat request', options);
+  console.log('[CHAT] Received chat request', {
+    model: options.model,
+    hasTools: !!options.tools?.length,
+    messageCount: options.messages.length,
+  });
   let system = await getSystemPrompt(options.system);
 
   const coreMessages = options.messages.map((msg) => ({
@@ -93,35 +143,16 @@ export async function POST(req: NextRequest) {
 
   let tools: ToolSet | undefined;
 
-  /**
-   * Retrieves the tools for the given model and adds them to the tools list.
-   * If the model supports D&D, it will also add the D&D tools to the tools list
-   * and set the system prompt with the D&D tools.
-   */
   const getTools = async (): Promise<void> => {
     if (!options.tools || options.tools.length === 0) {
       return;
     }
 
-    /**
-     * Returns the Model instance corresponding to the given modelId.
-     * @param {ModelID} modelId - The id of the model to retrieve.
-     * @returns {Model} The Model instance corresponding to the given modelId.
-     * @throws Throws an error if the modelId is not found in the Models array.
-     */
     const getModel = (modelId: ModelID): Model | undefined => {
-      console.log('[CHAT] Getting model', modelId);
       return Models.find((model) => model.value === modelId);
     };
 
-    /**
-     * Checks if a given custom tool is available in the selected model.
-     * @param {CustomTool} tool - The custom tool to check.
-     * @param {ModelID} modelId - The id of the model to check.
-     * @returns {boolean} True if the tool is available, false otherwise.
-     */
     const isValidTool = (tool: CustomTool, modelId: ModelID): boolean => {
-      console.log('[CHAT] Checking if tool', tool, 'is available for model', modelId);
       const model = getModel(modelId);
       return model ? model.tools.includes(tool) : false;
     };
@@ -130,7 +161,6 @@ export async function POST(req: NextRequest) {
     // Automatically process all tools from TOOL_CONFIG
     for (const [_toolKey, toolConfig] of Object.entries(TOOL_CONFIG)) {
       if (options.tools.includes(toolConfig.value) && isValidTool(toolConfig.value, options.model ?? DEFAULT_MODEL)) {
-        console.log(`[CHAT] Adding ${toolConfig.name} to tools list...`);
         const toolImplementation = await toolConfig.create();
         Object.entries(toolImplementation.tools).forEach(([key, tool]: [string, Tool]) => {
           tools = { ...tools, [key]: tool };
@@ -149,6 +179,8 @@ export async function POST(req: NextRequest) {
 
   await getTools();
 
+  const hasConvexTarget = !!options.convexThreadId && !!options.convexAssistantMessageId;
+
   const stream = createUIMessageStream({
     execute: ({ writer }) => {
       writer.write({
@@ -156,18 +188,17 @@ export async function POST(req: NextRequest) {
         data: { status: 'streaming' },
       });
 
+      const state = { content: '', reasoning: '' };
+
       const result = streamText({
         system,
         model,
         messages: coreMessages,
         tools,
-        stopWhen: stepCountIs(10),
+        stopWhen: stepCountIs(5),
         temperature: modelConfig.temperature,
         maxOutputTokens: modelConfig.maxOutputTokens,
-        // frequencyPenalty: modelConfig.frequencyPenalty,
-        // presencePenalty: modelConfig.presencePenalty,
-        abortSignal: req.signal,
-        experimental_transform: smoothStream({ delayInMs: null }),
+        experimental_transform: smoothStream({ delayInMs: 10 }),
         onStepFinish: ({ toolCalls, toolResults }) => {
           for (const toolCall of toolCalls) {
             writer.write({
@@ -187,29 +218,71 @@ export async function POST(req: NextRequest) {
             });
           }
         },
-        // onChunk: ({ chunk }) => {},
-        onFinish: ({ usage }) => {
+        onChunk: ({ chunk }) => {
+          if (chunk.type === 'text-delta') {
+            state.content += chunk.text;
+          } else if (chunk.type === 'reasoning-delta') {
+            state.reasoning += chunk.text;
+          }
+        },
+        onFinish: async () => {
           writer.write({
             type: 'data-status',
             data: { status: 'done' },
           });
+          if (options.convexAssistantMessageId) {
+            await publishStreamStatus(options.convexAssistantMessageId, state.content, state.reasoning || undefined, 'done');
+            await deleteStreamContent(options.convexAssistantMessageId);
+          }
+          if (hasConvexTarget) {
+            try {
+              await getConvexClient().mutation(api.messages.setDone, {
+                id: options.convexAssistantMessageId! as Id<'messages'>,
+                content: state.content,
+                reasoning: state.reasoning || undefined,
+              });
+            } catch (e) {
+              console.error('[CHAT] setDone mutation failed', e);
+            }
+          }
         },
-        onError: ({ error }) => {
+        onError: async ({ error }) => {
+          const errMsg = error instanceof Error ? error.message : 'Unknown error';
+          console.error('[CHAT] Error:', errMsg);
           writer.write({
             type: 'data-status',
             data: {
               status: 'error',
-              error:
-                error && typeof error === 'object' && 'message' in error && typeof (error as any).message === 'string' ?
-                  (error as any).message
-                : 'Unknown error',
+              error: errMsg,
             },
           });
-          console.error('[CHAT] Error:', (error as Error)?.message || error);
+          if (options.convexAssistantMessageId) {
+            await publishStreamStatus(
+              options.convexAssistantMessageId,
+              state.content || errMsg,
+              state.reasoning || undefined,
+              'error',
+            );
+            await deleteStreamContent(options.convexAssistantMessageId);
+          }
+          if (hasConvexTarget) {
+            try {
+              await getConvexClient().mutation(api.messages.setError, {
+                id: options.convexAssistantMessageId! as Id<'messages'>,
+                content: state.content || 'Error: No content received',
+              });
+            } catch (e) {
+              console.error('[CHAT] setError mutation failed', e);
+            }
+          }
         },
       });
-      writer.merge(result.toUIMessageStream());
+      const uiStream = result.toUIMessageStream();
+      const [sseBranch, redisBranch] = uiStream.tee();
+      writer.merge(sseBranch);
+      consumeRedisStream(redisBranch, options.convexAssistantMessageId, state);
     },
   });
-  return createUIMessageStreamResponse({ stream });
+  const resp = createUIMessageStreamResponse({ stream });
+  return resp;
 }
