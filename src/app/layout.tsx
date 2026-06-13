@@ -51,6 +51,7 @@ const jetbrains = JetBrains_Mono({
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <ClerkProvider
+      publishableKey={env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
       appearance={{
         variables: { colorPrimary: '#333' },
         baseTheme: dark,

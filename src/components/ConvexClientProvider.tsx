@@ -20,16 +20,10 @@ try {
 }
 
 export default function ConvexClientProvider({ children }: { children: ReactNode }) {
-  if (initError) {
-    return (
-      <div style={{ padding: '2rem', color: 'red', fontFamily: 'monospace' }}>
-        <h1>Convex Configuration Error</h1>
-        <p>{initError.message}</p>
-        <p>Please ensure NEXT_PUBLIC_CONVEX_URL is set in your .env.local file.</p>
-      </div>
-    );
+  if (initError || !convex) {
+    console.warn('Convex unavailable, rendering without Convex:', initError?.message);
+    return <>{children}</>;
   }
-  if (!convex) return <>{children}</>;
   return (
     <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
       {children}
