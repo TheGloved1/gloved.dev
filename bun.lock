@@ -5,9 +5,9 @@
     "": {
       "name": "gloved.dev",
       "dependencies": {
-        "@ai-sdk/google": "^2.0.72",
-        "@ai-sdk/groq": "^2.0.40",
-        "@ai-sdk/provider": "^2.0.3",
+        "@ai-sdk/google": "^2",
+        "@ai-sdk/groq": "^2",
+        "@ai-sdk/provider": "^2",
         "@clerk/nextjs": "^7.3.3",
         "@clerk/themes": "^2.4.57",
         "@eslint/js": "^10.0.1",
@@ -31,9 +31,10 @@
         "@t3-oss/env-nextjs": "^0.13.10",
         "@tanstack/react-query": "^5.91.2",
         "@tavily/core": "^0.7.3",
+        "@upstash/redis": "^1.38.0",
         "@vercel/analytics": "^2.0.1",
         "@vercel/speed-insights": "^2.0.0",
-        "ai": "^5.0.188",
+        "ai": "^5",
         "axios": "^1.16.0",
         "babel-plugin-react-compiler": "^1",
         "class-variance-authority": "^0.7.1",
@@ -74,7 +75,6 @@
         "@types/react": "19.2.14",
         "@types/react-dom": "19.2.3",
         "@typescript-eslint/parser": "^8.59.3",
-        "@upstash/redis": "^1.38.0",
         "baseline-browser-mapping": "^2.10.29",
         "critters": "^0.0.25",
         "eslint": "^10.3.0",
@@ -99,7 +99,7 @@
     "protobufjs",
   ],
   "overrides": {
-    "@types/react": "19.2.7",
+    "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
   },
   "packages": {
@@ -749,7 +749,7 @@
 
     "@types/prismjs": ["@types/prismjs@1.26.5", "", {}, "sha512-AUZTa7hQ2KY5L7AmtSiqxlhWxb4ina0yd8hNbl4TWuqnv/pFP0nDMb3YrfSBf4hJVGLh2YEIBfKaBW/9UEl6IQ=="],
 
-    "@types/react": ["@types/react@19.2.7", "", { "dependencies": { "csstype": "3.2.3" } }, "sha512-MWtvHrGZLFttgeEj28VXHxpmwYbor/ATPYbBfSFZEIRK0ecCFLl2Qo55z52Hss+UV9CRN7trSeq1zbgx7YDWWg=="],
+    "@types/react": ["@types/react@19.2.14", "", { "dependencies": { "csstype": "^3.2.2" } }, "sha512-ilcTH/UniCkMdtexkoCN0bI7pMcJDvmQFPvuPvmEaYA/NSfFTAgdUSLAoVjaRJm7+6PvcM+q1zYOwS4wTYMF9w=="],
 
     "@types/react-dom": ["@types/react-dom@19.2.3", "", { "peerDependencies": { "@types/react": "19.2.7" } }, "sha512-jp2L/eY6fn+KgVVQAOqYItbF0VY/YApe5Mz2F0aykSO8gx31bYCZyvSeYxCHKvzHG5eZjc+zyaS5BrBWya2+kQ=="],
 

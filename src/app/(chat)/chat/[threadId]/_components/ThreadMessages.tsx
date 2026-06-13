@@ -52,10 +52,11 @@ export default function ThreadMessages() {
   const handleScroll = useCallback(
     (e?: React.UIEvent<HTMLDivElement>) => {
       if (!scrollContainerRef.current) return;
+      const containerHeight = scrollContainerRef.current.clientHeight || e?.currentTarget.clientHeight || 0;
       distanceFromBottom.current =
         scrollContainerRef.current.scrollHeight -
         (scrollContainerRef.current.scrollTop || e?.currentTarget.scrollTop || 0) -
-        988;
+        containerHeight;
       if (distanceFromBottom.current > 200) {
         setAutoScroll(false);
         setIsAtBottom(false);

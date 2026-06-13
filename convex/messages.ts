@@ -1,9 +1,25 @@
 import { v } from 'convex/values';
 import { mutation, query } from './_generated/server';
 
+async function verifyThreadAccess(ctx: any, threadId: any) {
+  const identity = await ctx.auth.getUserIdentity();
+  if (!identity) {
+    throw new Error('Authentication required');
+  }
+  const thread = await ctx.db.get(threadId);
+  if (!thread) {
+    throw new Error('Thread not found');
+  }
+  if (thread.userId !== identity.subject) {
+    throw new Error('Unauthorized: You do not have access to this thread');
+  }
+  return identity;
+}
+
 export const getByThread = query({
   args: { threadId: v.id('threads') },
   handler: async (ctx, args) => {
+    await verifyThreadAccess(ctx, args.threadId);
     const messages = await ctx.db
       .query('messages')
       .withIndex('by_threadId', (q) => q.eq('threadId', args.threadId))
@@ -16,7 +32,11 @@ export const getByThread = query({
 export const getById = query({
   args: { id: v.id('messages') },
   handler: async (ctx, args) => {
-    return await ctx.db.get(args.id);
+    const message = await ctx.db.get(args.id);
+    if (message) {
+      await verifyThreadAccess(ctx, message.threadId);
+    }
+    return message;
   },
 });
 
@@ -31,6 +51,7 @@ export const create = mutation({
     externalId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    const identity = await verifyThreadAccess(ctx, args.threadId);
     const now = Date.now();
     return await ctx.db.insert('messages', {
       threadId: args.threadId,
@@ -40,7 +61,7 @@ export const create = mutation({
       status: 'streaming',
       createdAt: now,
       updatedAt: now,
-      userId: args.userId,
+      userId: identity.subject,
       attachments: args.attachments,
       externalId: args.externalId,
     });
@@ -62,8 +83,9 @@ export const createPair = mutation({
       role: args.userRole,
       model: args.model,
     });
+    const identity = await verifyThreadAccess(ctx, args.threadId);
     const now = Date.now();
-    const userId = args.userId;
+    const userId = identity.subject;
     await ctx.db.insert('messages', {
       threadId: args.threadId,
       content: args.userContent,
@@ -93,10 +115,14 @@ export const createPair = mutation({
 export const getByExternalId = query({
   args: { externalId: v.string() },
   handler: async (ctx, args) => {
-    return await ctx.db
+    const message = await ctx.db
       .query('messages')
       .withIndex('by_externalId', (q) => q.eq('externalId', args.externalId))
       .first();
+    if (message) {
+      await verifyThreadAccess(ctx, message.threadId);
+    }
+    return message;
   },
 });
 
@@ -120,6 +146,11 @@ export const updateContent = mutation({
   },
   handler: async (ctx, args) => {
     console.log('[CHAT-DEBUG-CONVEX] updateContent', { id: args.id, contentLen: args.content.length, status: args.status });
+    const message = await ctx.db.get(args.id);
+    if (!message) {
+      throw new Error('Message not found');
+    }
+    await verifyThreadAccess(ctx, message.threadId);
     const patch: Record<string, unknown> = {
       content: args.content,
       updatedAt: Date.now(),
@@ -150,6 +181,11 @@ export const setDone = mutation({
   },
   handler: async (ctx, args) => {
     console.log('[CHAT-DEBUG-CONVEX] setDone', { id: args.id, contentLen: args.content.length });
+    const message = await ctx.db.get(args.id);
+    if (!message) {
+      throw new Error('Message not found');
+    }
+    await verifyThreadAccess(ctx, message.threadId);
     await ctx.db.patch(args.id, {
       content: args.content,
       status: 'done',
@@ -169,6 +205,7 @@ export const editMessage = mutation({
     userId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    const identity = await verifyThreadAccess(ctx, args.threadId);
     const userMsg = await ctx.db.get(args.userMessageId);
     if (!userMsg) throw new Error('User message not found');
 
@@ -177,21 +214,33 @@ export const editMessage = mutation({
       updatedAt: Date.now(),
     });
 
-    const msgs = await ctx.db
-      .query('messages')
-      .withIndex('by_threadId', (q) => q.eq('threadId', args.threadId))
-      .order('asc')
-      .take(500);
-
+    // Process all messages after the edited one in batches
     let found = false;
-    for (const msg of msgs) {
-      if (msg._id === args.userMessageId) {
-        found = true;
-        continue;
+    let hasMore = true;
+    let lastCreatedAt = userMsg.createdAt;
+
+    while (hasMore) {
+      const msgs = await ctx.db
+        .query('messages')
+        .withIndex('by_threadId', (q) => q.eq('threadId', args.threadId))
+        .order('asc')
+        .filter((q) => q.gte(q.field('createdAt'), lastCreatedAt))
+        .take(500);
+
+      if (msgs.length === 0) break;
+
+      for (const msg of msgs) {
+        if (msg._id === args.userMessageId) {
+          found = true;
+          continue;
+        }
+        if (found && msg.status !== 'deleted') {
+          await ctx.db.patch(msg._id, { status: 'deleted', updatedAt: Date.now() });
+        }
+        lastCreatedAt = msg.createdAt;
       }
-      if (found && msg.status !== 'deleted') {
-        await ctx.db.patch(msg._id, { status: 'deleted', updatedAt: Date.now() });
-      }
+
+      hasMore = msgs.length === 500;
     }
 
     const assistantId = await ctx.db.insert('messages', {
@@ -202,7 +251,7 @@ export const editMessage = mutation({
       status: 'streaming',
       createdAt: Date.now(),
       updatedAt: Date.now(),
-      userId: args.userId,
+      userId: identity.subject,
     });
 
     return { assistantId };
@@ -215,6 +264,11 @@ export const setError = mutation({
     content: v.string(),
   },
   handler: async (ctx, args) => {
+    const message = await ctx.db.get(args.id);
+    if (!message) {
+      throw new Error('Message not found');
+    }
+    await verifyThreadAccess(ctx, message.threadId);
     await ctx.db.patch(args.id, {
       content: args.content,
       status: 'error',

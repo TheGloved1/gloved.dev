@@ -47,10 +47,15 @@ async function batch<T>(items: T[], fn: (item: T) => Promise<void>, concurrency 
   const total = items.length;
   const next = async (i: number) => {
     if (i >= total) return;
-    await fn(items[i]);
-    done++;
-    if (label && (done % Math.max(1, Math.floor(total / 10)) === 0 || done === total)) {
-      console.log(`  ${label}: ${done}/${total}`);
+    try {
+      await fn(items[i]);
+      done++;
+      if (label && (done % Math.max(1, Math.floor(total / 10)) === 0 || done === total)) {
+        console.log(`  ${label}: ${done}/${total}`);
+      }
+    } catch (error) {
+      console.error(`  ${label}: Error processing item ${i}:`, error);
+      errors++;
     }
     await next(i + concurrency);
   };

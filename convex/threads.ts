@@ -64,10 +64,21 @@ export const remove = mutation({
   args: { id: v.id('threads') },
   handler: async (ctx, args) => {
     await ctx.db.patch(args.id, { status: 'deleted', updatedAt: Date.now() });
-    const messages = await ctx.db
-      .query('messages')
-      .withIndex('by_threadId', (q) => q.eq('threadId', args.id))
-      .take(500);
-    await Promise.all(messages.map((msg) => ctx.db.delete(msg._id)));
+
+    // Delete all messages in batches to handle threads with >500 messages
+    let hasMore = true;
+    while (hasMore) {
+      const messages = await ctx.db
+        .query('messages')
+        .withIndex('by_threadId', (q) => q.eq('threadId', args.id))
+        .take(500);
+
+      if (messages.length === 0) {
+        hasMore = false;
+      } else {
+        await Promise.all(messages.map((msg) => ctx.db.delete(msg._id)));
+        hasMore = messages.length === 500;
+      }
+    }
   },
 });

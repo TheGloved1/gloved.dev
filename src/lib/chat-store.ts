@@ -508,8 +508,6 @@ export async function createMessage({
     assistantMessageId = `${threadId}:assistant:${Date.now()}`;
   }
 
-  generateTitle(threadId);
-
   let convexThreadId: Id<'threads'> | null = preResolvedThreadId ?? null;
   let convexAssistantMessageId: Id<'messages'> | null = preCreatedAssistantId ?? null;
 
@@ -607,8 +605,6 @@ export async function updateMessage({
       saveLocalMessages(threadId, allMsgs.slice(0, idx + 1));
     }
   }
-
-  generateTitle(threadId);
 
   let convexThreadId: Id<'threads'> | null = preResolvedThreadId ?? null;
   let convexAssistantMessageId: Id<'messages'> | null = preCreatedAssistantId ?? null;

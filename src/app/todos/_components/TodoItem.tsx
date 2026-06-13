@@ -45,6 +45,7 @@ function TodoItemComponent({
     <li className='group flex items-center gap-3 rounded-lg border border-white/10 bg-white/[0.02] px-3 py-2.5 transition-colors hover:border-fuchsia-500/30 hover:bg-fuchsia-500/[0.02]'>
       <button
         onClick={() => onToggle(todo.id)}
+        aria-label={`Toggle ${todo.title}`}
         className={`flex h-4 w-4 shrink-0 items-center justify-center rounded border transition-colors ${
           todo.completed ? 'border-fuchsia-500 bg-fuchsia-500' : 'border-white/30 hover:border-fuchsia-500/60'
         }`}
@@ -66,6 +67,7 @@ function TodoItemComponent({
           />
           <button
             onClick={onSaveEdit}
+            aria-label='Save'
             className='brutal-shadow-sm flex h-7 w-7 items-center justify-center rounded-lg border border-fuchsia-500/50 bg-fuchsia-500/10 text-fuchsia-400 hover:bg-fuchsia-500/20'
           >
             <svg className='h-3 w-3' fill='none' viewBox='0 0 12 12' stroke='currentColor' strokeWidth={3}>
@@ -74,6 +76,7 @@ function TodoItemComponent({
           </button>
           <button
             onClick={onCancelEdit}
+            aria-label='Cancel'
             className='brutal-shadow-sm flex h-7 w-7 items-center justify-center rounded-lg border border-white/20 bg-white/5 text-white/50 hover:border-white/40 hover:bg-white/10'
           >
             <svg className='h-3 w-3' fill='none' viewBox='0 0 12 12' stroke='currentColor' strokeWidth={3}>
@@ -95,6 +98,7 @@ function TodoItemComponent({
         <div className='relative h-7 w-16'>
           <button
             onClick={() => onStartEdit(todo)}
+            aria-label='Edit'
             className='absolute right-0 flex h-7 w-7 items-center justify-center text-white/20 transition-all duration-200 hover:text-white/50 group-hover:right-9'
           >
             <svg className='h-3.5 w-3.5' fill='none' viewBox='0 0 24 24' stroke='currentColor' strokeWidth={2}>
@@ -107,6 +111,7 @@ function TodoItemComponent({
           </button>
           <button
             onClick={() => onDelete(todo.id)}
+            aria-label='Delete'
             className='brutal-shadow-sm pointer-events-none absolute right-0 flex h-7 w-7 items-center justify-center rounded-lg border border-red-500/30 bg-red-500/10 text-red-400 opacity-0 transition-all duration-200 hover:border-red-500/60 hover:bg-red-500/20 group-hover:pointer-events-auto group-hover:opacity-100'
           >
             <svg className='h-3 w-3' fill='none' viewBox='0 0 24 24' stroke='currentColor' strokeWidth={2}>

@@ -25,7 +25,7 @@ export const env = createEnv({
   client: {
     NEXT_PUBLIC_FILE_MANAGER_PASSKEY: z.string(),
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string(),
-    NEXT_PUBLIC_CONVEX_URL: z.string(),
+    NEXT_PUBLIC_CONVEX_URL: z.string().optional(),
   },
 
   /**

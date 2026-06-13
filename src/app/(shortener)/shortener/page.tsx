@@ -8,7 +8,7 @@ import { api } from '@convex/_generated/api';
 import { useMutation, useQuery } from 'convex/react';
 import { Check, Copy, ExternalLink, Link2, Loader2, Scissors } from 'lucide-react';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 export default function Page() {
@@ -17,10 +17,15 @@ export default function Page() {
   const [longUrl, setLongUrl] = useState('');
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
-  const [shortUrlResult, setShortUrlResult] = useState<string | null>(null);
+  const [shortId, setShortId] = useState<string | null>(null);
+  const [origin, setOrigin] = useState('');
 
-  const urlsData = useQuery(api.shortUrls.getByUser, auth.userId ? { userId: auth.userId } : 'skip');
+  const urlsData = useQuery(api.shortUrls.getByUser, auth.userId ? {} : 'skip');
   const setShortUrl = useMutation(api.shortUrls.set);
+
+  useEffect(() => {
+    setOrigin(window.location.origin);
+  }, []);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -30,12 +35,11 @@ export default function Page() {
       });
 
     setPending(true);
-    setShortUrlResult(null);
+    setShortId(null);
     try {
       const id = crypto.randomUUID().slice(0, 8);
-      await setShortUrl({ userId: auth.userId, shortId: id, url: longUrl });
-      const result = window.location.origin + '/s/' + id;
-      setShortUrlResult(result);
+      await setShortUrl({ shortId: id, url: longUrl });
+      setShortId(id);
       toast.success('URL shortened!');
     } catch (error) {
       toast.error('Failed to shorten URL');
@@ -130,21 +134,21 @@ export default function Page() {
                   </span>
                 </Button>
 
-                {shortUrlResult && (
+                {shortId && origin && (
                   <div className='relative overflow-hidden rounded-none border border-green-500/30 bg-green-500/5 p-6 backdrop-blur-sm'>
                     <div className='absolute inset-0 bg-gradient-to-r from-green-500/10 to-transparent'></div>
                     <div className='relative z-10'>
                       <p className='font-mono-industrial mb-2 text-sm font-medium text-green-400'>{'// SLICE COMPLETE'}</p>
                       <div className='flex items-center justify-between gap-4'>
                         <Link
-                          href={shortUrlResult}
+                          href={`${origin}/s/${shortId}`}
                           className='font-mono-industrial text-lg text-white hover:text-green-400'
                           target='_blank'
                         >
-                          {shortUrlResult}
+                          {origin}/s/{shortId}
                         </Link>
                         <Button
-                          onClick={() => copyToClipboard(shortUrlResult.split('/').pop()!)}
+                          onClick={() => copyToClipboard(shortId)}
                           className='font-mono-industrial h-10 rounded-none border border-green-500/30 bg-transparent px-4 text-sm font-medium text-green-400 hover:bg-green-500/10 hover:text-green-300'
                         >
                           <Copy className='h-4 w-4' />
@@ -187,18 +191,20 @@ export default function Page() {
                             >
                               {url}
                             </Link>
-                            <div className='mt-2 flex items-center gap-2'>
-                              <span className='font-mono-industrial text-xs text-white/50'>
-                                {window.location.origin}/s/{id}
-                              </span>
-                              <Link
-                                href={window.location.origin + '/s/' + id}
-                                target='_blank'
-                                className='text-white/30 transition-colors hover:text-white/60'
-                              >
-                                <ExternalLink className='h-3 w-3' />
-                              </Link>
-                            </div>
+                            {origin && (
+                              <div className='mt-2 flex items-center gap-2'>
+                                <span className='font-mono-industrial text-xs text-white/50'>
+                                  {origin}/s/{id}
+                                </span>
+                                <Link
+                                  href={`${origin}/s/${id}`}
+                                  target='_blank'
+                                  className='text-white/30 transition-colors hover:text-white/60'
+                                >
+                                  <ExternalLink className='h-3 w-3' />
+                                </Link>
+                              </div>
+                            )}
                           </div>
                           <Button
                             onClick={() => copyToClipboard(id)}

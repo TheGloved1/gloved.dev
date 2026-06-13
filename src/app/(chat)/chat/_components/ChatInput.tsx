@@ -79,7 +79,11 @@ const ChatInput = memo(
         setLoading(true);
 
         let attachments: string[] | undefined;
-        if (canUpload && images.length) {
+        if (images.length > 0) {
+          if (!canUpload) {
+            toast.error('Please sign in to upload images');
+            return;
+          }
           for (const dataUrl of images) {
             const file = dataURLToFile(dataUrl);
             const imageUpload = await tryCatch(upload(file, auth.userId));
@@ -90,9 +94,6 @@ const ChatInput = memo(
             attachments = [...(attachments || []), imageUpload.data];
           }
           setInput(storageKey, { attachments: [] });
-        } else if (!canUpload) {
-          toast.error('Please sign in to upload images');
-          return;
         }
 
         const prompt = input;

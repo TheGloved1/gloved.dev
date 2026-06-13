@@ -14,7 +14,7 @@ import ShoppingList from './shopping-list';
 
 export default function GroceryPage(): React.JSX.Element {
   const { user, isSignedIn } = useUser();
-  const [clientIP, setClientIP] = useState<string>('unknown');
+  const [anonymousId, setAnonymousId] = useState<string>('');
   const [shoppingListSelectionMode, setShoppingListSelectionMode] = useState<boolean>(false);
   const [haveListSelectionMode, setHaveListSelectionMode] = useState<boolean>(false);
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
@@ -32,21 +32,27 @@ export default function GroceryPage(): React.JSX.Element {
     if (user?.emailAddresses?.[0]?.emailAddress) {
       return user.emailAddresses[0].emailAddress.split('@')[0];
     }
-    return 'unknown';
+    return '';
   };
 
-  const getClientIP = async (): Promise<string> => {
+  const getOrCreateAnonymousId = (): string => {
+    if (typeof window === 'undefined') return 'anonymous';
     try {
-      const response = await fetch('https://api.ipify.org?format=json');
-      const data = await response.json();
-      return data.ip || 'unknown';
+      let id = localStorage.getItem('grocery_anonymous_id');
+      if (!id) {
+        id = `anon_${crypto.randomUUID()}`;
+        localStorage.setItem('grocery_anonymous_id', id);
+      }
+      return id;
     } catch {
-      return 'unknown';
+      return 'anonymous';
     }
   };
 
   useMount(() => {
-    getClientIP().then(setClientIP);
+    if (!isSignedIn) {
+      setAnonymousId(getOrCreateAnonymousId());
+    }
   });
 
   const userName = getUserName();
@@ -68,7 +74,7 @@ export default function GroceryPage(): React.JSX.Element {
   const handleAddItem = async (listKey: 'shopping-list' | 'have-list', text: string) => {
     setAddItemPending(true);
     try {
-      const identifier = userName || clientIP;
+      const identifier = isSignedIn && userName ? userName : anonymousId || 'anonymous';
       await addItemMut({ listKey, text, addedBy: identifier });
       toast.success('Item added');
     } catch (error) {
