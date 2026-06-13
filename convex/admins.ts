@@ -22,7 +22,14 @@ async function requireAdmin(ctx: QueryCtx) {
 
 export const list = query({
   handler: async (ctx) => {
-    await requireAdmin(ctx);
+    const identity = await ctx.auth.getUserIdentity();
+    const email = identity?.email;
+    if (!email) return [];
+    const admin = await ctx.db
+      .query('admins')
+      .withIndex('by_email', (q) => q.eq('email', email))
+      .first();
+    if (!admin) return [];
     const admins = await ctx.db.query('admins').collect();
     return admins.map((a) => a.email);
   },
