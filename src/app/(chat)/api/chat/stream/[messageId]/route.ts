@@ -2,12 +2,12 @@ import { getConvexClient } from '@/lib/convex-server';
 import { getStreamContent, StreamData, StreamStatus, subscribeToStream } from '@/lib/redis';
 import { api } from '@convex/_generated/api';
 import type { Id } from '@convex/_generated/dataModel';
-import { NextRequest } from 'next/server';
+import { NextRequest as Request, NextResponse as Response } from 'next/server';
 
 const SAFETY_TIMEOUT_MS = 60_000;
 const KEEPALIVE_INTERVAL_MS = 30_000;
 
-export async function GET(req: NextRequest, { params }: { params: Promise<{ messageId: string }> }) {
+export async function GET(req: Request, { params }: { params: Promise<{ messageId: string }> }) {
   const { messageId } = await params;
 
   let content = '';

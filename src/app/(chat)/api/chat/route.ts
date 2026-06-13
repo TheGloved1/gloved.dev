@@ -34,7 +34,7 @@ import {
 } from 'ai';
 import { ConvexHttpClient } from 'convex/browser';
 
-import { NextRequest } from 'next/server';
+import { NextRequest as Request } from 'next/server';
 
 const google = createGoogleGenerativeAI({ apiKey: env.GEMINI });
 const groq = createGroq({ apiKey: env.GROQ });
@@ -125,7 +125,7 @@ async function consumeRedisStream(
   }
 }
 
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
   const options: ChatFetchOptions = await req.json();
   console.log('[CHAT] Received chat request', {
     model: options.model,
