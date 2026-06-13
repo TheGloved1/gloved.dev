@@ -107,7 +107,7 @@ export function BirdGame() {
       try {
         const displayName = getDisplayName();
         console.log('Attempting to save score:', scoreToSave, 'for user:', user?.id, displayName);
-        await saveScore({ userId: user.id, username: displayName, score: scoreToSave });
+        await saveScore({ score: scoreToSave });
         console.log('Score saved successfully!');
       } catch (error) {
         console.error('Failed to save score:', error);
