@@ -1,5 +1,6 @@
 'use client';
 
+import { env } from '@/env';
 import { api } from '@convex/_generated/api';
 import type { Id } from '@convex/_generated/dataModel';
 import { ConvexHttpClient } from 'convex/browser';
@@ -8,7 +9,7 @@ let client: ConvexHttpClient | null = null;
 
 export function getConvexClient(): ConvexHttpClient {
   if (!client) {
-    const url = process.env.NEXT_PUBLIC_CONVEX_URL;
+    const url = env.NEXT_PUBLIC_CONVEX_URL;
     if (!url) throw new Error('NEXT_PUBLIC_CONVEX_URL is not set');
     client = new ConvexHttpClient(url);
   }

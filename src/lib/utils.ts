@@ -141,7 +141,6 @@ export async function fetchIp() {
   const response = await tryCatch(fetch('https://api64.ipify.org?format=json'));
   if (response.error) return;
   const data = (await response.data.json()) as { ip: string };
-  console.log('Client IP:', data.ip);
   return data.ip;
 }
 
