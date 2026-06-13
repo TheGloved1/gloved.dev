@@ -22,7 +22,9 @@ async function requireAdmin(ctx: QueryCtx) {
 
 export const list = query({
   handler: async (ctx) => {
+    console.log('Listing admins...');
     const identity = await ctx.auth.getUserIdentity();
+    console.log('User identity:', JSON.stringify(identity));
     const email = identity?.email;
     if (!email) return [];
     const admin = await ctx.db
