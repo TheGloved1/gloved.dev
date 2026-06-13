@@ -1,7 +1,7 @@
 import { v } from 'convex/values';
-import { mutation, query } from './_generated/server';
+import { mutation, query, QueryCtx } from './_generated/server';
 
-async function requireAdmin(ctx: any) {
+async function requireAdmin(ctx: QueryCtx) {
   const identity = await ctx.auth.getUserIdentity();
   if (!identity) {
     throw new Error('Unauthorized: Authentication required');
@@ -21,7 +21,6 @@ async function requireAdmin(ctx: any) {
 }
 
 export const list = query({
-  args: {},
   handler: async (ctx) => {
     await requireAdmin(ctx);
     const admins = await ctx.db.query('admins').collect();

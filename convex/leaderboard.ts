@@ -2,7 +2,6 @@ import { v } from 'convex/values';
 import { mutation, query } from './_generated/server';
 
 export const getTop100 = query({
-  args: {},
   handler: async (ctx) => {
     const entries = await ctx.db.query('leaderboardEntries').withIndex('by_score').order('desc').take(100);
     return entries;

@@ -2,7 +2,6 @@ import { v } from 'convex/values';
 import { mutation, query } from './_generated/server';
 
 export const getShoppingList = query({
-  args: {},
   handler: async (ctx) => {
     return await ctx.db
       .query('groceryItems')
@@ -12,7 +11,6 @@ export const getShoppingList = query({
 });
 
 export const getHaveList = query({
-  args: {},
   handler: async (ctx) => {
     return await ctx.db
       .query('groceryItems')
