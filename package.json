@@ -76,7 +76,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "compressorjs": "^1.3.0",
-    "convex": "^1.40.0",
+    "convex": "^1.41.0",
     "crypto-js": "^4.2.0",
     "daisyui": "^4.12.24",
     "dotenv": "^17.4.2",

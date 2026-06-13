@@ -30,7 +30,7 @@ export const addEntry = mutation({
       throw new Error('Authentication required');
     }
     const userId = identity.subject;
-    const username = identity.name || identity.email || 'Anonymous';
+    const username = identity.nickname || identity.name || identity.email || 'Anonymous';
 
     const existing = await ctx.db
       .query('leaderboardEntries')
