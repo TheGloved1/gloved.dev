@@ -26,7 +26,7 @@ export const list = query({
     const identity = await ctx.auth.getUserIdentity();
     console.log('User identity:', JSON.stringify(identity));
     const email = identity?.email;
-    if (!email) throw new Error('Unauthorized: Email not found in identity');
+    if (!email) return console.log('No email found in identity');
     const admin = await ctx.db
       .query('admins')
       .withIndex('by_email', (q) => q.eq('email', email))
