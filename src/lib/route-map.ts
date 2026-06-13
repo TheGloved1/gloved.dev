@@ -7,114 +7,114 @@ export interface RouteInfo {
 }
 
 export const RouteMap: Record<string, RouteInfo> = {
-  '/(auth)/profile/[[...rest]]': {
-    relativePath: 'src/app/(auth)/profile/[[...rest]]/page.tsx',
-    githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/(auth)/profile/%5B%5B...rest%5D%5D/page.tsx',
-  },
-  '/(auth)/sign-in/[[...rest]]': {
-    relativePath: 'src/app/(auth)/sign-in/[[...rest]]/page.tsx',
-    githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/(auth)/sign-in/%5B%5B...rest%5D%5D/page.tsx',
-  },
-  '/(auth)/sign-up/[[...rest]]': {
-    relativePath: 'src/app/(auth)/sign-up/[[...rest]]/page.tsx',
-    githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/(auth)/sign-up/%5B%5B...rest%5D%5D/page.tsx',
-  },
-  '/(chat)/chat/[threadId]': {
-    relativePath: 'src/app/(chat)/chat/[threadId]/page.tsx',
-    githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/(chat)/chat/%5BthreadId%5D/page.tsx',
-  },
-  '/(chat)/chat/error': {
-    relativePath: 'src/app/(chat)/chat/error/page.tsx',
-    githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/(chat)/chat/error/page.tsx',
-  },
-  '/(chat)/chat': {
-    relativePath: 'src/app/(chat)/chat/page.tsx',
-    githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/(chat)/chat/page.tsx',
-  },
-  '/(chat)/chat/settings': {
-    relativePath: 'src/app/(chat)/chat/settings/page.tsx',
-    githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/(chat)/chat/settings/page.tsx',
-  },
-  '/(shortener)/shortener': {
-    relativePath: 'src/app/(shortener)/shortener/page.tsx',
-    githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/(shortener)/shortener/page.tsx',
-  },
-  '/admin': {
-    relativePath: 'src/app/admin/page.tsx',
-    githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/admin/page.tsx',
-  },
-  '/bgremover': {
-    relativePath: 'src/app/bgremover/page.tsx',
-    githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/bgremover/page.tsx',
-  },
-  '/bird': {
-    relativePath: 'src/app/bird/page.tsx',
-    githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/bird/page.tsx',
-  },
-  '/black': {
-    relativePath: 'src/app/black/page.tsx',
-    githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/black/page.tsx',
-  },
-  '/calc': {
-    relativePath: 'src/app/calc/page.tsx',
-    githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/calc/page.tsx',
-  },
-  '/colors': {
-    relativePath: 'src/app/colors/page.tsx',
-    githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/colors/page.tsx',
-  },
-  '/cookies': {
-    relativePath: 'src/app/cookies/page.tsx',
-    githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/cookies/page.tsx',
-  },
-  '/discord': {
-    relativePath: 'src/app/discord/page.tsx',
-    githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/discord/page.tsx',
-  },
-  '/fax': {
-    relativePath: 'src/app/fax/page.tsx',
-    githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/fax/page.tsx',
-  },
-  '/files': {
-    relativePath: 'src/app/files/page.tsx',
-    githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/files/page.tsx',
-  },
-  '/gallery': {
-    relativePath: 'src/app/gallery/page.tsx',
-    githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/gallery/page.tsx',
-  },
-  '/groceries': {
-    relativePath: 'src/app/groceries/page.tsx',
-    githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/groceries/page.tsx',
-  },
-  '/hangman': {
-    relativePath: 'src/app/hangman/page.tsx',
-    githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/hangman/page.tsx',
-  },
-  '/home': {
-    relativePath: 'src/app/home/page.tsx',
-    githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/home/page.tsx',
-  },
-  '/localstorage': {
-    relativePath: 'src/app/localstorage/page.tsx',
-    githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/localstorage/page.tsx',
-  },
-  '/': {
-    relativePath: 'src/app/page.tsx',
-    githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/page.tsx',
-  },
-  '/todos': {
-    relativePath: 'src/app/todos/page.tsx',
-    githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/todos/page.tsx',
-  },
-  '/white': {
-    relativePath: 'src/app/white/page.tsx',
-    githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/white/page.tsx',
-  },
-  '/wowadder': {
-    relativePath: 'src/app/wowadder/page.tsx',
-    githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/wowadder/page.tsx',
-  },
+    '/(auth)/profile/[[...rest]]': {
+      relativePath: 'src/app/(auth)/profile/[[...rest]]/page.tsx',
+      githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/(auth)/profile/%5B%5B...rest%5D%5D/page.tsx'
+    },
+    '/(auth)/sign-in/[[...rest]]': {
+      relativePath: 'src/app/(auth)/sign-in/[[...rest]]/page.tsx',
+      githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/(auth)/sign-in/%5B%5B...rest%5D%5D/page.tsx'
+    },
+    '/(auth)/sign-up/[[...rest]]': {
+      relativePath: 'src/app/(auth)/sign-up/[[...rest]]/page.tsx',
+      githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/(auth)/sign-up/%5B%5B...rest%5D%5D/page.tsx'
+    },
+    '/(chat)/chat/error': {
+      relativePath: 'src/app/(chat)/chat/error/page.tsx',
+      githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/(chat)/chat/error/page.tsx'
+    },
+    '/(chat)/chat': {
+      relativePath: 'src/app/(chat)/chat/page.tsx',
+      githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/(chat)/chat/page.tsx'
+    },
+    '/(chat)/chat/settings': {
+      relativePath: 'src/app/(chat)/chat/settings/page.tsx',
+      githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/(chat)/chat/settings/page.tsx'
+    },
+    '/(chat)/chat/[threadId]': {
+      relativePath: 'src/app/(chat)/chat/[threadId]/page.tsx',
+      githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/(chat)/chat/%5BthreadId%5D/page.tsx'
+    },
+    '/(shortener)/shortener': {
+      relativePath: 'src/app/(shortener)/shortener/page.tsx',
+      githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/(shortener)/shortener/page.tsx'
+    },
+    '/admin': {
+      relativePath: 'src/app/admin/page.tsx',
+      githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/admin/page.tsx'
+    },
+    '/bgremover': {
+      relativePath: 'src/app/bgremover/page.tsx',
+      githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/bgremover/page.tsx'
+    },
+    '/bird': {
+      relativePath: 'src/app/bird/page.tsx',
+      githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/bird/page.tsx'
+    },
+    '/black': {
+      relativePath: 'src/app/black/page.tsx',
+      githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/black/page.tsx'
+    },
+    '/calc': {
+      relativePath: 'src/app/calc/page.tsx',
+      githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/calc/page.tsx'
+    },
+    '/colors': {
+      relativePath: 'src/app/colors/page.tsx',
+      githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/colors/page.tsx'
+    },
+    '/cookies': {
+      relativePath: 'src/app/cookies/page.tsx',
+      githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/cookies/page.tsx'
+    },
+    '/discord': {
+      relativePath: 'src/app/discord/page.tsx',
+      githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/discord/page.tsx'
+    },
+    '/fax': {
+      relativePath: 'src/app/fax/page.tsx',
+      githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/fax/page.tsx'
+    },
+    '/files': {
+      relativePath: 'src/app/files/page.tsx',
+      githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/files/page.tsx'
+    },
+    '/gallery': {
+      relativePath: 'src/app/gallery/page.tsx',
+      githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/gallery/page.tsx'
+    },
+    '/groceries': {
+      relativePath: 'src/app/groceries/page.tsx',
+      githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/groceries/page.tsx'
+    },
+    '/hangman': {
+      relativePath: 'src/app/hangman/page.tsx',
+      githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/hangman/page.tsx'
+    },
+    '/home': {
+      relativePath: 'src/app/home/page.tsx',
+      githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/home/page.tsx'
+    },
+    '/localstorage': {
+      relativePath: 'src/app/localstorage/page.tsx',
+      githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/localstorage/page.tsx'
+    },
+    '/': {
+      relativePath: 'src/app/page.tsx',
+      githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/page.tsx'
+    },
+    '/todos': {
+      relativePath: 'src/app/todos/page.tsx',
+      githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/todos/page.tsx'
+    },
+    '/white': {
+      relativePath: 'src/app/white/page.tsx',
+      githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/white/page.tsx'
+    },
+    '/wowadder': {
+      relativePath: 'src/app/wowadder/page.tsx',
+      githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/wowadder/page.tsx'
+    }
 };
 
 // Dynamic route pattern matching
@@ -124,7 +124,7 @@ function matchDynamicRoute(pathname: string): RouteInfo | undefined {
   if (match__auth__profile______rest__) {
     return {
       relativePath: 'src/app/(auth)/profile/[[...rest]]/page.tsx',
-      githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/(auth)/profile/%5B%5B...rest%5D%5D/page.tsx',
+      githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/(auth)/profile/%5B%5B...rest%5D%5D/page.tsx'
     };
   }
 
@@ -133,7 +133,7 @@ function matchDynamicRoute(pathname: string): RouteInfo | undefined {
   if (match__auth__sign_in______rest__) {
     return {
       relativePath: 'src/app/(auth)/sign-in/[[...rest]]/page.tsx',
-      githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/(auth)/sign-in/%5B%5B...rest%5D%5D/page.tsx',
+      githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/(auth)/sign-in/%5B%5B...rest%5D%5D/page.tsx'
     };
   }
 
@@ -142,7 +142,7 @@ function matchDynamicRoute(pathname: string): RouteInfo | undefined {
   if (match__auth__sign_up______rest__) {
     return {
       relativePath: 'src/app/(auth)/sign-up/[[...rest]]/page.tsx',
-      githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/(auth)/sign-up/%5B%5B...rest%5D%5D/page.tsx',
+      githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/(auth)/sign-up/%5B%5B...rest%5D%5D/page.tsx'
     };
   }
 
@@ -151,7 +151,7 @@ function matchDynamicRoute(pathname: string): RouteInfo | undefined {
   if (match__chat__chat__threadId_) {
     return {
       relativePath: 'src/app/(chat)/chat/[threadId]/page.tsx',
-      githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/(chat)/chat/%5BthreadId%5D/page.tsx',
+      githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/(chat)/chat/%5BthreadId%5D/page.tsx'
     };
   }
 
