@@ -27,7 +27,7 @@ export default function Page() {
     );
   }
 
-  const email = auth.emailAddress;
+  const email = auth.email;
 
   return (
     <div className='relative flex h-full flex-col bg-[#0a0a0a] text-white selection:bg-fuchsia-500/30'>
