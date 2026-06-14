@@ -296,19 +296,19 @@ export default function ReleasesTab(): React.JSX.Element {
                   </div>
 
                   <div className='flex flex-wrap gap-2'>
-                    {msiUrl && (
-                      <a href={msiUrl} target='_blank' rel='noopener noreferrer'>
-                        <Button className='h-7 rounded-sm border border-[#3f3a36] bg-[#1c1917] px-2.5 text-[11px] text-[#a8a29e] transition-all duration-150 hover:border-[#a16207] hover:text-[#faf6f0] hover:shadow-[0_0_6px_rgba(161,98,7,0.15)] sm:h-8 sm:px-3 sm:text-xs'>
-                          <CloudDownload className='mr-1 h-3 w-3' />
-                          MSI
-                        </Button>
-                      </a>
-                    )}
                     {exeUrl && (
                       <a href={exeUrl} target='_blank' rel='noopener noreferrer'>
                         <Button className='h-7 rounded-sm border border-[#3f3a36] bg-[#1c1917] px-2.5 text-[11px] text-[#a8a29e] transition-all duration-150 hover:border-[#a16207] hover:text-[#faf6f0] hover:shadow-[0_0_6px_rgba(161,98,7,0.15)] sm:h-8 sm:px-3 sm:text-xs'>
                           <Download className='mr-1 h-3 w-3' />
                           EXE
+                        </Button>
+                      </a>
+                    )}
+                    {msiUrl && (
+                      <a href={msiUrl} target='_blank' rel='noopener noreferrer'>
+                        <Button className='h-7 rounded-sm border border-[#3f3a36] bg-[#1c1917] px-2.5 text-[11px] text-[#a8a29e] transition-all duration-150 hover:border-[#a16207] hover:text-[#faf6f0] hover:shadow-[0_0_6px_rgba(161,98,7,0.15)] sm:h-8 sm:px-3 sm:text-xs'>
+                          <CloudDownload className='mr-1 h-3 w-3' />
+                          MSI
                         </Button>
                       </a>
                     )}
