@@ -22,11 +22,9 @@ async function requireAdmin(ctx: QueryCtx) {
 
 export const list = query({
   handler: async (ctx) => {
-    console.log('Listing admins...');
     const identity = await ctx.auth.getUserIdentity();
-    console.log('User identity:', JSON.stringify(identity));
     const email = identity?.email;
-    if (!email) return console.log('No email found in identity');
+    if (!email) return identity;
     const admin = await ctx.db
       .query('admins')
       .withIndex('by_email', (q) => q.eq('email', email))
@@ -34,6 +32,21 @@ export const list = query({
     if (!admin) return [];
     const admins = await ctx.db.query('admins').collect();
     return admins.map((a) => a.email);
+  },
+});
+
+export const isAdmin = query({
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    const email = identity?.email;
+    if (!email) return false;
+    const admin = await ctx.db
+      .query('admins')
+      .withIndex('by_email', (q) => q.eq('email', email))
+      .first();
+    if (!admin) return false;
+    const admins = await ctx.db.query('admins').collect();
+    return admins.map((a) => a.email).includes(email);
   },
 });
 

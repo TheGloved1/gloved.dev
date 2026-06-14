@@ -1,14 +1,11 @@
 'use client';
-import { useUser } from '@clerk/nextjs';
-import { api } from '@convex/_generated/api';
+import { api } from '@convex/api';
 import { useQuery } from 'convex/react';
 
 export function useAdmin() {
-  const { user } = useUser();
+  const isAdmin = useQuery(api.admins.isAdmin);
   const admins = useQuery(api.admins.list);
-
-  const isAdmin =
-    user?.primaryEmailAddress?.emailAddress ? (admins ?? []).includes(user.primaryEmailAddress.emailAddress) : false;
+  console.log('isAdmin', isAdmin);
 
   return {
     isAdmin,
