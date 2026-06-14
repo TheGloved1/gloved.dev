@@ -24,7 +24,7 @@ export const list = query({
   handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity();
     const email = identity?.email;
-    if (!email) return identity;
+    if (!email) return [];
     const admin = await ctx.db
       .query('admins')
       .withIndex('by_email', (q) => q.eq('email', email))

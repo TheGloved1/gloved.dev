@@ -1,6 +1,6 @@
 'use client';
-import Loading from '@/components/loading';
-import { useAdmin } from '@/hooks/use-admin';
+import { api } from '@convex/_generated/api';
+import { useQuery } from 'convex/react';
 import React from 'react';
 
 /**
@@ -8,27 +8,10 @@ import React from 'react';
  * @param children The children to render if the user is an admin.
  * @param fallback The fallback element to render if the user is not an admin.
  */
-export default function AdminShow({
-  children,
-  fallback,
-}: {
-  children: React.ReactNode;
-  fallback?: React.ReactNode;
-}): React.JSX.Element {
-  const admins = useAdmin();
+export default function AdminShow({ children }: { children: React.ReactNode }): React.JSX.Element {
+  const isAdmin = useQuery(api.admins.isAdmin);
 
-  if (admins.error) {
-    return <></>;
-  }
-
-  if (admins.isLoading) {
-    if (fallback) {
-      return <>{fallback}</>;
-    }
-    return <Loading />;
-  }
-
-  if (admins.isAdmin) {
+  if (isAdmin) {
     return <>{children}</>;
   }
 
