@@ -10,8 +10,6 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { adminApps, apps, type AppItem } from '@/lib/apps';
 import { animationDelay } from '@/lib/utils';
 import { SignInButton, UserButton, useUser } from '@clerk/nextjs';
-import { api } from '@convex/_generated/api';
-import { useQuery } from 'convex/react';
 import { Video } from 'lucide-react';
 import DefaultPlayer from 'next-video/player';
 import Link from 'next/link';
@@ -69,8 +67,6 @@ function AppGrid({ apps }: { apps: AppItem[] }): React.JSX.Element {
 export default function Page(): React.JSX.Element {
   const isMobile = useIsMobile();
   const { isSignedIn } = useUser();
-  const identity = useQuery(api.debug.identity);
-  console.log('Fetched Identity:', identity);
 
   return (
     <ThemeChanger>

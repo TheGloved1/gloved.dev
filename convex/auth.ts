@@ -1,6 +1,6 @@
 import { query } from './_generated/server';
 
-export const identity = query({
+export const get = query({
   handler: async (ctx) => {
     return ctx.auth.getUserIdentity();
   },

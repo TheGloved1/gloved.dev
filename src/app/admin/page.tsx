@@ -2,32 +2,32 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAdmin } from '@/hooks/use-admin';
-import { useUser } from '@clerk/nextjs';
 import { api } from '@convex/_generated/api';
-import { useMutation } from 'convex/react';
-import { Crown, Loader2, Shield, Skull, Trash2, UserMinus, UserPlus } from 'lucide-react';
+import { useMutation, useQuery } from 'convex/react';
+import { Crown, Loader2, Shield, UserMinus, UserPlus } from 'lucide-react';
 import { notFound } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
 export default function Page() {
-  const { user } = useUser();
+  const auth = useQuery(api.auth.get);
   const admins = useAdmin();
   const [newAdmin, setNewAdmin] = useState('');
   const [loading, setLoading] = useState(false);
   const addAdmin = useMutation(api.admins.add);
   const removeAdmin = useMutation(api.admins.remove);
 
-  const email = user?.primaryEmailAddress?.emailAddress;
+  if ((auth && !admins.isAdmin) || auth === null) return notFound();
 
-  if (!user) return notFound();
-
-  if (admins.isLoading)
+  if (auth === undefined) {
     return (
       <div className='flex h-full flex-col items-center justify-center bg-[#0a0a0a]'>
         <Loader2 className='h-8 w-8 animate-spin text-fuchsia-500' />
       </div>
     );
+  }
+
+  const email = auth.emailAddress;
 
   return (
     <div className='relative flex h-full flex-col bg-[#0a0a0a] text-white selection:bg-fuchsia-500/30'>
@@ -142,28 +142,6 @@ export default function Page() {
             </ul>
           }
         </div>
-
-        {email === 'gloves1229@gmail.com' && (
-          <div className='shrink-0 rounded-xl border border-red-500/20 bg-red-500/[0.03] p-4 backdrop-blur-sm'>
-            <div className='flex items-center gap-2'>
-              <Skull className='h-4 w-4 text-red-400' />
-              <h2 className='font-display text-[11px] font-bold uppercase tracking-wide text-red-400'>Danger Zone</h2>
-            </div>
-            <p className='font-mono-industrial mt-1 text-[10px] text-white/40'>
-              Irreversible actions. Proceed with caution.
-            </p>
-            <Button
-              variant='destructive'
-              className='brutal-shadow-sm mt-3 h-7 border-red-500/50 bg-red-500/10 text-[9px] text-red-400 hover:bg-red-500/20'
-              onClick={async () => {
-                toast.success('Sync data operations are now handled by Convex');
-              }}
-            >
-              <Trash2 className='mr-1 h-3 w-3' />
-              Delete Sync Data
-            </Button>
-          </div>
-        )}
       </div>
     </div>
   );

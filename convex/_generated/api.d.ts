@@ -9,7 +9,7 @@
  */
 
 import type * as admins from "../admins.js";
-import type * as debug from "../debug.js";
+import type * as auth from "../auth.js";
 import type * as groceries from "../groceries.js";
 import type * as leaderboard from "../leaderboard.js";
 import type * as messages from "../messages.js";
@@ -24,7 +24,7 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   admins: typeof admins;
-  debug: typeof debug;
+  auth: typeof auth;
   groceries: typeof groceries;
   leaderboard: typeof leaderboard;
   messages: typeof messages;

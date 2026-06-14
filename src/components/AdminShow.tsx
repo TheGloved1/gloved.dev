@@ -10,7 +10,6 @@ import React from 'react';
  */
 export default function AdminShow({ children }: { children: React.ReactNode }): React.JSX.Element {
   const isAdmin = useQuery(api.admins.isAdmin);
-  console.log('isAdmin', isAdmin);
 
   if (isAdmin) {
     return <>{children}</>;
