@@ -8,9 +8,13 @@ type ObserverSectionProps = {
   className?: string;
 } & ComponentPropsWithoutRef<'section'>;
 
+const dirs = ['left', 'right'] as const;
+type Dir = (typeof dirs)[number];
+
 export default function ObserverSection({ children, className, id }: ObserverSectionProps): React.JSX.Element {
   const sectionRef = useRef<HTMLElement>(null);
   const [isInView, setIsInView] = useState(false);
+  const direction = dirs[Math.floor(Math.random() * dirs.length)];
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -43,7 +47,7 @@ export default function ObserverSection({ children, className, id }: ObserverSec
       ref={sectionRef}
       className={cn(
         `flex min-h-svh snap-start flex-col items-center justify-center text-center tracking-tight ${
-          isInView ? 'fade-in-left' : 'fade-out-left'
+          isInView ? `fade-in-${direction}` : `fade-out-${direction}`
         }`,
         className ? ` ${className}` : '',
       )}
