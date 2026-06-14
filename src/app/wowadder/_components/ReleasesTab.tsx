@@ -14,7 +14,7 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { minutes } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
-import { CloudDownload, ExternalLink, GitBranch, Loader2 } from 'lucide-react';
+import { CloudDownload, Download, ExternalLink, GitBranch, Loader2 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 type GitHubRelease = {
@@ -42,6 +42,11 @@ function formatDate(iso: string): string {
 function findMsiAsset(release: GitHubRelease): string | null {
   const msi = release.assets.find((a) => a.name.endsWith('.msi') && a.name.includes('x64_en-US'));
   return msi?.browser_download_url ?? null;
+}
+
+function findExeAsset(release: GitHubRelease): string | null {
+  const exe = release.assets.find((a) => a.name.endsWith('.exe') && a.name.includes('x64'));
+  return exe?.browser_download_url ?? null;
 }
 
 function getPageNumbers(current: number, total: number): (number | 'ellipsis')[] {
@@ -259,6 +264,8 @@ export default function ReleasesTab(): React.JSX.Element {
         <div className='space-y-4'>
           {paginatedReleases.map((release) => {
             const msiUrl = findMsiAsset(release);
+            const exeUrl = findExeAsset(release);
+
             const changelog = getChangelog(release);
 
             return (
@@ -294,6 +301,14 @@ export default function ReleasesTab(): React.JSX.Element {
                         <Button className='h-7 rounded-sm border border-[#3f3a36] bg-[#1c1917] px-2.5 text-[11px] text-[#a8a29e] transition-all duration-150 hover:border-[#a16207] hover:text-[#faf6f0] hover:shadow-[0_0_6px_rgba(161,98,7,0.15)] sm:h-8 sm:px-3 sm:text-xs'>
                           <CloudDownload className='mr-1 h-3 w-3' />
                           MSI
+                        </Button>
+                      </a>
+                    )}
+                    {exeUrl && (
+                      <a href={exeUrl} target='_blank' rel='noopener noreferrer'>
+                        <Button className='h-7 rounded-sm border border-[#3f3a36] bg-[#1c1917] px-2.5 text-[11px] text-[#a8a29e] transition-all duration-150 hover:border-[#a16207] hover:text-[#faf6f0] hover:shadow-[0_0_6px_rgba(161,98,7,0.15)] sm:h-8 sm:px-3 sm:text-xs'>
+                          <Download className='mr-1 h-3 w-3' />
+                          EXE
                         </Button>
                       </a>
                     )}
