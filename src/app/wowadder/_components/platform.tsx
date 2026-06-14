@@ -1,9 +1,11 @@
-import { SiApple, SiLinux } from '@icons-pack/react-simple-icons';
+import { SiApple, SiDebian, SiFedora, SiLinux } from '@icons-pack/react-simple-icons';
 
 export const RELEASE_EXTENSIONS = {
   Windows: ['msi', 'exe'],
-  Linux: ['deb', 'rpm', 'AppImage'],
   Mac: ['dmg'],
+  Debian: ['deb'],
+  Fedora: ['rpm'],
+  Linux: ['AppImage', 'deb', 'rpm'],
 } as const;
 
 export type PlatformKey = keyof typeof RELEASE_EXTENSIONS;
@@ -50,6 +52,10 @@ export function PlatformIcon({ platform, className }: { platform: string; classN
       return <SiLinux className={className} />;
     case 'Mac':
       return <SiApple className={className} />;
+    case 'Debian':
+      return <SiDebian className={className} />;
+    case 'Fedora':
+      return <SiFedora className={className} />;
     default:
       return <></>;
   }

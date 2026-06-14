@@ -17,14 +17,30 @@ const PLATFORMS: { key: PlatformKey; label: string }[] = [
 const RECOMMENDED_EXT: Record<PlatformKey, string> = {
   Windows: 'msi',
   Mac: 'dmg',
-  Linux: 'deb',
+  Linux: 'AppImage',
+  Debian: 'deb',
+  Fedora: 'rpm',
 };
+
+const EXT_PLATFORM_MAP: Record<PlatformKey, string[]> = {
+  Windows: ['msi', 'exe'],
+  Mac: ['dmg'],
+  Linux: ['AppImage'],
+  Debian: ['deb'],
+  Fedora: ['rpm'],
+};
+
+function getExtPlatform(ext: string) {
+  return (Object.entries(EXT_PLATFORM_MAP).find(([_, e]) => e.includes(ext))?.[0] as PlatformKey) || 'Windows';
+}
 
 function detectPlatform(): PlatformKey {
   if (typeof navigator === 'undefined') return 'Windows';
   const ua = navigator.userAgent;
   if (ua.includes('Windows')) return 'Windows';
   if (ua.includes('Mac')) return 'Mac';
+  if (ua.includes('Fedora')) return 'Fedora';
+  if (ua.includes('Debian')) return 'Debian';
   if (ua.includes('Linux')) return 'Linux';
   return 'Windows';
 }
@@ -173,7 +189,7 @@ export default function DownloadPage(): React.JSX.Element {
                             : 'border border-[#3f3a36] bg-[#292524] text-[#a8a29e] hover:border-[#a16207]/50 hover:text-[#faf6f0]'
                           }`}
                         >
-                          <PlatformIcon platform={activePlatform} className='h-5 w-5 shrink-0' />
+                          <PlatformIcon platform={getExtPlatform(asset.ext)} className='h-5 w-5 shrink-0' />
                           <span className='truncate'>{asset.name}</span>
                           <CloudDownload className='h-5 w-5 shrink-0' />
                         </Button>
