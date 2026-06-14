@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Constants from '@/lib/constants';
 import { cn } from '@/lib/utils';
-import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { Boxes, CloudDownload, Cpu, ExternalLink, Palette, Puzzle, Search, ShieldCheck, Wrench, Zap } from 'lucide-react';
 import Link from 'next/link';
@@ -97,15 +96,6 @@ const techStack = [
   { label: 'Installer', value: 'WiX MSI' },
 ];
 
-const fetchLatestReleaseDownloadLink = async () => {
-  const res = await fetch('https://api.github.com/repos/TheGloved1/WowAdder/releases/latest');
-  if (!res.ok) throw new Error('Failed to fetch latest release');
-  const data = await res.json();
-  const msi = data.assets.find((a: { name: string }) => a.name.endsWith('.msi') && a.name.includes('x64_en-US'));
-  if (!msi) throw new Error('No MSI installer found in latest release');
-  return msi.browser_download_url as string;
-};
-
 enum WowAdderTab {
   Overview = 'overview',
   Releases = 'releases',
@@ -135,12 +125,6 @@ function FadeInSection({
 
 export default function WowAdderPage(): React.JSX.Element {
   const [activeTab, setActiveTab] = useState<WowAdderTab>(WowAdderTab.Overview);
-  const latestRelease = useQuery({
-    queryKey: ['latestRelease'],
-    queryFn: fetchLatestReleaseDownloadLink,
-    staleTime: 1000 * 60 * 5,
-    retry: 1,
-  });
 
   return (
     <div className='font-wow-body relative min-h-screen bg-[#0c0a09] text-[#faf6f0] selection:bg-[#a16207]/30'>
@@ -191,26 +175,12 @@ export default function WowAdderPage(): React.JSX.Element {
                 View on GitHub
               </Button>
             </Link>
-            {latestRelease.data && (
-              <Link href={latestRelease.data} target='_blank' rel='noopener noreferrer'>
-                <Button className='border border-[#f59e0b] bg-[#fbbf24] px-4 text-xs font-bold tracking-wide text-[#0c0a09] shadow-[0_0_6px_rgba(251,191,36,0.15)] transition-all duration-150 hover:bg-[#fbbf24]/90 active:bg-[#d97706]'>
-                  <CloudDownload className='mr-1.5 h-3.5 w-3.5' />
-                  Download Latest Release
-                </Button>
-              </Link>
-            )}
-            {latestRelease.isLoading && (
-              <Button className='border border-[#3f3a36] bg-[#1c1917] text-xs text-[#a8a29e]'>
-                <CloudDownload className='mr-1.5 h-3.5 w-3.5 animate-pulse' />
-                Loading...
-              </Button>
-            )}
-            {latestRelease.isError && (
-              <Button className='border border-[#c41e3a]/40 bg-[#c41e3a]/20 text-xs text-[#faf6f0]'>
+            <Link href='/wowadder/downloads'>
+              <Button className='border border-[#f59e0b] bg-[#fbbf24] px-4 text-xs font-bold tracking-wide text-[#0c0a09] shadow-[0_0_6px_rgba(251,191,36,0.15)] transition-all duration-150 hover:bg-[#fbbf24]/90 active:bg-[#d97706]'>
                 <CloudDownload className='mr-1.5 h-3.5 w-3.5' />
-                Failed to fetch
+                Download
               </Button>
-            )}
+            </Link>
           </div>
         </FadeInSection>
       </section>

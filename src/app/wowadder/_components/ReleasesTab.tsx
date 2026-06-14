@@ -14,22 +14,9 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { minutes } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
-import { CloudDownload, Download, ExternalLink, GitBranch, Loader2 } from 'lucide-react';
+import { ExternalLink, GitBranch, Loader2 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
-
-type GitHubRelease = {
-  tag_name: string;
-  name: string;
-  published_at: string;
-  html_url: string;
-  body: string;
-  prerelease: boolean;
-  assets: {
-    name: string;
-    browser_download_url: string;
-    content_type: string;
-  }[];
-};
+import { findReleaseAssets, GitHubRelease, PlatformIcon, RELEASE_EXTENSIONS } from './platform';
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString('en-US', {
@@ -37,16 +24,6 @@ function formatDate(iso: string): string {
     month: 'short',
     day: 'numeric',
   });
-}
-
-function findMsiAsset(release: GitHubRelease): string | null {
-  const msi = release.assets.find((a) => a.name.endsWith('.msi') && a.name.includes('x64_en-US'));
-  return msi?.browser_download_url ?? null;
-}
-
-function findExeAsset(release: GitHubRelease): string | null {
-  const exe = release.assets.find((a) => a.name.endsWith('.exe') && a.name.includes('x64'));
-  return exe?.browser_download_url ?? null;
 }
 
 function getPageNumbers(current: number, total: number): (number | 'ellipsis')[] {
@@ -263,8 +240,7 @@ export default function ReleasesTab(): React.JSX.Element {
 
         <div className='space-y-4'>
           {paginatedReleases.map((release) => {
-            const msiUrl = findMsiAsset(release);
-            const exeUrl = findExeAsset(release);
+            const assets = findReleaseAssets(release);
 
             const changelog = getChangelog(release);
 
@@ -274,7 +250,7 @@ export default function ReleasesTab(): React.JSX.Element {
                 className='wow-card group p-4 transition-all duration-150 hover:shadow-[0_0_10px_rgba(161,98,7,0.1)] sm:p-5'
               >
                 {/* Header */}
-                <div className='mb-3 flex flex-wrap items-start justify-between gap-3'>
+                <div className='flex flex-wrap items-start justify-between gap-3'>
                   <div className='flex items-center gap-3'>
                     <div className='relative flex h-9 w-9 items-center justify-center rounded-sm border border-[#3f3a36] bg-[#292524] sm:h-10 sm:w-10'>
                       <div className='pointer-events-none absolute inset-px rounded-sm border border-[#a16207]/20' />
@@ -294,41 +270,48 @@ export default function ReleasesTab(): React.JSX.Element {
                       <p className='font-wow-body text-[11px] text-[#78716c]'>{formatDate(release.published_at)}</p>
                     </div>
                   </div>
-
-                  <div className='flex flex-wrap gap-2'>
-                    {exeUrl && (
-                      <a href={exeUrl} target='_blank' rel='noopener noreferrer'>
-                        <Button className='h-7 rounded-sm border border-[#3f3a36] bg-[#1c1917] px-2.5 text-[11px] text-[#a8a29e] transition-all duration-150 hover:border-[#a16207] hover:text-[#faf6f0] hover:shadow-[0_0_6px_rgba(161,98,7,0.15)] sm:h-8 sm:px-3 sm:text-xs'>
-                          <Download className='mr-1 h-3 w-3' />
-                          EXE
-                        </Button>
-                      </a>
-                    )}
-                    {msiUrl && (
-                      <a href={msiUrl} target='_blank' rel='noopener noreferrer'>
-                        <Button className='h-7 rounded-sm border border-[#3f3a36] bg-[#1c1917] px-2.5 text-[11px] text-[#a8a29e] transition-all duration-150 hover:border-[#a16207] hover:text-[#faf6f0] hover:shadow-[0_0_6px_rgba(161,98,7,0.15)] sm:h-8 sm:px-3 sm:text-xs'>
-                          <CloudDownload className='mr-1 h-3 w-3' />
-                          MSI
-                        </Button>
-                      </a>
-                    )}
-                    <a href={release.html_url} target='_blank' rel='noopener noreferrer'>
-                      <Button className='h-7 rounded-sm border border-[#3f3a36] bg-[#1c1917] px-2.5 text-[11px] text-[#a8a29e] transition-all duration-150 hover:border-[#a16207] hover:text-[#faf6f0] hover:shadow-[0_0_6px_rgba(161,98,7,0.15)] sm:h-8 sm:px-3 sm:text-xs'>
-                        <ExternalLink className='mr-1 h-3 w-3' />
-                        Details
-                      </Button>
-                    </a>
-                  </div>
+                  <a href={release.html_url} target='_blank' rel='noopener noreferrer'>
+                    <Button className='h-7 rounded-sm border border-[#3f3a36] bg-[#1c1917] px-2.5 text-[11px] text-[#a8a29e] transition-all duration-150 hover:border-[#a16207] hover:text-[#faf6f0] hover:shadow-[0_0_6px_rgba(161,98,7,0.15)] sm:h-8 sm:px-3 sm:text-xs'>
+                      <ExternalLink className='mr-1 h-3 w-3' />
+                      Details
+                    </Button>
+                  </a>
                 </div>
 
                 {/* Changelog */}
                 {changelog && (
-                  <div className='border-t border-[#292524] pt-1.5'>
+                  <div className='mt-3 border-t border-[#292524] pt-1.5'>
                     <div className='markdown-body [&_h2]:font-wow-heading [&_h3]:font-wow-heading [&_li]:font-wow-body [&_p]:font-wow-body [&_code]:font-wow-body [&_a:hover]:decoration-[#fbbf24] [&_a]:text-[#fbbf24] [&_a]:underline [&_a]:decoration-[#a16207]/30 [&_code]:mx-0.5 [&_code]:rounded-sm [&_code]:bg-[#292524] [&_code]:px-1 [&_code]:py-0.5 [&_code]:text-[11px] [&_code]:text-[#a8a29e] [&_h2]:mb-2 [&_h2]:mt-0 [&_h2]:text-sm [&_h2]:tracking-wide [&_h2]:text-[#fbbf24]/80 [&_h3]:mb-1.5 [&_h3]:mt-0.5 [&_h3]:text-xs [&_h3]:tracking-wide [&_h3]:text-[#a8a29e] [&_li]:text-xs [&_li]:leading-relaxed [&_li]:text-[#a8a29e]/80 [&_p]:text-xs [&_p]:leading-relaxed [&_p]:text-[#a8a29e]/80 [&_strong]:font-semibold [&_strong]:text-[#faf6f0]/80 [&_ul]:mb-0 [&_ul]:mt-1 [&_ul]:list-disc [&_ul]:pl-4'>
                       <Markdown>{changelog}</Markdown>
                     </div>
                   </div>
                 )}
+
+                {/* Downloads */}
+                <div className='mt-3 border-t border-[#292524] pt-3'>
+                  <span className='font-wow-body pb-6 text-base font-bold tracking-wide text-[#78716c]/50'>Downloads:</span>
+                  <div className='flex flex-wrap items-center gap-x-5 gap-y-2 pt-3'>
+                    {(Object.keys(RELEASE_EXTENSIONS) as (keyof typeof RELEASE_EXTENSIONS)[]).map((platform) => {
+                      const platformAssets = assets[platform];
+                      if (!platformAssets?.length) return null;
+                      return (
+                        <div key={platform} className='flex items-center gap-1.5'>
+                          <PlatformIcon platform={platform} className='h-3.5 w-3.5 text-[#78716c]/70' />
+                          <span className='font-wow-body text-[11px] font-medium tracking-wide text-[#78716c]/70'>
+                            {platform}
+                          </span>
+                          {platformAssets.map((asset) => (
+                            <a key={asset.name} href={asset.url} target='_blank' rel='noopener noreferrer'>
+                              <Button className='h-7 rounded-sm border border-[#3f3a36] bg-[#1c1917] px-2.5 text-[11px] text-[#a8a29e] transition-all duration-150 hover:border-[#a16207] hover:text-[#faf6f0] hover:shadow-[0_0_6px_rgba(161,98,7,0.15)] sm:h-8 sm:px-3 sm:text-xs'>
+                                {asset.ext.toUpperCase()}
+                              </Button>
+                            </a>
+                          ))}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
             );
           })}

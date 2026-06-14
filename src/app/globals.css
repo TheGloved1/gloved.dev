@@ -497,9 +497,27 @@ button.brutal-shadow-sm:active {
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    scrollbar-gutter: stable;
+  }
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Transparent scrollbar — gutter always reserved, bar invisible */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: transparent;
+}
+* {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
 }
 
 @theme inline {
