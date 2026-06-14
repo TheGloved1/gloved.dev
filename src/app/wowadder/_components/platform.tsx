@@ -1,3 +1,5 @@
+import { SiApple, SiLinux } from '@icons-pack/react-simple-icons';
+
 export const RELEASE_EXTENSIONS = {
   Windows: ['msi', 'exe'],
   Linux: ['deb', 'rpm', 'AppImage'],
@@ -45,17 +47,9 @@ export function PlatformIcon({ platform, className }: { platform: string; classN
         </svg>
       );
     case 'Linux':
-      return (
-        <svg className={className} viewBox='0 0 16 16' fill='currentColor'>
-          <path d='M8 1C6.34 1 5 2.34 5 4c0 .56.14 1.09.38 1.56C4.1 6.44 3.22 8.06 3.22 10c0 2.2 1.8 4 4 4h1.56c2.2 0 4-1.8 4-4 0-1.94-.88-3.56-2.16-4.44.24-.47.38-1 .38-1.56 0-1.66-1.34-3-3-3z' />
-        </svg>
-      );
+      return <SiLinux className={className} />;
     case 'Mac':
-      return (
-        <svg className={className} viewBox='0 0 16 16' fill='currentColor'>
-          <path d='M11.6 8.3c0-2.3 1.3-3 1.3-3s-1-1.3-2.3-1.3c-1 0-1.7.5-2.3.5s-1.3-.5-2.3-.5C4.7 4 3.7 5.3 3.7 5.3s1.3.7 1.3 3-1.3 2.7-1.3 2.7 1 1.3 2.3 1.3c1 0 1.3-.5 2.3-.5s1.3.5 2.3.5c1.3 0 2.3-1.3 2.3-1.3s-1.3-.4-1.3-2.7zM9.3 2.7c.7 0 1.3-.7 1.3-1.3s-.7-.7-1.3 0-.7 1.3 0 1.3z' />
-        </svg>
-      );
+      return <SiApple className={className} />;
     default:
       return <></>;
   }
