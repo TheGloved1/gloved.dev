@@ -29,7 +29,7 @@ function detectPlatform(): PlatformKey {
   return 'Windows';
 }
 
-export default function DownloadsPage(): React.JSX.Element {
+export default function DownloadPage(): React.JSX.Element {
   const [detectedPlatform] = useState<PlatformKey>(detectPlatform());
   const [activePlatform, setActivePlatform] = useState<PlatformKey>('Windows');
 

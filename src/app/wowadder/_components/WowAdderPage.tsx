@@ -169,7 +169,7 @@ export default function WowAdderPage(): React.JSX.Element {
                 View on GitHub
               </Button>
             </Link>
-            <TransitionLink href='/wowadder/downloads'>
+            <TransitionLink href='/wowadder/download'>
               <Button className='border border-[#f59e0b] bg-[#fbbf24] px-4 text-xs font-bold tracking-wide text-[#0c0a09] shadow-[0_0_6px_rgba(251,191,36,0.15)] transition-all duration-150 hover:bg-[#fbbf24]/90 active:bg-[#d97706]'>
                 <CloudDownload className='mr-1.5 h-3.5 w-3.5' />
                 Download

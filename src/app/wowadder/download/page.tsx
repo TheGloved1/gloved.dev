@@ -1,6 +1,6 @@
 import Constants from '@/lib/constants';
 import { Metadata } from 'next';
-import DownloadsPage from './_components/DownloadsPage';
+import DownloadPage from './_components/DownloadPage';
 
 export const metadata: Metadata = {
   title: `Download ${Constants.WowAdder.title}`,
@@ -16,5 +16,5 @@ export const metadata: Metadata = {
 };
 
 export default function Page(): React.JSX.Element {
-  return <DownloadsPage />;
+  return <DownloadPage />;
 }
