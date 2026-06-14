@@ -90,7 +90,11 @@ export default function DownloadPage(): React.JSX.Element {
         {latestRelease.data && (
           <>
             {detectedRecommended && (
-              <a href={detectedRecommended.url} target='_blank' rel='noopener noreferrer'>
+              <a
+                href={`/wowadder/download/latest?platform=${detectedPlatform}&ext=${detectedRecommended.ext}`}
+                target='_blank'
+                rel='noopener noreferrer'
+              >
                 <button className='flex w-full items-center justify-center gap-3 rounded-t-lg border border-[#a16207] bg-[#fbbf24] px-6 py-6 text-base font-bold tracking-wide text-[#0c0a09] shadow-[0_0_10px_rgba(251,191,36,0.2)] transition-all duration-150 hover:shadow-[0_0_16px_rgba(251,191,36,0.3)] hover:brightness-110 active:brightness-90'>
                   <PlatformIcon platform={detectedPlatform} className='h-5 w-5' />
                   Download
@@ -155,7 +159,13 @@ export default function DownloadPage(): React.JSX.Element {
                 <article className='rounded-lg border border-[#292524] bg-[#1c1917] px-4 py-3 sm:px-3'>
                   <div className='space-y-3'>
                     {platformAssets.map((asset) => (
-                      <a key={asset.name} href={asset.url} target='_blank' rel='noopener noreferrer' className='block'>
+                      <a
+                        key={asset.name}
+                        href={`/wowadder/download/latest?platform=${activePlatform}&ext=${asset.ext}`}
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        className='block'
+                      >
                         <Button
                           className={`flex w-full items-center justify-center gap-3 rounded-md px-5 py-3 text-base font-medium transition-all duration-150 hover:brightness-110 focus:brightness-110 active:brightness-90 ${
                             asset.ext === RECOMMENDED_EXT[activePlatform] ?
