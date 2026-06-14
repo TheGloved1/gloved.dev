@@ -1,6 +1,5 @@
 'use client';
 
-import PageBack from '@/components/PageBack';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Constants from '@/lib/constants';
@@ -11,6 +10,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import '../wow.css';
 import ReleasesTab from './ReleasesTab';
+import { TransitionLink } from './TransitionLink';
 
 const features = [
   {
@@ -105,15 +105,17 @@ function FadeInSection({
   children,
   delay = 0,
   className,
+  from = 'left',
 }: {
   children: React.ReactNode;
   delay?: number;
   className?: string;
+  from?: 'left' | 'right';
 }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0, x: from === 'left' ? -24 : 24 }}
+      whileInView={{ opacity: 1, x: 0 }}
       viewport={{ once: true, margin: '-50px' }}
       transition={{ duration: 0.7, ease: 'easeOut', delay: delay / 1000 }}
       className={className}
@@ -127,15 +129,7 @@ export default function WowAdderPage(): React.JSX.Element {
   const [activeTab, setActiveTab] = useState<WowAdderTab>(WowAdderTab.Overview);
 
   return (
-    <div className='font-wow-body relative min-h-screen bg-[#0c0a09] text-[#faf6f0] selection:bg-[#a16207]/30'>
-      <div className='wow-scanline pointer-events-none fixed inset-0' />
-
-      <PageBack
-        stayTop
-        className='z-50'
-        btnClassName='border border-[#3f3a36] bg-[#1c1917] text-xs text-[#a8a29e] transition-all duration-150 hover:border-[#a16207] hover:text-[#faf6f0] hover:shadow-[0_0_8px_rgba(161,98,7,0.2)]'
-      />
-
+    <>
       {/* Hero */}
       <section className='relative px-4 pb-8 pt-24 sm:pb-12 sm:pt-32 lg:pt-40'>
         <FadeInSection className='flex flex-col items-center'>
@@ -175,12 +169,12 @@ export default function WowAdderPage(): React.JSX.Element {
                 View on GitHub
               </Button>
             </Link>
-            <Link href='/wowadder/downloads'>
+            <TransitionLink href='/wowadder/downloads'>
               <Button className='border border-[#f59e0b] bg-[#fbbf24] px-4 text-xs font-bold tracking-wide text-[#0c0a09] shadow-[0_0_6px_rgba(251,191,36,0.15)] transition-all duration-150 hover:bg-[#fbbf24]/90 active:bg-[#d97706]'>
                 <CloudDownload className='mr-1.5 h-3.5 w-3.5' />
                 Download
               </Button>
-            </Link>
+            </TransitionLink>
           </div>
         </FadeInSection>
       </section>
@@ -346,6 +340,6 @@ export default function WowAdderPage(): React.JSX.Element {
           </TabsContent>
         </Tabs>
       </div>
-    </div>
+    </>
   );
 }
