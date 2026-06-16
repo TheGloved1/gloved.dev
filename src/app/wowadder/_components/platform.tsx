@@ -1,4 +1,5 @@
 import { SiApple, SiDebian, SiFedora, SiLinux } from '@icons-pack/react-simple-icons';
+import { NextRequest, NextResponse } from 'next/server';
 
 export const RELEASE_EXTENSIONS = {
   Windows: ['msi', 'exe'],
@@ -9,6 +10,14 @@ export const RELEASE_EXTENSIONS = {
 } as const;
 
 export type PlatformKey = keyof typeof RELEASE_EXTENSIONS;
+
+export const RECOMMENDED_EXT: Record<PlatformKey, string> = {
+  Windows: 'msi',
+  Mac: 'dmg',
+  Linux: 'AppImage',
+  Debian: 'deb',
+  Fedora: 'rpm',
+};
 
 export type GitHubRelease = {
   tag_name: string;
@@ -24,6 +33,23 @@ export type GitHubRelease = {
   }[];
 };
 
+export function detectPlatform(userAgent: string): string {
+  if (userAgent.includes('Windows')) return 'Windows';
+  if (userAgent.includes('Mac')) return 'Mac';
+  if (userAgent.includes('Linux')) return 'Linux';
+  if (userAgent.includes('Debian')) return 'Debian';
+  if (userAgent.includes('Fedora')) return 'Fedora';
+  return 'Windows';
+}
+
+export function parsePlatform(raw: string | null, userAgent: string): string {
+  if (raw) {
+    const normalized = raw.charAt(0).toUpperCase() + raw.slice(1).toLowerCase();
+    if (Object.keys(RELEASE_EXTENSIONS).includes(normalized)) return normalized;
+  }
+  return detectPlatform(userAgent);
+}
+
 export function findReleaseAssets(release: GitHubRelease) {
   const assets: Partial<Record<PlatformKey, { name: string; ext: string; url: string }[]>> = {};
 
@@ -38,6 +64,29 @@ export function findReleaseAssets(release: GitHubRelease) {
   }
 
   return assets;
+}
+
+export async function respondToDownload(
+  asset: { name: string; url: string } | undefined,
+  request: NextRequest,
+  options?: { filename?: string },
+): Promise<NextResponse | null> {
+  if (!asset) return null;
+
+  const { searchParams } = new URL(request.url);
+  if (searchParams.get('stream') === 'true') {
+    const fileRes = await fetch(asset.url);
+    if (!fileRes.ok) return null;
+    const buffer = await fileRes.arrayBuffer();
+    return new NextResponse(buffer, {
+      headers: {
+        'Content-Type': 'application/octet-stream',
+        'Content-Disposition': `attachment; filename="${options?.filename ?? asset.name}"`,
+      },
+    });
+  }
+
+  return NextResponse.redirect(asset.url);
 }
 
 export function PlatformIcon({ platform, className }: { platform: string; className?: string }): React.JSX.Element {
