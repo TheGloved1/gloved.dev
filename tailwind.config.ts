@@ -145,6 +145,8 @@ export default {
       fontFamily: {
         jetbrains: 'var(--font-jetbrains)',
         geist: 'var(--font-geist)',
+        syne: 'var(--font-syne)',
+        'space-grotesk': 'var(--font-space-grotesk)',
       },
       borderRadius: {
         lg: 'var(--radius)',

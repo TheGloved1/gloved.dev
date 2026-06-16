@@ -88,13 +88,15 @@ export default function Page(): React.JSX.Element {
       <div className='container relative flex min-h-screen flex-col items-center justify-center gap-8 px-1 py-16 md:px-4'>
         <div className='fixed inset-0 -z-10 bg-[#0a0a0a]'></div>
         {/* Old Heading */}
-        {isMobile ?
-          <h1 className='font-display text-xl font-extrabold uppercase tracking-tight text-white'>
-            <span>GLOVED</span>
-            <span className='text-fuchsia-500'>.</span>
-            <span>DEV</span>
-          </h1>
-        : <ParticleText text='gloved.dev' size={100} hoverColor='#ec4899' edgeComplexity={5} />}
+        <div className='flex min-h-[120px] items-center justify-center'>
+          {isMobile ?
+            <h1 className='font-display text-xl font-extrabold uppercase tracking-tight text-white'>
+              <span>GLOVED</span>
+              <span className='text-fuchsia-500'>.</span>
+              <span>DEV</span>
+            </h1>
+          : <ParticleText text='gloved.dev' size={100} hoverColor='#ec4899' edgeComplexity={5} className='h-[120px]' />}
+        </div>
         <AppGrid apps={apps} />
         <Dialog>
           <DialogTrigger asChild>

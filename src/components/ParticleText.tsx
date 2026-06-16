@@ -700,7 +700,7 @@ function ParticleText({
   return (
     <canvas
       ref={canvasRef}
-      className={`mx-auto h-full touch-none ${className}`}
+      className={`mx-auto h-24 touch-none ${className}`}
       aria-label={`Interactive particle effect displaying: ${text}`}
       style={{
         background: 'transparent',

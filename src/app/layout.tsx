@@ -10,7 +10,7 @@ import { dark } from '@clerk/themes';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Metadata } from 'next';
-import { JetBrains_Mono } from 'next/font/google';
+import { JetBrains_Mono, Space_Grotesk, Syne } from 'next/font/google';
 import Script from 'next/script';
 import React from 'react';
 import './globals.css';
@@ -42,6 +42,20 @@ export const metadata: Metadata = {
   },
 };
 
+const syne = Syne({
+  weight: ['400', '500', '600', '700', '800'],
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-syne',
+});
+
+const spaceGrotesk = Space_Grotesk({
+  weight: ['300', '400', '500', '600', '700'],
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-space-grotesk',
+});
+
 const jetbrains = JetBrains_Mono({
   weight: ['100', '200', '300', '400', '500', '600', '700', '800'],
   style: ['normal', 'italic'],
@@ -68,7 +82,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             <Script defer async crossOrigin='anonymous' src='//unpkg.com/react-scan/dist/auto.global.js' />
           </>
         )}
-        <body className={`dark min-h-screen bg-background antialiased ${jetbrains.className}`}>
+        <body
+          className={`dark min-h-screen bg-background antialiased ${jetbrains.className} ${syne.variable} ${spaceGrotesk.variable}`}
+        >
           <ConvexClientProvider>
             <ReactQueryProvider>
               <Analytics />
