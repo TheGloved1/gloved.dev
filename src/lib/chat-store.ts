@@ -667,7 +667,7 @@ export async function updateMessage({
 }
 
 async function resolveConvexThreadId(threadId: string): Promise<string | null> {
-  const isConvexId = threadId.length > 20 && !threadId.includes('-');
+  const isConvexId = threadId.startsWith('_') || (threadId.length > 20 && !threadId.includes('-'));
   if (isConvexId) return threadId;
   try {
     const client = getConvexClient();
@@ -683,23 +683,28 @@ async function fetchConvexMessages(threadId: string): Promise<Message[]> {
     const convexId = await resolveConvexThreadId(threadId);
     if (!convexId) return getLocalMessages(threadId);
     const client = getConvexClient();
-    const msgs = await client.query(api.messages.getByThread, { threadId: convexId as any });
-    return msgs
-      .filter((m: any) => m.status !== 'deleted')
-      .sort((a: any, b: any) => a._creationTime - b._creationTime)
-      .map((m: any) => ({
-        id: m._id,
-        threadId: m.threadId,
-        content: m.content,
-        role: m.role,
-        model: m.model,
-        status: m.status,
-        created_at: new Date(m.createdAt).toISOString(),
-        updated_at: new Date(m.updatedAt).toISOString(),
-        reasoning: m.reasoning,
-        attachments: m.attachments,
-        tools: m.tools,
-      }));
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const msgs = await client.query(api.messages.getByThread, { threadId: convexId as any });
+      const filtered = msgs
+        .filter((m: any) => m.status !== 'deleted')
+        .sort((a: any, b: any) => a._creationTime - b._creationTime)
+        .map((m: any) => ({
+          id: m._id,
+          threadId: m.threadId,
+          content: m.content,
+          role: m.role,
+          model: m.model,
+          status: m.status,
+          created_at: new Date(m.createdAt).toISOString(),
+          updated_at: new Date(m.updatedAt).toISOString(),
+          reasoning: m.reasoning,
+          attachments: m.attachments,
+          tools: m.tools,
+        }));
+      if (filtered.length > 0) return filtered;
+      if (attempt < 2) await new Promise((r) => setTimeout(r, 300 * (attempt + 1)));
+    }
+    return getLocalMessages(threadId);
   } catch {}
   return getLocalMessages(threadId);
 }
