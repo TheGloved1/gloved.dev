@@ -1,10 +1,20 @@
 'use client';
 
 import { env } from '@/env';
-import { useAuth } from '@clerk/nextjs';
+import { setDebugAdmin } from '@/lib/debug';
+import { useAuth, useUser } from '@clerk/nextjs';
 import { ConvexReactClient } from 'convex/react';
 import { ConvexProviderWithClerk } from 'convex/react-clerk';
-import { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
+
+function DebugAdminSetter() {
+  const { user } = useUser();
+  const isAdmin = user?.publicMetadata?.isAdmin === true;
+  useEffect(() => {
+    setDebugAdmin(isAdmin);
+  }, [isAdmin]);
+  return null;
+}
 
 let convex: ConvexReactClient | null = null;
 let initError: Error | null = null;
@@ -26,6 +36,7 @@ export default function ConvexClientProvider({ children }: { children: ReactNode
   }
   return (
     <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
+      <DebugAdminSetter />
       {children}
     </ConvexProviderWithClerk>
   );

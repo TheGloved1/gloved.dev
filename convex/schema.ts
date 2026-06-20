@@ -42,10 +42,6 @@ export default defineSchema({
     .index('by_userId', ['userId'])
     .index('by_externalId', ['externalId']),
 
-  admins: defineTable({
-    email: v.string(),
-  }).index('by_email', ['email']),
-
   groceryItems: defineTable({
     text: v.string(),
     listKey: v.union(v.literal('shopping-list'), v.literal('have-list')),

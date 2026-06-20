@@ -1,13 +1,9 @@
 'use client';
-import { api } from '@convex/api';
-import { useQuery } from 'convex/react';
+import { useUser } from '@clerk/nextjs';
 
 export function useAdmin() {
-  const isAdmin = useQuery(api.admins.isAdmin);
-  const admins = useQuery(api.admins.list);
-
+  const { user } = useUser();
   return {
-    isAdmin,
-    data: admins ?? [],
+    isAdmin: user?.publicMetadata?.isAdmin === true,
   };
 }
