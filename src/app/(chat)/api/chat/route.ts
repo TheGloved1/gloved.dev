@@ -10,6 +10,7 @@ import {
   Models,
   TOOL_CONFIG,
 } from '@/lib/ai';
+import { debugLog } from '@/lib/debug';
 import glovedApi from '@/lib/glovedapi';
 import { deleteStreamContent, publishStreamStatus, publishStreamUpdate, setStreamContent } from '@/lib/redis';
 import { formatMessageContent } from '@/lib/utils';
@@ -85,7 +86,8 @@ export const modelProvider = customProvider({
 });
 
 const getSystemPrompt = async (system?: string): Promise<string> => {
-  return system ?? (await glovedApi.getSystemPrompt())?.data ?? '';
+  debugLog('[CHAT] getSystemPrompt', system);
+  return system ?? (await glovedApi.getSystemPrompt()).data ?? '';
 };
 
 async function consumeRedisStream(

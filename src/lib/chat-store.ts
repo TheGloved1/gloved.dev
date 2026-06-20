@@ -1,5 +1,6 @@
 import { aiGenerate, ApiMessage, ChatFetchOptions, checkEmbeddings, CustomTools, ModelID, TITLE_MODEL } from '@/lib/ai';
 import { ensureConvexThread, getConvexClient } from '@/lib/convex-client';
+import { debugLog } from '@/lib/debug';
 import { now } from '@/lib/utils';
 import { api } from '@convex/_generated/api';
 import type { Id } from '@convex/_generated/dataModel';
@@ -185,7 +186,7 @@ export function updateStreamState(messageId: string, update: Partial<StreamState
   streamStore.set(messageId, { ...current, ...update });
   updateCounter++;
   if (updateCounter <= 5 || updateCounter % 20 === 0) {
-    console.log('[CHAT-DEBUG] updateStreamState', { messageId, update, updateCounter, storeSize: streamStore.size });
+    debugLog('[CHAT-DEBUG] updateStreamState', { messageId, update, updateCounter, storeSize: streamStore.size });
   }
   streamListeners.get(messageId)?.forEach((cb) => cb());
   streamVersion++;
@@ -205,7 +206,7 @@ export async function processStream(
   const tProcess = performance.now();
   let firstByteMs: number | null = null;
   let firstDeltaMs: number | null = null;
-  console.log('[TIMING] processStream entered', { messageId, hasLocalThread: !!localThreadId });
+  debugLog('[TIMING] processStream entered', { messageId, hasLocalThread: !!localThreadId });
   const reader = response.getReader();
   const decoder = new TextDecoder();
   let done = false;
@@ -222,7 +223,7 @@ export async function processStream(
     if (value) {
       if (firstByteMs === null) {
         firstByteMs = +(performance.now() - tProcess).toFixed(1);
-        console.log('[TIMING] processStream first byte', { ms: firstByteMs });
+        debugLog('[TIMING] processStream first byte', { ms: firstByteMs });
       }
       buffer += decoder.decode(value, { stream: true });
     }
@@ -237,7 +238,7 @@ export async function processStream(
       if (!line.startsWith('data:')) continue;
       const payload = line.slice(5).trim();
       if (payload === '[DONE]') {
-        console.log('[CHAT-DEBUG] processStream [DONE] received');
+        debugLog('[CHAT-DEBUG] processStream [DONE] received');
         done = true;
         if (messageId) {
           updateStreamState(messageId, {
@@ -257,7 +258,7 @@ export async function processStream(
       try {
         eventStreamDelta = JSON.parse(payload);
       } catch {
-        console.log('[CHAT-DEBUG] processStream parse error for line:', line.slice(0, 100));
+        debugLog('[CHAT-DEBUG] processStream parse error for line:', line.slice(0, 100));
         continue;
       }
       const type = eventStreamDelta?.type as string | undefined;
@@ -265,7 +266,7 @@ export async function processStream(
 
       chunkCount++;
       if (chunkCount <= 5 || chunkCount % 20 === 0) {
-        console.log('[CHAT-DEBUG] processStream chunk', { type, chunkCount, contentLen: messageContent.length });
+        debugLog('[CHAT-DEBUG] processStream chunk', { type, chunkCount, contentLen: messageContent.length });
       }
 
       if (type === 'data-status') {
@@ -280,7 +281,7 @@ export async function processStream(
           };
         };
         const status = dataStatus.data.status;
-        console.log('[CHAT-DEBUG] processStream data-status', { status, toolName: dataStatus.data.toolName });
+        debugLog('[CHAT-DEBUG] processStream data-status', { status, toolName: dataStatus.data.toolName });
         if (!messageId) continue;
         if (status === 'tool-call' && dataStatus.data.toolName) {
           const toolCall: NonNullable<Message['tools']>[number] = {
@@ -333,7 +334,7 @@ export async function processStream(
         if (delta) {
           if (firstDeltaMs === null) {
             firstDeltaMs = +(performance.now() - tProcess).toFixed(1);
-            console.log('[TIMING] processStream first text-delta', { ms: firstDeltaMs, deltaLen: delta.length });
+            debugLog('[TIMING] processStream first text-delta', { ms: firstDeltaMs, deltaLen: delta.length });
           }
           messageContent += delta;
           updateStreamState(messageId!, { content: messageContent });
@@ -341,7 +342,7 @@ export async function processStream(
         }
       } else if (type === 'finish-step') {
       } else if (type === 'finish') {
-        console.log('[CHAT-DEBUG] processStream finish event', {
+        debugLog('[CHAT-DEBUG] processStream finish event', {
           contentLen: messageContent.length,
           reasoningLen: reasoningContent.length,
         });
@@ -371,7 +372,7 @@ export async function processStream(
     }
   }
   const result = messageContent.trim() === '' ? 'Error: No content received' : messageContent;
-  console.log('[CHAT-DEBUG] processStream done', { resultLen: result.length, totalChunks: chunkCount });
+  debugLog('[CHAT-DEBUG] processStream done', { resultLen: result.length, totalChunks: chunkCount });
   return result;
 }
 
@@ -403,23 +404,23 @@ export async function startStreaming({
   messages?: Message[];
 }) {
   const tStart = performance.now();
-  console.log('[TIMING] startStreaming entered', { threadId, assistantMessageId, isSignedIn, model });
+  debugLog('[TIMING] startStreaming entered', { threadId, assistantMessageId, isSignedIn, model });
   const signal = chatAbortController.signal;
   const system = systemPrompt ? systemPrompt.trim() : '';
 
   // Register this as an active stream so SSE reconnection skips it (before await to avoid race)
   activeStreams.add(assistantMessageId);
 
-  console.log('[TIMING] startStreaming fetching convex messages');
+  debugLog('[TIMING] startStreaming fetching convex messages');
   const allMessages = preFetchedMessages ?? (await fetchConvexMessages(threadId));
   const messages = allMessages.map((m) => ({ role: m.role, content: m.content }));
-  console.log('[TIMING] fetchConvexMessages done', {
+  debugLog('[TIMING] fetchConvexMessages done', {
     count: allMessages.length,
     ms: +(performance.now() - tStart).toFixed(1),
   });
 
   try {
-    console.log('[TIMING] startStreaming calling aiGenerate');
+    debugLog('[TIMING] startStreaming calling aiGenerate');
     const tFetch = performance.now();
     const { data, error } = await aiGenerate(
       {
@@ -432,32 +433,32 @@ export async function startStreaming({
       },
       signal,
     );
-    console.log('[TIMING] aiGenerate returned', {
+    debugLog('[TIMING] aiGenerate returned', {
       ms: +(performance.now() - tFetch).toFixed(1),
       totalMs: +(performance.now() - tStart).toFixed(1),
     });
     if (error) {
-      console.log('[TIMING] startStreaming aiGenerate error', error);
+      debugLog('[TIMING] startStreaming aiGenerate error', error);
       return;
     }
     const reader = data.body;
     if (!reader) {
-      console.log('[TIMING] startStreaming no response body reader');
+      debugLog('[TIMING] startStreaming no response body reader');
       return;
     }
 
-    console.log('[TIMING] startStreaming starting processStream', { ms: +(performance.now() - tStart).toFixed(1) });
+    debugLog('[TIMING] startStreaming starting processStream', { ms: +(performance.now() - tStart).toFixed(1) });
     await processStream(reader, assistantMessageId, !isSignedIn ? threadId : undefined);
-    console.log('[TIMING] processStream completed');
+    debugLog('[TIMING] processStream completed');
     if (!isSignedIn) {
       updateLocalMessageById(threadId, assistantMessageId, { status: 'done' });
     }
   } catch (e) {
-    console.log('[CHAT-DEBUG] startStreaming uncaught error', e);
+    debugLog('[CHAT-DEBUG] startStreaming uncaught error', e);
     toast.error('Something went wrong during generation.');
   } finally {
     activeStreams.delete(assistantMessageId);
-    console.log('[CHAT-DEBUG] startStreaming cleanup done, activeStreams size:', activeStreams.size);
+    debugLog('[CHAT-DEBUG] startStreaming cleanup done, activeStreams size:', activeStreams.size);
   }
 }
 

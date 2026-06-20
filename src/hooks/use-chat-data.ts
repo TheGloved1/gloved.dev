@@ -18,22 +18,12 @@ import {
   updateMessage,
   updateStreamState,
 } from '@/lib/chat-store';
+import { debugLog, diagLog } from '@/lib/debug';
 import { useUser } from '@clerk/nextjs';
 import { api } from '@convex/_generated/api';
 import type { Id } from '@convex/_generated/dataModel';
 import { useConvex, useMutation, useQuery } from 'convex/react';
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
-
-/** Logs to browser console AND sends to server debug endpoint so logs survive page reload. */
-function diagLog(tag: string, data: Record<string, unknown>) {
-  const entry = { tag, ...data, t: Date.now() };
-  console.log('[SSE-DIAG]', entry);
-  fetch('/api/chat/debug', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(entry),
-  }).catch(() => {});
-}
 
 /**
  * Returns threads for the current user.
@@ -102,7 +92,7 @@ export function useThreadMessages(threadId: string): { messages: Message[]; isLo
     let base: Message[];
     if (isSignedIn && isConvexId) {
       if (!convexQuery) {
-        console.log('[CHAT-DEBUG] useThreadMessages convexQuery undefined (loading)');
+        debugLog('[CHAT-DEBUG] useThreadMessages convexQuery undefined (loading)');
         return [];
       }
       base = convexQuery
@@ -122,7 +112,7 @@ export function useThreadMessages(threadId: string): { messages: Message[]; isLo
           tools: m.tools,
         }));
       if (base.length > 0) {
-        console.log('[CHAT-DEBUG] useThreadMessages convexQuery has messages', {
+        debugLog('[CHAT-DEBUG] useThreadMessages convexQuery has messages', {
           count: base.length,
           statuses: base.map((m) => `${m.role}:${m.status}`),
         });
@@ -151,7 +141,7 @@ export function useThreadMessages(threadId: string): { messages: Message[]; isLo
       };
     });
     if (mutated) {
-      console.log('[CHAT-DEBUG] useThreadMessages overlaid stream state on messages');
+      debugLog('[CHAT-DEBUG] useThreadMessages overlaid stream state on messages');
     }
     return mutated ? result : base;
   }, [convexQuery, localMsgs, isSignedIn, isConvexId, threadId, streamVersion]);
@@ -429,11 +419,11 @@ export function useCreateMessage() {
         return createMessage({ threadId, userContent, model, systemPrompt, attachments, tools, userId: undefined });
       }
 
-      console.log('[CHAT-DEBUG] useCreateMessage entered', { threadId, userContent: userContent.slice(0, 50), model });
+      debugLog('[CHAT-DEBUG] useCreateMessage entered', { threadId, userContent: userContent.slice(0, 50), model });
 
       stopGeneration('Creating message...');
 
-      console.log('[CHAT-DEBUG] useCreateMessage calling createPair mutation');
+      debugLog('[CHAT-DEBUG] useCreateMessage calling createPair mutation');
       const pairResult = await createPair({
         threadId: threadId as Id<'threads'>,
         userContent,
@@ -443,7 +433,7 @@ export function useCreateMessage() {
         attachments,
       });
       const assistantId = pairResult.assistantId;
-      console.log('[CHAT-DEBUG] useCreateMessage createPair done', { assistantId });
+      debugLog('[CHAT-DEBUG] useCreateMessage createPair done', { assistantId });
 
       // Fetch messages via the React Convex client (has Clerk auth) to avoid auth issues
       let messages: Message[] = [];
@@ -466,11 +456,11 @@ export function useCreateMessage() {
             tools: m.tools,
           }));
       } catch (e) {
-        console.log('[CHAT-DEBUG] useCreateMessage convex.query failed', e);
+        debugLog('[CHAT-DEBUG] useCreateMessage convex.query failed', e);
       }
 
       // Fire-and-forget: streaming and title gen continue after navigation
-      console.log('[CHAT-DEBUG] useCreateMessage firing startStreaming');
+      debugLog('[CHAT-DEBUG] useCreateMessage firing startStreaming');
       startStreaming({
         threadId,
         assistantMessageId: assistantId,
@@ -485,7 +475,7 @@ export function useCreateMessage() {
 
       generateTitle(threadId, messages).catch(() => {});
 
-      console.log('[CHAT-DEBUG] useCreateMessage returning');
+      debugLog('[CHAT-DEBUG] useCreateMessage returning');
       return assistantId;
     },
     [isSignedIn, user, createPair, convex],
@@ -567,7 +557,7 @@ export function useUpdateMessage() {
             tools: m.tools,
           }));
       } catch (e) {
-        console.log('[CHAT-DEBUG] useUpdateMessage convex.query failed', e);
+        debugLog('[CHAT-DEBUG] useUpdateMessage convex.query failed', e);
       }
 
       startStreaming({
