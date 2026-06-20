@@ -18,10 +18,10 @@ import {
   updateMessage,
   updateStreamState,
 } from '@/lib/chat-store';
-import { useAuth, useUser } from '@clerk/nextjs';
+import { useUser } from '@clerk/nextjs';
 import { api } from '@convex/_generated/api';
 import type { Id } from '@convex/_generated/dataModel';
-import { useMutation, useQuery } from 'convex/react';
+import { useConvex, useMutation, useQuery } from 'convex/react';
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 
 /** Logs to browser console AND sends to server debug endpoint so logs survive page reload. */
@@ -369,7 +369,7 @@ export function useStreamingMessage(messageId: string | undefined) {
 
 export function useCreateMessage() {
   const { isSignedIn, user } = useUser();
-  const { getToken } = useAuth();
+  const convex = useConvex();
   const createPair = useMutation(api.messages.createPair).withOptimisticUpdate((localStore, args) => {
     const msgs = localStore.getQuery(api.messages.getByThread, { threadId: args.threadId });
     if (msgs === undefined) return;
@@ -445,9 +445,29 @@ export function useCreateMessage() {
       const assistantId = pairResult.assistantId;
       console.log('[CHAT-DEBUG] useCreateMessage createPair done', { assistantId });
 
-      const convexAuthToken = await getToken({ template: 'convex' })
-        .then((t) => t ?? undefined)
-        .catch(() => undefined);
+      // Fetch messages via the React Convex client (has Clerk auth) to avoid auth issues
+      let messages: Message[] = [];
+      try {
+        const raw = await convex.query(api.messages.getByThread, { threadId: threadId as Id<'threads'> });
+        messages = (raw as any[])
+          .slice()
+          .sort((a: any, b: any) => a._creationTime - b._creationTime)
+          .map((m: any) => ({
+            id: m._id,
+            threadId: m.threadId,
+            content: m.content,
+            role: m.role,
+            model: m.model,
+            status: m.status,
+            created_at: new Date(m.createdAt).toISOString(),
+            updated_at: new Date(m.updatedAt).toISOString(),
+            reasoning: m.reasoning,
+            attachments: m.attachments,
+            tools: m.tools,
+          }));
+      } catch (e) {
+        console.log('[CHAT-DEBUG] useCreateMessage convex.query failed', e);
+      }
 
       // Fire-and-forget: streaming and title gen continue after navigation
       console.log('[CHAT-DEBUG] useCreateMessage firing startStreaming');
@@ -460,21 +480,21 @@ export function useCreateMessage() {
         systemPrompt,
         model,
         tools,
-        convexAuthToken,
+        messages,
       }).catch(() => {});
 
-      generateTitle(threadId, convexAuthToken).catch(() => {});
+      generateTitle(threadId, messages).catch(() => {});
 
       console.log('[CHAT-DEBUG] useCreateMessage returning');
       return assistantId;
     },
-    [isSignedIn, user, createPair, getToken],
+    [isSignedIn, user, createPair, convex],
   );
 }
 
 export function useUpdateMessage() {
   const { isSignedIn, user } = useUser();
-  const { getToken } = useAuth();
+  const convex = useConvex();
 
   const editMessage = useMutation(api.messages.editMessage).withOptimisticUpdate((localStore, args) => {
     const msgs = localStore.getQuery(api.messages.getByThread, { threadId: args.threadId });
@@ -526,9 +546,29 @@ export function useUpdateMessage() {
       });
       const assistantId = result.assistantId;
 
-      const convexAuthToken = await getToken({ template: 'convex' })
-        .then((t) => t ?? undefined)
-        .catch(() => undefined);
+      // Fetch messages via the React Convex client (has Clerk auth) to avoid auth issues
+      let messages: Message[] = [];
+      try {
+        const raw = await convex.query(api.messages.getByThread, { threadId: threadId as Id<'threads'> });
+        messages = (raw as any[])
+          .slice()
+          .sort((a: any, b: any) => a._creationTime - b._creationTime)
+          .map((m: any) => ({
+            id: m._id,
+            threadId: m.threadId,
+            content: m.content,
+            role: m.role,
+            model: m.model,
+            status: m.status,
+            created_at: new Date(m.createdAt).toISOString(),
+            updated_at: new Date(m.updatedAt).toISOString(),
+            reasoning: m.reasoning,
+            attachments: m.attachments,
+            tools: m.tools,
+          }));
+      } catch (e) {
+        console.log('[CHAT-DEBUG] useUpdateMessage convex.query failed', e);
+      }
 
       startStreaming({
         threadId,
@@ -539,13 +579,13 @@ export function useUpdateMessage() {
         systemPrompt,
         model,
         tools,
-        convexAuthToken,
+        messages,
       }).catch(() => {});
 
-      generateTitle(threadId, convexAuthToken).catch(() => {});
+      generateTitle(threadId, messages).catch(() => {});
 
       return assistantId;
     },
-    [isSignedIn, user, editMessage, getToken],
+    [isSignedIn, user, editMessage, convex],
   );
 }
