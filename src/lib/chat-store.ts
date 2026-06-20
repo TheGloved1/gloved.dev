@@ -390,6 +390,7 @@ export async function startStreaming({
   systemPrompt,
   model,
   tools,
+  convexAuthToken,
 }: {
   threadId: string;
   assistantMessageId: string;
@@ -399,6 +400,7 @@ export async function startStreaming({
   systemPrompt?: string;
   model: ModelID;
   tools?: CustomTools | undefined;
+  convexAuthToken?: string;
 }) {
   const tStart = performance.now();
   console.log('[TIMING] startStreaming entered', { threadId, assistantMessageId, isSignedIn, model });
@@ -409,7 +411,7 @@ export async function startStreaming({
   activeStreams.add(assistantMessageId);
 
   console.log('[TIMING] startStreaming fetching convex messages');
-  const allMessages = await fetchConvexMessages(threadId);
+  const allMessages = await fetchConvexMessages(threadId, convexAuthToken);
   const messages = allMessages.map((m) => ({ role: m.role, content: m.content }));
   console.log('[TIMING] fetchConvexMessages done', {
     count: allMessages.length,
@@ -678,11 +680,12 @@ async function resolveConvexThreadId(threadId: string): Promise<string | null> {
   }
 }
 
-async function fetchConvexMessages(threadId: string): Promise<Message[]> {
+async function fetchConvexMessages(threadId: string, authToken?: string): Promise<Message[]> {
   try {
     const convexId = await resolveConvexThreadId(threadId);
     if (!convexId) return getLocalMessages(threadId);
     const client = getConvexClient();
+    if (authToken) client.setAuth(authToken);
     for (let attempt = 0; attempt < 3; attempt++) {
       const msgs = await client.query(api.messages.getByThread, { threadId: convexId as any });
       const filtered = msgs
@@ -709,13 +712,14 @@ async function fetchConvexMessages(threadId: string): Promise<Message[]> {
   return getLocalMessages(threadId);
 }
 
-export async function generateTitle(threadId: string) {
+export async function generateTitle(threadId: string, authToken?: string) {
   // Try to get messages from Convex first, fall back to localStorage
   let allMessages: Message[];
   try {
     const convexId = await resolveConvexThreadId(threadId);
     if (convexId) {
       const client = getConvexClient();
+      if (authToken) client.setAuth(authToken);
       const msgs = await client.query(api.messages.getByThread, { threadId: convexId as any });
       allMessages = msgs.map((m) => ({
         id: m._id,

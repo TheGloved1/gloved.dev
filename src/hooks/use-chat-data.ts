@@ -18,7 +18,7 @@ import {
   updateMessage,
   updateStreamState,
 } from '@/lib/chat-store';
-import { useUser } from '@clerk/nextjs';
+import { useAuth, useUser } from '@clerk/nextjs';
 import { api } from '@convex/_generated/api';
 import type { Id } from '@convex/_generated/dataModel';
 import { useMutation, useQuery } from 'convex/react';
@@ -369,6 +369,7 @@ export function useStreamingMessage(messageId: string | undefined) {
 
 export function useCreateMessage() {
   const { isSignedIn, user } = useUser();
+  const { getToken } = useAuth();
   const createPair = useMutation(api.messages.createPair).withOptimisticUpdate((localStore, args) => {
     const msgs = localStore.getQuery(api.messages.getByThread, { threadId: args.threadId });
     if (msgs === undefined) return;
@@ -444,6 +445,10 @@ export function useCreateMessage() {
       const assistantId = pairResult.assistantId;
       console.log('[CHAT-DEBUG] useCreateMessage createPair done', { assistantId });
 
+      const convexAuthToken = await getToken({ template: 'convex' })
+        .then((t) => t ?? undefined)
+        .catch(() => undefined);
+
       // Fire-and-forget: streaming and title gen continue after navigation
       console.log('[CHAT-DEBUG] useCreateMessage firing startStreaming');
       startStreaming({
@@ -455,19 +460,21 @@ export function useCreateMessage() {
         systemPrompt,
         model,
         tools,
+        convexAuthToken,
       }).catch(() => {});
 
-      generateTitle(threadId).catch(() => {});
+      generateTitle(threadId, convexAuthToken).catch(() => {});
 
       console.log('[CHAT-DEBUG] useCreateMessage returning');
       return assistantId;
     },
-    [isSignedIn, user, createPair],
+    [isSignedIn, user, createPair, getToken],
   );
 }
 
 export function useUpdateMessage() {
   const { isSignedIn, user } = useUser();
+  const { getToken } = useAuth();
 
   const editMessage = useMutation(api.messages.editMessage).withOptimisticUpdate((localStore, args) => {
     const msgs = localStore.getQuery(api.messages.getByThread, { threadId: args.threadId });
@@ -519,6 +526,10 @@ export function useUpdateMessage() {
       });
       const assistantId = result.assistantId;
 
+      const convexAuthToken = await getToken({ template: 'convex' })
+        .then((t) => t ?? undefined)
+        .catch(() => undefined);
+
       startStreaming({
         threadId,
         assistantMessageId: assistantId,
@@ -528,12 +539,13 @@ export function useUpdateMessage() {
         systemPrompt,
         model,
         tools,
+        convexAuthToken,
       }).catch(() => {});
 
-      generateTitle(threadId).catch(() => {});
+      generateTitle(threadId, convexAuthToken).catch(() => {});
 
       return assistantId;
     },
-    [isSignedIn, user, editMessage],
+    [isSignedIn, user, editMessage, getToken],
   );
 }
