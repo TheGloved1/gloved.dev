@@ -202,7 +202,7 @@ export async function processStream(
   response: ReadableStream<Uint8Array>,
   messageId?: string,
   localThreadId?: string,
-): Promise<string> {
+): Promise<{ content: string; reasoning?: string }> {
   const tProcess = performance.now();
   let firstByteMs: number | null = null;
   let firstDeltaMs: number | null = null;
@@ -213,9 +213,7 @@ export async function processStream(
   let messageContent = '';
   let reasoningContent = '';
   let buffer = '';
-  let lastLocalWrite = 0;
   let chunkCount = 0;
-  const LOCAL_WRITE_INTERVAL = 300;
 
   while (!done) {
     const { value, done: doneReading } = await reader.read();
@@ -371,9 +369,11 @@ export async function processStream(
       }
     }
   }
-  const result = messageContent.trim() === '' ? 'Error: No content received' : messageContent;
-  debugLog('[CHAT-DEBUG] processStream done', { resultLen: result.length, totalChunks: chunkCount });
-  return result;
+  debugLog('[CHAT-DEBUG] processStream done', { resultLen: messageContent.length, totalChunks: chunkCount });
+  return {
+    content: messageContent.trim() === '' ? 'Error: No content received' : messageContent,
+    reasoning: reasoningContent || undefined,
+  };
 }
 
 let chatAbortController = new AbortController();
@@ -448,11 +448,12 @@ export async function startStreaming({
     }
 
     debugLog('[TIMING] startStreaming starting processStream', { ms: +(performance.now() - tStart).toFixed(1) });
-    await processStream(reader, assistantMessageId, !isSignedIn ? threadId : undefined);
+    const streamResult = await processStream(reader, assistantMessageId, !isSignedIn ? threadId : undefined);
     debugLog('[TIMING] processStream completed');
     if (!isSignedIn) {
       updateLocalMessageById(threadId, assistantMessageId, { status: 'done' });
     }
+    return streamResult;
   } catch (e) {
     debugLog('[CHAT-DEBUG] startStreaming uncaught error', e);
     toast.error('Something went wrong during generation.');
@@ -759,7 +760,8 @@ export async function generateTitle(threadId: string, prefetchedMessages?: Messa
     const { data, error } = await aiGenerate({ model, system, messages } as ChatFetchOptions);
     if (error) return toast.error('Failed to generate title!');
     if (!data.body) return toast.error('Failed to generate title!');
-    const title = (await processStream(data.body)).split(/\s+/).slice(0, 6).join(' ');
+    const result = await processStream(data.body);
+    const title = result.content.split(/\s+/).slice(0, 6).join(' ');
 
     const titleConvexId = await resolveConvexThreadId(threadId);
     if (titleConvexId) {

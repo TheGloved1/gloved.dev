@@ -5,7 +5,6 @@ import {
   addLocalThread,
   createMessage,
   deleteLocalThread,
-  generateTitle,
   getLocalMessages,
   getLocalThreads,
   getStreamState,
@@ -471,9 +470,17 @@ export function useCreateMessage() {
         model,
         tools,
         messages,
-      }).catch(() => {});
-
-      generateTitle(threadId, messages).catch(() => {});
+      })
+        .then(async (result) => {
+          if (result) {
+            await convex.mutation(api.messages.setDone, {
+              id: assistantId as Id<'messages'>,
+              content: result.content,
+              reasoning: result.reasoning,
+            });
+          }
+        })
+        .catch(() => {});
 
       debugLog('[CHAT-DEBUG] useCreateMessage returning');
       return assistantId;
@@ -570,9 +577,17 @@ export function useUpdateMessage() {
         model,
         tools,
         messages,
-      }).catch(() => {});
-
-      generateTitle(threadId, messages).catch(() => {});
+      })
+        .then(async (result) => {
+          if (result) {
+            await convex.mutation(api.messages.setDone, {
+              id: assistantId as Id<'messages'>,
+              content: result.content,
+              reasoning: result.reasoning,
+            });
+          }
+        })
+        .catch(() => {});
 
       return assistantId;
     },

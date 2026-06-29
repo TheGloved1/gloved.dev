@@ -64,7 +64,7 @@ const FileItem = React.memo(function FileItem({ file, onDelete, className }: Fil
 
   const handleCopyUrl = async () => {
     try {
-      await navigator.clipboard.writeText(previewUrl);
+      await navigator.clipboard.writeText(fileUrl);
       setIsCopied(true);
       setTimeout(() => setIsCopied(false), 1000);
       setShowDialog(false);

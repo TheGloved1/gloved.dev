@@ -276,3 +276,74 @@ export const setError = mutation({
     });
   },
 });
+
+const toolsValidator = v.array(
+  v.object({
+    id: v.string(),
+    name: v.string(),
+    status: v.union(v.literal('running'), v.literal('done'), v.literal('error')),
+    after: v.number(),
+    result: v.optional(v.any()),
+  }),
+);
+
+export const importThread = mutation({
+  args: {
+    title: v.string(),
+    externalId: v.string(),
+    messages: v.array(
+      v.object({
+        content: v.string(),
+        role: v.union(v.literal('user'), v.literal('assistant')),
+        model: v.string(),
+        status: v.union(v.literal('streaming'), v.literal('done'), v.literal('error'), v.literal('deleted')),
+        reasoning: v.optional(v.string()),
+        tools: v.optional(toolsValidator),
+        attachments: v.optional(v.array(v.string())),
+        externalId: v.optional(v.string()),
+        createdAt: v.number(),
+        updatedAt: v.number(),
+      }),
+    ),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error('Authentication required');
+
+    const existing = await ctx.db
+      .query('threads')
+      .withIndex('by_externalId', (q) => q.eq('externalId', args.externalId))
+      .first();
+    if (existing) return { threadId: existing._id, skipped: true };
+
+    const now = Date.now();
+    const threadId = await ctx.db.insert('threads', {
+      title: args.title,
+      status: 'done',
+      createdAt: now,
+      updatedAt: now,
+      lastMessageAt: now,
+      userId: identity.subject,
+      externalId: args.externalId,
+    });
+
+    for (const msg of args.messages) {
+      await ctx.db.insert('messages', {
+        threadId,
+        content: msg.content,
+        role: msg.role,
+        model: msg.model,
+        status: msg.status === 'streaming' ? 'error' : msg.status,
+        reasoning: msg.reasoning,
+        tools: msg.tools,
+        attachments: msg.attachments,
+        externalId: msg.externalId,
+        createdAt: msg.createdAt,
+        updatedAt: msg.updatedAt,
+        userId: identity.subject,
+      });
+    }
+
+    return { threadId, skipped: false };
+  },
+});
