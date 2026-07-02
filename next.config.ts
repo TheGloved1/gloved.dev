@@ -23,6 +23,11 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'github.com',
+        port: '',
+      },
+      {
+        protocol: 'https',
         hostname: 'api.gloved.dev',
         port: '',
       },

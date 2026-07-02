@@ -2,99 +2,18 @@
 
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import Constants from '@/lib/constants';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
-import { Boxes, CloudDownload, Cpu, ExternalLink, Palette, Puzzle, Search, ShieldCheck, Wrench, Zap } from 'lucide-react';
+import { CloudDownload, ExternalLink } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import Markdown, { Components } from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
+import remarkGfm from 'remark-gfm';
 import '../wow.css';
 import ReleasesTab from './ReleasesTab';
 import { TransitionLink } from './TransitionLink';
-
-const features = [
-  {
-    icon: Search,
-    title: 'Browse & Search',
-    description: 'Find addons on CurseForge by name, category, or game version',
-  },
-  {
-    icon: Puzzle,
-    title: 'Category Sidebar',
-    description: 'Browse 60+ CurseForge categories with multiple sort options',
-  },
-  {
-    icon: CloudDownload,
-    title: 'One-Click Install',
-    description: 'Install directly to your Interface/AddOns folder',
-  },
-  {
-    icon: ShieldCheck,
-    title: 'Version-Aware Filtering',
-    description: 'View only compatible files per WoW patch',
-  },
-  {
-    icon: Search,
-    title: 'External Addon Detection',
-    description: 'Scans for unmanaged addons and matches them to CurseForge',
-  },
-  {
-    icon: Boxes,
-    title: 'Batch Sync',
-    description: 'Match and adopt multiple external addons at once',
-  },
-];
-
-const differentiators = [
-  {
-    icon: Cpu,
-    title: 'Lightweight & Native',
-    description:
-      'Built on Tauri v2 with a Rust backend and a compiled MSI installer (~5 MB). No Electron overhead, no bundled Chromium.',
-  },
-  {
-    icon: ShieldCheck,
-    title: 'No Account, No Ads',
-    description: 'Connects directly to the CurseForge Core API v2. No CurseForge account needed. No ads. No telemetry.',
-  },
-  {
-    icon: CloudDownload,
-    title: 'CurseForge Downloads',
-    description:
-      'By default, installing opens the CurseForge download page directly in your browser, supporting addon authors by counting your downloads.',
-  },
-  {
-    icon: Wrench,
-    title: 'Smart Addon Detection',
-    description:
-      'Scans your Interface/AddOns folder by parsing .toc metadata files. Detects addons installed outside WowAdder and can match and adopt them.',
-  },
-  {
-    icon: Zap,
-    title: 'Safe Upgrades',
-    description:
-      'Downloads and extracts the new version before removing old folders — no window where addon files are missing.',
-  },
-  {
-    icon: Palette,
-    title: 'Customizable Themes',
-    description:
-      'Choose from 5 color schemes inspired by World of Warcraft: Classic, Emerald, Crimson, Night Elf, and Frost.',
-  },
-];
-
-const techStack = [
-  { label: 'Desktop Framework', value: 'Tauri v2 (Rust backend)' },
-  { label: 'Frontend', value: 'React 19 + TypeScript' },
-  { label: 'Data Fetching', value: 'TanStack Query v5' },
-  { label: 'Styling', value: 'Tailwind CSS v4' },
-  { label: 'API Client', value: 'curseforge-v2' },
-  { label: 'Routing', value: 'React Router v7' },
-  { label: 'Markdown', value: 'react-markdown' },
-  { label: 'Build Tool', value: 'Vite 7' },
-  { label: 'Package Manager', value: 'Bun' },
-  { label: 'Installer', value: 'WiX MSI' },
-];
 
 enum WowAdderTab {
   Overview = 'overview',
@@ -125,6 +44,218 @@ function FadeInSection({
   );
 }
 
+const README_BASE = 'https://raw.githubusercontent.com/TheGloved1/WowAdder/main';
+const README_URL = `${README_BASE}/README.md`;
+const REPO_BLOB = 'https://github.com/TheGloved1/WowAdder/blob/main';
+
+const readmeComponents: Components = {
+  h1: ({ children, ...props }: any) => (
+    <h1
+      className='font-wow-heading mb-4 mt-10 border-b border-[#292524] pb-2 text-2xl font-bold tracking-wide text-[#fbbf24]'
+      {...props}
+    >
+      {children}
+    </h1>
+  ),
+  h2: ({ children, ...props }: any) => (
+    <h2 className='font-wow-heading mb-3 mt-8 text-xl font-bold tracking-wide text-[#fbbf24]' {...props}>
+      {children}
+    </h2>
+  ),
+  h3: ({ children, ...props }: any) => (
+    <h3 className='font-wow-heading mb-2 mt-6 text-lg font-bold tracking-wide text-[#fbbf24]' {...props}>
+      {children}
+    </h3>
+  ),
+  h4: ({ children, ...props }: any) => (
+    <h4 className='font-wow-heading mb-2 mt-4 text-base font-bold tracking-wide text-[#fbbf24]/90' {...props}>
+      {children}
+    </h4>
+  ),
+  p: ({ children, ...props }: any) => (
+    <p className='font-wow-body mb-4 text-sm leading-relaxed text-[#a8a29e]' {...props}>
+      {children}
+    </p>
+  ),
+  a: ({ children, href, ...props }: any) => {
+    const isRelative = href && !href.startsWith('http') && !href.startsWith('#') && !href.startsWith('mailto:');
+    const resolvedHref = isRelative ? `${REPO_BLOB}/${href.replace(/^\.\//, '')}` : href;
+    return (
+      <a
+        href={resolvedHref}
+        className='text-[#f59e0b] no-underline transition-all duration-150 hover:underline'
+        target='_blank'
+        rel='noopener noreferrer'
+        {...props}
+      >
+        {children}
+      </a>
+    );
+  },
+  strong: ({ children, ...props }: any) => (
+    <strong className='font-semibold text-[#faf6f0]' {...props}>
+      {children}
+    </strong>
+  ),
+  code: ({ children, className, ...props }: any) => {
+    const isInline = !className?.includes('language-');
+    if (isInline && !String(children).includes('\n')) {
+      return (
+        <code className='mx-0.5 rounded-sm bg-[#292524] px-1 py-0.5 font-mono text-xs text-[#fbbf24]' {...props}>
+          {children}
+        </code>
+      );
+    }
+    const language = className?.replace('language-', '') || 'plaintext';
+    return (
+      <pre className='mb-4 overflow-x-auto rounded-sm border border-[#3f3a36] bg-[#0c0a09] p-4'>
+        <code className={`language-${language} font-mono text-xs text-[#e4e4e7]`} {...props}>
+          {children}
+        </code>
+      </pre>
+    );
+  },
+  pre: ({ children, ...props }: any) => <>{children}</>,
+  ul: ({ children, ...props }: any) => (
+    <ul className='mb-4 list-disc pl-6 text-sm text-[#a8a29e] marker:text-[#a16207]' {...props}>
+      {children}
+    </ul>
+  ),
+  ol: ({ children, ...props }: any) => (
+    <ol className='mb-4 list-decimal pl-6 text-sm text-[#a8a29e] marker:text-[#a16207]' {...props}>
+      {children}
+    </ol>
+  ),
+  li: ({ children, ...props }: any) => (
+    <li className='mb-1 leading-relaxed' {...props}>
+      {children}
+    </li>
+  ),
+  blockquote: ({ children, ...props }: any) => (
+    <blockquote className='mb-4 border-l-2 border-[#fbbf24] pl-4 text-sm italic text-[#a8a29e]' {...props}>
+      {children}
+    </blockquote>
+  ),
+  hr: (props: any) => (
+    <div className='my-8 flex items-center gap-2'>
+      <div className='h-px flex-1 bg-gradient-to-r from-transparent via-[#a16207]/40 to-transparent' />
+      <div className='h-1.5 w-1.5 rotate-45 border border-[#a16207]/60' />
+      <div className='h-px flex-1 bg-gradient-to-r from-transparent via-[#a16207]/40 to-transparent' />
+    </div>
+  ),
+  img: ({ src, alt, ...props }: any) => {
+    const resolvedSrc = src?.startsWith('http') ? src : `${README_BASE}/${src?.replace(/^\//, '')}`;
+    return (
+      <div className='my-4 overflow-hidden rounded-sm border border-[#3f3a36]'>
+        <img src={resolvedSrc} alt={alt} className='w-full' {...props} />
+      </div>
+    );
+  },
+  table: ({ children, ...props }: any) => (
+    <div className='wow-card mb-4 overflow-hidden'>
+      <table className='w-full border-collapse' {...props}>
+        {children}
+      </table>
+    </div>
+  ),
+  thead: ({ children, ...props }: any) => <thead {...props}>{children}</thead>,
+  tbody: ({ children, ...props }: any) => <tbody {...props}>{children}</tbody>,
+  tr: ({ children, ...props }: any) => (
+    <tr className='transition-colors duration-150 hover:bg-[#292524]' {...props}>
+      {children}
+    </tr>
+  ),
+  th: ({ children, ...props }: any) => (
+    <th
+      className='font-wow-heading border-b border-[#292524] px-4 py-3 text-left text-xs tracking-wide text-[#fbbf24]/80'
+      {...props}
+    >
+      {children}
+    </th>
+  ),
+  td: ({ children, ...props }: any) => (
+    <td className='border-b border-[#292524] px-4 py-3 text-xs text-[#a8a29e]' {...props}>
+      {children}
+    </td>
+  ),
+};
+
+function ReadmeSection() {
+  const [readme, setReadme] = useState<string | null>(null);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch(README_URL)
+      .then((r) => {
+        if (!r.ok) throw new Error();
+        return r.text();
+      })
+      .then((text) => {
+        if (!cancelled) setReadme(text);
+      })
+      .catch(() => {
+        if (!cancelled) setError(true);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  if (error) {
+    return (
+      <FadeInSection className='px-4 py-20'>
+        <div className='mx-auto max-w-md text-center'>
+          <div className='mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-sm border border-[#3f3a36] bg-[#292524]'>
+            <ExternalLink className='h-5 w-5 text-[#a8a29e]' />
+          </div>
+          <p className='font-wow-body text-sm text-[#78716c]'>
+            Couldn&apos;t load the README.{' '}
+            <a
+              href='https://github.com/TheGloved1/WowAdder'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='text-[#f59e0b] hover:underline'
+            >
+              View on GitHub
+            </a>
+          </p>
+        </div>
+      </FadeInSection>
+    );
+  }
+
+  if (!readme) {
+    return (
+      <FadeInSection className='px-4 py-20'>
+        <div className='mx-auto max-w-2xl'>
+          {/* Skeleton blocks */}
+          {[1, 2, 3].map((block) => (
+            <div key={block} className='mb-8 animate-pulse'>
+              <div className='mb-3 h-6 w-1/3 rounded-sm bg-[#292524]' />
+              <div className='mb-2 h-3 w-full rounded-sm bg-[#292524]' />
+              <div className='mb-2 h-3 w-5/6 rounded-sm bg-[#292524]' />
+              <div className='mb-2 h-3 w-4/6 rounded-sm bg-[#292524]' />
+            </div>
+          ))}
+        </div>
+      </FadeInSection>
+    );
+  }
+
+  return (
+    <div className='px-4 py-12 sm:py-16'>
+      <div className='mx-auto max-w-4xl'>
+        <div className='wow-card p-6 sm:p-8 lg:p-10'>
+          <Markdown rehypePlugins={[rehypeRaw]} remarkPlugins={[remarkGfm]} components={readmeComponents}>
+            {readme}
+          </Markdown>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function WowAdderPage(): React.JSX.Element {
   const [activeTab, setActiveTab] = useState<WowAdderTab>(WowAdderTab.Overview);
 
@@ -137,7 +268,12 @@ export default function WowAdderPage(): React.JSX.Element {
             <div className='relative flex h-16 w-16 items-center justify-center rounded-sm border border-[#3f3a36] bg-[#1c1917] sm:h-20 sm:w-20'>
               {/* <div className='pointer-events-none absolute inset-px rounded-sm border border-[#a16207]/20' /> */}
               {/* <Boxes className='relative h-8 w-8 text-[#fbbf24] sm:h-10 sm:w-10' /> */}
-              <img src='https://github.com/TheGloved1/WowAdder/blob/main/public/logo.png?raw=true' alt='WowAdder logo' />
+              <Image
+                width={32}
+                height={32}
+                src='https://github.com/TheGloved1/WowAdder/blob/main/public/logo.png?raw=true'
+                alt='WowAdder logo'
+              />
             </div>
           </div>
 
@@ -146,7 +282,7 @@ export default function WowAdderPage(): React.JSX.Element {
               WowAdder
             </h1>
             <p className='font-wow-body mt-3 text-sm text-[#a8a29e] sm:text-base'>
-              A lightweight, native World of Warcraft addon manager
+              A lightweight World of Warcraft addon manager
             </p>
           </div>
 
@@ -215,124 +351,7 @@ export default function WowAdderPage(): React.JSX.Element {
           </div>
 
           <TabsContent value='overview' className='mt-0'>
-            {/* Features */}
-            <FadeInSection delay={100} className='mt-1 px-4 pt-16'>
-              <div className='mx-auto max-w-5xl'>
-                <div className='mb-10 text-center'>
-                  <h2 className='font-wow-heading text-lg tracking-wide text-[#fbbf24]'>Features</h2>
-                  <p className='font-wow-body mt-1.5 text-sm text-[#78716c]'>
-                    Everything you need to manage your World of Warcraft addons
-                  </p>
-                </div>
-                <div className='grid gap-3 sm:grid-cols-2 lg:grid-cols-3'>
-                  {features.map((feature) => (
-                    <div
-                      key={feature.title}
-                      className='wow-card group p-4 transition-all duration-150 hover:shadow-[0_0_10px_rgba(161,98,7,0.1)] sm:p-5'
-                    >
-                      <div className='relative mb-3 flex h-10 w-10 items-center justify-center rounded-sm border border-[#3f3a36] bg-[#292524]'>
-                        <div className='pointer-events-none absolute inset-px rounded-sm border border-[#a16207]/20' />
-                        <feature.icon className='relative h-[18px] w-[18px] text-[#fbbf24] transition-colors duration-150 group-hover:text-[#fbbf24]' />
-                      </div>
-                      <h3 className='font-wow-heading text-sm tracking-wide text-[#faf6f0] transition-colors duration-150 group-hover:text-[#fbbf24]'>
-                        {feature.title}
-                      </h3>
-                      <p className='font-wow-body mt-1 text-xs leading-relaxed text-[#a8a29e]'>{feature.description}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </FadeInSection>
-
-            {/* Divider */}
-            <div className='px-4'>
-              <div className='mx-auto h-px max-w-5xl bg-gradient-to-r from-transparent via-[#a16207]/30 to-transparent' />
-            </div>
-
-            {/* How It's Different */}
-            <FadeInSection delay={200} className='px-4 py-16 sm:py-20 lg:py-24'>
-              <div className='mx-auto max-w-5xl'>
-                <div className='mb-10 text-center'>
-                  <h2 className='font-wow-heading text-lg tracking-wide text-[#fbbf24]'>How It&apos;s Different</h2>
-                  <p className='font-wow-body mt-1.5 text-sm text-[#78716c]'>Built differently from the ground up</p>
-                </div>
-                <div className='grid gap-3 sm:grid-cols-2'>
-                  {differentiators.map((item) => (
-                    <div
-                      key={item.title}
-                      className='wow-card group p-4 transition-all duration-150 hover:shadow-[0_0_10px_rgba(161,98,7,0.1)] sm:p-5'
-                    >
-                      <div className='relative mb-3 flex h-10 w-10 items-center justify-center rounded-sm border border-[#3f3a36] bg-[#292524]'>
-                        <div className='pointer-events-none absolute inset-px rounded-sm border border-[#a16207]/20' />
-                        <item.icon className='relative h-[18px] w-[18px] text-[#fbbf24] transition-colors duration-150 group-hover:text-[#fbbf24]' />
-                      </div>
-                      <h3 className='font-wow-heading text-sm tracking-wide text-[#faf6f0] transition-colors duration-150 group-hover:text-[#fbbf24]'>
-                        {item.title}
-                      </h3>
-                      <p className='font-wow-body mt-1 text-xs leading-relaxed text-[#a8a29e]'>{item.description}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </FadeInSection>
-
-            {/* Divider */}
-            <div className='px-4'>
-              <div className='mx-auto h-px max-w-5xl bg-gradient-to-r from-transparent via-[#a16207]/30 to-transparent' />
-            </div>
-
-            {/* Tech Stack */}
-            <FadeInSection delay={300} className='px-4 py-16 sm:py-20 lg:py-24'>
-              <div className='mx-auto max-w-3xl'>
-                <div className='mb-10 text-center'>
-                  <h2 className='font-wow-heading text-lg tracking-wide text-[#fbbf24]'>Tech Stack</h2>
-                  <p className='font-wow-body mt-1.5 text-sm text-[#78716c]'>Modern tools for a modern addon manager</p>
-                </div>
-                <div className='wow-card overflow-hidden'>
-                  <table className='w-full'>
-                    <tbody>
-                      {techStack.map((item, i) => (
-                        <tr key={item.label} className='transition-colors duration-150 hover:bg-[#292524]'>
-                          <td className='font-wow-heading border-b border-[#292524] px-4 py-3 text-xs tracking-wide text-[#fbbf24]/80 sm:px-5'>
-                            {item.label}
-                          </td>
-                          <td className='font-wow-body border-b border-[#292524] px-4 py-3 text-xs text-[#a8a29e] sm:px-5'>
-                            {item.value}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </FadeInSection>
-
-            {/* Footer CTA */}
-            <FadeInSection delay={400} className='px-4 pb-20 pt-8 sm:pb-28 sm:pt-12'>
-              <div className='mx-auto max-w-2xl text-center'>
-                <div className='my-8 flex items-center gap-2'>
-                  <div className='h-px flex-1 bg-gradient-to-r from-transparent via-[#a16207]/40 to-transparent' />
-                  <div className='h-1.5 w-1.5 rotate-45 border border-[#a16207]/60' />
-                  <div className='h-px flex-1 bg-gradient-to-r from-transparent via-[#a16207]/40 to-transparent' />
-                </div>
-                <p className='font-wow-body text-sm text-[#78716c]'>
-                  Windows (MSI installer) &mdash; other platforms can build from source
-                </p>
-                <div className='mt-6 flex flex-wrap justify-center gap-3'>
-                  <Link href='https://github.com/TheGloved1/WowAdder' target='_blank' rel='noopener noreferrer'>
-                    <Button className='border border-[#3f3a36] bg-[#1c1917] text-xs text-[#a8a29e] transition-all duration-150 hover:border-[#a16207] hover:text-[#faf6f0] hover:shadow-[0_0_8px_rgba(161,98,7,0.2)]'>
-                      <ExternalLink className='mr-1.5 h-3.5 w-3.5' />
-                      View Source
-                    </Button>
-                  </Link>
-                  <Link href={Constants.Github.link}>
-                    <Button className='border border-transparent bg-transparent text-xs text-[#78716c] transition-all duration-150 hover:border-[#a16207]/50 hover:text-[#fbbf24]'>
-                      More Projects
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-            </FadeInSection>
+            <ReadmeSection />
           </TabsContent>
 
           <TabsContent value='releases' className='mt-0'>
