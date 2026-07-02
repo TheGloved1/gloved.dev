@@ -44,7 +44,7 @@ function FadeInSection({
   );
 }
 
-const README_BASE = 'https://raw.githubusercontent.com/TheGloved1/WowAdder/main';
+const README_BASE = 'https://raw.githubusercontent.com/TheGloved1/WowAdder/refs/heads/main';
 const README_URL = `${README_BASE}/README.md`;
 const REPO_BLOB = 'https://github.com/TheGloved1/WowAdder/blob/main';
 
