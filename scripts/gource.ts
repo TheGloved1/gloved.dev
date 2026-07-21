@@ -1,8 +1,8 @@
 import { spawn } from 'child_process';
 import { existsSync, mkdirSync, readdirSync, rmSync, writeFileSync } from 'fs';
-import { join, resolve, dirname } from 'path';
-import { fileURLToPath } from 'url';
 import { platform } from 'os';
+import { dirname, join, resolve } from 'path';
+import { fileURLToPath } from 'url';
 
 const CACHE_DIR = join(dirname(fileURLToPath(import.meta.url)), '.cache', 'gource');
 const GOURCE_ZIP_URL = 'https://github.com/acaudwell/Gource/releases/download/gource-0.53/gource-0.53.win64.zip';
@@ -12,12 +12,11 @@ function isWindows(): boolean {
 }
 
 async function findGourceExe(): Promise<string | null> {
+  if (!isWindows()) return null;
   if (existsSync(CACHE_DIR)) {
     const cached = findFileRecursive(CACHE_DIR, 'gource.exe');
     if (cached) return cached;
   }
-
-  if (!isWindows()) return null;
 
   return downloadAndExtractGource();
 }
@@ -49,11 +48,11 @@ async function downloadAndExtractGource(): Promise<string | null> {
 
 function extractZip(zipPath: string, destDir: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    const ps = spawn('powershell', [
-      '-NoProfile',
-      '-Command',
-      `Expand-Archive -Path '${zipPath}' -DestinationPath '${destDir}' -Force`,
-    ], { shell: true });
+    const ps = spawn(
+      'powershell',
+      ['-NoProfile', '-Command', `Expand-Archive -Path '${zipPath}' -DestinationPath '${destDir}' -Force`],
+      { shell: true },
+    );
     ps.on('close', (code) => (code === 0 ? resolve() : reject(new Error(`Expand-Archive exited with code ${code}`))));
     ps.on('error', reject);
   });
@@ -74,25 +73,37 @@ function findFileRecursive(dir: string, target: string): string | null {
 
 function buildGourceArgs(title: string): string[] {
   return [
-    '--title', title,
-    '--auto-skip-seconds', '1',
-    '--viewport', '1280x720',
-    '--font-size', '18',
-    '--seconds-per-day', '0.10',
+    '--title',
+    title,
+    '--auto-skip-seconds',
+    '1',
+    '--viewport',
+    '1280x720',
+    '--font-size',
+    '18',
+    '--seconds-per-day',
+    '0.10',
     '--stop-at-end',
-    '-o', '-',
+    '-o',
+    '-',
   ];
 }
 
 function buildFfmpegArgs(outputPath: string): string[] {
   return [
     '-y',
-    '-r', '60',
-    '-f', 'image2pipe',
-    '-vcodec', 'ppm',
-    '-i', '-',
-    '-vcodec', 'libvpx',
-    '-b:v', '10000K',
+    '-r',
+    '60',
+    '-f',
+    'image2pipe',
+    '-vcodec',
+    'ppm',
+    '-i',
+    '-',
+    '-vcodec',
+    'libvpx',
+    '-b:v',
+    '10000K',
     outputPath,
   ];
 }
@@ -125,10 +136,11 @@ function hideGourceWindow() {
 }
 
 async function run() {
-  const outputPath = process.argv[2] ? resolve(process.cwd(), process.argv[2]) : join(process.cwd(), 'public', 'gource.webm');
+  const outputPath =
+    process.argv[2] ? resolve(process.cwd(), process.argv[2]) : join(process.cwd(), 'public', 'gource.webm');
   const title = process.argv[3] ?? 'gloved.dev';
 
-  const gourcePath = await findGourceExe() ?? 'gource';
+  const gourcePath = (await findGourceExe()) ?? 'gource';
 
   const gource = spawn(gourcePath, buildGourceArgs(title));
   const ffmpeg = spawn('ffmpeg', buildFfmpegArgs(outputPath));

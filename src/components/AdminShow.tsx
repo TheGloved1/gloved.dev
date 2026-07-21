@@ -5,6 +5,8 @@ import React from 'react';
 export default function AdminShow({ children }: { children: React.ReactNode }): React.JSX.Element {
   const { user } = useUser();
   const isAdmin = user?.publicMetadata?.isAdmin === true;
+  console.log('isAdmin', isAdmin);
+  console.log('user', JSON.stringify(user));
 
   if (isAdmin) return <>{children}</>;
   return <></>;
