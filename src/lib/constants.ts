@@ -11,7 +11,7 @@ const Constants = {
   Home: {
     title: 'Home',
     link: '/home',
-    description: 'The home page for my About Me based web project built with Next.js',
+    description: 'The home/overview page for my Website.',
   },
   FileUploader: {
     title: 'GlovedFiles',
