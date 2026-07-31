@@ -1,4 +1,4 @@
-## TODO
+# TODO
 
 - [x] Update chat UI for mobile
 - [x] Add nice looking home button to chat ui
@@ -12,4 +12,3 @@
 - [x] Implement GlovedChat DnD options
 - [x] Implement OpenRouter support
 - [x] Add OpenRouter models to [Models.ts](src/lib/ai/models.ts)
-- [ ] Create global File Viewer Page
