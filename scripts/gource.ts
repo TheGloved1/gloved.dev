@@ -5,7 +5,7 @@ import { dirname, join, resolve } from 'path';
 import { fileURLToPath } from 'url';
 
 const CACHE_DIR = join(dirname(fileURLToPath(import.meta.url)), '.cache', 'gource');
-const GOURCE_ZIP_URL = 'https://github.com/acaudwell/Gource/releases/download/gource-0.53/gource-0.53.win64.zip';
+const GOURCE_ZIP_URL = 'https://github.com/acaudwell/Gource/releases/download/gource-0.56/gource-0.56.tar.gz';
 
 function isWindows(): boolean {
   return platform() === 'win32';
