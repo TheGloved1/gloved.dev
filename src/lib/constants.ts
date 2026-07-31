@@ -1,10 +1,7 @@
-import { GLOVED_API_URL } from './glovedapi';
-
 const Constants = {
   NAME: 'gloved.dev',
-  DESC: 'A personal website for my projects and interests. Built with Next.js',
-  ICON: '/new_logo.png',
-  API: GLOVED_API_URL,
+  DESC: 'A personal website for my projects and interests',
+  ICON: '/logo.png',
   GITHUB_URL: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/',
   FILE_SIZE_LIMIT_MB: 2.5,
   MAX_FILE_SIZE: 2.5 * 1024 * 1024,
