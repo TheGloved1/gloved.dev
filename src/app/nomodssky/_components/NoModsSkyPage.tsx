@@ -281,7 +281,9 @@ export default function NoModsSkyPage(): React.JSX.Element {
             <h1 className='font-nms-heading text-4xl font-bold tracking-wide text-[#00d4ff] sm:text-5xl lg:text-6xl'>
               NoModsSky
             </h1>
-            <p className='font-nms-body mt-3 text-sm text-[#8ea0c0] sm:text-base'>A No Man's Sky mod manager</p>
+            <p className='font-nms-body mt-3 text-sm text-[#8ea0c0] sm:text-base'>
+              A simple cross-platform No Man&apos;s Sky mod manager
+            </p>
           </div>
 
           <div className='my-6 flex w-full max-w-xs items-center gap-2'>

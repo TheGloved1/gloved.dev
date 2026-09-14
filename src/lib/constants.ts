@@ -103,7 +103,7 @@ const Constants = {
   NoModsSky: {
     title: 'NoModsSky',
     link: '/nomodssky',
-    description: "A No Man's Sky mod manager",
+    description: "A simple cross-platform No Man's Sky mod manager",
   },
 } as const;
 
