@@ -42,6 +42,12 @@ export const apps: AppItem[] = [
     link: Constants.WowAdder.link,
   },
   {
+    icon: Gamepad2,
+    title: Constants.NoModsSky.title,
+    description: Constants.NoModsSky.description,
+    link: Constants.NoModsSky.link,
+  },
+  {
     icon: Scissors,
     title: Constants.BGRemover.title,
     description: Constants.BGRemover.description,

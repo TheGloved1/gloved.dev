@@ -100,6 +100,11 @@ const Constants = {
     link: '/wowadder',
     description: 'A lightweight World of Warcraft addon manager',
   },
+  NoModsSky: {
+    title: 'NoModsSky',
+    link: '/nomodssky',
+    description: "A No Man's Sky mod manager",
+  },
 } as const;
 
 export default Constants;
