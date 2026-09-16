@@ -13,7 +13,7 @@ const TransitionContext = createContext<TransitionContextValue>({
 });
 export const useTransition = () => useContext(TransitionContext);
 
-export default function NoModsSkyLayout({ children }: { children: React.ReactNode }) {
+export default function NoMansManagerLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const controls = useAnimationControls();

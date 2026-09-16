@@ -65,9 +65,9 @@ export default function ReleasesTab(): React.JSX.Element {
   }, [releasesPerPage]);
 
   const releasesQuery = useQuery({
-    queryKey: ['nomodssky-releases'],
+    queryKey: ['nomansmanager-releases'],
     queryFn: async () => {
-      const res = await fetch('https://api.github.com/repos/TheGloved1/NoModsSky/releases?per_page=100');
+      const res = await fetch('https://api.github.com/repos/TheGloved1/NoMansManager/releases?per_page=100');
       if (!res.ok) throw new Error('Failed to fetch releases');
       return (await res.json()) as GitHubRelease[];
     },
@@ -98,7 +98,7 @@ export default function ReleasesTab(): React.JSX.Element {
 
     Promise.allSettled(
       missing.map(async (tag) => {
-        const res = await fetch(`https://github.com/TheGloved1/NoModsSky/releases/download/${tag}/updater.json`, {
+        const res = await fetch(`https://github.com/TheGloved1/NoMansManager/releases/download/${tag}/updater.json`, {
           signal: controller.signal,
         });
         if (res.status === 404) return { tag, notes: '' };

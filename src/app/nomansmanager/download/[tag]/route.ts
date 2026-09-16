@@ -16,7 +16,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   const extParam = searchParams.get('ext');
 
   try {
-    const res = await fetch(`https://api.github.com/repos/TheGloved1/NoModsSky/releases/tags/${encodeURIComponent(tag)}`);
+    const res = await fetch(`https://api.github.com/repos/TheGloved1/NoMansManager/releases/tags/${encodeURIComponent(tag)}`);
     if (!res.ok) {
       return NextResponse.json({ error: 'Release not found' }, { status: 404 });
     }

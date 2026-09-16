@@ -43,9 +43,9 @@ export const apps: AppItem[] = [
   },
   {
     icon: Gamepad2,
-    title: Constants.NoModsSky.title,
-    description: Constants.NoModsSky.description,
-    link: Constants.NoModsSky.link,
+    title: Constants.NoMansManager.title,
+    description: Constants.NoMansManager.description,
+    link: Constants.NoMansManager.link,
   },
   {
     icon: Scissors,

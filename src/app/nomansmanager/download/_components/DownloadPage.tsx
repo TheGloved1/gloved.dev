@@ -54,9 +54,9 @@ export default function DownloadPage(): React.JSX.Element {
   }, [detectedPlatform]);
 
   const latestRelease = useQuery({
-    queryKey: ['nomodssky-latest-release'],
+    queryKey: ['nomansmanager-latest-release'],
     queryFn: async () => {
-      const res = await fetch('https://api.github.com/repos/TheGloved1/NoModsSky/releases/latest');
+      const res = await fetch('https://api.github.com/repos/TheGloved1/NoMansManager/releases/latest');
       if (!res.ok) throw new Error('Failed to fetch latest release');
       return (await res.json()) as GitHubRelease;
     },
@@ -81,7 +81,7 @@ export default function DownloadPage(): React.JSX.Element {
         {/* Header */}
         <div className='mb-8 text-center'>
           <h1 className='font-nms-heading text-3xl font-bold tracking-wide text-[#00d4ff] sm:text-4xl'>
-            Download NoModsSky
+            Download NoMansManager
           </h1>
         </div>
 
@@ -109,7 +109,7 @@ export default function DownloadPage(): React.JSX.Element {
           <>
             {detectedRecommended && (
               <a
-                href={`/nomodssky/download/latest?platform=${detectedPlatform}&ext=${detectedRecommended.ext}`}
+                href={`/nomansmanager/download/latest?platform=${detectedPlatform}&ext=${detectedRecommended.ext}`}
                 target='_blank'
                 rel='noopener noreferrer'
               >
@@ -179,7 +179,7 @@ export default function DownloadPage(): React.JSX.Element {
                     {platformAssets.map((asset) => (
                       <a
                         key={asset.name}
-                        href={`/nomodssky/download/latest?platform=${activePlatform}&ext=${asset.ext}`}
+                        href={`/nomansmanager/download/latest?platform=${activePlatform}&ext=${asset.ext}`}
                         target='_blank'
                         rel='noopener noreferrer'
                         className='block'

@@ -48,6 +48,13 @@ const nextConfig: NextConfig = {
       permanent: true,
     });
 
+    // Redirect old NoModsSky routes to NoMansManager (renamed app)
+    redirects.push({
+      source: '/nomodssky/:path*',
+      destination: '/nomansmanager/:path*',
+      permanent: true,
+    });
+
     // Add more redirects here as needed
     // redirects.push({
     //   source: '/old-route',

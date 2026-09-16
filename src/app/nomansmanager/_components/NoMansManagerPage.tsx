@@ -15,7 +15,7 @@ import '../nms.css';
 import ReleasesTab from './ReleasesTab';
 import { TransitionLink } from './TransitionLink';
 
-enum NoModsSkyTab {
+enum NoMansManagerTab {
   Overview = 'overview',
   Releases = 'releases',
 }
@@ -44,9 +44,9 @@ function FadeInSection({
   );
 }
 
-const README_BASE = 'https://raw.githubusercontent.com/TheGloved1/NoModsSky/refs/heads/main';
+const README_BASE = 'https://raw.githubusercontent.com/TheGloved1/NoMansManager/refs/heads/main';
 const README_URL = `${README_BASE}/README.md`;
-const REPO_BLOB = 'https://github.com/TheGloved1/NoModsSky/blob/main';
+const REPO_BLOB = 'https://github.com/TheGloved1/NoMansManager/blob/main';
 
 const readmeComponents: Components = {
   h1: ({ children, ...props }: any) => (
@@ -212,7 +212,7 @@ function ReadmeSection() {
           <p className='font-nms-body text-sm text-[#5a6d8a]'>
             Couldn&apos;t load the README.{' '}
             <a
-              href='https://github.com/TheGloved1/NoModsSky'
+              href='https://github.com/TheGloved1/NoMansManager'
               target='_blank'
               rel='noopener noreferrer'
               className='text-[#ff8c00] hover:underline'
@@ -256,8 +256,8 @@ function ReadmeSection() {
   );
 }
 
-export default function NoModsSkyPage(): React.JSX.Element {
-  const [activeTab, setActiveTab] = useState<NoModsSkyTab>(NoModsSkyTab.Overview);
+export default function NoMansManagerPage(): React.JSX.Element {
+  const [activeTab, setActiveTab] = useState<NoMansManagerTab>(NoMansManagerTab.Overview);
 
   return (
     <>
@@ -271,15 +271,15 @@ export default function NoModsSkyPage(): React.JSX.Element {
               <Image
                 width={32}
                 height={32}
-                src='https://github.com/TheGloved1/NoModsSky/blob/main/src-tauri/icons/icon.png?raw=true'
-                alt='NoModsSky logo'
+                src='https://github.com/TheGloved1/NoMansManager/blob/main/src-tauri/icons/icon.png?raw=true'
+                alt='NoMansManager logo'
               />
             </div>
           </div>
 
           <div className='text-center'>
             <h1 className='font-nms-heading text-4xl font-bold tracking-wide text-[#00d4ff] sm:text-5xl lg:text-6xl'>
-              NoModsSky
+              NoMansManager
             </h1>
             <p className='font-nms-body mt-3 text-sm text-[#8ea0c0] sm:text-base'>
               A simple cross-platform No Man&apos;s Sky mod manager
@@ -299,13 +299,13 @@ export default function NoModsSkyPage(): React.JSX.Element {
           </p>
 
           <div className='mt-8 flex flex-wrap justify-center gap-3'>
-            <Link href='https://github.com/TheGloved1/NoModsSky' target='_blank' rel='noopener noreferrer'>
+            <Link href='https://github.com/TheGloved1/NoMansManager' target='_blank' rel='noopener noreferrer'>
               <Button className='border border-[#1e3356] bg-[#111b2d] text-xs text-[#8ea0c0] transition-all duration-150 hover:border-[#0099cc] hover:text-[#e6f1ff] hover:shadow-[0_0_8px_rgba(0,212,255,0.2)]'>
                 <ExternalLink className='mr-1.5 h-3.5 w-3.5' />
                 View on GitHub
               </Button>
             </Link>
-            <TransitionLink href='/nomodssky/download'>
+            <TransitionLink href='/nomansmanager/download'>
               <Button className='border border-[#ff8c00] bg-[#00d4ff] px-4 text-xs font-bold tracking-wide text-[#0a0f1a] shadow-[0_0_6px_rgba(0,212,255,0.15)] transition-all duration-150 hover:bg-[#00d4ff]/90 active:bg-[#d97706]'>
                 <CloudDownload className='mr-1.5 h-3.5 w-3.5' />
                 Download
@@ -326,10 +326,10 @@ export default function NoModsSkyPage(): React.JSX.Element {
           <div className='flex justify-center'>
             <TabsList className='gap-0.5 rounded-sm border border-[#1a2a45] bg-[#0a0f1a] p-0.5'>
               <TabsTrigger
-                value={NoModsSkyTab.Overview}
+                value={NoMansManagerTab.Overview}
                 className={cn(
                   'font-nms-heading rounded-sm px-5 py-1.5 text-xs tracking-wide transition-all duration-150',
-                  activeTab === NoModsSkyTab.Overview ?
+                  activeTab === NoMansManagerTab.Overview ?
                     'bg-[#111b2d] text-[#00d4ff] shadow-[0_0_6px_rgba(0,212,255,0.1)]'
                   : 'text-[#8ea0c0] hover:bg-[#1a2a45] hover:text-[#e6f1ff]',
                 )}
@@ -337,10 +337,10 @@ export default function NoModsSkyPage(): React.JSX.Element {
                 Overview
               </TabsTrigger>
               <TabsTrigger
-                value={NoModsSkyTab.Releases}
+                value={NoMansManagerTab.Releases}
                 className={cn(
                   'font-nms-heading rounded-sm px-5 py-1.5 text-xs tracking-wide transition-all duration-150',
-                  activeTab === NoModsSkyTab.Releases ?
+                  activeTab === NoMansManagerTab.Releases ?
                     'bg-[#111b2d] text-[#00d4ff] shadow-[0_0_6px_rgba(0,212,255,0.1)]'
                   : 'text-[#8ea0c0] hover:bg-[#1a2a45] hover:text-[#e6f1ff]',
                 )}

@@ -71,13 +71,13 @@ export const RouteMap: Record<string, RouteInfo> = {
     relativePath: 'src/app/black/page.tsx',
     githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/black/page.tsx',
   },
-  '/nomodssky': {
-    relativePath: 'src/app/nomodssky/page.tsx',
-    githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/nomodssky/page.tsx',
+  '/nomansmanager': {
+    relativePath: 'src/app/nomansmanager/page.tsx',
+    githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/nomansmanager/page.tsx',
   },
-  '/nomodssky/download': {
-    relativePath: 'src/app/nomodssky/download/page.tsx',
-    githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/nomodssky/download/page.tsx',
+  '/nomansmanager/download': {
+    relativePath: 'src/app/nomansmanager/download/page.tsx',
+    githubUrl: 'https://github.com/TheGloved1/gloved.dev/blob/master/src/app/nomansmanager/download/page.tsx',
   },
   '/gallery': {
     relativePath: 'src/app/gallery/page.tsx',

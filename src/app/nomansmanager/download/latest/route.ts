@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
   const extParam = searchParams.get('ext');
 
   try {
-    const res = await fetch('https://api.github.com/repos/TheGloved1/NoModsSky/releases/latest');
+    const res = await fetch('https://api.github.com/repos/TheGloved1/NoMansManager/releases/latest');
     if (!res.ok) {
       return NextResponse.json({ error: 'Failed to fetch latest release' }, { status: 502 });
     }
